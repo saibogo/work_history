@@ -1,0 +1,24 @@
+Database structure:
+-Table workspoints - all point
+-Table oborudovanie - all equipments
+-Table works - all works
+
+Table workspoints structure:
+-point_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+-point_name TEXT NOT NULL,
+-point_address TEXT NOT NULL
+
+Table oborudovanie structure:
+id	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+point_id	INTEGER NOT NULL,
+name	TEXT NOT NULL,
+model	TEXT NOT NULL,
+serial_num	TEXT NOT NULL,
+pre_id	INTEGER
+
+Table works structure:
+id	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+id_obor	INTEGER NOT NULL,
+date	TEXT NOT NULL,
+problem	TEXT NOT NULL,
+result	TEXT
