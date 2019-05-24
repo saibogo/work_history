@@ -6,6 +6,7 @@ max_size_column = 40
 rows_pxls = 25
 max_pxls_in_canvas = 600
 relief = GROOVE
+ip_address = '192.168.6.242:5000'
 
 points_table = ['Название предприятия', 'Адрес предприятия']
 points_table_name = 'Зарегистрированные предприятия'

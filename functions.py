@@ -52,3 +52,8 @@ def full_equip_to_view(equip: list) -> list:
 
     point, _, name, model, serial, pre_id = range(6)
     return list(map(str, [equip[point], equip[name], equip[model], equip[serial], equip[pre_id]]))
+
+
+def get_id_list(ls: list) -> list:
+    """Function return all id in list ls"""
+    return [elem[0] for elem in ls]
