@@ -1,6 +1,7 @@
-from flask import Flask
+from flask import Flask, request
 
 import select_operations
+import insert_operations
 import web.universal_html as uhtml
 import config
 import functions
@@ -43,8 +44,8 @@ def equips_operations():
 @app.route("/points")
 def points_operations():
     name = 'Действия с предприятиями'
-    menu = [(1, 'Все зарегестрированные предприятия')]
-    links_list = ['/all-points']
+    menu = [(1, 'Все зарегестрированные предприятия'), (2, 'Добавить предприятие')]
+    links_list = ['/all-points', '/create_new_point']
     return uhtml.universal_table(name, ['№', 'Доступное действие'], menu, True, links_list)
 
 
@@ -55,7 +56,35 @@ def all_points_table():
     full_points = select_operations.get_full_information_list_points(curr, all_points)
     links_list = ['/equip/' + str(elem) for elem in functions.get_id_list(all_points)]
     close_database(conn)
-    return uhtml.universal_table(config.points_table_name, config.points_table, full_points, True, links_list)
+    table1 =  uhtml.universal_table(config.points_table_name, config.points_table, full_points, True, links_list)
+    table2 = uhtml.add_new_point()
+    return table1 + '\n' + table2
+
+
+@app.route("/create_new_point")
+def create_new_point():
+    html = uhtml.style_custom() + '\n' + uhtml.add_new_point()
+    return html
+
+
+@app.route('/add-point', methods=['POST'])
+def add_point():
+    if request.method == "POST":
+        data = functions.form_to_data(request.form)
+        point_name = data['point_name']
+        point_adr = data['point_addres']
+        password = data["password"]
+        if functions.is_valid_password(password):
+            conn, curr = database()
+            insert_operations.create_new_point(curr, point_name, point_adr)
+            select_operations.commit(conn)
+            close_database(conn)
+            return uhtml.operation_completed()
+        else:
+            return uhtml.pass_is_not_valid()
+
+    else:
+        return "Method not correct!"
 
 
 @app.route("/equip/<point_id>")
@@ -67,12 +96,44 @@ def equip_to_point(point_id):
     links_list = ['/work/' + str(elem) for elem in functions.get_id_list(all_equips)]
     correct_full_equips = [[elem[i] for i in [0, 2, 3, 4, 5]] for elem in full_equips]
     close_database(conn)
-    return uhtml.universal_table(config.equips_table_name, config.equips_table, correct_full_equips, True, links_list)
+    table1 = uhtml.universal_table(config.equips_table_name, config.equips_table, correct_full_equips, True, links_list)
+    table2 = uhtml.add_new_equip(point_id)
+    return table1 + '\n' + table2
 
 
 @app.route("/all-equips")
 def all_equips_table():
     return equip_to_point('0')
+
+
+@app.route("/add-equip", methods=['POST'])
+def add_equip():
+    if request.method == "POST":
+        data = functions.form_to_data(request.form)
+        point_id = data['point_id']
+        equip_name = data['equip_name']
+        model = data['model']
+        serial_num = data['serial_num']
+        pre_id = data['pre_id']
+        password = data["password"]
+        if functions.is_valid_password(password):
+            conn, curr = database()
+            if model == '':
+                insert_operations.create_new_equip(curr, point_id, equip_name)
+            elif serial_num == '':
+                insert_operations.create_new_equip(curr, point_id, equip_name, model)
+            elif pre_id == '':
+                insert_operations.create_new_equip(curr, point_id, equip_name, model, serial_num)
+            else:
+                insert_operations.create_new_equip(curr, point_id, equip_name, model, serial_num, pre_id)
+            select_operations.commit(conn)
+            close_database(conn)
+            return uhtml.operation_completed()
+        else:
+            return uhtml.pass_is_not_valid()
+
+    else:
+        return "Method not correct!"
 
 
 @app.route("/works")
