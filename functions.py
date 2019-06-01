@@ -1,3 +1,8 @@
+import hashlib
+import request
+
+import config
+
 __author__ = "Andrey Gleykh"
 __license__ = "GPL"
 __email__ = "gleykh@gmail.com"
@@ -57,3 +62,16 @@ def full_equip_to_view(equip: list) -> list:
 def get_id_list(ls: list) -> list:
     """Function return all id in list ls"""
     return [elem[0] for elem in ls]
+
+
+def is_valid_password(password: str) -> bool:
+    """Function compare password and config-password"""
+    return config.pass_hash == int(hashlib.sha256(password.encode('utf-8')).hexdigest(), 16)
+
+
+def form_to_data(form: dict) -> dict:
+    """Fuction create dict contain all data in form"""
+    fields = [k for k in form]
+    values = [form[k] for k in form]
+    data = dict(zip(fields, values))
+    return data
