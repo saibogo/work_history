@@ -1,3 +1,7 @@
+from datetime import datetime, date, time
+
+import config
+
 __author__ = "Andrey Gleykh"
 __license__ = "GPL"
 __email__ = "gleykh@gmail.com"
@@ -36,7 +40,7 @@ def universal_table(name: str, headers: list, data: list, links: bool = False, l
     for i in range(len(data)):
         result.append('<tr>' + "".join(['<td>' + link_or_str(elem, links, links_list[i] if links else '') +
                                         '</td>' for elem in data[i]]) + '</tr>')
-
+    result.append('</table>')
     return "\n".join(result)
 
 
@@ -46,9 +50,9 @@ def add_new_point() -> str:
     result.append('<table><caption> Добавить новое предприятие</caption>')
     result.append('<tr><th>Название</th><th>Адрес</th><th>Пароль доступа</th><th></th></tr>')
     result.append('<form action="/add-point" method="post"><tr>')
-    result.append('<td><input name="point_name"></td>')
-    result.append('<td><input name="point_addres"></td>')
-    result.append('<td><input type="password" name="password"></td>')
+    result.append('<td><input name="point_name" placeholder="Обязательно"></td>')
+    result.append('<td><input name="point_addres" placeholder="Обязательно"></td>')
+    result.append('<td><input type="password" name="password" placeholder="Обязательно"></td>')
     result.append('<td><input type="submit" value="Отправить"></td>')
     result.append('</tr></form></table>')
     return "\n".join(result)
@@ -62,11 +66,36 @@ def add_new_equip(point_id: str) -> str:
                   '<th>Серийник</th><th>Предыдущий ID</th><th>Пароль доступа</th><th>Отправить</th></tr>')
     result.append('<form action="/add-equip" method="post"><tr>')
     result.append('<td><input name="point_id" value="' + str(point_id) + '" readonly></td>')
-    result.append('<td><input name="equip_name"></td>')
-    result.append('<td><input name="model"></td>')
-    result.append('<td><input name="serial_num"></td>')
-    result.append('<td><input name="pre_id"></td>')
-    result.append('<td><input type="password" name="password"></td>')
+    result.append('<td><input name="equip_name"  placeholder="Обязательно"></td>')
+    result.append('<td><input name="model" placeholder="Если есть"></td>')
+    result.append('<td><input name="serial_num" placeholder="Если есть"></td>')
+    result.append('<td><input name="pre_id" placeholder="Если есть"></td>')
+    result.append('<td><input type="password" name="password"  placeholder="Обязательно"></td>')
+    result.append('<td><input type="submit" value="Отправить"></td>')
+    result.append('</tr></form></table>')
+    return "\n".join(result)
+
+
+def add_new_work(equip_id: str) -> str:
+    """Function return string contain table to add new work"""
+    curr_datetime = datetime.now()
+    year = str(curr_datetime.year)
+    month = str(curr_datetime.month) if curr_datetime.month > 9 else '0' + str(curr_datetime.month)
+    day = str(curr_datetime.day) if curr_datetime.day > 9 else '0' + str(curr_datetime.day)
+    hour = str(curr_datetime.hour) if curr_datetime.hour > 9 else '0' + str(curr_datetime.hour)
+    minute = str(curr_datetime.minute) if curr_datetime.minute > 9 else '0' + str(curr_datetime.minute)
+    date_to_browser = year + '-' + month + '-' + day + 'T' + hour + ':' + minute
+
+    result = list()
+    result.append('<table><caption>Зарегестрировать произведенные работы</caption>')
+    result.append('<tr><th>ID оборудования</th><th>Причина ремонта</th><th>описание работ</th><th>Дата и время</th>'
+                  '<th>Пароль доступа</th><th>Отправить</th></tr>')
+    result.append('<form action="/add-work" method="post"><tr>')
+    result.append('<td><input name="equip_id" value="' + str(equip_id) + '" readonly></td>')
+    result.append('<td><input name="query" placeholder="Необязательно"></td>')
+    result.append('<td><input name="work" placeholder="Обязательно"></td>')
+    result.append('<td><input type="datetime-local" name="work_datetime" value="' + date_to_browser + '"></td>')
+    result.append('<td><input type="password" name="password"  placeholder="Обязательно"></td>')
     result.append('<td><input type="submit" value="Отправить"></td>')
     result.append('</tr></form></table>')
     return "\n".join(result)
@@ -80,3 +109,20 @@ def pass_is_not_valid() -> str:
 def operation_completed() -> str:
     """Function return string contain message to insert in DB"""
     return style_custom() + '\n' + '<h1>Добавлена запись в базу данных</h1>'
+
+
+def data_is_not_valid() -> str:
+    """Function return string contain message BAD DATA"""
+    return style_custom() + '\n' + '<h1>Некорректные данные</h1>'
+
+
+def navigations_menu(pre_html: str) -> str:
+    """Function return string contain navigations bar"""
+
+    result = list()
+    result.append('<table><caption>Навигация</caption><tr>')
+    result.append('<td><a href="' + pre_html + '">В предыдущее меню</a></td>')
+    result.append('<td><a href="' + config.full_address + '">Главное меню</a></td>')
+    result.append('<td><a href="mailto:gleykh@malachite.ru">Обратная связь</a></td>')
+    result.append('</tr></table>')
+    return '\n'.join(result)
