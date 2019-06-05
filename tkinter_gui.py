@@ -1,12 +1,16 @@
 import sqlite3
 import tkinter as tk
 from tkinter import messagebox as mb
+import threading
+import requests
+import psutil
 
 import config
 import insert_operations
 import select_operations
 import universal_windows
 import functions
+import web.server as webserver
 
 __author__ = "Andrey Gleykh"
 __license__ = "GPL"
@@ -267,20 +271,53 @@ def main_window() -> None:
 
         works_windows(conn, curr)
 
+    def start_web_server(self) -> None:
+        """Function start web-server to connect database"""
+
+        try:
+            response = requests.get("http://" + config.ip_address + ":" + config.port + '/add-work')
+            print("Веб-сервер уже запущен")
+        except:
+            print("Запускаем веб-сервер")
+            threading.Thread(target=webserver.start_server).start()
+
+    def stop_web_server(self) -> None:
+        """Function stop web-server to connect database"""
+
+        try:
+            response = requests.get("http://" + config.ip_address + ":" + config.port + '/add-work')
+            for proc in psutil.process_iter():
+                data = proc.as_dict(attrs=['cmdline', 'pid'])
+                for elem in data['cmdline']:
+                    if 'work_history' in elem:
+                        print(data)
+                        print("процесс найден PID=" + str(data['pid']))
+                        proc.kill()
+                        print("Веб-сервер остановлен")
+        except:
+            print("Веб-сервер не запущен")
+
+
     root = tk.Tk()
     root.title('База ремонтов')
     but_points = tk.Button(root, text='Операции с предприятиями')
     but_equip = tk.Button(root, text='Операции с оборудованием')
     but_work = tk.Button(root, text='Операции с ремонтами')
+    but_start_server = tk.Button(root, text='Запустить веб-сервис')
+    but_stop_server = tk.Button(root, text='Остановить сервер')
     but_exit = tk.Button(root, text='Выход')
 
     but_points.bind(left_mouse_but, func=create_poin_gui)
     but_equip.bind(left_mouse_but, func=create_equip_window)
     but_work.bind(left_mouse_but, func=create_works_window)
+    but_start_server.bind(left_mouse_but, func=start_web_server)
+    but_stop_server.bind(left_mouse_but, func=stop_web_server)
     but_exit.bind(left_mouse_but, func=exit_gui)
 
     but_points.pack()
     but_equip.pack()
     but_work.pack()
+    but_start_server.pack()
+    but_stop_server.pack()
     but_exit.pack()
     root.mainloop()

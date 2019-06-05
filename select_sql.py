@@ -66,3 +66,14 @@ def sql_select_point_from_like_str(s: str) -> str:
     words = s.split()
     return 'SELECT * FROM workspoints WHERE LOWER(point_name) LiKE "%' + str('%'.join(words)) + '%"'
 
+
+def sql_select_max_id_equip() -> str:
+    """Return the query string select maximal number in col ID in table oborudovanie"""
+
+    return "SELECT MAX(id) FROM oborudovanie"
+
+def sql_select_point_id_from_equip_id(equip_id: str) -> str:
+    """Return the query string select a point contain this equip"""
+
+    return 'select point_id from oborudovanie where id = "' + str(equip_id) + '"'
+

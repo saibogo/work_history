@@ -6,7 +6,9 @@ max_size_column = 40
 rows_pxls = 25
 max_pxls_in_canvas = 600
 relief = GROOVE
-ip_address = '192.168.6.242:5000'
+ip_address = '192.168.6.242'
+port = '5000'
+full_address = "http://" + ip_address + ":" + port
 pass_hash = 52380570359700838927303160461451880435941242634047643826816963312413378430196
 
 points_table = ['Название предприятия', 'Адрес предприятия']
