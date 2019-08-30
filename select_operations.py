@@ -149,6 +149,17 @@ def get_maximal_equip_id(curr: sqlite3.Cursor) -> str:
     return str(get_selected(curr, select_sql.sql_select_max_id_equip())[0][0])
 
 
+def get_maximal_points_id(curr: sqlite3.Cursor) -> str:
+    """Return string number of maximal id in table workspoints"""
+
+    return str(get_selected(curr, select_sql.sql_select_max_id_point())[0][0])
+
+def get_maximal_work_id(curr: sqlite3.Cursor) -> str:
+    """Return string number of maximal id in table works"""
+
+    return str(get_selected(curr, select_sql.sql_select_max_work_id())[0][0])
+
+
 def get_point_id_from_equip_id(curr: sqlite3.Cursor, equip_id: str) -> str:
     """Return point_id, where point contain equip"""
 

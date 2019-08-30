@@ -72,6 +72,19 @@ def sql_select_max_id_equip() -> str:
 
     return "SELECT MAX(id) FROM oborudovanie"
 
+
+def sql_select_max_id_point() -> str:
+    """Return the query string select maximal number in column point_id in table workspoints"""
+
+    return "SELECT MAX(point_id) FROM workspoints"
+
+
+def sql_select_max_work_id() -> str:
+    """Return the query string select maximal number in column id in table works"""
+
+    return "SELECT MAX(id) FROM works"
+
+
 def sql_select_point_id_from_equip_id(equip_id: str) -> str:
     """Return the query string select a point contain this equip"""
 
