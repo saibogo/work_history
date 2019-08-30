@@ -27,6 +27,7 @@ def style_custom() -> str:
     result.append('a:visited {color: DarkSlateGrey; text-decoration: none}')
     result.append('a:hover {color: Purple; text-decoration: none; background: DarkKhaki}')
     result.append('a:active {color: DarkSlateGrey; text-decoration: none; font-size: large}')
+    result.append('ul {font-style: italic; text-align; center}')
     result.append('</style>')
     return '\n'.join(result)
 
@@ -124,5 +125,17 @@ def navigations_menu(pre_html: str) -> str:
     result.append('<td><a href="' + pre_html + '">В предыдущее меню</a></td>')
     result.append('<td><a href="' + config.full_address + '">Главное меню</a></td>')
     result.append('<td><a href="mailto:gleykh@malachite.ru">Обратная связь</a></td>')
+    result.append('<td><a href="' + config.full_address + '/FAQ">Частые вопросы</a></td>')
     result.append('</tr></table>')
+    return '\n'.join(result)
+
+
+def list_to_ul(ls: list) -> str:
+    """Function return html-string contain notnumeric html-list"""
+
+    result = list()
+    result.append('<ul>')
+    for elem in ls:
+        result.append('<li>' + str(elem) + '</li>')
+    result.append('</ul>')
     return '\n'.join(result)

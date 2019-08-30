@@ -235,6 +235,51 @@ def add_work():
         return "Method not correct!" + uhtml.navigations_menu(config.full_address + '/')
 
 
+@app.route("/FAQ")
+def faq():
+    conn, curr = database()
+    page = list()
+    page.append(uhtml.style_custom())
+    page.append('<table><tr><td><h2>Наиболее часты вопросы по системе</h2>')
+    page.append('<ul>')
+    page.append('<li>Что нужно для использования системы?'+\
+                uhtml.list_to_ul(['Компьютер во внутренней сети компании Малахит',
+                                  'Браузер с поддержкой технологии ' +
+                                   '<a href="https://www.w3.org/Style/CSS/Overview.en.html">CSS</a>']) + '</li>')
+    page.append('<li>С использованием каких технологий написана система?' +\
+                uhtml.list_to_ul(['Используется база данных <a href="https://www.sqlite.org/index.html"> SQLite</a>',
+                                  'Используется веб-сервер ' +
+                                  '<a href="https://flask.palletsprojects.com/en/1.0.x/changelog/">Flask</a>',
+                                  'Используется язык программирования ' +
+                                  '<a href="https://www.python.org/">Python3</a>',
+                                  'Для клиентского приложения использована связка ' +
+                                  '<a href="https://www.python.org/">Python3</a> + ' +
+                                  '<a href="https://docs.python.org/3/library/tk.html">tkinter</a>']) + '</li>')
+    page.append('<li>Сколько пользователей поддерживает система?' +\
+                uhtml.list_to_ul(['Структура базы данных поддерживает только одного исполнителя',
+                                  'Одновременно над добавлением записей может работать неограниченное количество' +\
+                                  ' пользователей, но все они будут использовать одну учетную запись']) + '</li>')
+    page.append('<li>Планируется ли развитие системы?' +\
+                uhtml.list_to_ul(['Планируется миграция базы данных на MySQL',
+                                  'Планируется изменение структуры базы данных и внедрение многопользовательского' +\
+                                   ' режима', 'Планируется внедрение системы поиска по записям']) + '</li>')
+    max_equip_id = select_operations.get_maximal_equip_id(curr)
+    max_point_id = select_operations.get_maximal_points_id(curr)
+    max_work_id = select_operations.get_maximal_work_id(curr)
+    page.append('<li>Сколько записей зарегистрированно на данный момент?' +\
+                uhtml.list_to_ul(['Единиц или групп оборудования: <a href="' + config.full_address + '/all-equips">' +
+                                  str(max_equip_id) + '</a>',
+                                  'Предприятий: <a href="' + config.full_address + '/all-points">' +
+                                  str(max_point_id) + '</a>',
+                                  'Произведенных работ: <a href="' + config.full_address + '/all-works">' +
+                                  str(max_work_id) + '</a>']) + '</li>')
+    page.append('</ul></td></tr></table>')
+    result = ''.join(page)
+    print(result)
+    return result
+
+
+
 def start_server():
     app.run(host='0.0.0.0')
 
