@@ -164,3 +164,27 @@ def get_point_id_from_equip_id(curr: sqlite3.Cursor, equip_id: str) -> str:
     """Return point_id, where point contain equip"""
 
     return str(get_selected(curr, select_sql.sql_select_point_id_from_equip_id(equip_id))[0][0])
+
+
+def get_all_work_id_contain_word(curr: sqlite3.Cursor, word: str) -> list:
+    """Function return list contain ID work likes word"""
+
+    max_id = get_maximal_work_id(curr)
+    result = set()
+    for i in range(1, int(max_id) + 1):
+        tmp = get_full_information_to_work(curr, str(i))
+        for elem in tmp:
+            if elem is None:
+                pass
+            elif word.lower() in str(elem).lower():
+                result.add(i)
+            else:
+                pass
+
+    return list(map(lambda x: str(x), sorted(list(result))))
+
+
+def get_all_works_contain_word(curr: sqlite3.Cursor, word: str) -> list:
+    """Function return all works contain word in point_name and work and equip_name"""
+
+    return [get_full_information_to_work(curr, id) for id in get_all_work_id_contain_word(curr, word)]
