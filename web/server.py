@@ -235,12 +235,12 @@ def add_work():
         return "Method not correct!" + uhtml.navigations_menu(config.full_address + '/')
 
 
-@app.route("/FAQ")
+@app.route("/FAQ", methods=['GET'])
 def faq():
     conn, curr = database()
     page = list()
     page.append(uhtml.style_custom())
-    page.append('<table><tr><td><h2>Наиболее часты вопросы по системе</h2>')
+    page.append('<table><caption>Наиболее частые вопросы по системе:</caption><tr><td>')
     page.append('<ul>')
     page.append('<li>Что нужно для использования системы?'+\
                 uhtml.list_to_ul(['Компьютер во внутренней сети компании Малахит',
@@ -274,9 +274,34 @@ def faq():
                                   'Произведенных работ: <a href="' + config.full_address + '/all-works">' +
                                   str(max_work_id) + '</a>']) + '</li>')
     page.append('</ul></td></tr></table>')
+    preview_page = request.args.get('page', default=config.full_address, type=str)
+    print(preview_page)
+    page.append(uhtml.navigations_menu(preview_page))
     result = ''.join(page)
     print(result)
     return result
+
+
+@app.route('/find')
+def find_page():
+    return uhtml.find_table()
+
+
+@app.route('/findresult', methods=['POST'])
+def find_from_works():
+    if request.method == "POST":
+        data = functions.form_to_data(request.form)
+        find_request = data['find_request']
+        conn, curr = database()
+        works = select_operations.get_all_works_contain_word(curr, find_request)
+        correct_full_works = [[elem[i] for i in [0, 2, 3, 4, 6, 7, 8]] for elem in works]
+        close_database(conn)
+        table1 = uhtml.universal_table(config.works_table_name, config.works_table, correct_full_works)
+        return table1
+    else:
+        return "Method not correct!" + uhtml.navigations_menu(config.full_address + '/')
+
+
 
 
 

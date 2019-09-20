@@ -1,4 +1,5 @@
-from datetime import datetime, date, time
+from datetime import datetime
+from flask import request
 
 import config
 
@@ -125,7 +126,8 @@ def navigations_menu(pre_html: str) -> str:
     result.append('<td><a href="' + pre_html + '">В предыдущее меню</a></td>')
     result.append('<td><a href="' + config.full_address + '">Главное меню</a></td>')
     result.append('<td><a href="mailto:gleykh@malachite.ru">Обратная связь</a></td>')
-    result.append('<td><a href="' + config.full_address + '/FAQ">Частые вопросы</a></td>')
+    result.append('<td><a href="' + config.full_address + '/FAQ?page=' + request.url + '">Частые вопросы</a></td>')
+    result.append('<td><a href="' + config.full_address + '/find' + '">Поиск</a></td>')
     result.append('</tr></table>')
     return '\n'.join(result)
 
@@ -139,3 +141,20 @@ def list_to_ul(ls: list) -> str:
         result.append('<li>' + str(elem) + '</li>')
     result.append('</ul>')
     return '\n'.join(result)
+
+
+def find_table() -> str:
+    """Function return table to select find-string"""
+    result = list()
+    result.append(style_custom())
+    result.append('<table><caption>Встроенная поисковая система</caption>')
+    result.append('<tr><th>Примечание к поиску</th><th>Строка поиска</th><th>Отправить</th></tr>')
+    result.append('<form action="/findresult" method="post"><tr>')
+    result.append('<td><input name="comment" value="Введите строку поиска.(Регистр сиволов не важен)" readonly></td>')
+    result.append('<td><input name="find_request"  placeholder="Обязательно"></td>')
+    result.append('<td><input type="submit" value="Отправить"></td>')
+    result.append('</tr></form></table>')
+    return "\n".join(result)
+
+
+
