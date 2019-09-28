@@ -1,6 +1,8 @@
 from tkinter import GROOVE, FLAT, RAISED, SUNKEN, RIDGE
 
-database_name = '/home/saibogo/PycharmProjects/work_history/malachite_works.db'
+path_to_project = '/home/saibogo/PycharmProjects/work_history/'
+database_name = path_to_project + 'malachite_works.db'
+static_dir = path_to_project + 'web/static/'
 str_interrupted = 'Interrupted'
 max_size_column = 40
 rows_pxls = 25
