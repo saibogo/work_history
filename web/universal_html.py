@@ -17,6 +17,7 @@ def link_or_str(elem: str, link_type: bool = False, link: str = '') -> str:
 def style_custom() -> str:
     """Function return string contain sections <style>"""
     result = list()
+    result.append('<head><link rel="shortcut icon" href="' + config.full_address + '/favicon.ico" type="image/x-icon"></head>')
     result.append('<style>')
     result.append('body {background: Khaki; color: MidnightBlue}')
     result.append('h1 {text-align: center}')

@@ -1,4 +1,5 @@
 from flask import Flask, request
+from flask import send_from_directory
 
 import select_operations
 import insert_operations
@@ -11,7 +12,7 @@ __license__ = "GPL"
 __email__ = "gleykh@gmail.com"
 __status__ = "Prototype"
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder=config.static_dir)
 
 
 def database():
@@ -32,6 +33,10 @@ def hello():
     links_list = ['/points', '/equips', '/works']
     return uhtml.universal_table(name, ['№', 'выполнить:'], menu, True, links_list)
 
+
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(config.static_dir, 'favicon.ico')
 
 @app.route("/equips")
 def equips_operations():
