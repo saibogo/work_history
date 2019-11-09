@@ -6,11 +6,7 @@ import insert_operations
 import web.universal_html as uhtml
 import config
 import functions
-
-__author__ = "Andrey Gleykh"
-__license__ = "GPL"
-__email__ = "gleykh@gmail.com"
-__status__ = "Prototype"
+from metadata import *
 
 app = Flask(__name__, static_folder=config.static_dir)
 
