@@ -1,13 +1,9 @@
-__author__ = "Andrey Gleykh"
-__license__ = "GPL"
-__email__ = "gleykh@gmail.com"
-__status__ = "Prototype"
-
-
 import psycopg2
 import sqlite3
 import config
 
+
+from metadata import *
 # This program execute migration LiteSQL database to Postgres database
 
 con_postgres = psycopg2.connect(

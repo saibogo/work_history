@@ -1,11 +1,8 @@
 from tkinter import *  # from x import * is bad practice
 
 import config
+from metadata import *
 
-
-#from ttk import *
-
-# http://tkinter.unpythonic.net/wiki/VerticalScrolledFrame
 
 class VerticalScrolledFrame(Frame):
     """A pure Tkinter scrollable frame that actually works!

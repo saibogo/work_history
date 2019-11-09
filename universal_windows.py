@@ -5,11 +5,7 @@ from tkinter import messagebox as mb
 import config
 import functions
 from scroll_frame import VerticalScrolledFrame
-
-__author__ = "Andrey Gleykh"
-__license__ = "GPL"
-__email__ = "gleykh@gmail.com"
-__status__ = "Prototype"
+from metadata import *
 
 left_mouse_but = '<Button-1>'
 

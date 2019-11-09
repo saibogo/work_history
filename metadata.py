@@ -1,0 +1,5 @@
+__author__ = "Andrey Gleykh"
+__license__ = "GPL"
+__email__ = "gleykh@gmail.com"
+__status__ = "Prototype"
+__version__ = "0.2.1"

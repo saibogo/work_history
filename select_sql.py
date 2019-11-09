@@ -1,15 +1,10 @@
-import functions
-
-__author__ = "Andrey Gleykh"
-__license__ = "GPL"
-__email__ = "gleykh@gmail.com"
-__status__ = "Prototype"
+from metadata import *
 
 
 def sql_select_point(point_id: str) -> str:
     """Returns the string of the query for selecting a point by a unique number"""
 
-    return "SELECT * FROM workspoints WHERE point_id" + ("=" + str(point_id)
+    return "SELECT * FROM workspoints " + ("WHERE point_id=" + str(point_id)
                                                          if point_id != '' and point_id != '0'
                                                          else "")
 
@@ -20,7 +15,7 @@ sql_select_all_points = sql_select_point('')
 def sql_select_equipment_in_point(point: str) -> str:
     """Returns the query string for selecting all equipment items at a given point"""
 
-    return "SELECT * FROM oborudovanie WHERE point_id" + ("=" + str(point) if point != "" else "")
+    return "SELECT * FROM oborudovanie" + (" WHERE point_id=" + str(point) if point != "" else "")
 
 
 sql_select_all_equipment = sql_select_equipment_in_point('')
@@ -29,7 +24,7 @@ sql_select_all_equipment = sql_select_equipment_in_point('')
 def sql_select_work_to_equipment_id(id: str) -> str:
     """Returns the query string to select all repairs corresponding to the equipment with the given number"""
 
-    return "SELECT * FROM works WHERE id_obor" + ("=" + str(id) if str(id) != '' else '')
+    return "SELECT * FROM works" + (" WHERE id_obor=" + str(id) if str(id) != '' else '')
 
 
 sql_select_all_works = sql_select_work_to_equipment_id('')
@@ -57,7 +52,7 @@ def sql_select_equip_from_like_str(s: str) -> str:
     """Return the query string select equips from like-string"""
 
     words = s.split()
-    return 'SELECT * FROM oborudovanie WHERE name LiKE "%' + str('%'.join(words)) + '%"'
+    return 'SELECT * FROM oborudovanie WHERE name LIKE "%' + str('%'.join(words)) + '%"'
 
 
 def sql_select_point_from_like_str(s: str) -> str:
@@ -88,5 +83,5 @@ def sql_select_max_work_id() -> str:
 def sql_select_point_id_from_equip_id(equip_id: str) -> str:
     """Return the query string select a point contain this equip"""
 
-    return 'select point_id from oborudovanie where id = "' + str(equip_id) + '"'
+    return 'select point_id from oborudovanie where id = ' + str(equip_id)
 

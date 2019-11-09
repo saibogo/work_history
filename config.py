@@ -1,7 +1,13 @@
-from tkinter import GROOVE, FLAT, RAISED, SUNKEN, RIDGE
+from tkinter import GROOVE
+
+from metadata import *
 
 path_to_project = '/home/saibogo/PycharmProjects/work_history/'
-database_name = path_to_project + 'malachite_works.db'
+database_name = 'workhistory'
+user_name = 'saibogo'
+user_password = 'begemot100'
+database_host = '127.0.0.1'
+database_port = '5432'
 static_dir = path_to_project + 'web/static/'
 str_interrupted = 'Interrupted'
 max_size_column = 40

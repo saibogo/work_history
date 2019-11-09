@@ -1,6 +1,7 @@
 import hashlib
 
 import config
+from metadata import *
 
 __author__ = "Andrey Gleykh"
 __license__ = "GPL"

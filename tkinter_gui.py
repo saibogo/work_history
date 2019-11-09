@@ -11,6 +11,7 @@ import select_operations
 import universal_windows
 import functions
 import web.server as webserver
+from metadata import *
 
 __author__ = "Andrey Gleykh"
 __license__ = "GPL"
