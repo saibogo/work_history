@@ -2,7 +2,9 @@ import psycopg2
 
 import config
 import select_sql
-from metadata import *
+import functions
+
+functions.info_string(__name__)
 
 
 def open_database() -> psycopg2.connect:
@@ -98,8 +100,7 @@ def get_full_information_list_points(cursor, ls: list) -> list:
 def get_full_equip_information(cursor, equip_id: str) -> list:
     """Returns a list object containing complete information about a given piece of equipment"""
 
-    tmp = list(get_selected(cursor, select_sql.sql_select_equip_information(equip_id))[0])
-    return get_full_point_information(cursor, tmp[0]) + tmp[1:]
+    return list(get_selected(cursor, select_sql.sql_select_full_equips_info(equip_id))[0])
 
 
 def get_full_equips_list_info(cursor, ls: list) -> list:
@@ -111,9 +112,7 @@ def get_full_equips_list_info(cursor, ls: list) -> list:
 def get_full_information_to_work(cursor, work_id: str) -> list:
     """Returns a list object containing complete information about the work done with the specified number"""
 
-    tmp = list(get_selected(cursor, select_sql.sql_select_work_from_id(work_id))[0])
-    equip_id = tmp[1]
-    return get_full_equip_information(cursor, equip_id) + tmp[2:]
+    return list(get_selected(cursor, select_sql.sql_select_work_from_id(work_id))[0])
 
 
 def get_full_info_from_works_list(cursor, ls: list) -> list:
@@ -128,7 +127,7 @@ def get_all_equips_list_from_like_str(cursor, s: str) -> list:
     return get_selected(cursor, select_sql.sql_select_equip_from_like_str(s))
 
 
-def get_all_points_list_from_like_str(cursor, s:str) -> str:
+def get_all_points_list_from_like_str(cursor, s:str) -> list:
     """Return all points names contain s-string"""
 
     return get_selected(cursor, select_sql.sql_select_point_from_like_str(s))
@@ -167,25 +166,8 @@ def get_point_id_from_equip_id(cursor, equip_id: str) -> str:
     return str(get_selected(cursor, select_sql.sql_select_point_id_from_equip_id(equip_id))[0][0])
 
 
-def get_all_work_id_contain_word(cursor, word: str) -> list:
+def get_all_works_like_word(cursor, word: str) -> list:
     """Function return list contain ID work likes word"""
 
-    max_id = get_maximal_work_id(cursor)
-    result = set()
-    for i in range(1, int(max_id) + 1):
-        tmp = get_full_information_to_work(cursor, str(i))
-        for elem in tmp:
-            if elem is None:
-                pass
-            elif word.lower() in str(elem).lower():
-                result.add(i)
-            else:
-                pass
+    return get_selected(cursor, select_sql.sql_select_all_works_from_like_str(word))
 
-    return list(map(lambda x: str(x), sorted(list(result))))
-
-
-def get_all_works_contain_word(cursor, word: str) -> list:
-    """Function return all works contain word in point_name and work and equip_name"""
-
-    return [get_full_information_to_work(cursor, id) for id in get_all_work_id_contain_word(cursor, word)]

@@ -1,17 +1,17 @@
 import psycopg2
 import sqlite3
 import config
-
-
-from metadata import *
+import functions
 # This program execute migration LiteSQL database to Postgres database
 
+functions.info_string(__name__)
+
 con_postgres = psycopg2.connect(
-  database="workhistory",
-  user="saibogo",
-  password="begemot100",
-  host="127.0.0.1",
-  port="5432"
+  database=config.database_name,
+  user=config.user_name,
+  password=config.user_password,
+  host=config.database_host,
+  port=config.database_port
 )
 
 con_lite = sqlite3.connect(config.database_name)

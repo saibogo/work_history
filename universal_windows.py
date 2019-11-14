@@ -5,9 +5,9 @@ from tkinter import messagebox as mb
 import config
 import functions
 from scroll_frame import VerticalScrolledFrame
-from metadata import *
 
 left_mouse_but = '<Button-1>'
+functions.info_string(__name__)
 
 
 def print_table_window(name_table: str, header_ls: list, data: list) -> None:

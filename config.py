@@ -1,6 +1,5 @@
 from tkinter import GROOVE
 
-from metadata import *
 
 path_to_project = '/home/saibogo/PycharmProjects/work_history/'
 database_name = 'workhistory'

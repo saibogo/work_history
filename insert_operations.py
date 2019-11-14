@@ -1,7 +1,9 @@
 from insert_sql import *
 import select_operations
+import functions
 
-from metadata import *
+
+functions.info_string(__name__)
 
 
 def create_new_point(cursor, point_name: str, point_address: str) -> None:

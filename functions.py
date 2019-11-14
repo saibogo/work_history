@@ -1,12 +1,14 @@
 import hashlib
 
 import config
-from metadata import *
+import metadata
 
-__author__ = "Andrey Gleykh"
-__license__ = "GPL"
-__email__ = "gleykh@gmail.com"
-__status__ = "Prototype"
+
+def info_string(name_module):
+    print('Import module {}. Version: {}, Author: {}, License: {}'.format(name_module,
+                                                                          metadata.__version__,
+                                                                          metadata.__author__,
+                                                                          metadata.__license__))
 
 
 def print_list(ls: list) -> None:
@@ -75,3 +77,5 @@ def form_to_data(form: dict) -> dict:
     values = [form[k] for k in form]
     data = dict(zip(fields, values))
     return data
+
+info_string(__name__)

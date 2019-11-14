@@ -1,7 +1,9 @@
 from tkinter import *  # from x import * is bad practice
 
 import config
-from metadata import *
+import functions
+
+functions.info_string(__name__)
 
 
 class VerticalScrolledFrame(Frame):

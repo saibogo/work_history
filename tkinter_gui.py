@@ -11,14 +11,10 @@ import select_operations
 import universal_windows
 import functions
 import web.server as webserver
-from metadata import *
 
-__author__ = "Andrey Gleykh"
-__license__ = "GPL"
-__email__ = "gleykh@gmail.com"
-__status__ = "Prototype"
 
 left_mouse_but = '<Button-1>'
+functions.info_string(__name__)
 
 
 def create_complete_works_win(curr: sqlite3.Cursor, works: list) -> None:

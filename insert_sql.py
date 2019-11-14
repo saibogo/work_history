@@ -1,4 +1,7 @@
-from metadata import *
+import functions
+
+
+functions.info_string(__name__)
 
 
 def sql_insert_new_point(point_id: str, name: str, addres: str) -> str:
