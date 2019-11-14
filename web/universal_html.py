@@ -2,7 +2,9 @@ from datetime import datetime
 from flask import request
 
 import config
-from metadata import *
+import functions
+
+functions.info_string(__name__)
 
 
 def link_or_str(elem: str, link_type: bool = False, link: str = '') -> str:
@@ -151,6 +153,11 @@ def find_table() -> str:
     result.append('<form action="/findresult" method="post"><tr>')
     result.append('<td><input name="comment" value="Введите строку поиска.(Регистр сиволов не важен)" readonly></td>')
     result.append('<td><input name="find_request"  placeholder="Обязательно"></td>')
+    result.append('<td><select name="find_in_table">')
+    result.append('<option selected value="works">В работах</option>')
+    result.append('<option value="workspoints">В предприятиях</option>')
+    result.append('<option value="oborudovanie">В оборудовании</option>')
+    result.append('</select></td>')
     result.append('<td><input type="submit" value="Отправить"></td>')
     result.append('</tr></form></table>')
     return "\n".join(result)

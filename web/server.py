@@ -6,15 +6,15 @@ import insert_operations
 import web.universal_html as uhtml
 import config
 import functions
-from metadata import *
+
 
 app = Flask(__name__, static_folder=config.static_dir)
+functions.info_string(__name__)
 
 
 def database():
     conn = select_operations.open_database()
     curr = select_operations.create_cursor(conn)
-
     return conn, curr
 
 
@@ -33,6 +33,7 @@ def hello():
 @app.route('/favicon.ico')
 def favicon():
     return send_from_directory(config.static_dir, 'favicon.ico')
+
 
 @app.route("/equips")
 def equips_operations():
@@ -101,7 +102,7 @@ def equip_to_point(point_id):
     full_equips = select_operations.get_full_equips_list_info(
         curr, all_equips)
     links_list = ['/work/' + str(elem) for elem in functions.get_id_list(all_equips)]
-    correct_full_equips = [[elem[i] for i in [0, 2, 3, 4, 5]] for elem in full_equips]
+    correct_full_equips = full_equips
     close_database(conn)
     table1 = uhtml.universal_table(config.equips_table_name, config.equips_table, correct_full_equips, True, links_list)
     table2 = uhtml.add_new_equip(point_id)
@@ -197,9 +198,8 @@ def work_to_equip(equip_id):
         str(equip_id) != '0' else uhtml.navigations_menu(config.full_address + '/works')
     full_works = select_operations.get_full_info_from_works_list(
         curr, select_operations.get_works_from_equip_id(curr, str(equip_id)))
-    correct_full_works = [[elem[i] for i in [0, 2, 3, 4, 6, 7, 8]] for elem in full_works]
     close_database(conn)
-    table1 = uhtml.universal_table(config.works_table_name, config.works_table, correct_full_works)
+    table1 = uhtml.universal_table(config.works_table_name, config.works_table, full_works)
     table2 = uhtml.add_new_work(equip_id)
     return ((table1 + '\n' + table2) if str(equip_id) != '0' else table1) + '\n' + navigation
 
@@ -218,7 +218,6 @@ def add_work():
         query = data['query'].replace('"', '\'')
         work = data['work'].replace('"', '\'')
         work_datetime = data['work_datetime'].replace("T", ' ') + ':00'
-        print(query, work, work_datetime, equip_id)
         navigation = uhtml.navigations_menu(config.full_address + '/work/' + str(equip_id))
         if functions.is_valid_password(password):
             if work.replace(" ", "") == '':
@@ -248,7 +247,7 @@ def faq():
                                   'Браузер с поддержкой технологии ' +
                                    '<a href="https://www.w3.org/Style/CSS/Overview.en.html">CSS</a>']) + '</li>')
     page.append('<li>С использованием каких технологий написана система?' +\
-                uhtml.list_to_ul(['Используется база данных <a href="https://www.sqlite.org/index.html"> SQLite</a>',
+                uhtml.list_to_ul(['Используется база данных <a href="https://www.postgresql.org/"> PostgreSQL</a>',
                                   'Используется веб-сервер ' +
                                   '<a href="https://flask.palletsprojects.com/en/1.0.x/changelog/">Flask</a>',
                                   'Используется язык программирования ' +
@@ -261,9 +260,10 @@ def faq():
                                   'Одновременно над добавлением записей может работать неограниченное количество' +\
                                   ' пользователей, но все они будут использовать одну учетную запись']) + '</li>')
     page.append('<li>Планируется ли развитие системы?' +\
-                uhtml.list_to_ul(['Планируется миграция базы данных на PostgresSQL',
+                uhtml.list_to_ul(['Планируется процедура автоматического бэкапа PostgreSQL-базы',
                                   'Планируется изменение структуры базы данных и внедрение многопользовательского' +\
-                                   ' режима', 'Планируется внедрение системы поиска по записям']) + '</li>')
+                                   ' режима', 'Планируется внедрение системы поиска по записям',
+                                  'В планах внедрение возможности редактирования записей']) + '</li>')
     max_equip_id = select_operations.get_maximal_equip_id(curr)
     max_point_id = select_operations.get_maximal_points_id(curr)
     max_work_id = select_operations.get_maximal_work_id(curr)
@@ -276,10 +276,8 @@ def faq():
                                   str(max_work_id) + '</a>']) + '</li>')
     page.append('</ul></td></tr></table>')
     preview_page = request.args.get('page', default=config.full_address, type=str)
-    print(preview_page)
     page.append(uhtml.navigations_menu(preview_page))
     result = ''.join(page)
-    print(result)
     return result
 
 
@@ -294,16 +292,36 @@ def find_from_works():
         data = functions.form_to_data(request.form)
         find_request = data['find_request']
         conn, curr = database()
-        works = select_operations.get_all_works_contain_word(curr, find_request)
-        correct_full_works = [[elem[i] for i in [0, 2, 3, 4, 6, 7, 8]] for elem in works]
+        find_from_table = data['find_in_table']
+        if find_from_table == 'works':
+            works = select_operations.get_all_works_like_word(curr, find_request)
+            result = uhtml.universal_table(config.works_table_name,
+                                           config.works_table,
+                                           [list(work) for work in works])
+            return result + uhtml.navigations_menu('/works')
+        elif find_from_table == 'workspoints':
+            points = select_operations.get_all_points_list_from_like_str(curr, find_request)
+            links_list = ['/equip/' + str(elem[0]) for elem in points]
+            result = uhtml.universal_table(config.points_table_name,
+                                           config.points_table,
+                                           [[elem[1], elem[2]] for elem in points],
+                                           True,
+                                           links_list)
+            return result + uhtml.navigations_menu('/points')
+        elif find_from_table == 'oborudovanie':
+            equips = select_operations.get_all_equips_list_from_like_str(curr, find_request)
+            links_list = ['/work/' + str(elem[0]) for elem in equips]
+            result = uhtml.universal_table(config.equips_table_name,
+                                           config.equips_table,
+                                           [[equip[i] for i in range(1, len(equip))] for equip in equips],
+                                           True,
+                                           links_list)
+            return result + uhtml.navigations_menu('/equips')
+        else:
+            return 'Not corrected selected!'
         close_database(conn)
-        table1 = uhtml.universal_table(config.works_table_name, config.works_table, correct_full_works)
-        return table1
     else:
         return "Method not correct!" + uhtml.navigations_menu(config.full_address + '/')
-
-
-
 
 
 def start_server():
