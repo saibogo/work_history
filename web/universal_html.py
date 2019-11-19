@@ -121,7 +121,6 @@ def data_is_not_valid() -> str:
 
 def navigations_menu(pre_html: str) -> str:
     """Function return string contain navigations bar"""
-
     result = list()
     result.append('<table><caption>Навигация</caption><tr>')
     result.append('<td><a href="' + pre_html + '">В предыдущее меню</a></td>')
@@ -129,13 +128,13 @@ def navigations_menu(pre_html: str) -> str:
     result.append('<td><a href="mailto:gleykh@malachite.ru">Обратная связь</a></td>')
     result.append('<td><a href="' + config.full_address + '/FAQ?page=' + request.url + '">Частые вопросы</a></td>')
     result.append('<td><a href="' + config.full_address + '/find' + '">Поиск</a></td>')
+    result.append('<td><a href="' + config.full_address + '/statistics' + '">Статистика</a></td>')
     result.append('</tr></table>')
     return '\n'.join(result)
 
 
 def list_to_ul(ls: list) -> str:
     """Function return html-string contain notnumeric html-list"""
-
     result = list()
     result.append('<ul>')
     for elem in ls:
@@ -146,18 +145,31 @@ def list_to_ul(ls: list) -> str:
 
 def find_table() -> str:
     """Function return table to select find-string"""
+    curr_datetime = datetime.now()
+    year = str(curr_datetime.year)
+    month = str(curr_datetime.month) if curr_datetime.month > 9 else '0' + str(curr_datetime.month)
+    day = str(curr_datetime.day) if curr_datetime.day > 9 else '0' + str(curr_datetime.day)
+    hour = str(curr_datetime.hour) if curr_datetime.hour > 9 else '0' + str(curr_datetime.hour)
+    minute = str(curr_datetime.minute) if curr_datetime.minute > 9 else '0' + str(curr_datetime.minute)
+    date_to_browser = year + '-' + month + '-' + day + 'T' + hour + ':' + minute
+
     result = list()
     result.append(style_custom())
     result.append('<table><caption>Встроенная поисковая система</caption>')
-    result.append('<tr><th>Примечание к поиску</th><th>Строка поиска</th><th>Отправить</th></tr>')
+    result.append('<tr><th>Примечание к поиску</th><th>Строка поиска</th><th>Где искать</th>' +
+                  '<th>Дата от(Только для работ)</th><th>Дата до(Только для работ)</th><th>Отправить</th></tr>')
     result.append('<form action="/findresult" method="post"><tr>')
     result.append('<td><input name="comment" value="Введите строку поиска.(Регистр сиволов не важен)" readonly></td>')
     result.append('<td><input name="find_request"  placeholder="Обязательно"></td>')
     result.append('<td><select name="find_in_table">')
     result.append('<option selected value="works">В работах</option>')
+    result.append('<option selected value="works_ignored_date">В работах не учитывая дату</option>')
     result.append('<option value="workspoints">В предприятиях</option>')
     result.append('<option value="oborudovanie">В оборудовании</option>')
     result.append('</select></td>')
+    result.append('<td><input type="datetime-local" name="work_datetime_start" value="' + date_to_browser + '"></td>')
+    result.append('<td><input type="datetime-local" name="work_datetime_stop" value="' + date_to_browser + '"></td>')
+
     result.append('<td><input type="submit" value="Отправить"></td>')
     result.append('</tr></form></table>')
     return "\n".join(result)
