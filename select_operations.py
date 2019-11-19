@@ -1,40 +1,16 @@
 import psycopg2
 
-import config
 import select_sql
 import functions
 
+
 functions.info_string(__name__)
-
-
-def open_database() -> psycopg2.connect:
-    """Creates a new connection to the database specified in the config file"""
-
-    return psycopg2.connect(database=config.database_name,
-                            user=config.user_name,
-                            password=config.user_password,
-                            host=config.database_host,
-                            port=config.database_port)
 
 
 def commit(connection: psycopg2.connect) -> None:
     """Applies changes to the database"""
 
     connection.commit()
-
-
-def close_database(connection: psycopg2.connect, save: bool = True) -> None:
-    """Disconnects to database. The save option determines if changes should be applied."""
-
-    if save:
-        commit(connection)
-    connection.close()
-
-
-def create_cursor(connection: psycopg2.connect):
-    """Creates a new cursor to an open connection"""
-
-    return connection.cursor()
 
 
 def get_selected(cursor, sql: str) -> list:
@@ -103,12 +79,6 @@ def get_full_equip_information(cursor, equip_id: str) -> list:
     return list(get_selected(cursor, select_sql.sql_select_full_equips_info(equip_id))[0])
 
 
-def get_full_equips_list_info(cursor, ls: list) -> list:
-    """Returns a list object containing the complete information of the equipment specified in the list"""
-
-    return [get_full_equip_information(cursor, elem[0]) for elem in ls]
-
-
 def get_full_information_to_work(cursor, work_id: str) -> list:
     """Returns a list object containing complete information about the work done with the specified number"""
 
@@ -171,3 +141,20 @@ def get_all_works_like_word(cursor, word: str) -> list:
 
     return get_selected(cursor, select_sql.sql_select_all_works_from_like_str(word))
 
+
+def get_all_works_like_word_and_date(cursor, word: str, date_start: str, date_stop: str) -> list:
+    """Function return list contain all works in date-date interval and like word"""
+
+    return get_selected(cursor, select_sql.sql_select_all_works_from_like_str_and_date(word, date_start, date_stop))
+
+
+def get_statistic(cursor) -> list:
+    """Function return list contain stat info from all points"""
+
+    return get_selected(cursor, select_sql.sql_select_statistic())
+
+
+def get_size_database(cursor) -> str:
+    """Function return size workhistory database"""
+
+    return get_selected(cursor, select_sql.sql_select_size_database())[0][0]

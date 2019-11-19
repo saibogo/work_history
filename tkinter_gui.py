@@ -1,4 +1,3 @@
-import sqlite3
 import tkinter as tk
 from tkinter import messagebox as mb
 import threading
@@ -11,46 +10,46 @@ import select_operations
 import universal_windows
 import functions
 import web.server as webserver
-
+from database import Database
 
 left_mouse_but = '<Button-1>'
 functions.info_string(__name__)
 
 
-def create_complete_works_win(curr: sqlite3.Cursor, works: list) -> None:
+def create_complete_works_win(works: list) -> None:
     """Function create new window to complete works"""
 
-    full_works = select_operations.get_full_info_from_works_list(curr, works)
-    data = [functions.full_work_to_view(elem) for elem in full_works]
-    universal_windows.print_table_window(config.works_table_name, config.works_table, data)
+    universal_windows.print_table_window(config.works_table_name,
+                                         config.works_table,
+                                         [[str(elem) for elem in work] for work in works])
 
 
-def create_complete_equips_win(curr: sqlite3.Cursor, equips: list) -> None:
+def create_complete_equips_win(equips: list) -> None:
     """Function create new window to registred equips"""
 
-    equips_full = select_operations.get_full_equips_list_info(curr, equips)
-    data = [functions.full_equip_to_view(elem) for elem in equips_full]
-    universal_windows.print_table_window(config.equips_table_name, config.equips_table, data)
+    universal_windows.print_table_window(config.equips_table_name,
+                                         config.equips_table,
+                                         [[str(equip[i]) for i in range(1, len(equip))] for equip in equips])
 
 
-def select_point(curr: sqlite3.Cursor) -> str:
+def select_point(cursor) -> str:
     """Function return point_id selected point"""
 
-    points = [str(elem[0]) + ' - ' + str(elem[1]) for elem in select_operations.get_all_points(curr)]
+    points = [str(elem[0]) + ' - ' + str(elem[1]) for elem in select_operations.get_all_points(cursor)]
     point_num = universal_windows.select_window('Выберите предприятие', points)
     return point_num.split()[0]
 
 
-def select_equip(curr: sqlite3.Cursor, point_num: str) -> str:
+def select_equip(cursor, point_num: str) -> str:
     """Function return id selected equip"""
 
-    equips = select_operations.get_equip_in_point(curr, point_num)
+    equips = select_operations.get_equip_in_point(cursor, point_num)
     data = [" - ".join(functions.full_equip_to_view(elem)) for elem in equips]
     equip_str = universal_windows.select_window('Выберите оборудование', data)
     return equip_str.split()[0]
 
 
-def point_window(conn: sqlite3.Connection, curr: sqlite3.Cursor) -> None:
+def point_window(connection, cursor) -> None:
     """Create window from point operations in database"""
 
     pw = tk.Toplevel()
@@ -61,21 +60,23 @@ def point_window(conn: sqlite3.Connection, curr: sqlite3.Cursor) -> None:
 
     def all_points(self) -> None:
         """Function print all points in database"""
-        points = select_operations.get_all_points(curr)
-        full_information_points = select_operations.get_full_information_list_points(curr, points)
-        universal_windows.print_table_window(config.points_table_name, config.points_table, full_information_points)
+        points = select_operations.get_all_points(cursor)
+        full_information_points = select_operations.get_full_information_list_points(cursor, points)
+        universal_windows.print_table_window(config.points_table_name,
+                                             config.points_table,
+                                             full_information_points)
 
     def commit(self) -> None:
         """Function to button commit"""
 
-        select_operations.commit(conn)
+        connection.commit()
 
     def create_new_point(self) -> None:
         """Function to create point button"""
 
         new_point_data = universal_windows.input_window(config.create_point_name, config.create_point_table)
         if len(new_point_data) != 0:
-            insert_operations.create_new_point(curr, new_point_data[0], new_point_data[1])
+            insert_operations.create_new_point(cursor, new_point_data[0], new_point_data[1])
 
     pw.title('Операции с предприятиями')
     but_all = tk.Button(pw, text='Просмотреть все доступные')
@@ -95,7 +96,7 @@ def point_window(conn: sqlite3.Connection, curr: sqlite3.Cursor) -> None:
     pw.mainloop()
 
 
-def equip_window(conn: sqlite3.Connection, curr: sqlite3.Cursor) -> None:
+def equip_window(connection, cursor) -> None:
     """Function create window to equipments operations"""
 
     ew = tk.Toplevel()
@@ -103,17 +104,17 @@ def equip_window(conn: sqlite3.Connection, curr: sqlite3.Cursor) -> None:
 
     def view_equips(self)-> None:
         """Function to view button"""
-        point_num = select_point(curr)
+        point_num = select_point(cursor)
         if point_num == config.str_interrupted:
             return
         else:
-            equips = select_operations.get_equip_in_point(curr, point_num)
-            create_complete_equips_win(curr, equips)
+            equips = select_operations.get_equip_in_point(cursor, point_num)
+            create_complete_equips_win(equips)
 
     def commit(self) -> None:
         """Function to Button Commit"""
 
-        select_operations.commit(conn)
+        connection.commit()
 
     def close_win(self) -> None:
         """Function to exit button"""
@@ -123,7 +124,7 @@ def equip_window(conn: sqlite3.Connection, curr: sqlite3.Cursor) -> None:
     def new_equip(self) -> None:
         """Function to add new equips button"""
 
-        point_num = select_point(curr)
+        point_num = select_point(cursor)
         if point_num == config.str_interrupted or point_num == '0':
             return
         else:
@@ -135,14 +136,14 @@ def equip_window(conn: sqlite3.Connection, curr: sqlite3.Cursor) -> None:
                 model = model if model else "not model"
                 serial = serial if serial else "not number"
                 preid = preid if preid else "NULL"
-                insert_operations.create_new_equip(curr, point_num, name, model, serial, preid)
+                insert_operations.create_new_equip(cursor, point_num, name, model, serial, preid)
 
     def find_likes(self) -> None:
         """Function to find like button"""
 
         find_str = universal_windows.input_window(config.find_like_name, config.find_like_table)
-        equips = select_operations.get_all_equips_list_from_like_str(curr, find_str[0])
-        create_complete_equips_win(curr, equips)
+        equips = select_operations.get_all_equips_list_from_like_str(cursor, find_str[0])
+        create_complete_equips_win(equips)
 
     but_view = tk.Button(ew, text='Посмотреть зарегистрированное')
     but_like = tk.Button(ew, text='Поиск по имени')
@@ -163,7 +164,7 @@ def equip_window(conn: sqlite3.Connection, curr: sqlite3.Cursor) -> None:
     but_exit.pack()
 
 
-def works_windows(conn: sqlite3.Connection, curr: sqlite3.Cursor) -> None:
+def works_windows(connection, cursor) -> None:
     """Function create new window for works in database operations"""
 
     ww = tk.Toplevel()
@@ -171,16 +172,16 @@ def works_windows(conn: sqlite3.Connection, curr: sqlite3.Cursor) -> None:
 
     def complete_works(self) -> None:
         """Function to all complete works button"""
-        point_num = select_point(curr)
+        point_num = select_point(cursor)
         if point_num == config.str_interrupted:
             return
         else:
-            equip_id = select_equip(curr, point_num)
+            equip_id = select_equip(cursor, point_num)
             if equip_id == config.str_interrupted:
                 return
             else:
-                works = select_operations.get_works_from_point_and_equip(curr, point_num, equip_id)
-                create_complete_works_win(curr, works)
+                works = select_operations.get_works_from_point_and_equip(cursor, point_num, equip_id)
+                create_complete_works_win(works)
 
     def close_works(self) -> None:
         """Function to exit button"""
@@ -191,33 +192,33 @@ def works_windows(conn: sqlite3.Connection, curr: sqlite3.Cursor) -> None:
     def commit_works(self) -> None:
         """Function to commit button"""
 
-        select_operations.commit(conn)
+        connection.commit()
 
     def new_work(self) -> None:
         """Function to create new work button"""
 
-        point_num = select_point(curr)
+        point_num = select_point(cursor)
         if point_num == config.str_interrupted:
             return
         else:
-            equip_id = select_equip(curr, point_num)
+            equip_id = select_equip(cursor, point_num)
             if equip_id == config.str_interrupted or equip_id == '0':
                 return
             else:
                 data_work = universal_windows.input_window(config.create_work_table_name, config.create_work_table)
                 date = universal_windows.select_date_and_time()
-                insert_operations.create_new_work(curr, equip_id, date, data_work[0], data_work[1])
+                insert_operations.create_new_work(cursor, equip_id, date, data_work[0], data_work[1])
 
     def find_equips_to_point_likes(self) -> None:
         """Function to button find likes points name"""
 
         find_str = universal_windows.input_window(config.find_like_name, config.find_like_table_points)
-        points = select_operations.get_all_points_list_from_like_str(curr, find_str[0])
+        points = select_operations.get_all_points_list_from_like_str(cursor, find_str[0])
         equips = []
         for point in points:
-            equips = equips + (select_operations.get_equip_in_point(curr, point[0]))
-        works = select_operations.get_works_list_from_equips_list(curr, equips)
-        create_complete_works_win(curr, works)
+            equips = equips + (select_operations.get_equip_in_point(cursor, point[0]))
+        works = select_operations.get_works_list_from_equips_list(cursor, equips)
+        create_complete_works_win(works)
 
     but_complete = tk.Button(ww, text='Все выполненные')
     but_find_like_point = tk.Button(ww, text='Поиск по предприятию')
@@ -243,78 +244,78 @@ def works_windows(conn: sqlite3.Connection, curr: sqlite3.Cursor) -> None:
 def main_window() -> None:
     """Create new window-gui from database operations"""
 
-    conn = select_operations.open_database()
-    curr = select_operations.create_cursor(conn)
+    with Database() as base:
+        connection, cursor = base
 
-    def exit_gui(self) -> None:
-        """Function to Button Exit"""
+        def exit_gui(self) -> None:
+            """Function to Button Exit"""
 
-        answer = mb.askyesno('Сохранение', 'Применить изменения?')
-        select_operations.close_database(conn, answer)
-        root.destroy()
+            answer = mb.askyesno('Сохранение', 'Применить изменения?')
+            if answer:
+                connection.commit()
+            root.destroy()
 
-    def create_poin_gui(self) -> None:
-        """Function to Button 'Points'"""
+        def create_poin_gui(self) -> None:
+            """Function to Button 'Points'"""
 
-        point_window(conn, curr)
+            point_window(connection, cursor)
 
-    def create_equip_window(self) -> None:
-        """Function to Button Equip"""
+        def create_equip_window(self) -> None:
+            """Function to Button Equip"""
 
-        equip_window(conn, curr)
+            equip_window(connection, cursor)
 
-    def create_works_window(self) -> None:
-        """Function to Works Button"""
+        def create_works_window(self) -> None:
+            """Function to Works Button"""
 
-        works_windows(conn, curr)
+            works_windows(connection, cursor)
 
-    def start_web_server(self) -> None:
-        """Function start web-server to connect database"""
+        def start_web_server(self) -> None:
+            """Function start web-server to connect database"""
 
-        try:
-            response = requests.get("http://" + config.ip_address + ":" + config.port + '/add-work')
-            print("Веб-сервер уже запущен")
-        except:
-            print("Запускаем веб-сервер")
-            threading.Thread(target=webserver.start_server).start()
+            try:
+                _ = requests.get("http://" + config.ip_address + ":" + config.port + '/add-work')
+                print("Веб-сервер уже запущен")
+            except:
+                print("Запускаем веб-сервер")
+                threading.Thread(target=webserver.start_server).start()
 
-    def stop_web_server(self) -> None:
-        """Function stop web-server to connect database"""
+        def stop_web_server(self) -> None:
+            """Function stop web-server to connect database"""
 
-        try:
-            response = requests.get("http://" + config.ip_address + ":" + config.port + '/add-work')
-            for proc in psutil.process_iter():
-                data = proc.as_dict(attrs=['cmdline', 'pid'])
-                for elem in data['cmdline']:
-                    if 'work_history' in elem:
-                        print(data)
-                        print("процесс найден PID=" + str(data['pid']))
-                        proc.kill()
-                        print("Веб-сервер остановлен")
-        except:
-            print("Веб-сервер не запущен")
+            try:
+                _ = requests.get("http://" + config.ip_address + ":" + config.port + '/add-work')
+                for process in psutil.process_iter():
+                    data = process.as_dict(attrs=['cmdline', 'pid'])
+                    for elem in data['cmdline']:
+                        if 'work_history' in elem:
+                            print(data)
+                            print("процесс найден PID=" + str(data['pid']))
+                            process.kill()
+                            print("Веб-сервер остановлен")
+            except:
+                print("Веб-сервер не запущен")
 
+        root = tk.Tk()
+        root.title('База ремонтов')
+        but_points = tk.Button(root, text='Операции с предприятиями')
+        but_equip = tk.Button(root, text='Операции с оборудованием')
+        but_work = tk.Button(root, text='Операции с ремонтами')
+        but_start_server = tk.Button(root, text='Запустить веб-сервис')
+        but_stop_server = tk.Button(root, text='Остановить сервер')
+        but_exit = tk.Button(root, text='Выход')
 
-    root = tk.Tk()
-    root.title('База ремонтов')
-    but_points = tk.Button(root, text='Операции с предприятиями')
-    but_equip = tk.Button(root, text='Операции с оборудованием')
-    but_work = tk.Button(root, text='Операции с ремонтами')
-    but_start_server = tk.Button(root, text='Запустить веб-сервис')
-    but_stop_server = tk.Button(root, text='Остановить сервер')
-    but_exit = tk.Button(root, text='Выход')
+        but_points.bind(left_mouse_but, func=create_poin_gui)
+        but_equip.bind(left_mouse_but, func=create_equip_window)
+        but_work.bind(left_mouse_but, func=create_works_window)
+        but_start_server.bind(left_mouse_but, func=start_web_server)
+        but_stop_server.bind(left_mouse_but, func=stop_web_server)
+        but_exit.bind(left_mouse_but, func=exit_gui)
 
-    but_points.bind(left_mouse_but, func=create_poin_gui)
-    but_equip.bind(left_mouse_but, func=create_equip_window)
-    but_work.bind(left_mouse_but, func=create_works_window)
-    but_start_server.bind(left_mouse_but, func=start_web_server)
-    but_stop_server.bind(left_mouse_but, func=stop_web_server)
-    but_exit.bind(left_mouse_but, func=exit_gui)
-
-    but_points.pack()
-    but_equip.pack()
-    but_work.pack()
-    but_start_server.pack()
-    but_stop_server.pack()
-    but_exit.pack()
-    root.mainloop()
+        but_points.pack()
+        but_equip.pack()
+        but_work.pack()
+        but_start_server.pack()
+        but_stop_server.pack()
+        but_exit.pack()
+        root.mainloop()

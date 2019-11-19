@@ -41,5 +41,8 @@ find_like_name = 'Поиск по совпадениям'
 find_like_table = ['Введите часть наименования оборудования']
 find_like_table_points = ['Введите часть наименования предприятия']
 
+statistics_table_name = 'Сборная статистика по предприятиям'
+statistics_table = ['Предприятие', 'Единиц оборудования', 'Выполнено работ', 'Дата последних работ']
+
 max_width_for_date = 7
 max_height_for_date = 6

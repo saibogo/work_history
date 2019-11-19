@@ -11,14 +11,16 @@ def sql_select_point(point_id: str) -> str:
                                                          else "") + ' ORDER BY point_name'
 
 
-sql_select_all_points = sql_select_point('')
-
-
 def sql_select_equipment_in_point(point: str) -> str:
     """Returns the query string for selecting all equipment items at a given point"""
 
-    return "SELECT * FROM oborudovanie" + (" WHERE point_id=" + str(point) if point != "" else "") +\
-           ' ORDER BY name'
+    return 'SELECT oborudovanie.id, workspoints.point_name, ' + \
+           'oborudovanie.name, oborudovanie.model, oborudovanie.serial_num, ' + \
+           'oborudovanie.pre_id ' + \
+           'FROM oborudovanie JOIN workspoints ' + \
+           'ON workspoints.point_id = oborudovanie.point_id ' + \
+           ('WHERE oborudovanie.point_id = ' + str(point) + ' ' if str(point) != "" else '') + \
+           'ORDER BY oborudovanie.name'
 
 
 sql_select_all_equipment = sql_select_equipment_in_point('')
@@ -27,7 +29,14 @@ sql_select_all_equipment = sql_select_equipment_in_point('')
 def sql_select_work_to_equipment_id(id: str) -> str:
     """Returns the query string to select all repairs corresponding to the equipment with the given number"""
 
-    return "SELECT * FROM works" + (" WHERE id_obor=" + str(id) if str(id) != '' else '') + ' ORDER BY date'
+    return 'SELECT workspoints.point_name, oborudovanie.name, ' + \
+           'oborudovanie.model, oborudovanie.serial_num, ' + \
+           'works.date, works.problem, works.result ' + \
+           'FROM works ' + \
+           'JOIN oborudovanie ON oborudovanie.id = works.id_obor ' + \
+           'JOIN workspoints ON oborudovanie.point_id = workspoints.point_id ' + \
+           ('WHERE oborudovanie.id = ' + str(id) + " " if str(id) != '' else '') + \
+           'ORDER BY works.date'
 
 
 sql_select_all_works = sql_select_work_to_equipment_id('')
@@ -35,14 +44,9 @@ sql_select_all_works = sql_select_work_to_equipment_id('')
 
 def sql_select_information_to_point(id: str) -> str:
     """Returns the string of the request for complete information about the point with the given number"""
+    #used
 
     return "SELECT point_name, point_address FROM workspoints WHERE point_id=" + str(id)
-
-
-def sql_select_equip_information(id: str) -> str:
-    """Returns the query string for the complete information of the equipment with the given number"""
-
-    return "SELECT point_id, name, model, serial_num, pre_id FROM oborudovanie WHERE id=" + str(id)
 
 
 def sql_select_work_from_id(id: str) -> str:
@@ -98,6 +102,25 @@ def sql_select_all_works_from_like_str(s: str) -> str:
            'ORDER BY oborudovanie.name, works.date'
 
 
+def sql_select_all_works_from_like_str_and_date(s: str, date_start: str, date_stop: str) -> str:
+    """Function return SQL-strin contain query from table works like all records to s-string and in dates range"""
+
+    like_string = '%' + s.replace(' ', '%') + '%'
+    return 'SELECT workspoints.point_name, oborudovanie.name, oborudovanie.model, ' + \
+           'oborudovanie.serial_num, works.date, works.problem, works.result ' + \
+           'FROM works ' + \
+           'JOIN oborudovanie ' + \
+           'ON oborudovanie.id = works.id_obor ' + \
+           'JOIN workspoints ' + \
+           'ON workspoints.point_id = oborudovanie.point_id ' + \
+           'WHERE ((LOWER (works.problem) LIKE LOWER(\'' + like_string + '\')) OR ' +\
+           '(LOWER(works.result) LIKE LOWER(\'' + like_string + '\'))) ' + \
+           'AND works.date ' + \
+           'BETWEEN \'' + date_start + '\' AND \'' + date_stop + '\' ' + \
+           'ORDER BY  works.date,oborudovanie.name '
+
+
+
 def sql_select_max_id_equip() -> str:
     """Return the query string select maximal number in col ID in table oborudovanie"""
 
@@ -133,3 +156,23 @@ def sql_select_full_equips_info(equip_id: str) -> str:
            'FROM oborudovanie ' +\
            'JOIN workspoints ON workspoints.point_id = oborudovanie.point_id ' + \
            'WHERE oborudovanie.id = ' + str(equip_id)
+
+
+def sql_select_statistic() -> str:
+    """Return SQL-string contain querry to statistic from database records"""
+
+    return 'SELECT MAX(workspoints.point_id) AS point_id, workspoints.point_name AS name_point,' +\
+           ' COUNT(DISTINCT oborudovanie.id) AS equips_count, ' + \
+           'COUNT(works.id) AS works_count, MAX(works.date) AS last_date ' + \
+           'FROM workspoints ' + \
+           'JOIN oborudovanie ' + \
+           'ON oborudovanie.point_id = workspoints.point_id ' + \
+           'JOIN works ' + \
+           'ON works.id_obor = oborudovanie.id ' + \
+           'GROUP BY name_point ' + \
+           'ORDER BY name_point'
+
+def sql_select_size_database() -> str:
+    """Return SQL-string contain query to size database workhistory"""
+
+    return 'SELECT pg_size_pretty(pg_database_size(current_database()))'
