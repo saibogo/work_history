@@ -1,8 +1,9 @@
-from datetime import datetime
 from flask import request
 
 import config
 import functions
+import select_operations
+from database import Database
 
 functions.info_string(__name__)
 
@@ -37,7 +38,6 @@ def style_custom() -> str:
 def universal_table(name: str, headers: list, data: list, links: bool = False, links_list: list = []) -> str:
     """Function return string contain html-table"""
     result = list()
-    result.append(style_custom())
     result.append('<table><caption>' + str(name) + '</caption>')
     result.append('<tr>' + "".join(['<th>' + str(elem) + '</th>' for elem in headers]) + '</tr>')
     for i in range(len(data)):
@@ -81,23 +81,26 @@ def add_new_equip(point_id: str) -> str:
 
 def add_new_work(equip_id: str) -> str:
     """Function return string contain table to add new work"""
-    curr_datetime = datetime.now()
-    year = str(curr_datetime.year)
-    month = str(curr_datetime.month) if curr_datetime.month > 9 else '0' + str(curr_datetime.month)
-    day = str(curr_datetime.day) if curr_datetime.day > 9 else '0' + str(curr_datetime.day)
-    hour = str(curr_datetime.hour) if curr_datetime.hour > 9 else '0' + str(curr_datetime.hour)
-    minute = str(curr_datetime.minute) if curr_datetime.minute > 9 else '0' + str(curr_datetime.minute)
-    date_to_browser = year + '-' + month + '-' + day + 'T' + hour + ':' + minute
+    date_to_browser = functions.date_to_browser()
+
+    performers = []
+    with Database() as base:
+        connection, cursor = base
+        performers = select_operations.get_table_current_workers(cursor)
 
     result = list()
     result.append('<table><caption>Зарегестрировать произведенные работы</caption>')
     result.append('<tr><th>ID оборудования</th><th>Причина ремонта</th><th>описание работ</th><th>Дата и время</th>'
-                  '<th>Пароль доступа</th><th>Отправить</th></tr>')
+                  '<th>Исполнители</th><th>Пароль доступа</th><th>Отправить</th></tr>')
     result.append('<form action="/add-work" method="post"><tr>')
     result.append('<td><input name="equip_id" value="' + str(equip_id) + '" readonly></td>')
     result.append('<td><input name="query" placeholder="Необязательно"></td>')
     result.append('<td><input name="work" placeholder="Обязательно"></td>')
     result.append('<td><input type="datetime-local" name="work_datetime" value="' + date_to_browser + '"></td>')
+    result.append('<td><select  name="performer">')
+    for perfomer in performers:
+        result.append('<option value=\'' + str(perfomer[0]) + '\'>' + str(perfomer[2]) + '</option>')
+    result.append('</select></td>')
     result.append('<td><input type="password" name="password"  placeholder="Обязательно"></td>')
     result.append('<td><input type="submit" value="Отправить"></td>')
     result.append('</tr></form></table>')
@@ -106,17 +109,17 @@ def add_new_work(equip_id: str) -> str:
 
 def pass_is_not_valid() -> str:
     """Function return string contain message NOT VALID"""
-    return style_custom() + '\n' + '<h1>Неверный пароль!</h1>'
+    return '<h1>Неверный пароль!</h1>'
 
 
 def operation_completed() -> str:
     """Function return string contain message to insert in DB"""
-    return style_custom() + '\n' + '<h1>Добавлена запись в базу данных</h1>'
+    return '<h1>Добавлена запись в базу данных</h1>'
 
 
 def data_is_not_valid() -> str:
     """Function return string contain message BAD DATA"""
-    return style_custom() + '\n' + '<h1>Некорректные данные</h1>'
+    return '<h1>Некорректные данные</h1>'
 
 
 def navigations_menu(pre_html: str) -> str:
@@ -145,16 +148,9 @@ def list_to_ul(ls: list) -> str:
 
 def find_table() -> str:
     """Function return table to select find-string"""
-    curr_datetime = datetime.now()
-    year = str(curr_datetime.year)
-    month = str(curr_datetime.month) if curr_datetime.month > 9 else '0' + str(curr_datetime.month)
-    day = str(curr_datetime.day) if curr_datetime.day > 9 else '0' + str(curr_datetime.day)
-    hour = str(curr_datetime.hour) if curr_datetime.hour > 9 else '0' + str(curr_datetime.hour)
-    minute = str(curr_datetime.minute) if curr_datetime.minute > 9 else '0' + str(curr_datetime.minute)
-    date_to_browser = year + '-' + month + '-' + day + 'T' + hour + ':' + minute
+    date_to_browser = functions.date_to_browser()
 
     result = list()
-    result.append(style_custom())
     result.append('<table><caption>Встроенная поисковая система</caption>')
     result.append('<tr><th>Примечание к поиску</th><th>Строка поиска</th><th>Где искать</th>' +
                   '<th>Дата от(Только для работ)</th><th>Дата до(Только для работ)</th><th>Отправить</th></tr>')
@@ -174,5 +170,29 @@ def find_table() -> str:
     result.append('</tr></form></table>')
     return "\n".join(result)
 
+
+def add_performer_in_work(work: list) -> str:
+    """Return HTML-table for add new performer to current work"""
+
+    performers = []
+    with Database() as base:
+        connection, cursor = base
+        performers = select_operations.get_table_current_workers(cursor)
+
+    result = list()
+    result.append('<table><caption>Добавить исполнителя</caption>')
+    result.append('<tr><th>№</th><th>Параметр</th><th>Содержимое</th></tr>')
+    for i in range(len(config.works_table)):
+        result.append('<tr><td>' + str(i) + '</td><td>' + config.works_table[i] + '</td><td>' + str(work[0][i]) +
+                      '</td></tr>')
+    result.append('<form action="/add-perfomer-result method="post">')
+    result.append('<tr><td>' + str(len(config.works_table)) + '</td>')
+    result.append('<td><select name="workers">')
+    for elem in performers:
+        result.append('<option value="' + str(elem[0]) + '">' + str(elem[2]) + '</option>')
+    result.append('</select></td>')
+    result.append('<td><input type="submit" value="Добавить"></td></tr></form></table>')
+
+    return  "\n".join(result)
 
 
