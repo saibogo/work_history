@@ -1,8 +1,7 @@
 import psycopg2
 
-import select_sql
 import functions
-
+import select_sql
 
 functions.info_string(__name__)
 
@@ -44,7 +43,7 @@ def get_equip_in_point(cursor, point_id: str) -> list:
 def get_works_from_equip_id(cursor, id: str) -> list:
     """Returns a list object containing all jobs for a given piece of equipment"""
 
-    sql = select_sql.sql_select_all_works \
+    sql = select_sql.sql_select_all_works() \
         if id == '' or id == '0' \
         else select_sql.sql_select_work_to_equipment_id(id)
     return get_selected(cursor, sql)
@@ -158,3 +157,27 @@ def get_size_database(cursor) -> str:
     """Function return size workhistory database"""
 
     return get_selected(cursor, select_sql.sql_select_size_database())[0][0]
+
+
+def get_count_unique_dates_in_works(cursor) -> int:
+    """Function return count(unique date) in works table"""
+
+    return get_selected(cursor, select_sql.sql_select_count_uniques_dates())[0][0]
+
+
+def get_count_unique_works(cursor) -> int:
+    """Function return count(id) in work table"""
+
+    return get_selected(cursor, select_sql.sql_select_count_uniques_works())[0][0]
+
+
+def get_all_workers(cursor) -> list:
+    """Function return list contain all workers"""
+
+    return get_selected(cursor, select_sql.sql_select_all_workers())
+
+
+def get_table_current_workers(cursor) -> list:
+    """Function return list contain current workers"""
+
+    return get_selected(cursor, select_sql.sql_select_table_current_workers())

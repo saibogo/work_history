@@ -1,14 +1,15 @@
+import threading
 import tkinter as tk
 from tkinter import messagebox as mb
-import threading
-import requests
+
 import psutil
+import requests
 
 import config
+import functions
 import insert_operations
 import select_operations
 import universal_windows
-import functions
 import web.server as webserver
 from database import Database
 

@@ -1,7 +1,10 @@
-import psycopg2
 import sqlite3
+
+import psycopg2
+
 import config
 import functions
+
 # This program execute migration LiteSQL database to Postgres database
 
 functions.info_string(__name__)

@@ -1,7 +1,6 @@
-from insert_sql import *
-import select_operations
 import functions
-
+import select_operations
+from insert_sql import *
 
 functions.info_string(__name__)
 
@@ -22,9 +21,11 @@ def create_new_equip(cursor, point_id: str, name: str,
                                         pre_id if pre_id != "" else str(new_id)))
 
 
-def create_new_work(cursor, id_obor: str, date: str, problem: str, result: str) -> None:
+def create_new_work(cursor, id_obor: str, date: str, problem: str, result: str, worker_id: str) -> None:
     """Create a new work record in database"""
 
     new_id = str(int(select_operations.get_maximal_work_id(cursor)) + 1)
-    cursor.execute(sql_insert_new_work(new_id, id_obor, date, problem, result))
+    cursor.execute(sql_insert_new_work(new_id, id_obor, date, problem, result, worker_id))
+
+
 

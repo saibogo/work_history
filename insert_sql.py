@@ -24,8 +24,12 @@ def sql_insert_new_equip(id: str, point: str, name: str, model: str, serial: str
                str(serial) + '\', ' + str(pre_id) + ')'
 
 
-def sql_insert_new_work(id:str, id_obor: str, date: str, problem: str, result:str) -> str:
+def sql_insert_new_work(id:str, id_obor: str, date: str, problem: str, result:str, worker_id:str) -> str:
     """Function return query string to add new work"""
 
-    return 'INSERT INTO works (id, id_obor, date, problem, result) VALUES (' + str(id) + ', ' + str(id_obor) +\
-           ', \'' + str(date) + '\', \'' + str(problem) + '\', \'' + str(result) + '\')'
+    return 'BEGIN;' + \
+           'INSERT INTO works (id, id_obor, date, problem, result) VALUES (' + str(id) + ', ' + str(id_obor) +\
+           ', \'' + str(date) + '\', \'' + str(problem) + '\', \'' + str(result) + '\');' + \
+           'INSERT INTO performers (work_id, worker_id) VALUES (' + str(id) + ', ' +\
+           str(worker_id) + ');' + 'COMMIT;'
+

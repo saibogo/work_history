@@ -1,5 +1,5 @@
-import web.server
 import functions
+import web.server
 
 functions.info_string(__name__)
 

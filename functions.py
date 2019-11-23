@@ -1,4 +1,5 @@
 import hashlib
+from datetime import datetime
 
 import config
 import metadata
@@ -49,6 +50,31 @@ def form_to_data(form: dict) -> dict:
     values = [form[k] for k in form]
     data = dict(zip(fields, values))
     return data
+
+
+def date_to_browser() -> str:
+    """Return current datetime string to browser format"""
+
+    curr_datetime = datetime.now()
+    year = str(curr_datetime.year)
+    month = str(curr_datetime.month) if curr_datetime.month > 9 else '0' + str(curr_datetime.month)
+    day = str(curr_datetime.day) if curr_datetime.day > 9 else '0' + str(curr_datetime.day)
+    hour = str(curr_datetime.hour) if curr_datetime.hour > 9 else '0' + str(curr_datetime.hour)
+    minute = str(curr_datetime.minute) if curr_datetime.minute > 9 else '0' + str(curr_datetime.minute)
+    return "{}-{}-{}T{}:{}".format(year, month, day, hour, minute)
+
+
+def works_table_add_new_performer(works: list) -> list:
+    """Add to all works string link ADD-Performer"""
+
+    new_works = []
+    for work in works:
+        new_works.append([])
+        for elem in work:
+            new_works[-1].append(str(elem))
+        new_works[-1][-1] += ('<a href="/add-performer-to-work/' + str(new_works[-1][0]) + '">+</a>')
+
+    return new_works
 
 
 info_string(__name__)
