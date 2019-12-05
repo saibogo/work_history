@@ -29,28 +29,14 @@ sql_select_all_equipment = sql_select_equipment_in_point('')
 def sql_select_work_to_equipment_id(id: str) -> str:
     """Returns the query string to select all repairs corresponding to the equipment with the given number"""
 
-    query =  """SELECT works.id, workspoints.point_name, oborudovanie.name, oborudovanie.model, 
-    oborudovanie.serial_num, works.date, works.problem, works.result, tmp.all_workers FROM works 
-    JOIN oborudovanie ON oborudovanie.id = works.id_obor JOIN workspoints 
-    ON oborudovanie.point_id = workspoints.point_id AND oborudovanie.id = {0} 
-    JOIN (SELECT works.id AS work_id, string_agg(workers.sub_name, ' ') AS all_workers FROM works JOIN oborudovanie 
-    ON works.id_obor = oborudovanie.id AND oborudovanie.id = {0} JOIN performers ON works.id = performers.work_id 
-    JOIN workers ON workers.id = performers.worker_id GROUP BY works.id) AS tmp ON tmp.work_id = works.id 
-    ORDER BY works.date"""
+    query =  """SELECT * FROM works_likes WHERE id IN (SELECT id FROM works WHERE id_obor = {0}) ORDER BY date"""
 
     return query.format(id)
 
 
 def sql_select_all_works() -> str:
     """Returns the query string to select all repairs corresponding to the equipments"""
-    return """SELECT works.id, workspoints.point_name, oborudovanie.name, oborudovanie.model,
-     oborudovanie.serial_num, works.date, works.problem, works.result, tmp.all_workers FROM works 
-     JOIN oborudovanie ON oborudovanie.id = works.id_obor JOIN workspoints ON
-      oborudovanie.point_id = workspoints.point_id JOIN (SELECT works.id AS work_id, 
-      string_agg(workers.sub_name, ' ') AS all_workers FROM works JOIN oborudovanie 
-      ON works.id_obor = oborudovanie.id JOIN performers ON works.id = performers.work_id 
-      JOIN workers ON workers.id = performers.worker_id GROUP BY works.id) AS tmp 
-      ON tmp.work_id = works.id ORDER BY works.date"""
+    return """SELECT * FROM works_likes ORDER BY date"""
 
 
 def sql_select_information_to_point(id: str) -> str:
@@ -63,13 +49,7 @@ def sql_select_information_to_point(id: str) -> str:
 def sql_select_work_from_id(id: str) -> str:
     """Returns the query string corresponding to the work performed with the specified number"""
 
-    query =  """SELECT works.id, workspoints.point_name AS point_name, oborudovanie.name AS name, 
-    oborudovanie.model AS model, oborudovanie.serial_num AS serial_num, works.date AS date, 
-    works.problem AS problem, works.result AS result, perfs.all_workers FROM works JOIN oborudovanie 
-    ON oborudovanie.id = works.id_obor JOIN workspoints ON workspoints.point_id = oborudovanie.point_id 
-    JOIN (SELECT string_agg(tmp.sub_name, ' ') AS all_workers FROM (SELECT workers.sub_name FROM workers 
-    JOIN performers ON workers.id = performers.worker_id WHERE performers.work_id = {0}) AS tmp) AS perfs 
-    ON works.id = {0}"""
+    query =  """SELECT * FROM works_likes WHERE id = {0}"""
 
     return query.format(id)
 
@@ -98,15 +78,8 @@ def sql_select_all_works_from_like_str(s: str) -> str:
     """Function return string contain sql-query from table works like all records to s-string"""
 
     like_string = '%' + s.replace(' ', '%') + '%'
-    query =  """SELECT works.id, workspoints.point_name, oborudovanie.name, oborudovanie.model, 
-    oborudovanie.serial_num, works.date, works.problem, works.result, tmp.all_workers FROM works 
-    JOIN oborudovanie ON oborudovanie.id = works.id_obor JOIN workspoints 
-    ON workspoints.point_id = oborudovanie.point_id JOIN (SELECT works.id AS work_id, 
-    string_agg(workers.sub_name, ' ') AS all_workers FROM works JOIN oborudovanie 
-    ON works.id_obor = oborudovanie.id JOIN performers ON works.id = performers.work_id 
-    JOIN workers ON workers.id = performers.worker_id GROUP BY works.id) AS tmp 
-    ON tmp.work_id = works.id WHERE (LOWER (works.problem) LIKE LOWER('{0}')) OR 
-    (LOWER(works.result) LIKE LoWER('{0}')) ORDER BY works.date, oborudovanie.name"""
+    query =  """SELECT * FROM works_likes WHERE (LOWER (problem) LIKE LOWER('{0}')) OR 
+    (LOWER(result) LIKE LOWER('{0}')) ORDER BY date, name;"""
 
     return query.format(like_string)
 
@@ -115,18 +88,10 @@ def sql_select_all_works_from_like_str_and_date(s: str, date_start: str, date_st
     """Function return SQL-string contain query from table works like all records to s-string and in dates range"""
 
     like_string = '%' + s.replace(' ', '%') + '%'
-    query = """SELECT works.id, workspoints.point_name, oborudovanie.name, oborudovanie.model, 
-    oborudovanie.serial_num, works.date, works.problem, works.result, tmp.all_workers FROM works 
-    JOIN oborudovanie ON oborudovanie.id = works.id_obor JOIN workspoints 
-    ON workspoints.point_id = oborudovanie.point_id JOIN (SELECT works.id AS work_id, 
-    string_agg(workers.sub_name, ' ') AS all_workers FROM works JOIN oborudovanie 
-    ON works.id_obor = oborudovanie.id JOIN performers ON works.id = performers.work_id JOIN workers 
-    ON workers.id = performers.worker_id GROUP BY works.id) AS tmp ON tmp.work_id = works.id 
-    WHERE ((LOWER (works.problem) LIKE LOWER('{0}')) OR (LOWER(works.result) 
-    LIKE LOWER('{0}'))) AND (works.date BETWEEN '{1}' AND '{2}') ORDER BY  works.date, oborudovanie.name"""
+    query = """SELECT * FROM works_likes WHERE ((LOWER (problem) LIKE LOWER('{0}')) OR (LOWER(result) 
+    LIKE LOWER('{0}'))) AND (date BETWEEN '{1}' AND '{2}') ORDER BY  date, name"""
 
     return query.format(like_string, date_start, date_stop)
-
 
 
 def sql_select_max_id_equip() -> str:
@@ -154,7 +119,7 @@ def sql_select_point_id_from_equip_id(equip_id: str) -> str:
 
 
 def sql_select_full_equips_info(equip_id: str) -> str:
-    """Return SQL-query contayn query to complete information from equip"""
+    """Return SQL-query contain query to complete information from equip"""
 
     query = """SELECT workspoints.point_name AS point_name, oborudovanie.name AS name, oborudovanie.model AS model,
      oborudovanie.serial_num AS serial_num, oborudovanie.pre_id AS pre_id FROM oborudovanie 
@@ -164,12 +129,9 @@ def sql_select_full_equips_info(equip_id: str) -> str:
 
 
 def sql_select_statistic() -> str:
-    """Return SQL-string contain querry to statistic from database records"""
+    """Return SQL-string contain query to statistic from database records"""
 
-    return """SELECT MAX(workspoints.point_id) AS point_id, workspoints.point_name AS name_point, 
-    COUNT(DISTINCT oborudovanie.id) AS equips_count, COUNT(works.id) AS works_count, MAX(works.date) AS last_date 
-    FROM workspoints JOIN oborudovanie ON oborudovanie.point_id = workspoints.point_id JOIN works 
-    ON works.id_obor = oborudovanie.id GROUP BY name_point ORDER BY name_point"""
+    return """SELECT * FROM statistic"""
 
 
 def sql_select_size_database() -> str:
@@ -193,9 +155,7 @@ def sql_select_count_uniques_works() -> str:
 def sql_select_all_workers() -> str:
     """Return SQL-query return table with all workers"""
 
-    return """SELECT workers.id, workers.sub_name, workers.name, workers.phone_number, CASE WHEN workers.is_work=true
-     THEN 'Работает' ELSE 'Уволен' END , posts.post_name FROM workers JOIN posts 
-     ON posts.id = workers.post_id ORDER BY sub_name, name"""
+    return """SELECT * FROM all_workers"""
 
 
 def sql_select_table_current_workers() ->str:
@@ -207,14 +167,9 @@ def sql_select_table_current_workers() ->str:
 def sql_select_works_from_worker(id: str) -> str:
     """Return SQL-query contain all works from current performer"""
 
-    query = """SELECT works.id, workspoints.point_name, oborudovanie.name, 
-    oborudovanie.model, oborudovanie.serial_num, works.date, works.problem, works.result, 
-    tmp.all_workers FROM works JOIN performers ON works.id = performers.work_id JOIN oborudovanie 
-    ON oborudovanie.id = works.id_obor JOIN workspoints ON workspoints.point_id = oborudovanie.point_id 
-    JOIN (SELECT works.id AS work_id, string_agg(workers.sub_name, ' ') AS all_workers FROM works 
-    JOIN oborudovanie ON works.id_obor = oborudovanie.id JOIN performers ON works.id = performers.work_id 
-    JOIN workers ON workers.id = performers.worker_id GROUP BY works.id) AS tmp ON tmp.work_id = works.id 
-    WHERE performers.worker_id = {0}"""
+    query = """SELECT works_from_worker.id, point_name, name, model, serial_num, date, problem,
+     result, all_workers FROM works_from_worker JOIN performers ON performers.worker_id = {0} 
+     AND works_from_worker.id = performers.work_id ORDER BY date"""
 
     return query.format(id)
 

@@ -21,6 +21,55 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
+-- Name: posts; Type: TABLE; Schema: public; Owner: saibogo
+--
+
+CREATE TABLE public.posts (
+    id integer NOT NULL,
+    post_name text NOT NULL
+);
+
+
+ALTER TABLE public.posts OWNER TO saibogo;
+
+--
+-- Name: workers; Type: TABLE; Schema: public; Owner: saibogo
+--
+
+CREATE TABLE public.workers (
+    id integer NOT NULL,
+    name text NOT NULL,
+    sub_name text NOT NULL,
+    is_work boolean DEFAULT true,
+    phone_number text DEFAULT ''::text NOT NULL,
+    post_id integer
+);
+
+
+ALTER TABLE public.workers OWNER TO saibogo;
+
+--
+-- Name: all_workers; Type: VIEW; Schema: public; Owner: saibogo
+--
+
+CREATE VIEW public.all_workers AS
+ SELECT workers.id,
+    workers.sub_name,
+    workers.name,
+    workers.phone_number,
+        CASE
+            WHEN (workers.is_work = true) THEN 'Работает'::text
+            ELSE 'Уволен'::text
+        END AS "case",
+    posts.post_name
+   FROM (public.workers
+     JOIN public.posts ON ((posts.id = workers.post_id)))
+  ORDER BY workers.sub_name, workers.name;
+
+
+ALTER TABLE public.all_workers OWNER TO saibogo;
+
+--
 -- Name: bindings; Type: TABLE; Schema: public; Owner: saibogo
 --
 
@@ -73,6 +122,93 @@ ALTER TABLE public.days_names ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
     CACHE 1
 );
 
+
+--
+-- Name: works_days; Type: TABLE; Schema: public; Owner: saibogo
+--
+
+CREATE TABLE public.works_days (
+    worker_id integer,
+    day1 boolean DEFAULT true,
+    day2 boolean DEFAULT true,
+    day3 boolean DEFAULT true,
+    day4 boolean DEFAULT true,
+    day5 boolean DEFAULT true,
+    day6 boolean DEFAULT true,
+    day7 boolean DEFAULT true
+);
+
+
+ALTER TABLE public.works_days OWNER TO saibogo;
+
+--
+-- Name: workspoints; Type: TABLE; Schema: public; Owner: saibogo
+--
+
+CREATE TABLE public.workspoints (
+    point_id integer NOT NULL,
+    point_name text NOT NULL,
+    point_address text NOT NULL
+);
+
+
+ALTER TABLE public.workspoints OWNER TO saibogo;
+
+--
+-- Name: firsts_bindings; Type: VIEW; Schema: public; Owner: saibogo
+--
+
+CREATE VIEW public.firsts_bindings AS
+ SELECT workspoints.point_name,
+        CASE
+            WHEN (wd.day1 = true) THEN ( SELECT workers.sub_name
+               FROM public.workers
+              WHERE ((workers.id = bindings.worker_id) AND (bindings.is_main = true)))
+            ELSE '--'::text
+        END AS monday,
+        CASE
+            WHEN (wd.day2 = true) THEN ( SELECT workers.sub_name
+               FROM public.workers
+              WHERE ((workers.id = bindings.worker_id) AND (bindings.is_main = true)))
+            ELSE '--'::text
+        END AS thuesday,
+        CASE
+            WHEN (wd.day3 = true) THEN ( SELECT workers.sub_name
+               FROM public.workers
+              WHERE ((workers.id = bindings.worker_id) AND (bindings.is_main = true)))
+            ELSE '--'::text
+        END AS wednesday,
+        CASE
+            WHEN (wd.day4 = true) THEN ( SELECT workers.sub_name
+               FROM public.workers
+              WHERE ((workers.id = bindings.worker_id) AND (bindings.is_main = true)))
+            ELSE '--'::text
+        END AS thoursday,
+        CASE
+            WHEN (wd.day5 = true) THEN ( SELECT workers.sub_name
+               FROM public.workers
+              WHERE ((workers.id = bindings.worker_id) AND (bindings.is_main = true)))
+            ELSE '--'::text
+        END AS friday,
+        CASE
+            WHEN (wd.day6 = true) THEN ( SELECT workers.sub_name
+               FROM public.workers
+              WHERE ((workers.id = bindings.worker_id) AND (bindings.is_main = true)))
+            ELSE '--'::text
+        END AS saturday,
+        CASE
+            WHEN (wd.day7 = true) THEN ( SELECT workers.sub_name
+               FROM public.workers
+              WHERE ((workers.id = bindings.worker_id) AND (bindings.is_main = true)))
+            ELSE '--'::text
+        END AS sunday
+   FROM ((public.workspoints
+     JOIN public.bindings ON ((bindings.point_id = workspoints.point_id)))
+     JOIN public.works_days wd ON (((wd.worker_id = bindings.worker_id) AND (bindings.is_main = true))))
+  ORDER BY workspoints.point_name;
+
+
+ALTER TABLE public.firsts_bindings OWNER TO saibogo;
 
 --
 -- Name: oborudovanie; Type: TABLE; Schema: public; Owner: saibogo
@@ -132,18 +268,6 @@ ALTER TABLE public.performers ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
 
 
 --
--- Name: posts; Type: TABLE; Schema: public; Owner: saibogo
---
-
-CREATE TABLE public.posts (
-    id integer NOT NULL,
-    post_name text NOT NULL
-);
-
-
-ALTER TABLE public.posts OWNER TO saibogo;
-
---
 -- Name: posts_id_seq; Type: SEQUENCE; Schema: public; Owner: saibogo
 --
 
@@ -158,34 +282,19 @@ ALTER TABLE public.posts ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
 
 
 --
--- Name: workers; Type: TABLE; Schema: public; Owner: saibogo
+-- Name: seconds_bindings; Type: VIEW; Schema: public; Owner: saibogo
 --
 
-CREATE TABLE public.workers (
-    id integer NOT NULL,
-    name text NOT NULL,
-    sub_name text NOT NULL,
-    is_work boolean DEFAULT true,
-    phone_number text DEFAULT ''::text NOT NULL,
-    post_id integer
-);
+CREATE VIEW public.seconds_bindings AS
+ SELECT workspoints.point_name AS point,
+    string_agg(workers.sub_name, ', '::text) AS alter_workers
+   FROM ((public.workspoints
+     JOIN public.bindings ON (((bindings.point_id = workspoints.point_id) AND (bindings.is_main = false))))
+     JOIN public.workers ON ((workers.id = bindings.worker_id)))
+  GROUP BY workspoints.point_name;
 
 
-ALTER TABLE public.workers OWNER TO saibogo;
-
---
--- Name: workers_id_seq; Type: SEQUENCE; Schema: public; Owner: saibogo
---
-
-ALTER TABLE public.workers ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
-    SEQUENCE NAME public.workers_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1
-);
-
+ALTER TABLE public.seconds_bindings OWNER TO saibogo;
 
 --
 -- Name: works; Type: TABLE; Schema: public; Owner: saibogo
@@ -203,22 +312,66 @@ CREATE TABLE public.works (
 ALTER TABLE public.works OWNER TO saibogo;
 
 --
--- Name: works_days; Type: TABLE; Schema: public; Owner: saibogo
+-- Name: statistic; Type: VIEW; Schema: public; Owner: saibogo
 --
 
-CREATE TABLE public.works_days (
-    worker_id integer,
-    day1 boolean DEFAULT true,
-    day2 boolean DEFAULT true,
-    day3 boolean DEFAULT true,
-    day4 boolean DEFAULT true,
-    day5 boolean DEFAULT true,
-    day6 boolean DEFAULT true,
-    day7 boolean DEFAULT true
+CREATE VIEW public.statistic AS
+ SELECT max(workspoints.point_id) AS point_id,
+    workspoints.point_name AS name_point,
+    count(DISTINCT oborudovanie.id) AS equips_count,
+    count(works.id) AS works_count,
+    max(works.date) AS last_date
+   FROM ((public.workspoints
+     JOIN public.oborudovanie ON ((oborudovanie.point_id = workspoints.point_id)))
+     JOIN public.works ON ((works.id_obor = oborudovanie.id)))
+  GROUP BY workspoints.point_name
+  ORDER BY workspoints.point_name;
+
+
+ALTER TABLE public.statistic OWNER TO saibogo;
+
+--
+-- Name: workers_id_seq; Type: SEQUENCE; Schema: public; Owner: saibogo
+--
+
+ALTER TABLE public.workers ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public.workers_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
 );
 
 
-ALTER TABLE public.works_days OWNER TO saibogo;
+--
+-- Name: works_from_worker; Type: VIEW; Schema: public; Owner: saibogo
+--
+
+CREATE VIEW public.works_from_worker AS
+ SELECT works.id,
+    workspoints.point_name,
+    oborudovanie.name,
+    oborudovanie.model,
+    oborudovanie.serial_num,
+    works.date,
+    works.problem,
+    works.result,
+    tmp.all_workers
+   FROM ((((public.works
+     JOIN public.performers ON ((works.id = performers.work_id)))
+     JOIN public.oborudovanie ON ((oborudovanie.id = works.id_obor)))
+     JOIN public.workspoints ON ((workspoints.point_id = oborudovanie.point_id)))
+     JOIN ( SELECT works_1.id AS work_id,
+            string_agg(workers.sub_name, ' '::text) AS all_workers
+           FROM (((public.works works_1
+             JOIN public.oborudovanie oborudovanie_1 ON ((works_1.id_obor = oborudovanie_1.id)))
+             JOIN public.performers performers_1 ON ((works_1.id = performers_1.work_id)))
+             JOIN public.workers ON ((workers.id = performers_1.worker_id)))
+          GROUP BY works_1.id) tmp ON ((tmp.work_id = works.id)));
+
+
+ALTER TABLE public.works_from_worker OWNER TO saibogo;
 
 --
 -- Name: works_id_seq; Type: SEQUENCE; Schema: public; Owner: saibogo
@@ -235,17 +388,32 @@ ALTER TABLE public.works ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
 
 
 --
--- Name: workspoints; Type: TABLE; Schema: public; Owner: saibogo
+-- Name: works_likes; Type: VIEW; Schema: public; Owner: saibogo
 --
 
-CREATE TABLE public.workspoints (
-    point_id integer NOT NULL,
-    point_name text NOT NULL,
-    point_address text NOT NULL
-);
+CREATE VIEW public.works_likes AS
+ SELECT works.id,
+    workspoints.point_name,
+    oborudovanie.name,
+    oborudovanie.model,
+    oborudovanie.serial_num,
+    works.date,
+    works.problem,
+    works.result,
+    tmp.all_workers
+   FROM (((public.works
+     JOIN public.oborudovanie ON ((oborudovanie.id = works.id_obor)))
+     JOIN public.workspoints ON ((workspoints.point_id = oborudovanie.point_id)))
+     JOIN ( SELECT works_1.id AS work_id,
+            string_agg(workers.sub_name, ' '::text) AS all_workers
+           FROM (((public.works works_1
+             JOIN public.oborudovanie oborudovanie_1 ON ((works_1.id_obor = oborudovanie_1.id)))
+             JOIN public.performers ON ((works_1.id = performers.work_id)))
+             JOIN public.workers ON ((workers.id = performers.worker_id)))
+          GROUP BY works_1.id) tmp ON ((tmp.work_id = works.id)));
 
 
-ALTER TABLE public.workspoints OWNER TO saibogo;
+ALTER TABLE public.works_likes OWNER TO saibogo;
 
 --
 -- Name: workspoints_point_id_seq; Type: SEQUENCE; Schema: public; Owner: saibogo
@@ -658,6 +826,10 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id) FROM st
 323	25	система канализации кухня	not model	not number	323
 324	2	система вентиляции подвал мясной цех, цех питания	not model	not number	324
 325	2	мойка двухсекционная овощной цех	not model	not number	325
+326	1	вспомогательное оборудование гостевых туалетов	not model	not number	326
+327	2	плита индукционная Техно-ТТ 4 комфорки горячий цех (средняя)	not model	not number	327
+328	2	система канализации овощной цех	not model	not number	328
+329	11	система канализации	not model	not number	329
 \.
 
 
@@ -1311,6 +1483,21 @@ COPY public.performers (id, work_id, worker_id) FROM stdin;
 643	614	1
 644	615	5
 645	616	1
+646	617	1
+647	618	1
+648	619	1
+649	620	1
+650	621	1
+651	622	7
+652	623	1
+653	624	1
+654	624	2
+655	625	1
+656	626	1
+657	627	1
+658	627	2
+659	628	1
+660	628	3
 \.
 
 
@@ -1371,56 +1558,68 @@ COPY public.works (id, id_obor, date, problem, result) FROM stdin;
 555	297	2019-11-17 08:00:00	чистка жироуловителей	чистка жироуловителя. необходимо сделать переднюю планку сьемной
 571	307	2019-11-22 12:00:00	повреждение питающего кабеля	укоротил, перекоммутировал, вычистил внутреннюю часть от пыли и гари
 592	318	2019-11-27 16:25:00	подготовка к снятию жироуловителей	демонтирована передняя планка
+617	36	2019-12-01 10:52:00	ремонт батарей	собрали из резерва батарею 10 секций. Установили  в дальний угол около дверей экспедиции
 531	219	2019-11-12 14:00:00	необходима чистка колодца возле Бургер Кинга	прораб манипулятором поднял плиту. Бригада КРОТ осуществила чистку колодца - 140 литров ила вперемежку с бумагой, тряпками и прочим
 542	94	2019-11-16 08:38:00	тускло горит потолочный светильник	установил PPL 595/U 36W 4000K
 556	210	2019-11-17 08:30:00	чистка жироуловителей	чистка жироуловителя. необходимо сделать переднюю планку сьемной
 572	295	2019-11-22 13:37:00	отключается УЗО группа 6	после демонтажа принтера на зоне пасты админы не убрали блок питания. Судя по всему его залило водой и он прошивал на землю. После удаления из системы - все заработало
 593	319	2019-11-27 16:20:00	подготовка к снятию жироуловителей	демонтирована передняя планка
+618	326	2019-12-03 08:24:00	в правом туалете сломан держатель для ершика	заменил на держатель из самого левого туалета
 532	294	2019-11-13 00:00:00	возгорание в помещении ВРУ	ыгорел трансформатор тока(крайний правый). правй ввод обесточен. Необходима замена трансформатора ТТИ-А 150/5 кл. 0,5, кабельных перемычек, обжимных клемм и возможно сборного клемника внизу щита
 543	172	2019-11-16 08:30:00	не горит светильник возле склада хозпринадлежностей	установил PPL 595/U 36W 4000K
 557	76	2019-11-17 09:15:00	чистка жироуловителей	чистка жироуловителя. Пришлось снимать и вытряхать. Передняя планка раковины удалена - надо посадить на болты
 573	308	2019-11-22 20:15:00	практически отсутствует давление на выходе из фильтра	оба картриджа забиты. Установил на данный момент только полипропиленовый. Необходимо заказать фильтра в Аквафоре. СВГ и B150+. Также необходимо избавиться от умягчителя - установлен в простенке с подводкой из металлопластиковых труб. Похоже еще и направление перепутано
 594	297	2019-11-27 16:46:00	подготовка к снятию жироуловителей	демонтирована передняя планка
+619	327	2019-12-03 10:32:00	неисправна правая дальняя комфорка	разбито стекло. Плата не отзывается на действия с пульта. Временно установили пластиковую заглушку. Заказал в ПЕРФИ деталировку для замены стекла и индуктора
 533	294	2019-11-13 11:00:00	ремонт ВРУ	заменили ТТИ-А 150/5 кл. 0,5. Заменили перемычку трансформатор тока - клемник. Выполнена протяжка всех соединений начиная от нижних болтов вводных автоматов. Зачищена поверхность щита от гари.
 544	283	2019-11-16 11:00:00	нет света в туалете АУП	установил светодиодную 10 Ватт теплый белый Е27 JazzWay
 558	4	2019-11-17 10:30:00	не работает левый смеситель	установил настенный на полипропиленовых трубах с душевой лейкой. Необходимо удалить старый смеситель и установить заглушку
 574	309	2019-11-22 20:40:00	выпадает в ошибку по набору воды	судя по всему неисправен датчик уровня. Давление на помпе прыгает до 10 бар а на нагрева не происходит
 595	320	2019-11-27 19:30:00	при включении режима Каппучино отключается дифференциальный автомат	при диагностике выявлено: Не проходит пар через блок соленоидов(нижний). Подтекает снизу корпуса жидкость - машину необходимо разбирать в условиях мастерской. Машина должна быть перемещена по согласованию с Карамолиным Иваном на Малышева 36
+620	203	2019-12-03 13:11:00	трое весов CAS неисправны	заменили на всех шнуры с продувкой корпусов. Шнуры 2,2-2,5 метра
 1	1	2019-04-24 07:00:00	громкий скрежет при включении	Разрушены шлицы крепления вентилятора обдува двигателя. закрепить не представляется возможным. Без вентилятора работает, но необходимы частые перерывы в работе для охлаждения двигателя.
 534	295	2019-11-14 08:00:00	проведение электроизмерений	проверены все автоматы, прогружены УЗО, проверена петля фаза-ноль. Работы производились Дэтроит-энерго
 545	96	2019-11-16 13:00:00	не работает левая комфорка	неисправен термостат. изначально не замыкался. после чистки контактов не размыкается. нужна замена. левая комфорка отключена
 559	231	2019-11-19 08:17:00	течет вода под мойкой	сломана шпилька на разрыве струи. Протекает носик крана. Необходимо заменить разрыв струи на обычный сифон и поменять носик крана - похоже трещина
 575	10	2019-11-23 07:45:00	не горит часть светильников	заменил E27 9 Ватт теплый белый JazzWay
 596	321	2019-11-27 12:30:00	отсутствует ГВС	система переведена в режим от водонагревателей
+621	320	2019-12-03 17:50:00	вместо американо идет вода	Пришлось очень сильно уменьшить помол, только после этого появились крема - качество кофе. Персонал не знал, что кофе надо засыпать в оба бункера, поэтому двойные напитки получались жидкими. Машина практически не моется
 535	108	2019-11-14 08:15:00	нет нагрева	сработала тепловая защита. Включил
 546	300	2019-11-16 16:10:00	сломаны прутья для миксера напольног опланетарного	укоротил и переобжал
 560	302	2019-11-19 09:30:00	неисправна нагнетающая часть	разбит компрессор. Масло поступает в бак. Необходима замена верхней головки либо замена агрегата. Выставлен счет на новый компрессор ВИХРЬ
 576	24	2019-11-23 07:55:00	не горит часть светильников	заменил 1 штукe GU5.3 9 Ватт теплый белый JazzWay
 597	321	2019-11-28 07:30:00	восстановлено поступление ГВС	контроль правильности переключений выполненных персоналом
+622	328	2019-12-03 20:00:00	не уходит вода с дальней односекционной мойки	промывка трубы диаметр 50 мм от картофелечистки Керхером
 536	296	2019-11-14 10:30:00	нет пара	заменили прокладку на вводе холодной воды. Отревизировал переключатель времени(необходима замена потенциометра), вычистили от накипи бак и помпу
 547	4	2019-11-16 15:00:00	чистка жироуловителей	прочищен. необходимо сделать переднюю планку сьемной
 561	303	2019-11-19 15:08:00	не работает	сгорели переключатели. Заменил один вводной на 16 А  и один сдвоенный 6 контактов. Переобжал большую часть клемм
 577	36	2019-11-23 08:50:00	диагностика батарей коридор экспедиция	обе карйние батареи по 12 секций с разрывами. Демонтировал. Необходима замена
 598	319	2019-11-27 19:30:00	чистка жироуловителей	вычищен
+623	137	2019-12-04 08:20:00	перелив воды из испарителя	оброс датчик уровня. Вычистил
 537	297	2019-11-14 11:25:00	протекает вода из левой раковины	раскручен болт крепления сливного сифона. закрепил
 548	74	2019-11-16 16:00:00	чистка жироуловителей	чистка жироуловителя. необходимо сделать переднюю планку сьемной
 562	304	2019-11-19 15:00:00	сбои программы в предварительный нагрев	после отключения выдал сообщение о замене батарейки. Поставил тестовую со сниженным зарядом CR2032 - ошибка пропала. Необходимо купить и сменить на обоих пароконвектоматах
 578	310	2019-11-23 09:00:00	загрязнены ТЭНы	чистка от пыли
 599	317	2019-11-27 19:45:00	чистка жироуловителей	вычищен
+624	37	2019-12-04 14:00:00	недостаточная производительность	диагностика. Похоже забит Y-фильтр на вводе подающего трубопровода. Согласованы работы на вечер
 549	99	2019-11-16 15:30:00	чистка жироуловителей	чистка жироуловителя. необходимо сделать переднюю планку сьемной
 563	305	2019-11-19 16:17:00	загрязнены ТЭНы	профилактическая чистка. Полностью вычистить не удалось - необходима продувка компрессором
 579	311	2019-11-23 10:59:00	потоп в помещении Цеха Питания и Служебной Раздевалки ООО Кулинария Плюс	порыв смесителя в служебных помещениях Бургер Кинг. водоснабжение в месте порыва перекрыто. Необходимы дальнейшая диагностика и оценка ущерба
 600	318	2019-11-27 20:00:00	чистка жироуловителей	вычищен
+625	163	2019-12-04 14:43:00	перелив воды из испарителя	забит полипропиленовый картридж 10 микрон. заменил
 2	2	2019-04-26 07:00:00	необходимо уплотнение проходящих труб фильтрованной воды	потолки запенены
 550	116	2019-11-16 15:15:00	чистка жироуловителей	чистка жироуловителя. необходимо сделать переднюю планку сьемной
 564	292	2019-11-20 08:46:00	необходима замена опорных колес на шпильке	заменил на Колесо термостойкое поворотное (фенольное) RFG 100 Поставщик Адванта М
 580	312	2019-11-23 13:48:00	не уходит вода с ситемы Ятаган(пожаротушение)	Прочистка при помощи керхера. Трубы забиты пылью и гарью. Требуется установка отстойника
 601	297	2019-11-27 20:30:00	чистка жироуловителей	вычищен
+626	198	2019-12-04 18:00:00	короткое замыкание	сгорело соединение внутри пастоварки - были просто соединены два контакта. Переделал на скуртки, удалил лишние провода
 551	301	2019-11-16 14:30:00	чистка жироуловителей	чистка жироуловителя. необходимо сделать переднюю планку сьемной
 565	137	2019-11-20 11:53:00	перелив воды из испарителя	оброс датчик уровня. Вычистил. Вычистил камеру датчика.
 602	283	2019-11-28 11:39:00	поврежден светильник в кабинете кладовщиков	заменил 4*18 люминисцентный на светодиодный 36 ватт для подвесных потолков белый свет
+627	37	2019-12-04 21:45:00	недостаточная производительность	Диагностика: отсутствует сетка внутри Y-фильтра на подаче. В батареях грязь и необходима их чистка. Прогнали систему по очереди каждую нитку. Добились повышения температуры подачи примерно вдвое. Необходима замена циркуляционного насоса
 566	74	2019-11-20 08:30:00	слабый напор воды из правого смесителя	забит аэратор. убрал его - необходима замена
 603	322	2019-11-28 17:43:00	не горит часть новогодней гирлянды	поломаны провода и светодиоды. Часть спаял, часть убрал.
+628	329	2019-12-05 10:30:00	подтопили магазин этажом ниже	вырван тройник канализации на сборной канализации 100 мм диаметр. Трубы забиты жиром. Заменили 3 метра труб два тройника два отвода. Для простоты разборки установили компенсационный патрубок 50 мм диаметр. Требуется промывка остальной системы.
 567	203	2019-11-20 13:00:00	сгорела вилка на весах в пекарне	шнур уже задеревенел - заменил на готовый шнур с вилкой 3 метра
 581	46	2019-11-23 15:00:00	диагностика	не включается. При повороте выключателя со снятым шлангом нет звука нагнетания. Неисправен либо регулятор либо реле давления. Требуется ремонт
 604	323	2019-11-28 19:02:00	чистка жироуловителей	вычищены оба жироуловителя + промыта труба Керхером
@@ -2042,7 +2241,7 @@ SELECT pg_catalog.setval('public.oborudovanie_id_seq', 1, false);
 -- Name: performers_id_seq; Type: SEQUENCE SET; Schema: public; Owner: saibogo
 --
 
-SELECT pg_catalog.setval('public.performers_id_seq', 645, true);
+SELECT pg_catalog.setval('public.performers_id_seq', 660, true);
 
 
 --
