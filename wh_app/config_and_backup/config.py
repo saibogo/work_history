@@ -1,19 +1,19 @@
 from tkinter import GROOVE
 
 
-path_to_project = '/home/saibogo/PycharmProjects/work_history/'
+path_to_project = '/home/saibogo/GitHub/wh_github/'
 database_name = 'workhistory'
 user_name = 'saibogo'
 user_password = 'begemot100'
 database_host = '127.0.0.1'
 database_port = '5432'
-static_dir = path_to_project + 'web/static/'
+static_dir = path_to_project + 'wh_app/web/static/'
 str_interrupted = 'Interrupted'
 max_size_column = 40
 rows_pxls = 25
 max_pxls_in_canvas = 600
 relief = GROOVE
-ip_address = '192.168.6.242'
+ip_address = '192.168.1.146'
 port = '5000'
 full_address = "http://" + ip_address + ":" + port
 pass_hash = 52380570359700838927303160461451880435941242634047643826816963312413378430196
