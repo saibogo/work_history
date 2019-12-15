@@ -1,7 +1,6 @@
-import tkinter_gui as gui
-import view_operation
-from database import Database
-
+from wh_app.simple_gui import tkinter_gui as gui
+from wh_app.sql_operations import view_operation
+from wh_app.postgresql.database import Database
 
 with Database() as base:
     connection, cursor = base
