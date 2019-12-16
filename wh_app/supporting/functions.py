@@ -13,14 +13,17 @@ def info_string(name_module):
 
 
 def str_to_str_n(s: str, max_len: int) -> str:
-    """Function return new string, separated /n"""
+    """Function return new string, separated \n"""
 
     tmp = s
     chunks = []
+    if max_len == 0:
+        return str_to_str_n(s, 1)
     while len(tmp) >= max_len:
         chunks.append(tmp[:max_len])
         tmp = tmp[max_len:]
-    chunks.append(tmp)
+    if len(tmp) != 0:
+        chunks.append(tmp)
     return '\n'.join(chunks)
 
 
@@ -33,8 +36,14 @@ def num_to_time_str(num: int) -> str:
 def full_equip_to_view(equip: list) -> list:
     """Function return list in format correct to view table"""
 
-    point, _, name, model, serial, pre_id = range(6)
-    return list(map(str, [equip[point], equip[name], equip[model], equip[serial], equip[pre_id]]))
+    len_equip_record = 6
+    point, _, name, model, serial, pre_id = range(len_equip_record)
+    if len(equip) != len_equip_record:
+        result = []
+    else:
+        result =  list(map(str, [equip[point], equip[name], equip[model], equip[serial], equip[pre_id]]))
+
+    return result
 
 
 def is_valid_password(password: str) -> bool:
@@ -68,11 +77,13 @@ def works_table_add_new_performer(works: list) -> list:
     """Add to all works string link ADD-Performer"""
 
     new_works = []
+
     for work in works:
         new_works.append([])
         for elem in work:
             new_works[-1].append(str(elem))
-        new_works[-1][-1] += ('<a href="/add-performer-to-work/' + str(new_works[-1][0]) + '">+</a>')
+        if work != []:
+            new_works[-1][-1] += ('<a href="/add-performer-to-work/' + str(new_works[-1][0]) + '">+</a>')
 
     return new_works
 
@@ -83,7 +94,7 @@ def list_of_pages(all_records: list) -> list:
     result = [i + 1 for i in range(len(all_records) // config.max_records_in_page)]
     if len(all_records) % config.max_records_in_page != 0:
         result.append(len(result) + 1)
-    return result
+    return result if len(all_records) > 0 else [1]
 
 
 info_string(__name__)
