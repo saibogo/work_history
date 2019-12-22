@@ -6,7 +6,7 @@ import psutil
 import requests
 
 from wh_app.config_and_backup import config
-from wh_app.supporting import functions
+from wh_app.supporting import functions, stop_start_web
 from wh_app.sql_operations import insert_operations
 from wh_app.sql_operations import select_operations
 from wh_app.simple_gui import universal_windows
@@ -273,29 +273,12 @@ def main_window() -> None:
 
         def start_web_server(self) -> None:
             """Function start web-server to connect database"""
-
-            try:
-                _ = requests.get("http://" + config.ip_address + ":" + config.port + '/add-work')
-                print("Веб-сервер уже запущен")
-            except:
-                print("Запускаем веб-сервер")
-                threading.Thread(target=webserver.start_server).start()
+            stop_start_web.start_server()
 
         def stop_web_server(self) -> None:
             """Function stop web-server to connect database"""
 
-            try:
-                _ = requests.get("http://" + config.ip_address + ":" + config.port + '/add-work')
-                for process in psutil.process_iter():
-                    data = process.as_dict(attrs=['cmdline', 'pid'])
-                    for elem in data['cmdline']:
-                        if 'work_history' in elem:
-                            print(data)
-                            print("процесс найден PID=" + str(data['pid']))
-                            process.kill()
-                            print("Веб-сервер остановлен")
-            except:
-                print("Веб-сервер не запущен")
+            stop_start_web.stop_server()
 
         root = tk.Tk()
         root.title('База ремонтов')
