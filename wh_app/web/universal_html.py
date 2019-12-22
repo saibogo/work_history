@@ -252,11 +252,14 @@ def info_from_alter_works() -> str:
 def paging_table(link: str, all_elems: list, current: int) -> str:
     """Return simple table contain paging links"""
 
-    result = ['<br><table id="pages_table"><tr>']
-    for elem in all_elems:
-        result.append('<td class="paging_td">')
-        result.append(str(elem) if elem == current else '<a href="{0}/{1}">{1}</a>'.format(link, elem))
-        result.append('</td>')
-    result.append('</tr></table>')
+    if len(all_elems) == 1:
+        result = [""]
+    else:
+        result = ['<br><table id="pages_table"><tr>']
+        for elem in all_elems:
+            result.append('<td class="paging_td">')
+            result.append(str(elem) if elem == current else '<a href="{0}/{1}">{1}</a>'.format(link, elem))
+            result.append('</td>')
+        result.append('</tr></table>')
     return "\n".join(result)
 

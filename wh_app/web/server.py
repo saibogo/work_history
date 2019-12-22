@@ -148,19 +148,7 @@ def equip_to_point_limit(point_id, page_num):
 
 @app.route("/equip/<point_id>")
 def equip_to_point(point_id):
-    with Database() as base:
-        connection, cursor = base
-        all_equips = select_operations.get_equip_in_point(cursor, str(point_id))
-        pages = functions.list_of_pages(all_equips)
-        if len(pages) > 1:
-            return redirect("/equip/{0}/page/1".format(point_id))
-        links_list = ['/work/' + str(equip[0]) for equip in all_equips]
-        table1 = uhtml.universal_table(config.equips_table_name,
-                                       config.equips_table,
-                                       [[equip[i] for i in range(1, len(equip))] for equip in all_equips],
-                                       True, links_list)
-        table2 = uhtml.add_new_equip(point_id) if point_id != '0' else ""
-        return web_template.result_page(table1 + table2, '/all-points')
+    return redirect('/equip/{0}/page/1'.format(point_id))
 
 
 @app.route('/find-equip-to-id')
@@ -296,20 +284,7 @@ def work_to_equip_paging(equip_id, page_id):
 
 @app.route("/work/<equip_id>")
 def work_to_equip(equip_id):
-    with Database() as base:
-        connection, cursor = base
-        pre_adr = ('/equip/' + str(select_operations.get_point_id_from_equip_id(cursor, equip_id))) if\
-            str(equip_id) != '0' else '/works'
-        full_works = select_operations.get_works_from_equip_id(cursor, equip_id)
-        full_works = functions.works_table_add_new_performer(full_works)
-        page_list = functions.list_of_pages(full_works)
-        if len(page_list) > 1:
-            return redirect("/work/{}/page/1".format(equip_id))
-        table1 = uhtml.universal_table(config.works_table_name,
-                                       config.works_table,
-                                       full_works)
-        table2 = uhtml.add_new_work(equip_id) if str(equip_id) != 0 else ""
-        return web_template.result_page(table1 + table2, pre_adr)
+    return redirect('/work/{0}/page/1'.format(equip_id))
 
 
 @app.route("/performer/<performer_id>", methods=['GET'])
@@ -402,52 +377,98 @@ def find_from_works():
     if request.method == "POST":
         data = functions.form_to_data(request.form)
         find_request = data[uhtml.FIND_REQUEST]
-        with Database() as base:
-            connection, cursor = base
-            find_from_table = data[uhtml.FIND_IN_TABLE]
-            if find_from_table == uhtml.WORKS_IGNORED_DATE:
-                works = select_operations.get_all_works_like_word(cursor, find_request)
-                works = functions.works_table_add_new_performer(works)
-                result = uhtml.universal_table(config.works_table_name,
-                                               config.works_table,
-                                               [list(work) for work in works])
-                return web_template.result_page(result, '/works')
+        find_from_table = data[uhtml.FIND_IN_TABLE]
+        if find_from_table == uhtml.WORKS_IGNORED_DATE:
+            return redirect('/find/work/{0}/page/1'.format(find_request))
+        elif find_from_table == uhtml.WORKS:
+            return redirect('/find/work/{0}/{1}/{2}/page/1'.format(find_request,
+                                                            data[uhtml.WORK_DATETIME_START],
+                                                            data[uhtml.WORK_DATETIME_STOP]))
+        elif find_from_table == uhtml.WORKS_POINTS:
+            return redirect('/find/point/{0}/page/1'.format(find_request))
 
-            elif find_from_table == uhtml.WORKS:
-                date_start = data[uhtml.WORK_DATETIME_START].replace('T', ' ')
-                date_stop = data[uhtml.WORK_DATETIME_STOP].replace('T', ' ')
-                works = select_operations.get_all_works_like_word_and_date(cursor, find_request, date_start, date_stop)
-                works = functions.works_table_add_new_performer(works)
-                result = uhtml.universal_table(config.works_table_name,
-                                               config.works_table,
-                                               [list(work) for work in works])
-                return web_template.result_page(result, '/works')
-
-            elif find_from_table == uhtml.WORKS_POINTS:
-                points = select_operations.get_all_points_list_from_like_str(cursor, find_request)
-                links_list = ['/equip/' + str(elem[0]) for elem in points]
-                result = uhtml.universal_table(config.points_table_name,
-                                               config.points_table,
-                                               [[point[1], point[2]] for point in points],
-                                               True,
-                                               links_list)
-                return web_template.result_page(result, '/points')
-
-            elif find_from_table == uhtml.EQUIPS:
-                equips = select_operations.get_all_equips_list_from_like_str(cursor, find_request)
-                links_list = ['/work/' + str(equip[0]) for equip in equips]
-                result = uhtml.universal_table(config.equips_table_name,
-                                               config.equips_table,
-                                               [[equip[i] for i in range(1, len(equip))] for equip in equips],
-                                               True,
-                                               links_list)
-                return web_template.result_page(result, '/equips')
-
-            else:
-                return web_template.result_page('Not corrected selected in Find!', '/')
+        elif find_from_table == uhtml.EQUIPS:
+            return redirect('/find/equip/{0}/page/1'.format(find_request))
+        else:
+            return web_template.result_page('Not corrected selected in Find!', '/')
 
     else:
         return web_template.result_page('Method in Find Page not corrected!', '/')
+
+
+@app.route('/find/work/<find_string>/page/<page_num>')
+def find_work_paging(find_string: str, page_num: str) -> str:
+    with Database() as base:
+        connection, cursor = base
+        works = select_operations.get_all_works_like_word_limit(cursor, find_string, int(page_num))
+        works = functions.works_table_add_new_performer(works)
+        pages_list = functions.list_of_pages(select_operations.get_all_works_like_word(cursor, find_string))
+        result = uhtml.universal_table(config.works_table_name,
+                                       config.works_table,
+                                       [list(work) for work in works])
+        pages_table = uhtml.paging_table('/find/work/{0}/page'.format(find_string),
+                                         pages_list,
+                                         int(page_num))
+        return web_template.result_page(result + pages_table, '/find')
+
+
+@app.route('/find/work/<find_string>/<data_start>/<data_stop>/page/<page_num>')
+def find_work_like_date_paging(find_string: str, data_start: str, data_stop: str, page_num: str) -> str:
+    with Database() as base:
+        connection, cursor = base
+        date_start_correct = data_start.replace('T', ' ')
+        date_stop_correct = data_stop.replace('T', ' ')
+        pages_list = functions.list_of_pages(select_operations.get_all_works_like_word_and_date(cursor,
+                                                                   find_string,
+                                                                   date_start_correct,
+                                                                   date_stop_correct))
+        works = select_operations.get_all_works_like_word_and_date_limit(cursor,
+                                                                         find_string,
+                                                                         date_start_correct,
+                                                                         date_stop_correct,
+                                                                         int(page_num))
+        works = functions.works_table_add_new_performer(works)
+        result = uhtml.universal_table(config.works_table_name,
+                                       config.works_table,
+                                       [list(work) for work in works])
+        pages_table = uhtml.paging_table('/find/work/{0}/{1}/{2}/page'.format(find_string,
+                                                                              date_start_correct,
+                                                                              date_stop_correct),
+                                         pages_list,
+                                         int(page_num))
+        return web_template.result_page(result + pages_table, '/find')
+
+
+@app.route('/find/point/<find_string>/page/<page_num>')
+def find_point(find_string: str, page_num: str) -> str:
+    with Database() as base:
+        connection, cursor = base
+        points = select_operations.get_all_points_list_from_like_str_limit(cursor, find_string, int(page_num))
+        pages_list = functions.list_of_pages(select_operations.get_all_points_list_from_like_str(cursor, find_string))
+        links_list = ['/equip/' + str(elem[0]) for elem in points]
+        result = uhtml.universal_table(config.points_table_name,
+                                       config.points_table,
+                                       [[point[1], point[2]] for point in points],
+                                       True,
+                                       links_list)
+        pages_table = uhtml.paging_table('/find/point/{0}/page'.format(find_string), pages_list, int(page_num))
+        return web_template.result_page(result + pages_table, '/find')
+
+
+@app.route('/find/equip/<find_string>/page/<page_num>')
+def find_equip(find_string: str, page_num: str) -> str:
+    with Database() as base:
+        connection, cursor = base
+        equips = select_operations.get_all_equips_list_from_like_str_limit(cursor, find_string, int(page_num))
+        pages_list = functions.list_of_pages(select_operations.get_all_equips_list_from_like_str(cursor, find_string))
+        links_list = ['/work/' + str(equip[0]) for equip in equips]
+        result = uhtml.universal_table(config.equips_table_name,
+                                       config.equips_table,
+                                       [[equip[i] for i in range(1, len(equip))] for equip in equips],
+                                       True,
+                                       links_list)
+        pages_table = uhtml.paging_table('/find/equip/{0}/page'.format(find_string), pages_list, int(page_num))
+        return web_template.result_page(result + pages_table, '/find')
 
 
 @app.route('/statistics', methods=['GET'])
