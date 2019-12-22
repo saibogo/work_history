@@ -96,6 +96,16 @@ def sql_select_equip_from_like_str(s: str) -> str:
     return query.format(words)
 
 
+def sql_select_equip_from_like_str_limit(s: str, page_num: str) -> str:
+    """Return the query string select equips from like-string use LIMIT and OFFSET"""
+
+    words = '%' + s.replace(' ', '%') + '%'
+    query =  """SELECT id, workspoints.point_name, name, model, serial_num, pre_id FROM oborudovanie 
+    JOIN workspoints ON oborudovanie.point_id = workspoints.point_id WHERE LOWER(name)
+     LIKE LOWER('{0}') ORDER BY name LIMIT {1} OFFSET {2}"""
+    return query.format(words, config.max_records_in_page, (int(page_num) - 1) * config.max_records_in_page)
+
+
 def sql_select_point_from_like_str(s: str) -> str:
     """Return the query string select points from like-string"""
 
@@ -106,14 +116,34 @@ def sql_select_point_from_like_str(s: str) -> str:
     return query.format(like_string)
 
 
+def sql_select_point_from_like_str_limit(s: str, page_num: str) -> str:
+    """Return the query string select points from like-string"""
+
+    like_string = '%' + s.replace(' ', '%') + '%'
+    query = """SELECT * FROM workspoints WHERE (LOWER(point_name) LIKE LOWER('{0}')) OR (LOWER(point_address) LIKE
+    LOWER('{0}')) ORDER BY point_name LIMIT {1} OFFSET {2}"""
+
+    return query.format(like_string, config.max_records_in_page, (int(page_num) - 1) * config.max_records_in_page)
+
+
 def sql_select_all_works_from_like_str(s: str) -> str:
     """Function return string contain sql-query from table works like all records to s-string"""
 
     like_string = '%' + s.replace(' ', '%') + '%'
     query =  """SELECT * FROM works_likes WHERE (LOWER (problem) LIKE LOWER('{0}')) OR 
-    (LOWER(result) LIKE LOWER('{0}')) ORDER BY date, name;"""
+    (LOWER(result) LIKE LOWER('{0}')) ORDER BY date, name"""
 
     return query.format(like_string)
+
+
+def sql_select_all_works_from_like_str_limit(s: str, page_num: str) -> str:
+    """Function return string contain sql-query from table works like all records to s-string"""
+
+    like_string = '%' + s.replace(' ', '%') + '%'
+    query =  """SELECT * FROM works_likes WHERE (LOWER (problem) LIKE LOWER('{0}')) OR 
+    (LOWER(result) LIKE LOWER('{0}')) ORDER BY date, name LIMIT {1} OFFSET {2}"""
+
+    return query.format(like_string, config.max_records_in_page, (int(page_num) - 1) * config.max_records_in_page)
 
 
 def sql_select_all_works_from_like_str_and_date(s: str, date_start: str, date_stop: str) -> str:
@@ -124,6 +154,20 @@ def sql_select_all_works_from_like_str_and_date(s: str, date_start: str, date_st
     LIKE LOWER('{0}'))) AND (date BETWEEN '{1}' AND '{2}') ORDER BY  date, name"""
 
     return query.format(like_string, date_start, date_stop)
+
+
+def sql_select_all_works_from_like_str_and_date_limit(s: str, date_start: str, date_stop: str, page_num: str) -> str:
+    """Function return SQL-string contain query from table works like all records to s-string and in dates range"""
+
+    like_string = '%' + s.replace(' ', '%') + '%'
+    query = """SELECT * FROM works_likes WHERE ((LOWER (problem) LIKE LOWER('{0}')) OR (LOWER(result) 
+    LIKE LOWER('{0}'))) AND (date BETWEEN '{1}' AND '{2}') ORDER BY  date, name LIMIT {3} OFFSET {4}"""
+
+    return query.format(like_string, date_start,
+                        date_stop,
+                        config.max_records_in_page,
+                        (int(page_num) - 1) * config.max_records_in_page)
+
 
 
 def sql_select_max_id_equip() -> str:
