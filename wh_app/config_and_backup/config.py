@@ -1,7 +1,7 @@
 from tkinter import GROOVE
 
 
-path_to_project = '/home/saibogo/GitHub/wh_github/'
+path_to_project = '/home/saibogo/PycharmProjects/work_history/'
 database_name = 'workhistory'
 user_name = 'saibogo'
 user_password = 'begemot100'
@@ -13,7 +13,7 @@ max_size_column = 40
 rows_pxls = 25
 max_pxls_in_canvas = 600
 relief = GROOVE
-ip_address = '192.168.1.146'
+ip_address = '192.168.6.242'
 port = '5000'
 full_address = "http://" + ip_address + ":" + port
 pass_hash = 52380570359700838927303160461451880435941242634047643826816963312413378430196
