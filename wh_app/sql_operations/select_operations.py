@@ -114,10 +114,23 @@ def get_all_equips_list_from_like_str(cursor, s: str) -> list:
     return get_selected(cursor, select_sql.sql_select_equip_from_like_str(s))
 
 
+def get_all_equips_list_from_like_str_limit(cursor, s: str, page_num: int) -> list:
+    """Return all equips names contain s-string use LIMIT and OFFSET"""
+
+    return get_selected(cursor, select_sql.sql_select_equip_from_like_str_limit(s, str(page_num)))
+
+
+
 def get_all_points_list_from_like_str(cursor, s:str) -> list:
     """Return all points names contain s-string"""
 
     return get_selected(cursor, select_sql.sql_select_point_from_like_str(s))
+
+
+def get_all_points_list_from_like_str_limit(cursor, s:str, page_num: int) -> list:
+    """Return all points names contain s-string use LIMIT and OFFSET"""
+
+    return get_selected(cursor, select_sql.sql_select_point_from_like_str_limit(s, str(page_num)))
 
 
 def get_works_list_from_equips_list(cursor, list_equips: list) -> list:
@@ -159,10 +172,25 @@ def get_all_works_like_word(cursor, word: str) -> list:
     return get_selected(cursor, select_sql.sql_select_all_works_from_like_str(word))
 
 
+def get_all_works_like_word_limit(cursor, word: str, page_num: int) -> list:
+    """Function return list contain ID work likes word"""
+
+    return get_selected(cursor, select_sql.sql_select_all_works_from_like_str_limit(word, str(page_num)))
+
+
 def get_all_works_like_word_and_date(cursor, word: str, date_start: str, date_stop: str) -> list:
     """Function return list contain all works in date-date interval and like word"""
 
     return get_selected(cursor, select_sql.sql_select_all_works_from_like_str_and_date(word, date_start, date_stop))
+
+
+def get_all_works_like_word_and_date_limit(cursor, word: str, date_start: str, date_stop: str, page_num: int) -> list:
+    """Function return list contain all works in date-date interval and like word use LIMIT and OFFSET"""
+
+    return get_selected(cursor, select_sql.sql_select_all_works_from_like_str_and_date_limit(word,
+                                                                                             date_start,
+                                                                                             date_stop,
+                                                                                             str(page_num)))
 
 
 def get_statistic(cursor) -> list:
