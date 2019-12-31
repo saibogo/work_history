@@ -42,8 +42,10 @@ def equips_operations():
 @app.route("/points")
 def points_operations():
     name = 'Действия с предприятиями'
-    menu = [(1, 'Все зарегестрированные предприятия'), (2, 'Добавить предприятие')]
-    links_list = ['/all-points', '/create_new_point']
+    menu = [(1, 'Все зарегестрированные предприятия'),
+            (2, 'Только действующие'),
+            (3, 'Добавить предприятие')]
+    links_list = ['/all-points', '/works-points', '/create-new-point']
     table = uhtml.universal_table(name, ['№', 'Доступное действие'], menu, True, links_list)
     return web_template.result_page(table, '/')
 
@@ -98,7 +100,21 @@ def all_points_table():
         return web_template.result_page(table1 + table2, '/points')
 
 
-@app.route("/create_new_point")
+@app.route("/works-points")
+def all_works_points_table():
+    with Database() as base:
+        connection, cursor = base
+        all_points = select_operations.get_all_works_points(cursor)
+        links_list = ['/equip/' + str(elem[0]) for elem in all_points]
+        table1 =  uhtml.universal_table(config.points_table_name,
+                                        config.points_table,
+                                        [[point[i] for i in range(1, len(point))] for point in all_points],
+                                        True, links_list)
+        table2 = uhtml.add_new_point()
+        return web_template.result_page(table1 + table2, '/points')
+
+
+@app.route("/create-new-point")
 def create_new_point():
     html = uhtml.style_custom() + '\n' + uhtml.add_new_point()
     return web_template.result_page(html, '/points')
