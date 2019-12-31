@@ -7,10 +7,19 @@ functions.info_string(__name__)
 def sql_select_point(point_id: str) -> str:
     """Returns the string of the query for selecting a point by a unique number"""
 
-    query = """SELECT * FROM workspoints {0} ORDER BY point_name"""
+    query = """SELECT point_id, point_name, point_address, 
+    CASE WHEN is_work = true THEN 'Работает' ELSE 'Закрыто' END 
+    FROM workspoints {0} ORDER BY point_name"""
 
     formatter = ("WHERE point_id = " + str(point_id)) if (str(point_id) != '' and str(point_id) != '0') else ""
     return query.format(formatter)
+
+
+def sql_select_all_works_points() -> str:
+    """Return the string of the query for selected a point where status is 'work'"""
+    return """SELECT point_id, point_name, point_address, 
+    CASE WHEN is_work = true THEN 'Работает' ELSE 'Закрыто' END 
+    FROM workspoints WHERE is_work = true ORDER BY point_name"""
 
 
 def sql_select_equipment_in_point(point: str) -> str:
