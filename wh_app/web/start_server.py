@@ -1,5 +1,5 @@
-from wh_app.supporting import functions
 import wh_app.web.server
+from wh_app.supporting import functions
 
 functions.info_string(__name__)
 

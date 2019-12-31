@@ -1,9 +1,9 @@
 from flask import request
 
 from wh_app.config_and_backup import config
-from wh_app.supporting import functions
-from wh_app.sql_operations import select_operations
 from wh_app.postgresql.database import Database
+from wh_app.sql_operations import select_operations
+from wh_app.supporting import functions
 
 functions.info_string(__name__)
 
