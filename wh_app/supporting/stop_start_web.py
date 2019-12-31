@@ -31,3 +31,16 @@ def stop_server():
                     print("Веб-сервер остановлен")
     except:
         print("Веб-сервер не запущен")
+
+
+def status_server():
+    try:
+        _ = requests.get("http://" + config.ip_address + ":" + config.port + '/add-work')
+        for process in psutil.process_iter():
+            data = process.as_dict(attrs=['cmdline', 'pid'])
+            for elem in data['cmdline']:
+                if 'work_history' in elem:
+                    print("Веб сервер работает")
+                    return
+    except:
+        print("Веб-сервер не работает")
