@@ -31,6 +31,11 @@ def get_all_points(cursor) -> list:
     return get_point(cursor, '0')
 
 
+def get_all_works_points(cursor) -> list:
+    """Return a list object containing all points haves status 'in work' """
+    return get_selected(cursor, select_sql.sql_select_all_works_points())
+
+
 def get_equip_in_point(cursor, point_id: str) -> list:
     """Returns all equipment for this point"""
 
