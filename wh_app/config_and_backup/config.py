@@ -18,6 +18,7 @@ port = '5000'
 full_address = "http://" + ip_address + ":" + port
 pass_hash = 52380570359700838927303160461451880435941242634047643826816963312413378430196
 max_records_in_page = 10
+path_to_dump = path_to_project + '/wh_app/config_and_backup/postgress_backup.db'
 
 points_table = ['Название предприятия', 'Адрес предприятия', 'Текущий статус']
 points_table_name = 'Зарегистрированные предприятия'
