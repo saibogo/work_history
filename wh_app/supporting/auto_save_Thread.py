@@ -3,6 +3,9 @@ import datetime
 import time
 from wh_app.supporting.backup_operations import create_dump
 from wh_app.config_and_backup import config
+from wh_app.supporting import functions
+
+functions.info_string(__name__)
 
 
 class AutoSaveThread(threading.Thread):

@@ -1,7 +1,12 @@
 import subprocess
 
+from wh_app.supporting import functions
+from wh_app.config_and_backup.config import path_to_dump
 
-def create_dump(path_to_file: str) -> None:
+functions.info_string(__name__)
+
+
+def create_dump(path_to_file: str=path_to_dump) -> None:
     """Save to DB-dump in file"""
     try:
         print("Path: {0}".format(path_to_file))

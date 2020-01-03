@@ -40,8 +40,6 @@ def status_server() -> bool:
             data = process.as_dict(attrs=['cmdline', 'pid'])
             for elem in data['cmdline']:
                 if 'work_history' in elem:
-                    print("Веб сервер работает")
                     return True
     except:
-        print("Веб-сервер не работает")
         return False
