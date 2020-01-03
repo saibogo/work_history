@@ -160,6 +160,7 @@ def navigations_menu(pre_html: str) -> str:
     result.append('<td><a href="' + config.full_address + '/FAQ?page=' + request.url + '">Частые вопросы</a></td>')
     result.append('<td><a href="' + config.full_address + '/find' + '">Поиск</a></td>')
     result.append('<td><a href="' + config.full_address + '/statistics' + '">Статистика</a></td>')
+    result.append('<td><a href="' + config.full_address + '/system-status' + '">Статус системы</a></td>')
     result.append('</tr></table>')
     return '\n'.join(result)
 

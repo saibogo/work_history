@@ -5,7 +5,7 @@ import wh_app.web.template as web_template
 import wh_app.web.universal_html as uhtml
 from wh_app.config_and_backup import config
 from wh_app.supporting import functions
-from wh_app.web.any_section import main_web_menu, faq_page, statistics_page
+from wh_app.web.any_section import main_web_menu, faq_page, statistics_page, system_status_page
 from wh_app.web.equips_section import equip_to_point_limit, find_equip_to_id_page, select_equip_to_id_page, \
     add_equip_method, equips_menu
 from wh_app.web.find_section import find_page, find_method, find_work_paging, find_work_like_date_paging, \
@@ -16,6 +16,7 @@ from wh_app.web.workers_section import workers_menu, all_workers_table, works_da
     add_performer_to_work, add_performer_result_method
 from wh_app.web.works_section import works_menu, find_work_to_id_page, select_work_to_id_method, \
     work_to_equip_paging, add_work_method
+
 
 app = Flask(__name__, static_folder=config.static_dir)
 functions.info_string(__name__)
@@ -164,6 +165,11 @@ def faq():
 @app.route('/statistics', methods=['GET'])
 def statistics():
     return statistics_page(request.args.get('page', default=config.full_address, type=str))
+
+
+@app.route('/system-status', methods=['GET'])
+def system_status():
+    return system_status_page(request.args.get('page', default=config.full_address, type=str))
 
 
 @app.route('/find', methods=['GET'])

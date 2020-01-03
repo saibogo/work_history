@@ -4,6 +4,7 @@ from wh_app.config_and_backup import config
 from wh_app.postgresql.database import Database
 from wh_app.sql_operations import select_operations
 from wh_app.supporting import functions
+from wh_app.supporting import system_status
 
 functions.info_string(__name__)
 
@@ -63,3 +64,11 @@ def statistics_page(preview_page):
                                        True,
                                        links_list)
         return web_template.result_page(result, preview_page)
+
+
+def system_status_page(preview_page):
+    current_status = system_status.SystemStatus.get_status()
+    status_to_list = [[key, current_status[key]] for key in current_status]
+    result = uhtml.universal_table(config.all_workers_table_name,
+                                   config.system_status_table, status_to_list)
+    return web_template.result_page(result, preview_page)

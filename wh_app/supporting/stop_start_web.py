@@ -33,7 +33,7 @@ def stop_server():
         print("Веб-сервер не запущен")
 
 
-def status_server():
+def status_server() -> bool:
     try:
         _ = requests.get("http://" + config.ip_address + ":" + config.port + '/add-work')
         for process in psutil.process_iter():
@@ -41,6 +41,7 @@ def status_server():
             for elem in data['cmdline']:
                 if 'work_history' in elem:
                     print("Веб сервер работает")
-                    return
+                    return True
     except:
         print("Веб-сервер не работает")
+        return False
