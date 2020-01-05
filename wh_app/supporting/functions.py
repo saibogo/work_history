@@ -3,6 +3,7 @@ from datetime import datetime
 
 from wh_app.config_and_backup import config
 from wh_app.supporting import metadata
+from wh_app.config_and_backup.passwords_hash import hashes
 
 
 def info_string(name_module):
@@ -47,9 +48,16 @@ def full_equip_to_view(equip: list) -> list:
 
 
 def is_valid_password(password: str) -> bool:
-    """Function compare password and config-password"""
+    """Function compare password and passwords hashes"""
 
-    return config.pass_hash == int(hashlib.sha256(password.encode('utf-8')).hexdigest(), 16)
+    current_hash = int(hashlib.sha256(password.encode('utf-8')).hexdigest(), 16)
+    return current_hash in hashes.values()
+
+
+def is_superuser_password(password: str) -> bool:
+    """Function compare password and superuser password hash"""
+
+    return hashes["saibogo"] ==  int(hashlib.sha256(password.encode('utf-8')).hexdigest(), 16)
 
 
 def form_to_data(form: dict) -> dict:

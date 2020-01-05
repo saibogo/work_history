@@ -33,7 +33,7 @@ def drop_all_data() -> None:
 
     if answer in ['Y', 'y']:
         password = getpass.getpass("Требуется пароль администратора системы:")
-        if functions.is_valid_password(password):
+        if functions.is_superuser_password(password):
             print('Выполняется очистка текущей базы данных!')
             backup_operations.create_dump()
             with database.Database() as base:
