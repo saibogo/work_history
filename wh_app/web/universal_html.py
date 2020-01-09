@@ -4,6 +4,7 @@ from wh_app.config_and_backup import config
 from wh_app.postgresql.database import Database
 from wh_app.sql_operations import select_operations
 from wh_app.supporting import functions
+from wh_app.config_and_backup import table_headers
 
 functions.info_string(__name__)
 
@@ -214,11 +215,11 @@ def add_performer_in_work(work: list) -> str:
     result = list()
     result.append('<table><caption>Добавить исполнителя</caption>')
     result.append('<tr><th>№</th><th>Параметр</th><th>Содержимое</th></tr>')
-    for i in range(len(config.works_table)):
-        result.append('<tr><td>' + str(i) + '</td><td>' + config.works_table[i] + '</td><td>' + str(work[0][i]) +
+    for i in range(len(table_headers.works_table)):
+        result.append('<tr><td>' + str(i) + '</td><td>' + table_headers.works_table[i] + '</td><td>' + str(work[0][i]) +
                       '</td></tr>')
     result.append('<form action="/add-performer-result" method="post">')
-    result.append('<tr><td>' + str(len(config.works_table)) + '</td>')
+    result.append('<tr><td>' + str(len(table_headers.works_table)) + '</td>')
     result.append('<td>Добавить исполнителя</td><td><select name="' + PERFORMER + '">')
     for worker in performers:
         result.append('<option value="' + str(worker[0]) + '">' + str(worker[2]) + '</option>')

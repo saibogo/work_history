@@ -2,11 +2,11 @@ from flask import redirect
 
 import wh_app.web.template as web_template
 import wh_app.web.universal_html as uhtml
-from wh_app.config_and_backup import config
 from wh_app.postgresql.database import Database
 from wh_app.sql_operations import insert_operations
 from wh_app.sql_operations import select_operations
 from wh_app.supporting import functions
+from wh_app.config_and_backup import table_headers
 
 functions.info_string(__name__)
 
@@ -41,8 +41,8 @@ def select_work_to_id_method(data, method):
             connection, cursor = base
             work = select_operations.get_full_information_to_work(cursor, str(work_id))
             work = functions.works_table_add_new_performer([work])
-            table1 = uhtml.universal_table(config.works_table_name,
-                                           config.works_table,
+            table1 = uhtml.universal_table(table_headers.works_table_name,
+                                           table_headers.works_table,
                                            work)
             return web_template.result_page(table1, pre_adr)
     else:
@@ -57,8 +57,8 @@ def work_to_equip_paging(equip_id, page_id):
             str(equip_id) != '0' else '/works'
         full_works = select_operations.get_works_from_equip_id_limit(cursor, equip_id, page_id)
         full_works = functions.works_table_add_new_performer(full_works)
-        table1 = uhtml.universal_table(config.works_table_name,
-                                       config.works_table,
+        table1 = uhtml.universal_table(table_headers.works_table_name,
+                                       table_headers.works_table,
                                        full_works)
         table2 = uhtml.add_new_work(equip_id) if str(equip_id) != 0 else ""
         table_paging = uhtml.paging_table("/work/{0}/page".format(equip_id),

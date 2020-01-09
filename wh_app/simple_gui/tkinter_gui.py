@@ -1,17 +1,14 @@
-import threading
 import tkinter as tk
 from tkinter import messagebox as mb
 
-import psutil
-import requests
 
 from wh_app.config_and_backup import config
 from wh_app.supporting import functions, stop_start_web
 from wh_app.sql_operations import insert_operations
 from wh_app.sql_operations import select_operations
 from wh_app.simple_gui import universal_windows
-import wh_app.web.server as webserver
 from wh_app.postgresql.database import Database
+from wh_app.config_and_backup import table_headers
 
 left_mouse_but = '<Button-1>'
 functions.info_string(__name__)
@@ -20,16 +17,16 @@ functions.info_string(__name__)
 def create_complete_works_win(works: list) -> None:
     """Function create new window to complete works"""
 
-    universal_windows.print_table_window(config.works_table_name,
-                                         config.works_table,
+    universal_windows.print_table_window(table_headers.works_table_name,
+                                         table_headers.works_table,
                                          [[str(elem) for elem in work] for work in works])
 
 
 def create_complete_equips_win(equips: list) -> None:
     """Function create new window to registred equips"""
 
-    universal_windows.print_table_window(config.equips_table_name,
-                                         config.equips_table,
+    universal_windows.print_table_window(table_headers.equips_table_name,
+                                         table_headers.equips_table,
                                          [[str(equip[i]) for i in range(1, len(equip))] for equip in equips])
 
 
@@ -55,27 +52,28 @@ def point_window(connection, cursor) -> None:
 
     pw = tk.Toplevel()
 
-    def exit_points_gui(self) -> None:
+    def exit_points_gui(_) -> None:
         """Function to button exit"""
         pw.destroy()
 
-    def all_points(self) -> None:
+    def all_points(_) -> None:
         """Function print all points in database"""
         points = select_operations.get_all_points(cursor)
         full_information_points = select_operations.get_full_information_list_points(cursor, points)
-        universal_windows.print_table_window(config.points_table_name,
-                                             config.points_table,
+        universal_windows.print_table_window(table_headers.points_table_name,
+                                             table_headers.points_table,
                                              full_information_points)
 
-    def commit(self) -> None:
+    def commit(_) -> None:
         """Function to button commit"""
 
         connection.commit()
 
-    def create_new_point(self) -> None:
+    def create_new_point(_) -> None:
         """Function to create point button"""
 
-        new_point_data = universal_windows.input_window(config.create_point_name, config.create_point_table)
+        new_point_data = universal_windows.input_window(table_headers.create_point_name,
+                                                        table_headers.create_point_table)
         if len(new_point_data) != 0:
             insert_operations.create_new_point(cursor, new_point_data[0], new_point_data[1])
 
@@ -103,7 +101,7 @@ def equip_window(connection, cursor) -> None:
     ew = tk.Toplevel()
     ew.title('Операции с оборудованием')
 
-    def view_equips(self)-> None:
+    def view_equips(_) -> None:
         """Function to view button"""
         point_num = select_point(cursor)
         if point_num == config.str_interrupted:
@@ -112,24 +110,25 @@ def equip_window(connection, cursor) -> None:
             equips = select_operations.get_equip_in_point(cursor, point_num)
             create_complete_equips_win(equips)
 
-    def commit(self) -> None:
+    def commit(_) -> None:
         """Function to Button Commit"""
 
         connection.commit()
 
-    def close_win(self) -> None:
+    def close_win(_) -> None:
         """Function to exit button"""
 
         ew.destroy()
 
-    def new_equip(self) -> None:
+    def new_equip(_) -> None:
         """Function to add new equips button"""
 
         point_num = select_point(cursor)
         if point_num == config.str_interrupted or point_num == '0':
             return
         else:
-            data = universal_windows.input_window(config.create_equip_name, config.create_equip_table)
+            data = universal_windows.input_window(table_headers.create_equip_name,
+                                                  table_headers.create_equip_table)
             if len(data) == 0 or len(data[0]) == 0:
                 return
             else:
@@ -139,10 +138,11 @@ def equip_window(connection, cursor) -> None:
                 preid = preid if preid else "NULL"
                 insert_operations.create_new_equip(cursor, point_num, name, model, serial, preid)
 
-    def find_likes(self) -> None:
+    def find_likes(_) -> None:
         """Function to find like button"""
 
-        find_str = universal_windows.input_window(config.find_like_name, config.find_like_table)
+        find_str = universal_windows.input_window(table_headers.find_like_name,
+                                                  table_headers.find_like_table)
         equips = select_operations.get_all_equips_list_from_like_str(cursor, find_str[0])
         create_complete_equips_win(equips)
 
@@ -171,7 +171,7 @@ def works_windows(connection, cursor) -> None:
     ww = tk.Toplevel()
     ww.title('Выполненные работы')
 
-    def complete_works(self) -> None:
+    def complete_works(_) -> None:
         """Function to all complete works button"""
         point_num = select_point(cursor)
         if point_num == config.str_interrupted:
@@ -184,18 +184,18 @@ def works_windows(connection, cursor) -> None:
                 works = select_operations.get_works_from_point_and_equip(cursor, point_num, equip_id)
                 create_complete_works_win(works)
 
-    def close_works(self) -> None:
+    def close_works(_) -> None:
         """Function to exit button"""
 
         ww.quit()
         ww.destroy()
 
-    def commit_works(self) -> None:
+    def commit_works(_) -> None:
         """Function to commit button"""
 
         connection.commit()
 
-    def new_work(self) -> None:
+    def new_work(_) -> None:
         """Function to create new work button"""
 
         point_num = select_point(cursor)
@@ -206,14 +206,16 @@ def works_windows(connection, cursor) -> None:
             if equip_id == config.str_interrupted or equip_id == '0':
                 return
             else:
-                data_work = universal_windows.input_window(config.create_work_table_name, config.create_work_table)
+                data_work = universal_windows.input_window(table_headers.create_work_table_name,
+                                                           table_headers.create_work_table)
                 date = universal_windows.select_date_and_time()
-                insert_operations.create_new_work(cursor, equip_id, date, data_work[0], data_work[1])
+                insert_operations.create_new_work(cursor, equip_id, date, data_work[0], data_work[1], "1")
 
-    def find_equips_to_point_likes(self) -> None:
+    def find_equips_to_point_likes(_) -> None:
         """Function to button find likes points name"""
 
-        find_str = universal_windows.input_window(config.find_like_name, config.find_like_table_points)
+        find_str = universal_windows.input_window(table_headers.find_like_name,
+                                                  table_headers.find_like_table_points)
         points = select_operations.get_all_points_list_from_like_str(cursor, find_str[0])
         equips = []
         for point in points:
@@ -248,7 +250,7 @@ def main_window() -> None:
     with Database() as base:
         connection, cursor = base
 
-        def exit_gui(self) -> None:
+        def exit_gui(_) -> None:
             """Function to Button Exit"""
 
             answer = mb.askyesno('Сохранение', 'Применить изменения?')
@@ -256,26 +258,26 @@ def main_window() -> None:
                 connection.commit()
             root.destroy()
 
-        def create_poin_gui(self) -> None:
+        def create_poin_gui(_) -> None:
             """Function to Button 'Points'"""
 
             point_window(connection, cursor)
 
-        def create_equip_window(self) -> None:
+        def create_equip_window(_) -> None:
             """Function to Button Equip"""
 
             equip_window(connection, cursor)
 
-        def create_works_window(self) -> None:
+        def create_works_window(_) -> None:
             """Function to Works Button"""
 
             works_windows(connection, cursor)
 
-        def start_web_server(self) -> None:
+        def start_web_server(_) -> None:
             """Function start web-server to connect database"""
             stop_start_web.start_server()
 
-        def stop_web_server(self) -> None:
+        def stop_web_server(_) -> None:
             """Function stop web-server to connect database"""
 
             stop_start_web.stop_server()

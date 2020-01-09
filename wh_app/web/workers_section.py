@@ -1,10 +1,10 @@
 import wh_app.web.template as web_template
 import wh_app.web.universal_html as uhtml
-from wh_app.config_and_backup import config
 from wh_app.postgresql.database import Database
 from wh_app.sql_operations import insert_operations
 from wh_app.sql_operations import select_operations
 from wh_app.supporting import functions
+from wh_app.config_and_backup import table_headers
 
 functions.info_string(__name__)
 
@@ -22,8 +22,8 @@ def all_workers_table():
         connection, cursor = base
         all_workers = select_operations.get_all_workers(cursor)
         links = ['/performer/' + str(elem[0]) for elem in all_workers]
-        table = uhtml.universal_table(config.all_workers_table_name,
-                                      config.workers_table,
+        table = uhtml.universal_table(table_headers.all_workers_table_name,
+                                      table_headers.workers_table,
                                       all_workers, True, links)
         return web_template.result_page(table, '/workers')
 
@@ -33,11 +33,11 @@ def works_days_page():
         connection, cursor = base
         works_days_list = select_operations.get_works_days_table(cursor)
         alter_works_days = select_operations.get_alter_works_days_table(cursor)
-        table = uhtml.universal_table(config.works_days_table_name,
-                                      config.works_days_table,
+        table = uhtml.universal_table(table_headers.works_days_table_name,
+                                      table_headers.works_days_table,
                                       works_days_list)
-        table2 = uhtml.universal_table(config.alter_works_days_table_name,
-                                       config.alter_works_days_table,
+        table2 = uhtml.universal_table(table_headers.alter_works_days_table_name,
+                                       table_headers.alter_works_days_table,
                                        alter_works_days)
         return web_template.result_page(table + uhtml.info_from_alter_works() + table2, '/workers')
 
@@ -47,8 +47,8 @@ def works_from_performers_table(performer_id, pre_adr: str) -> str:
         connection, cursor = base
         full_works = select_operations.get_all_works_from_worker_id(cursor, performer_id)
         full_works = functions.works_table_add_new_performer(full_works)
-        table = uhtml.universal_table(config.works_table_name,
-                                      config.works_table,
+        table = uhtml.universal_table(table_headers.works_table_name,
+                                      table_headers.works_table,
                                       full_works)
         return web_template.result_page(table, pre_adr)
 

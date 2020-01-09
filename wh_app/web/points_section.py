@@ -1,10 +1,10 @@
 import wh_app.web.template as web_template
 import wh_app.web.universal_html as uhtml
-from wh_app.config_and_backup import config
 from wh_app.postgresql.database import Database
 from wh_app.sql_operations import insert_operations
 from wh_app.sql_operations import select_operations
 from wh_app.supporting import functions
+from wh_app.config_and_backup import table_headers
 
 functions.info_string(__name__)
 
@@ -24,8 +24,8 @@ def all_points_table():
         connection, cursor = base
         all_points = select_operations.get_all_points(cursor)
         links_list = ['/equip/' + str(elem[0]) for elem in all_points]
-        table1 =  uhtml.universal_table(config.points_table_name,
-                                        config.points_table,
+        table1 =  uhtml.universal_table(table_headers.points_table_name,
+                                        table_headers.points_table,
                                         [[point[i] for i in range(1, len(point))] for point in all_points],
                                         True, links_list)
         table2 = uhtml.add_new_point()
@@ -61,12 +61,13 @@ def add_point_method(data, method):
 
 def all_works_points_table():
     """Return only points have status WORK"""
+
     with Database() as base:
         connection, cursor = base
         all_points = select_operations.get_all_works_points(cursor)
         links_list = ['/equip/' + str(elem[0]) for elem in all_points]
-        table1 =  uhtml.universal_table(config.points_table_name,
-                                        config.points_table,
+        table1 =  uhtml.universal_table(table_headers.points_table_name,
+                                        table_headers.points_table,
                                         [[point[i] for i in range(1, len(point))] for point in all_points],
                                         True, links_list)
         table2 = uhtml.add_new_point()

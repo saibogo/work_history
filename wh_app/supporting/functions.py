@@ -3,7 +3,6 @@ from datetime import datetime
 
 from wh_app.config_and_backup import config
 from wh_app.supporting import metadata
-from wh_app.config_and_backup.passwords_hash import hashes
 
 
 def info_string(name_module):
@@ -47,17 +46,40 @@ def full_equip_to_view(equip: list) -> list:
     return result
 
 
+def read_all_users() -> dict:
+    """Function return dict contain all users in workhistory system"""
+
+    result = {}
+    try:
+        file_passwords = open(config.path_to_passwords, mode='r')
+        for line in file_passwords:
+            user, pass_hash = line.split()
+            result[user] = int(pass_hash)
+        file_passwords.close()
+    except FileNotFoundError:
+        print("File {0} not found!".format(config.path_to_passwords))
+    return result
+
+
+def create_hash(s: str) -> int:
+    """Create hash from string"""
+
+    return int(hashlib.sha256(s.encode('utf-8')).hexdigest(), 16)
+
+
 def is_valid_password(password: str) -> bool:
     """Function compare password and passwords hashes"""
 
-    current_hash = int(hashlib.sha256(password.encode('utf-8')).hexdigest(), 16)
-    return current_hash in hashes.values()
+    return create_hash(password) in read_all_users().values()
 
 
 def is_superuser_password(password: str) -> bool:
     """Function compare password and superuser password hash"""
 
-    return hashes["saibogo"] ==  int(hashlib.sha256(password.encode('utf-8')).hexdigest(), 16)
+    try:
+        return read_all_users()["saibogo"] ==  create_hash(password)
+    except KeyError:
+        return False
 
 
 def form_to_data(form: dict) -> dict:

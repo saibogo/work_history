@@ -5,6 +5,7 @@ from wh_app.postgresql.database import Database
 from wh_app.sql_operations import select_operations
 from wh_app.supporting import functions
 from wh_app.supporting import system_status
+from wh_app.config_and_backup import table_headers
 
 functions.info_string(__name__)
 
@@ -58,8 +59,8 @@ def statistics_page(preview_page):
         connection, cursor = base
         statistics = select_operations.get_statistic(cursor)
         links_list = ['/equip/' + str(elem[0]) for elem in statistics]
-        result = uhtml.universal_table(config.statistics_table_name,
-                                       config.statistics_table,
+        result = uhtml.universal_table(table_headers.statistics_table_name,
+                                       table_headers.statistics_table,
                                        [[elem[i] for i in range(1, len(elem))] for elem in statistics],
                                        True,
                                        links_list)
@@ -69,6 +70,7 @@ def statistics_page(preview_page):
 def system_status_page(preview_page):
     current_status = system_status.SystemStatus.get_status()
     status_to_list = [[key, current_status[key]] for key in current_status]
-    result = uhtml.universal_table(config.all_workers_table_name,
-                                   config.system_status_table, status_to_list)
+    result = uhtml.universal_table(table_headers.all_workers_table_name,
+                                   table_headers.system_status_table,
+                                   status_to_list)
     return web_template.result_page(result, preview_page)
