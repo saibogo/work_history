@@ -85,7 +85,7 @@ def find_point_page(find_string: str, page_num: str) -> str:
         links_list = ['/equip/' + str(elem[0]) for elem in points]
         result = uhtml.universal_table(table_headers.points_table_name,
                                        table_headers.points_table,
-                                       [[point[1], point[2]] for point in points],
+                                       [[point[1], point[2], point[3]] for point in points],
                                        True,
                                        links_list)
         pages_table = uhtml.paging_table('/find/point/{0}/page'.format(find_string), pages_list, int(page_num))

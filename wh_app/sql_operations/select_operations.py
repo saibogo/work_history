@@ -45,7 +45,7 @@ def get_equip_in_point(cursor, point_id: str) -> list:
     return get_selected(cursor, sql)
 
 
-def get_equip_in_point_limit(cursor, point_id: str, page_num: int) -> str:
+def get_equip_in_point_limit(cursor, point_id: str, page_num: int) -> list:
     """Returns all equipment for this point use LIMIT and OFFSET"""
 
     sql = select_sql.sql_select_all_equipment_limit(page_num) \

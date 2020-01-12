@@ -61,6 +61,15 @@ def read_all_users() -> dict:
     return result
 
 
+def save_all_users(users: dict) -> None:
+    """Save users and hashes in file"""
+
+    file_passwords = open(config.path_to_passwords, mode='w')
+    for user in users:
+        file_passwords.write('{0} {1}\n'.format(user, users[user]))
+    file_passwords.close()
+
+
 def create_hash(s: str) -> int:
     """Create hash from string"""
 

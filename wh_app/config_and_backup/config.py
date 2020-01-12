@@ -18,7 +18,7 @@ port = '5000'
 full_address = "http://" + ip_address + ":" + port
 
 max_records_in_page = 10
-path_to_dump = path_to_project + '/wh_app/config_and_backup/postgress_backup.db'
+path_to_dump = path_to_project + 'wh_app/config_and_backup/postgress_backup.db'
 path_to_passwords = path_to_project + 'wh_app/config_and_backup/.users_pass'
 
 max_width_for_date = 7
