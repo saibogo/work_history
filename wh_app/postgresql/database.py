@@ -15,7 +15,6 @@ class Database:
                                            port=config.database_port)
         self.cursor = self.connection.cursor()
 
-
     def __enter__(self):
         return self.connection, self.cursor
 
