@@ -9,18 +9,18 @@ from wh_app.supporting import functions
 functions.info_string(__name__)
 
 
-def start_server():
-    try:
-        _ = requests.get("http://" + config.ip_address + ":" + config.port + '/add-work')
+def start_server() -> None:
+    if status_server():
         print("Веб-сервер уже запущен")
-    except:
+    else:
         print("Запускаем веб-сервер")
         threading.Thread(target=webserver.start_server).start()
 
 
-def stop_server():
-    try:
-        _ = requests.get("http://" + config.ip_address + ":" + config.port + '/add-work')
+def stop_server() -> None:
+    if not status_server():
+        print("Веб-сервер не запущен")
+    else:
         for process in psutil.process_iter():
             data = process.as_dict(attrs=['cmdline', 'pid'])
             for elem in data['cmdline']:
@@ -29,8 +29,6 @@ def stop_server():
                     print("процесс найден PID=" + str(data['pid']))
                     process.kill()
                     print("Веб-сервер остановлен")
-    except:
-        print("Веб-сервер не запущен")
 
 
 def status_server() -> bool:
@@ -41,5 +39,6 @@ def status_server() -> bool:
             for elem in data['cmdline']:
                 if 'work_history' in elem:
                     return True
-    except:
+    except requests.ConnectionError:
         return False
+    return False

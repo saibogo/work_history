@@ -1,3 +1,5 @@
+import psycopg2
+
 from wh_app.postgresql.database import Database
 from wh_app.supporting import functions
 from wh_app.supporting import stop_start_web
@@ -13,7 +15,7 @@ class SystemStatus:
             with Database() as base:
                 _, _ = base
             return True
-        except:
+        except psycopg2.ConnectionException:
             return False
 
     @classmethod
@@ -26,8 +28,7 @@ class SystemStatus:
 
     @classmethod
     def get_status(cls) -> dict:
-        result = {}
-        result["Сервер PostgreSql"] = "Доступен" if cls.database_server_is_work() else "Не доступен"
-        result["Веб-сервер"] = "Работает" if cls.flask_is_work() else "Не работает"
-        result["Автосохранение базы данных"] = "Включено" if cls.autosave_database_is_work() else "Выключено"
+        result = {"Сервер PostgreSql": "Доступен" if cls.database_server_is_work() else "Не доступен",
+                  "Веб-сервер": "Работает" if cls.flask_is_work() else "Не работает",
+                  "Автосохранение базы данных": "Включено" if cls.autosave_database_is_work() else "Выключено"}
         return result

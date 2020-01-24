@@ -4,6 +4,7 @@ from wh_app.supporting import functions
 from wh_app.supporting import delete_views_and_tables as cleardb
 from wh_app.supporting import users_operation
 
+
 functions.info_string(__name__)
 
 
