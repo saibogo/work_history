@@ -1,39 +1,62 @@
 from wh_app.supporting import functions
+from wh_app.sql.sql_constant import sql_consts_dict
 
 functions.info_string(__name__)
 
 
-def sql_insert_new_point(point_id: str, name: str, addres: str) -> str:
+def sql_insert_new_point(point_id: str, name: str, address: str) -> str:
     """Returns the query string to add a new point"""
 
-    return 'INSERT INTO workspoints (point_id, point_name, point_address) ' \
-           'VALUES (' + point_id + ', \'' + str(name) + '\', \'' + str(addres) + '\')'
+    query = """INSERT INTO %(workspoints)s (%(point_id)s, %(point_name)s, %(point_address)s) 
+    VALUES ('{0}', '{1}', '{2}')""" % sql_consts_dict
+
+    return query.format(point_id,
+                        name,
+                        address)
 
 
-def sql_insert_new_equip(id: str, point: str, name: str, model: str, serial: str, pre_id: str) -> str:
+def sql_insert_new_equip(equip_id: str, point: str, name: str, model: str, serial: str, pre_id: str) -> str:
     """Returns the query string to add a new piece of equipment"""
 
     if pre_id == "NULL":
-        return 'INSERT INTO oborudovanie (id, point_id, name, model, serial_num) VALUES' \
-               + '(' + str(id) + ', ' + str(point) + ', \'' + str(name) + '\', \'' +\
-               str(model) + '\', \'' + str(serial) + '\', ' + str(id) + ')'
+        query = """INSERT INTO %(oborudovanie)s (%(id)s, %(point_id)s, %(name)s, %(model)s, %(serial_num)s) 
+        VALUES ('{0}', '{1}', '{2}', '{3}', '{4}')""" % sql_consts_dict
+        return query.format(equip_id,
+                            point,
+                            name,
+                            model,
+                            serial)
     else:
-        return 'INSERT INTO oborudovanie (id, point_id, name, model, serial_num, pre_id) VALUES' \
-               + '(' + str(id) + ', ' + str(point) + ', \'' + str(name) + '\', \'' + str(model) + '\', \'' +\
-               str(serial) + '\', ' + str(pre_id) + ')'
+        query = """INSERT INTO %(oborudovanie)s (%(id)s, %(point_id)s, %(name)s, %(model)s, %(serial_num)s, %(pre_id)s) 
+                VALUES ('{0}', '{1}', '{2}', '{3}', '{4}', '{5}')""" % sql_consts_dict
+        return query.format(equip_id,
+                            point,
+                            name,
+                            model,
+                            serial,
+                            pre_id)
 
 
-def sql_insert_new_work(id:str, id_obor: str, date: str, problem: str, result:str, worker_id:str) -> str:
+def sql_insert_new_work(work_id: str, id_obor: str, date: str, problem: str, result: str, worker_id: str) -> str:
     """Function return query string to add new work"""
 
-    return 'BEGIN;' + \
-           'INSERT INTO works (id, id_obor, date, problem, result) VALUES (' + str(id) + ', ' + str(id_obor) +\
-           ', \'' + str(date) + '\', \'' + str(problem) + '\', \'' + str(result) + '\');' + \
-           'INSERT INTO performers (work_id, worker_id) VALUES (' + str(id) + ', ' +\
-           str(worker_id) + ');' + 'COMMIT;'
+    query = """BEGIN; 
+    INSERT INTO %(works)s (%(id)s, %(id_obor)s, %(date)s, %(problem)s, %(result)s) 
+    VALUES ('{0}', '{1}', '{2}', '{3}', '{4}'); 
+    INSERT INTO %(performers)s (%(work_id)s, %(worker_id)s) VALUES ('{5}', '{6}'); 
+    COMMIT;""" % sql_consts_dict
+    return query.format(work_id,
+                        id_obor,
+                        date,
+                        problem,
+                        result,
+                        work_id,
+                        worker_id)
 
 
 def sql_add_new_performers(work_id: str, worker_id: str) -> str:
     """Return SQL-string contain query to insert new performer in performers table"""
 
-    return 'INSERT INTO performers (work_id, worker_id) VALUES (' + str(work_id) + ', ' + str(worker_id) + ')'
+    query = """INSERT INTO %(performers)s (%(work_id)s, %(worker_id)s) VALUES ('{0}', '{1}')""" % sql_consts_dict
+    return query.format(work_id,
+                        worker_id)

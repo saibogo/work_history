@@ -16,6 +16,7 @@ from wh_app.web.workers_section import workers_menu, all_workers_table, works_da
     add_performer_to_work, add_performer_result_method
 from wh_app.web.works_section import works_menu, find_work_to_id_page, select_work_to_id_method, \
     work_to_equip_paging, add_work_method
+from wh_app.web.bugs_section import bugs_menu, all_bugs_table, all_bugs_in_work_table
 
 
 app = Flask(__name__, static_folder=config.static_dir)
@@ -200,6 +201,21 @@ def find_point(find_string: str, page_num: str) -> str:
 @app.route('/find/equip/<find_string>/page/<page_num>')
 def find_equip(find_string: str, page_num: str) -> str:
     return find_equip_page(find_string, page_num)
+
+
+@app.route('/bugs')
+def bugs():
+    return bugs_menu()
+
+
+@app.route('/all-bugs')
+def all_bugs():
+    return all_bugs_table()
+
+
+@app.route('/all-bugs-in-work')
+def all_bugs_in_work():
+    return all_bugs_in_work_table()
 
 
 @app.errorhandler(404)

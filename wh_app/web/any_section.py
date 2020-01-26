@@ -15,8 +15,9 @@ def main_web_menu():
     menu = [(1, 'Операции с предприятиями'),
             (2, 'Операции с оборудованием'),
             (3, 'Операции с ремонтами'),
-            (4, 'Операции с сотрудниками')]
-    links_list = ['/points', '/equips', '/works', '/workers']
+            (4, 'Операции с сотрудниками'),
+            (5, 'Баг-трекер системы')]
+    links_list = ['/points', '/equips', '/works', '/workers', '/bugs']
     table = uhtml.universal_table(name, ['№', 'выполнить:'], menu, True, links_list)
     return web_template.result_page(table)
 

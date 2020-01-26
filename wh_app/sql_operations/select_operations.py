@@ -250,3 +250,15 @@ def get_alter_works_days_table(cursor) -> list:
     """Function return all alternatives bindings worers <--> points"""
 
     return get_selected(cursor, select_sql.sql_select_alter_works_days())
+
+
+def get_all_bugz_in_bugzilla(cursor) -> list:
+    """Function return all records in bugzilla"""
+
+    return get_selected(cursor, select_sql.sql_select_all_bugs_in_bugzilla())
+
+
+def get_all_bugz_in_work_in_bugzilla(cursor) -> list:
+    """Function return all records in bugzilla if bug's status = in work"""
+
+    return get_selected(cursor, select_sql.sql_select_all_bugs_in_work_in_bugzilla())

@@ -380,3 +380,26 @@ def sql_select_alter_works_days() -> str:
     """Return SQL-query contain alternative bindings point <--> workers"""
 
     return """SELECT * FROM %(seconds_bindings)s ORDER BY %(point)s""" % sql_consts_dict
+
+
+def sql_select_all_bugs_in_bugzilla() -> str:
+    """Return all records in bugzilla table"""
+
+    query = """SELECT %(id)s, %(problem)s, %(bug_in_work)s FROM %(bugzilla)s""" % sql_consts_dict
+    return query
+
+
+def sql_select_all_bugs_in_bugzilla_limit(page_num: str) -> str:
+    """Return all records in bugzilla table use paging"""
+
+    query = """SELECT %(id)s, %(problem)s, %(bug_in_work)s FROM %(bugzilla)s LIMIT {0} OFFSET {1}""" % sql_consts_dict
+    return query.format(config.max_records_in_page,
+                        (int(page_num) - 1) * config.max_records_in_page)
+
+
+def sql_select_all_bugs_in_work_in_bugzilla() -> str:
+    """Return all records in bugzilla table if status = in work"""
+
+    query = """SELECT %(id)s, %(problem)s, %(bug_in_work)s 
+    FROM %(bugzilla)s WHERE %(status)s = true""" % sql_consts_dict
+    return query
