@@ -33,4 +33,9 @@ def add_new_performer_in_performers_table(cursor, work_id: str, worker_id: str) 
     cursor.execute(sql_add_new_performers(work_id, worker_id))
 
 
+def add_new_bug_in_bugzilla(cursor, problem: str) -> None:
+    """Add new record in bugzilla"""
+
+    cursor.execute(sql_add_new_bug(problem))
+
 

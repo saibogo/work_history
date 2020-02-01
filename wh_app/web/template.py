@@ -1,5 +1,6 @@
 from wh_app.supporting import functions
 from wh_app.web.universal_html import list_to_ul, style_custom, navigations_menu
+from wh_app.web.java_script_generate.shutdown_handler import generate_message_shutdown_server
 
 functions.info_string(__name__)
 
@@ -20,6 +21,8 @@ def used_tecnology_list() -> list:
             '<a href="https://flask.palletsprojects.com/en/1.0.x/changelog/">Flask</a>',
             'Используется язык программирования ' +
             '<a href="https://www.python.org/">Python3</a>',
+            'Также для создания сообщений пользователям использован язык' +
+            '<a href="https://www.javascript.com/">JavaScript</a>',
             'Для клиентского приложения использована связка ' +
             '<a href="https://www.python.org/">Python3</a> + ' +
             '<a href="https://docs.python.org/3/library/tk.html">tkinter</a>']
@@ -62,5 +65,7 @@ def faq_state_machine(section: str) -> str:
 
 def result_page(main_page: str, preview_adr: str="") -> str:
     """Return complete HTML page"""
-    return "{}\n{}\n{}\n".format(style_custom(),
-                                 main_page, navigations_menu(preview_adr) if preview_adr != "" else "")
+    return "{0}\n{1}\n{2}\n{3}\n".format(style_custom(),
+                                 generate_message_shutdown_server(),
+                                 main_page,
+                                 navigations_menu(preview_adr) if preview_adr != "" else "")

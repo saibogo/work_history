@@ -18,6 +18,7 @@ def print_help():
     print('--savedb path_to_file : Save current database in file path_to_file')
     print("--adduser: Create new user if not exist")
     print("--updatepassword username : Update password from user if username exist")
+    print("--saystop message: Send message all user 'Server ready to shutdown'")
     print('if not arguments - start GUI')
 
 
@@ -31,4 +32,5 @@ commands = {'--startserver': stop_start_web.start_server,
             '--adduser': users_operation.create_new_user}
 
 commands_ext = {'--savedb': bcp_oper.create_dump,
-                '--updatepassword': users_operation.update_password}
+                '--updatepassword': users_operation.update_password,
+                '--saystop': stop_start_web.say_stop}

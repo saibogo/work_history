@@ -31,6 +31,7 @@ EQUIPS = 'equips'
 WORK_DATETIME_START = 'work_datetime_start'
 WORK_DATETIME_STOP = 'work_datetime_stop'
 WORK_ID = 'work_id'
+DESCRIPTION = "description"
 
 
 def link_or_str(elem: str, link_type: bool = False, link: str = '') -> str:
@@ -60,6 +61,7 @@ def style_custom() -> str:
     result.append('ul {font-style: italic; text-align; center}')
     result.append('table#pages_table {border: 0px}')
     result.append('.paging_td {border: 0px}')
+    result.append('textarea {width: 100%}')
     result.append('</style>')
     return '\n'.join(result)
 
@@ -263,5 +265,18 @@ def paging_table(link: str, all_elems: list, current: int) -> str:
             result.append(str(elem) if elem == current else '<a href="{0}/{1}">{1}</a>'.format(link, elem))
             result.append('</td>')
         result.append('</tr></table>')
+    return "\n".join(result)
+
+
+def new_bug_input_table() -> str:
+    """Return form to input new bug in bag tracker"""
+
+    result = list()
+    result.append('<table><caption>Зарегистрировать проблему работы с сервером</caption>')
+    result.append('<tr><th>Описание проблемы, включая время</th><th>Пароль</th><th>Действие</th></tr>')
+    result.append('<form action="/add-bug-result" method="post">')
+    result.append('<tr><td><textarea name="' + DESCRIPTION + '" placeholder="Обязательное поле"></textarea></td>')
+    result.append('<td><input type="password" name = "' + PASSWORD + '" placeholder="Обязательно"></td>')
+    result.append('<td><input type="submit" value="Отправить"></td></tr></form></table>')
     return "\n".join(result)
 

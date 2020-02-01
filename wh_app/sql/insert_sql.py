@@ -60,3 +60,10 @@ def sql_add_new_performers(work_id: str, worker_id: str) -> str:
     query = """INSERT INTO %(performers)s (%(work_id)s, %(worker_id)s) VALUES ('{0}', '{1}')""" % sql_consts_dict
     return query.format(work_id,
                         worker_id)
+
+
+def sql_add_new_bug(problem: str) -> str:
+    """Return SQL-string contain query to insert new record in bugzilla"""
+
+    query = """INSERT INTO %(bugzilla)s (%(problem)s, %(status)s) VALUES ('{0}', true)""" % sql_consts_dict
+    return query.format(problem)

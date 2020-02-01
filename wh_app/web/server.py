@@ -1,4 +1,4 @@
-from flask import Flask, request, redirect
+from flask import Flask, request, redirect, abort
 from flask import send_from_directory
 
 import wh_app.web.template as web_template
@@ -16,7 +16,7 @@ from wh_app.web.workers_section import workers_menu, all_workers_table, works_da
     add_performer_to_work, add_performer_result_method
 from wh_app.web.works_section import works_menu, find_work_to_id_page, select_work_to_id_method, \
     work_to_equip_paging, add_work_method
-from wh_app.web.bugs_section import bugs_menu, all_bugs_table, all_bugs_in_work_table
+from wh_app.web.bugs_section import bugs_menu, all_bugs_table, all_bugs_in_work_table, add_bugs_result_table
 
 
 app = Flask(__name__, static_folder=config.static_dir)
@@ -218,8 +218,35 @@ def all_bugs_in_work():
     return all_bugs_in_work_table()
 
 
+@app.route('/add-bug')
+def add_bug():
+    return web_template.result_page(uhtml.new_bug_input_table(), '/bugs')
+
+
+@app.route('/add-bug-result', methods=['POST'])
+def add_bug_result():
+    return add_bugs_result_table(functions.form_to_data(request.form), request.method)
+
+
+@app.route('/server-ready-to-shutdown')
+def server_ready_to_shutdown():
+    message = ""
+    try:
+        message_file = open(config.path_to_messages, 'r')
+        for line in message_file:
+           message += line
+    except FileNotFoundError:
+        pass
+    return message
+
+
 @app.errorhandler(404)
 def page_not_found(error):
+    return web_template.result_page(uhtml.html_page_not_found(), '/')
+
+
+@app.errorhandler(405)
+def method_not_allowed(error):
     return web_template.result_page(uhtml.html_page_not_found(), '/')
 
 
