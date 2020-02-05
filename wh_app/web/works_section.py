@@ -72,8 +72,8 @@ def add_work_method(data, method):
     if method == "POST":
         password = data[uhtml.PASSWORD]
         equip_id = data[uhtml.EQUIP_ID]
-        query = data[uhtml.QUERY].replace('"', '\'')
-        work = data[uhtml.WORK].replace('"', '\'')
+        query = data[uhtml.QUERY]
+        work = data[uhtml.WORK]
         work_datetime = data[uhtml.WORK_DATETIME].replace("T", ' ') + ':00'
         pre_adr = '/work/' + str(equip_id)
         perfomer = data[uhtml.PERFORMER]

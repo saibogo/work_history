@@ -40,8 +40,8 @@ def create_new_point_page():
 def add_point_method(data, method):
     pre_adr = '/all-points'
     if method == "POST":
-        point_name = data[uhtml.POINT_NAME].replace('"', '\'')
-        point_adr = data[uhtml.POINT_ADDRESS].replace('"', '\'')
+        point_name = data[uhtml.POINT_NAME]
+        point_adr = data[uhtml.POINT_ADDRESS]
         password = data[uhtml.PASSWORD]
         if functions.is_valid_password(password):
             if point_name.replace(" ", '') == '' or point_adr.replace(" ", '') == '':

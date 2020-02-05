@@ -69,10 +69,10 @@ def select_equip_to_id_page(data, method):
 def add_equip_method(data, method):
     if method == "POST":
         point_id = data[uhtml.POINT_ID]
-        equip_name = data[uhtml.EQUIP_NAME].replace('"', '\'')
-        model = data[uhtml.MODEL].replace('"', '\'')
-        serial_num = data[uhtml.SERIAL_NUM].replace('"', '\'')
-        pre_id = data[uhtml.PRE_ID].replace('"', '\'')
+        equip_name = data[uhtml.EQUIP_NAME]
+        model = data[uhtml.MODEL]
+        serial_num = data[uhtml.SERIAL_NUM]
+        pre_id = data[uhtml.PRE_ID]
         password = data[uhtml.PASSWORD]
         if functions.is_valid_password(password):
             with Database() as base:
