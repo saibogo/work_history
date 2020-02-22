@@ -125,8 +125,8 @@ def add_new_work(equip_id: str) -> str:
                   '<th>Исполнители</th><th>Пароль доступа</th><th>Отправить</th></tr>')
     result.append('<form action="/add-work" method="post"><tr>')
     result.append('<td><input name="' + EQUIP_ID + '" value="' + str(equip_id) + '" readonly></td>')
-    result.append('<td><input name="' + QUERY + '" placeholder="Необязательно"></td>')
-    result.append('<td><input name="' + WORK + '" placeholder="Обязательно"></td>')
+    result.append('<td><textarea name="' + QUERY + '" placeholder="Необязательно"></textarea></td>')
+    result.append('<td><textarea name="' + WORK + '" placeholder="Обязательно"></textarea></td>')
     result.append('<td><input type="datetime-local" name="' + WORK_DATETIME + '" value="' + date_to_browser + '"></td>')
     result.append('<td><select  name="' + PERFORMER + '">')
     for perfomer in performers:

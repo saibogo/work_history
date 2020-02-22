@@ -93,12 +93,10 @@ def is_superuser_password(password: str) -> bool:
 
 def form_to_data(form: dict) -> dict:
     """Function create dict contain all data in form"""
-    print(form)
+
     fields = [k for k in form]
     values = [form[k] for k in form]
-    print(values)
     values = list(map(lambda elem: elem.replace('"', '\"').replace("'", "\""), values))
-    print(values)
     data = dict(zip(fields, values))
     return data
 
