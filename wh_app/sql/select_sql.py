@@ -148,12 +148,19 @@ def sql_select_equip_from_like_str(s: str) -> str:
         LIKE LOWER('HuraKan') ORDER BY name
         """
 
-    words = '%' + s.replace(' ', '%') + '%'
-    query = """SELECT %(id)s, %(workspoints)s.%(point_name)s, 
-    %(name)s, %(model)s, %(serial_num)s, %(pre_id)s FROM %(oborudovanie)s  
-    JOIN %(workspoints)s ON %(oborudovanie)s.%(point_id)s = %(workspoints)s.%(point_id)s 
-    WHERE LOWER(%(name)s) LIKE LOWER('{0}') ORDER BY %(name)s""" % sql_consts_dict
-    return query.format(words)
+    if s != '*':
+        words = '%' + s.replace(' ', '%') + '%'
+        query = """SELECT %(id)s, %(workspoints)s.%(point_name)s, 
+        %(name)s, %(model)s, %(serial_num)s, %(pre_id)s FROM %(oborudovanie)s  
+        JOIN %(workspoints)s ON %(oborudovanie)s.%(point_id)s = %(workspoints)s.%(point_id)s 
+        WHERE LOWER(%(name)s) LIKE LOWER('{0}') ORDER BY %(name)s""" % sql_consts_dict
+        return query.format(words)
+    else:
+        query = """SELECT %(id)s, %(workspoints)s.%(point_name)s, 
+                %(name)s, %(model)s, %(serial_num)s, %(pre_id)s FROM %(oborudovanie)s  
+                JOIN %(workspoints)s ON %(oborudovanie)s.%(point_id)s = %(workspoints)s.%(point_id)s 
+                ORDER BY %(name)s""" % sql_consts_dict
+        return query
 
 
 def sql_select_equip_from_like_str_limit(s: str, page_num: str) -> str:
@@ -164,14 +171,23 @@ def sql_select_equip_from_like_str_limit(s: str, page_num: str) -> str:
         LIKE LOWER('RaTiONaL') ORDER BY name LIMIT 10 OFFSET 30
         """
 
-    words = '%' + s.replace(' ', '%') + '%'
-    query = """SELECT %(id)s, %(workspoints)s.%(point_name)s, %(name)s, %(model)s, %(serial_num)s, 
-    %(pre_id)s FROM %(oborudovanie)s  
-    JOIN %(workspoints)s ON %(oborudovanie)s.%(point_id)s = %(workspoints)s.%(point_id)s 
-    WHERE LOWER(%(name)s) LIKE LOWER('{0}') ORDER BY %(name)s LIMIT {1} OFFSET {2}""" % sql_consts_dict
-    return query.format(words,
-                        config.max_records_in_page,
-                        (int(page_num) - 1) * config.max_records_in_page)
+    if s != '*':
+        words = '%' + s.replace(' ', '%') + '%'
+        query = """SELECT %(id)s, %(workspoints)s.%(point_name)s, %(name)s, %(model)s, %(serial_num)s, 
+        %(pre_id)s FROM %(oborudovanie)s  
+        JOIN %(workspoints)s ON %(oborudovanie)s.%(point_id)s = %(workspoints)s.%(point_id)s 
+        WHERE LOWER(%(name)s) LIKE LOWER('{0}') ORDER BY %(name)s LIMIT {1} OFFSET {2}""" % sql_consts_dict
+        return query.format(words,
+                            config.max_records_in_page,
+                            (int(page_num) - 1) * config.max_records_in_page)
+
+    else:
+        query = """SELECT %(id)s, %(workspoints)s.%(point_name)s, %(name)s, %(model)s, %(serial_num)s, 
+                %(pre_id)s FROM %(oborudovanie)s  
+                JOIN %(workspoints)s ON %(oborudovanie)s.%(point_id)s = %(workspoints)s.%(point_id)s 
+                 ORDER BY %(name)s LIMIT {0} OFFSET {1}""" % sql_consts_dict
+        return query.format(config.max_records_in_page,
+                            (int(page_num) - 1) * config.max_records_in_page)
 
 
 def sql_select_point_from_like_str(s: str) -> str:
@@ -181,12 +197,16 @@ def sql_select_point_from_like_str(s: str) -> str:
         LOWER('PoINT')) ORDER BY point_name
         """
 
-    like_string = '%' + s.replace(' ', '%') + '%'
-    query = """SELECT * FROM %(workspoints)s WHERE (LOWER(%(point_name)s) LIKE LOWER('{0}')) 
-    OR (LOWER(%(point_address)s) LIKE
-    LOWER('{0}')) ORDER BY %(point_name)s""" % sql_consts_dict
+    if s != '*':
+        like_string = '%' + s.replace(' ', '%') + '%'
+        query = """SELECT * FROM %(workspoints)s WHERE (LOWER(%(point_name)s) LIKE LOWER('{0}')) 
+        OR (LOWER(%(point_address)s) LIKE
+        LOWER('{0}')) ORDER BY %(point_name)s""" % sql_consts_dict
 
-    return query.format(like_string)
+        return query.format(like_string)
+    else:
+        query = """SELECT * FROM %(workspoints)s  ORDER BY %(point_name)s""" % sql_consts_dict
+        return query
 
 
 def sql_select_point_from_like_str_limit(s: str, page_num: str) -> str:
@@ -198,15 +218,22 @@ def sql_select_point_from_like_str_limit(s: str, page_num: str) -> str:
         LOWER('Пб')) ORDER BY point_name LIMIT 15 OFFSET 45
         """
 
-    like_string = '%' + s.replace(' ', '%') + '%'
-    query = """SELECT %(point_id)s, %(point_name)s, %(point_address)s, 
-    %(cast_open_close)s 
-    FROM %(workspoints)s WHERE (LOWER(%(point_name)s) LIKE LOWER('{0}')) OR (LOWER(%(point_address)s) LIKE
-    LOWER('{0}')) ORDER BY %(point_name)s LIMIT {1} OFFSET {2}""" % sql_consts_dict
+    if s != '*':
+        like_string = '%' + s.replace(' ', '%') + '%'
+        query = """SELECT %(point_id)s, %(point_name)s, %(point_address)s, 
+        %(cast_open_close)s 
+        FROM %(workspoints)s WHERE (LOWER(%(point_name)s) LIKE LOWER('{0}')) OR (LOWER(%(point_address)s) LIKE
+        LOWER('{0}')) ORDER BY %(point_name)s LIMIT {1} OFFSET {2}""" % sql_consts_dict
 
-    return query.format(like_string,
-                        config.max_records_in_page,
-                        (int(page_num) - 1) * config.max_records_in_page)
+        return query.format(like_string,
+                            config.max_records_in_page,
+                            (int(page_num) - 1) * config.max_records_in_page)
+    else:
+        query = """SELECT %(point_id)s, %(point_name)s, %(point_address)s, 
+                %(cast_open_close)s 
+                FROM %(workspoints)s ORDER BY %(point_name)s LIMIT {0} OFFSET {1}""" % sql_consts_dict
+        return query.format(config.max_records_in_page,
+                            (int(page_num) - 1) * config.max_records_in_page)
 
 
 def sql_select_all_works_from_like_str(s: str) -> str:
@@ -215,12 +242,15 @@ def sql_select_all_works_from_like_str(s: str) -> str:
         SELECT * FROM works_likes WHERE (LOWER (problem) LIKE LOWER('nOt Working')) OR
         (LOWER(result) LIKE LOWER('nOt Working')) ORDER BY date, name
         """
+    if s != '*':
+        like_string = '%' + s.replace(' ', '%') + '%'
+        query = """SELECT * FROM %(works_likes)s WHERE (LOWER (%(problem)s) LIKE LOWER('{0}')) OR 
+        (LOWER(%(result)s) LIKE LOWER('{0}')) ORDER BY %(date)s, %(name)s""" % sql_consts_dict
 
-    like_string = '%' + s.replace(' ', '%') + '%'
-    query = """SELECT * FROM %(works_likes)s WHERE (LOWER (%(problem)s) LIKE LOWER('{0}')) OR 
-    (LOWER(%(result)s) LIKE LOWER('{0}')) ORDER BY %(date)s, %(name)s""" % sql_consts_dict
-
-    return query.format(like_string)
+        return query.format(like_string)
+    else:
+        query = """SELECT * FROM %(works_likes)s ORDER BY %(date)s, %(name)s""" % sql_consts_dict
+        return query
 
 
 def sql_select_all_works_from_like_str_limit(s: str, page_num: str) -> str:
@@ -230,13 +260,18 @@ def sql_select_all_works_from_like_str_limit(s: str, page_num: str) -> str:
         (LOWER(result) LIKE LOWER('не Гор')) ORDER BY date, name LIMIT 13 OFFSET 39
         """
 
-    like_string = '%' + s.replace(' ', '%') + '%'
-    query = """SELECT * FROM %(works_likes)s WHERE (LOWER (%(problem)s) LIKE LOWER('{0}')) OR 
-    (LOWER(%(result)s) LIKE LOWER('{0}')) ORDER BY %(date)s, %(name)s LIMIT {1} OFFSET {2}""" % sql_consts_dict
+    if s != '*':
+        like_string = '%' + s.replace(' ', '%') + '%'
+        query = """SELECT * FROM %(works_likes)s WHERE (LOWER (%(problem)s) LIKE LOWER('{0}')) OR 
+        (LOWER(%(result)s) LIKE LOWER('{0}')) ORDER BY %(date)s, %(name)s LIMIT {1} OFFSET {2}""" % sql_consts_dict
 
-    return query.format(like_string,
-                        config.max_records_in_page,
-                        (int(page_num) - 1) * config.max_records_in_page)
+        return query.format(like_string,
+                            config.max_records_in_page,
+                            (int(page_num) - 1) * config.max_records_in_page)
+    else:
+        query = """SELECT * FROM %(works_likes)s ORDER BY %(date)s, %(name)s LIMIT {0} OFFSET {1}""" % sql_consts_dict
+        return query.format(config.max_records_in_page,
+                            (int(page_num) - 1) * config.max_records_in_page)
 
 
 def sql_select_all_works_from_like_str_and_date(s: str, date_start: str, date_stop: str) -> str:
@@ -246,13 +281,19 @@ def sql_select_all_works_from_like_str_and_date(s: str, date_start: str, date_st
         LIKE LOWER('not Working'))) AND (date BETWEEN '21-12-2020' AND '31-12-2020') ORDER BY  date, name
         """
 
-    like_string = '%' + s.replace(' ', '%') + '%'
-    query = """SELECT * FROM %(works_likes)s WHERE ((LOWER (%(problem)s) LIKE LOWER('{0}')) OR (LOWER(%(result)s) 
-    LIKE LOWER('{0}'))) AND (date BETWEEN '{1}' AND '{2}') ORDER BY  %(date)s, %(name)s""" % sql_consts_dict
+    if s != '*':
+        like_string = '%' + s.replace(' ', '%') + '%'
+        query = """SELECT * FROM %(works_likes)s WHERE ((LOWER (%(problem)s) LIKE LOWER('{0}')) OR (LOWER(%(result)s) 
+        LIKE LOWER('{0}'))) AND (date BETWEEN '{1}' AND '{2}') ORDER BY  %(date)s, %(name)s""" % sql_consts_dict
 
-    return query.format(like_string,
-                        date_start,
-                        date_stop)
+        return query.format(like_string,
+                            date_start,
+                            date_stop)
+    else:
+        query = """SELECT * FROM %(works_likes)s WHERE 
+        (date BETWEEN '{0}' AND '{1}') ORDER BY  %(date)s, %(name)s""" % sql_consts_dict
+        return query.format(date_start,
+                            date_stop)
 
 
 def sql_select_all_works_from_like_str_and_date_limit(s: str, date_start: str, date_stop: str, page_num: str) -> str:
@@ -263,16 +304,25 @@ def sql_select_all_works_from_like_str_and_date_limit(s: str, date_start: str, d
         ORDER BY  date, name LIMIT 15 OFFSET 45
         """
 
-    like_string = '%' + s.replace(' ', '%') + '%'
-    query = """SELECT * FROM works_likes WHERE ((LOWER (problem) LIKE LOWER('{0}')) OR (LOWER(result) 
-    LIKE LOWER('{0}'))) AND (date BETWEEN '{1}' AND '{2}') 
-    ORDER BY  date, name LIMIT {3} OFFSET {4}""" % sql_consts_dict
+    if s != '*':
+        like_string = '%' + s.replace(' ', '%') + '%'
+        query = """SELECT * FROM works_likes WHERE ((LOWER (problem) LIKE LOWER('{0}')) OR (LOWER(result) 
+        LIKE LOWER('{0}'))) AND (date BETWEEN '{1}' AND '{2}') 
+        ORDER BY  date, name LIMIT {3} OFFSET {4}""" % sql_consts_dict
 
-    return query.format(like_string,
-                        date_start,
-                        date_stop,
-                        config.max_records_in_page,
-                        (int(page_num) - 1) * config.max_records_in_page)
+        return query.format(like_string,
+                            date_start,
+                            date_stop,
+                            config.max_records_in_page,
+                           (int(page_num) - 1) * config.max_records_in_page)
+
+    else:
+        query = """SELECT * FROM works_likes WHERE date BETWEEN '{0}' AND '{1}' 
+                ORDER BY  date, name LIMIT {2} OFFSET {3}""" % sql_consts_dict
+        return query.format(date_start,
+                            date_stop,
+                            config.max_records_in_page,
+                           (int(page_num) - 1) * config.max_records_in_page)
 
 
 def sql_select_max_id_equip() -> str:

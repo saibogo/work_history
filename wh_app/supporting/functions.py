@@ -11,6 +11,8 @@ def info_string(name_module):
                                                                           metadata.__author__,
                                                                           metadata.__license__))
 
+from wh_app.web.universal_html import FIND_REQUEST
+
 
 def str_to_str_n(s: str, max_len: int) -> str:
     """Function return new string, separated \n"""
@@ -98,6 +100,9 @@ def form_to_data(form: dict) -> dict:
     values = [form[k] for k in form]
     values = list(map(lambda elem: elem.replace('"', '\"').replace("'", "\""), values))
     data = dict(zip(fields, values))
+    data[FIND_REQUEST] = data[FIND_REQUEST].replace(" ", '')
+    if data[FIND_REQUEST] == '' or data[FIND_REQUEST] == ' ':
+        data[FIND_REQUEST] = '*'
     return data
 
 
