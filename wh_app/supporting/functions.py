@@ -100,9 +100,10 @@ def form_to_data(form: dict) -> dict:
     values = [form[k] for k in form]
     values = list(map(lambda elem: elem.replace('"', '\"').replace("'", "\""), values))
     data = dict(zip(fields, values))
-    data[FIND_REQUEST] = data[FIND_REQUEST].replace(" ", '')
-    if data[FIND_REQUEST] == '' or data[FIND_REQUEST] == ' ':
-        data[FIND_REQUEST] = '*'
+    if FIND_REQUEST in data.keys():
+        data[FIND_REQUEST] = data[FIND_REQUEST].replace(" ", '')
+        if data[FIND_REQUEST] == '' or data[FIND_REQUEST] == ' ':
+            data[FIND_REQUEST] = '*'
     return data
 
 

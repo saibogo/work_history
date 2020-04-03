@@ -259,12 +259,16 @@ def paging_table(link: str, all_elems: list, current: int) -> str:
     if len(all_elems) == 1:
         result = [""]
     else:
-        result = ['<br><table id="pages_table"><tr>']
-        for elem in all_elems:
-            result.append('<td class="paging_td">')
-            result.append(str(elem) if elem == current else '<a href="{0}/{1}">{1}</a>'.format(link, elem))
-            result.append('</td>')
-        result.append('</tr></table>')
+        result = ['<br><table id="pages_table">']
+        for tr in range(len(all_elems) // config.max_pages_in_tr + 1):
+            result.append('<tr>')
+            for td in range(min(config.max_pages_in_tr, len(all_elems) - tr * config.max_pages_in_tr)):
+                result.append('<td class="paging_td">')
+                elem = all_elems[tr * config.max_pages_in_tr + td]
+                result.append(str(elem) if elem == current else '<a href="{0}/{1}">{1}</a>'.format(link, elem))
+                result.append('</td>')
+            result.append('</tr>')
+        result.append('</table>')
     return "\n".join(result)
 
 
