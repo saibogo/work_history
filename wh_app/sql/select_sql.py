@@ -454,3 +454,22 @@ def sql_select_all_bugs_in_work_in_bugzilla() -> str:
     query = """SELECT %(id)s, %(problem)s, %(bug_in_work)s 
     FROM %(bugzilla)s WHERE %(status)s = true ORDER BY %(id)s""" % sql_consts_dict
     return query
+
+
+def sql_select_all_customers() -> str:
+    """Return all records in table customer"""
+
+    return """SELECT id, full_name FROM %(customer_table)s ORDER BY %(id)s""" % sql_consts_dict
+
+
+def sql_select_all_orders() -> str:
+    """Return all records in table orders"""
+
+    query = """SELECT orders.%(id)s, customer.full_name, orders.date, problem,
+    (%(bug_in_work)s)
+	FROM orders 
+	JOIN customer 
+	ON customer_id = customer.%(id)s 
+	ORDER BY %(id)s""" % sql_consts_dict
+
+    return query

@@ -262,3 +262,16 @@ def get_all_bugz_in_work_in_bugzilla(cursor) -> list:
     """Function return all records in bugzilla if bug's status = in work"""
 
     return get_selected(cursor, select_sql.sql_select_all_bugs_in_work_in_bugzilla())
+
+
+def get_all_customers(cursor) -> list:
+    """Function return list contains all record in customer table"""
+
+    return get_selected(cursor, select_sql.sql_select_all_customers())
+
+
+def get_all_orders(cursor) -> list:
+    """Function return list contains all records in table orders"""
+
+    return get_selected(cursor, select_sql.sql_select_all_orders())
+

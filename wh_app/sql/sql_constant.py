@@ -12,7 +12,8 @@ any_consts = {"id": "id",
               "tmp": "tmp",
               "phone_number": "phone_number",
               "bugzilla": "bugzilla",
-              "status": "status"
+              "status": "status",
+              "customer_table": "customer"
               }
 
 workers_const = {"all_workers": "all_workers",
