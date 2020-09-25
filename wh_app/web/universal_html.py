@@ -234,6 +234,67 @@ def add_performer_in_work(work: list) -> str:
     return  "\n".join(result)
 
 
+def edit_point_information(point: list) -> str:
+    """Return editable table about selected point"""
+
+    result = list()
+    result.append('<table><caption>Редактировать сведения о предприятии</caption>')
+    result.append('<tr><th>№</th><th>Параметр</th><th>Значение</th></tr>')
+
+    result.append('<form action="/upgrade-point-info" method = "post">')
+    result.append('<tr><td>1</td><td>ID</td><td>' + point[0] + '</td></tr>')
+    result.append('<input type="hidden" name="' + POINT_ID + '" value="' + point[0] + '"></input>')
+
+    result.append('<tr><td>2</td><td>Служебное название</td>')
+    result.append('<td><textarea name="' + POINT_NAME + '">' + point[1] + '</textarea></td></tr>')
+
+    result.append('<tr><td>3</td><td>Адрес</td>')
+    result.append('<td><textarea rows=2 name="' + POINT_ADDRESS + '">' + point[2] + '</textarea></td></tr>')
+
+    result.append('<tr><td>4</td><td>Статус</td>')
+    result.append('<td>' + point[3] + '</td></tr>')
+
+    result.append('<tr><td>5</td><td>Пароль доступа</td>')
+    result.append('<td><input type="password" name="' + PASSWORD + '"></input></td></tr>')
+
+    result.append('<tr><td>6</td><td>Применить изменения</td>')
+    result.append('<td><input type="submit" value="Отправить"></input></td></tr>')
+
+    result.append('</form></table>')
+
+    return "\n".join(result)
+
+
+def on_off_point_table(point: list) -> str:
+    """Return table, contain dialog ON/OFF selected point"""
+
+    result = list()
+    result.append('<table><caption>Изменение статуса предприятия</caption>')
+    result.append('<tr><th>№</th><th>Параметр</th><th>Значение</th></tr>')
+    result.append('<form action="/invert-point-status" method = "post">')
+
+    result.append('<tr><td>1</td><td>ID</td><td>' + point[0] + '</td></tr>')
+    result.append('<input type="hidden" name="' + POINT_ID + '" value="' + point[0] + '"></input>')
+
+    result.append('<tr><td>2</td><td>Служебное название</td>')
+    result.append('<td>' + str(point[1]) + '</td></tr>')
+
+    result.append('<tr><td>3</td><td>Адрес</td>')
+    result.append('<td>' + str(point[2]) + '</td></tr>')
+
+    result.append('<tr><td>4</td><td>Статус</td>')
+    result.append('<td>' + point[3] + '</td></tr>')
+
+    result.append('<tr><td>5</td><td>Пароль доступа</td>')
+    result.append('<td><input type="password" name="' + PASSWORD + '"></input></td></tr>')
+
+    result.append('<tr><td>6</td><td>Изменить статус</td>')
+    result.append('<td><input type="submit" value="Изменить"></input></td></tr>')
+
+    result.append('</form></table>')
+    return "\n".join(result)
+
+
 def html_page_not_found() -> str:
     """Return html contain PAGE NOT FOUND"""
 

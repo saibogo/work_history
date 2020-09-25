@@ -61,7 +61,9 @@ point_consts = {"point_id": "point_id",
                 "point_address": "point_address",
                 "workspoints": "workspoints",
                 "point": "point",
-                "name_point": "name_point"}
+                "name_point": "name_point",
+                "is_work": "is_work"
+                }
 
 any_consts.update(point_consts)
 any_consts.update(replace_consts)

@@ -11,7 +11,8 @@ from wh_app.web.equips_section import equip_to_point_limit, find_equip_to_id_pag
 from wh_app.web.find_section import find_page, find_method, find_work_paging, find_work_like_date_paging, \
     find_point_page, find_equip_page
 from wh_app.web.points_section import points_operations, all_points_table, create_new_point_page, \
-    add_point_method, all_works_points_table
+    add_point_method, all_works_points_table, edit_point_method, upgrade_point_method, on_off_point_method, \
+    invert_point_status_method
 from wh_app.web.workers_section import workers_menu, all_workers_table, works_days_page, works_from_performers_table, \
     add_performer_to_work, add_performer_result_method
 from wh_app.web.works_section import works_menu, find_work_to_id_page, select_work_to_id_method, \
@@ -62,6 +63,26 @@ def add_point():
 @app.route("/works-points")
 def works_points():
     return all_works_points_table()
+
+
+@app.route("/edit-point/<point_id>")
+def edit_point(point_id: str):
+    return edit_point_method(point_id)
+
+
+@app.route("/on-off-point/<point_id>")
+def on_off_point(point_id:str):
+    return on_off_point_method(point_id)
+
+
+@app.route("/upgrade-point-info", methods=['POST'])
+def upgrade_point_info():
+    return upgrade_point_method(functions.form_to_data(request.form), request.method)
+
+
+@app.route("/invert-point-status", methods=['POST'])
+def invert_point_status():
+    return invert_point_status_method(functions.form_to_data(request.form), request.method)
 
 
 @app.route("/equip/<point_id>")
