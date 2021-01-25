@@ -15,27 +15,39 @@ table {
     background: Khaki;
     border: 3px solid;
     margin: auto;
+    border-top-left-radius: 10px;
     }
 
 caption {
     color: Navy;
     font-size: large;
     font-style: italic;
+    margin-bottom: 10px;
     }
 
 th {
     font-style: italic;
     border: 1px solid;
+    border-top-left-radius: 10px;
     }
 
 td {
     font-style: italic;
     border: 1px solid;
+    border-top-left-radius: 10px;
     }
 
 tr:nth-child(even) {
     background-color: palegoldenrod;
     }
+
+tr > :nth-child(3) {
+    text-align: center;
+}
+
+tr > :nth-child(4) {
+    text-align: center;
+}
 
 a:link {
     color: DarkSlateGrey;
@@ -50,7 +62,9 @@ a:visited {
 a:hover {
     color: Purple;
     text-decoration: none;
-    background: DarkKhaki
+    background: DarkKhaki;
+    transition: color 1.5s ease-in,
+     background 1s ease-in;
     }
 
 a:active {
@@ -73,6 +87,7 @@ table#pages_table {
     }
 
 textarea {
-    width: 100%;
+    width: 98%;
+    border-top-left-radius: 10px;
     }
 
