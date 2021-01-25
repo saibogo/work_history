@@ -34,6 +34,10 @@ def main_page():
 def favicon():
     return send_from_directory(config.static_dir, 'favicon.ico')
 
+@app.route('/syyles.css')
+def styles():
+    return send_from_directory(config.static_dir, 'style.css')
+
 
 @app.route("/equips")
 def equips():
