@@ -1,6 +1,8 @@
 body {
     background: Khaki;
     color: MidnightBlue;
+    background-image: url("/image/background.jpg");
+    background-size: 100%;
     }
 
 h1 {
@@ -12,7 +14,7 @@ h3 {
     }
 
 table {
-    background: Khaki;
+    /*background: Khaki;*/
     border: 3px solid;
     margin: auto;
     border-top-left-radius: 10px;
@@ -38,7 +40,8 @@ td {
     }
 
 tr:nth-child(even) {
-    background-color: palegoldenrod;
+    /*background-color: palegoldenrod;*/
+    background-image: url("/image/background.jpg");
     }
 
 tr > :nth-child(3) {

@@ -39,6 +39,11 @@ def styles():
     return send_from_directory(config.static_dir, 'style.css')
 
 
+@app.route('/image/background.jpg')
+def get_background_image():
+    return send_from_directory(config.static_dir, 'image/background.jpg')
+
+
 @app.route("/equips")
 def equips():
     return equips_menu()
