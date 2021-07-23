@@ -10,17 +10,17 @@ from wh_app.config_and_backup import table_headers
 functions.info_string(__name__)
 
 
-def points_operations():
+def points_operations(stylesheet_number: str) -> str:
     name = 'Действия с предприятиями'
     menu = [(1, 'Все зарегестрированные предприятия'),
             (2, 'Только действующие'),
             (3, 'Добавить предприятие')]
     links_list = ['/all-points', '/works-points', '/create-new-point']
     table = uhtml.universal_table(name, ['№', 'Доступное действие'], menu, True, links_list)
-    return web_template.result_page(table, '/')
+    return web_template.result_page(table, '/', str(stylesheet_number))
 
 
-def all_points_table():
+def all_points_table(stylesheet_number: str) -> str:
     with Database() as base:
         connection, cursor = base
         all_points = select_operations.get_all_points(cursor)
@@ -37,15 +37,15 @@ def all_points_table():
                                         rows,
                                         True, links_list)
         table2 = uhtml.add_new_point()
-        return web_template.result_page(table1 + table2, '/points')
+        return web_template.result_page(table1 + table2, '/points', str(stylesheet_number))
 
 
-def create_new_point_page():
+def create_new_point_page(stylesheet_number: str) -> str:
     html = uhtml.style_custom() + '\n' + uhtml.add_new_point()
-    return web_template.result_page(html, '/points')
+    return web_template.result_page(html, '/points', str(stylesheet_number))
 
 
-def add_point_method(data, method):
+def add_point_method(data, method, stylesheet_number: str) -> str:
     pre_adr = '/all-points'
     if method == "POST":
         point_name = data[uhtml.POINT_NAME]
@@ -61,13 +61,13 @@ def add_point_method(data, method):
                     connection.commit()
                     return web_template.result_page(uhtml.operation_completed(), pre_adr)
         else:
-            return web_template.result_page(uhtml.pass_is_not_valid(), pre_adr)
+            return web_template.result_page(uhtml.pass_is_not_valid(), pre_adr, str(stylesheet_number))
 
     else:
         return web_template.result_page("Method in add Point not corrected!", pre_adr)
 
 
-def all_works_points_table():
+def all_works_points_table(stylesheet_number: str) -> str:
     """Return only points have status WORK"""
 
     with Database() as base:
@@ -86,30 +86,30 @@ def all_works_points_table():
                                         rows,
                                         True, links_list)
         table2 = uhtml.add_new_point()
-        return web_template.result_page(table1 + table2, '/points')
+        return web_template.result_page(table1 + table2, '/points', str(stylesheet_number))
 
 
-def edit_point_method(point_id: str):
+def edit_point_method(point_id: str, stylesheet_number: str):
     """Return page editable selected point"""
 
     with Database() as base:
         connection, cursor = base
         point = select_operations.get_full_point_information(cursor, point_id)
         point.insert(0, point_id)
-        return web_template.result_page(uhtml.edit_point_information(point), '/points')
+        return web_template.result_page(uhtml.edit_point_information(point), '/points', str(stylesheet_number))
 
 
-def on_off_point_method(point_id: str):
+def on_off_point_method(point_id: str, stylesheet_number: str) -> str:
     """Return page for on-off select"""
 
     with Database() as base:
         connection, cursor = base
         point = select_operations.get_full_point_information(cursor, point_id)
         point.insert(0, point_id)
-        return web_template.result_page(uhtml.on_off_point_table(point), '/points')
+        return web_template.result_page(uhtml.on_off_point_table(point), '/points', str(stylesheet_number))
 
 
-def invert_point_status_method(data, method):
+def invert_point_status_method(data, method, stylesheet_number: str) -> str:
     pre_adr = '/all-points'
     if method == 'POST':
         point_id = data[uhtml.POINT_ID]
@@ -119,14 +119,16 @@ def invert_point_status_method(data, method):
                 connection, cursor = base
                 update_operations.invert_point_is_work(cursor, point_id)
                 connection.commit()
-                return web_template.result_page(uhtml.operation_completed(), pre_adr)
+                return web_template.result_page(uhtml.operation_completed(), pre_adr, str(stylesheet_number))
         else:
-            return web_template.result_page(uhtml.pass_is_not_valid(), pre_adr)
+            return web_template.result_page(uhtml.pass_is_not_valid(), pre_adr, str(stylesheet_number))
     else:
-        return web_template.result_page("Method in Invert Points Status not corrected!", pre_adr)
+        return web_template.result_page("Method in Invert Points Status not corrected!",
+                                        pre_adr,
+                                        str(stylesheet_number))
 
 
-def upgrade_point_method(data, method):
+def upgrade_point_method(data, method, stylesheet_number: str) -> str:
     pre_adr = '/all-points'
     if method == "POST":
         point_name = data[uhtml.POINT_NAME]
@@ -135,14 +137,14 @@ def upgrade_point_method(data, method):
         password = data[uhtml.PASSWORD]
         if functions.is_superuser_password(password):
             if point_name.replace(" ", '') == '' or point_adr.replace(" ", '') == '':
-                return web_template.result_page(uhtml.data_is_not_valid(), pre_adr)
+                return web_template.result_page(uhtml.data_is_not_valid(), pre_adr, str(stylesheet_number))
             else:
                 with Database() as base:
                     connection, cursor = base
                     update_operations.update_point_information(cursor, point_id, point_name, point_adr)
                     connection.commit()
-                    return web_template.result_page(uhtml.operation_completed(), pre_adr)
+                    return web_template.result_page(uhtml.operation_completed(), pre_adr, str(stylesheet_number))
         else:
-            return web_template.result_page(uhtml.pass_is_not_valid(), pre_adr)
+            return web_template.result_page(uhtml.pass_is_not_valid(), pre_adr, str(stylesheet_number))
     else:
-        return web_template.result_page("Method in Edit Point not corrected!", pre_adr)
+        return web_template.result_page("Method in Edit Point not corrected!", pre_adr, str(stylesheet_number))

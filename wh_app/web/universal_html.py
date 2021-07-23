@@ -39,13 +39,18 @@ def link_or_str(elem: str, link_type: bool = False, link: str = '') -> str:
     return '<a href="' + str(link) + '">' + str(elem) + '</a>' if link_type else str(elem)
 
 
-def style_custom() -> str:
+def style_custom(stylesheet_number=0) -> str:
     """Function return string contain sections <style>"""
     result = list()
     result.append('<head><link rel="shortcut icon" href="' + config.full_address +
                   '/favicon.ico" sizes="32x32" type="image/x-icon" title="История произведенных работ">')
     result.append('<title>История произведенных ремонтов</title></head>')
-    result.append('<link rel="stylesheet" href="/style.css">')
+    stylesheet_name: str = ""
+    if str(stylesheet_number) == '0':
+        stylesheet_name = "/style.css"
+    else:
+        stylesheet_name = "/style1.css"
+    result.append('<link rel="stylesheet" href="{0}">'.format(stylesheet_name))
     result.append('</head>')
     return '\n'.join(result)
 
@@ -137,17 +142,22 @@ def data_is_not_valid() -> str:
     return '<h1>Некорректные данные</h1>'
 
 
+def selected_new_theme() -> str:
+    """ Function return string contain message NEW THEME"""
+    return '<h1>Произведена смена темы оформления</h1>'
+
+
 def navigations_menu(pre_html: str) -> str:
     """Function return string contain navigations bar"""
     result = list()
-    result.append('<table><caption>Навигация</caption><tr>')
-    result.append('<td><a href="' + pre_html + '">В предыдущее меню</a></td>')
-    result.append('<td><a href="' + config.full_address + '">Главное меню</a></td>')
-    result.append('<td><a href="mailto:gleykh@malachite.ru">Обратная связь</a></td>')
-    result.append('<td><a href="' + config.full_address + '/FAQ?page=' + request.url + '">Частые вопросы</a></td>')
-    result.append('<td><a href="' + config.full_address + '/find' + '">Поиск</a></td>')
-    result.append('<td><a href="' + config.full_address + '/statistics' + '">Статистика</a></td>')
-    result.append('<td><a href="' + config.full_address + '/system-status' + '">Статус системы</a></td>')
+    result.append('<table class="navigation_menu"><caption>Навигация</caption><tr>')
+    result.append('<td class="navigation_bottom"><a href="' + pre_html + '">В предыдущее меню</a></td>')
+    result.append('<td class="navigation_bottom"><a href="' + config.full_address + '">Главное меню</a></td>')
+    result.append('<td class="navigation_bottom"><a href="mailto:gleykh@malachite.ru">Обратная связь</a></td>')
+    result.append('<td class="navigation_bottom"><a href="' + config.full_address + '/FAQ?page=' + request.url + '">Частые вопросы</a></td>')
+    result.append('<td class="navigation_bottom"><a href="' + config.full_address + '/find' + '">Поиск</a></td>')
+    result.append('<td class="navigation_bottom"><a href="' + config.full_address + '/statistics' + '">Статистика</a></td>')
+    result.append('<td class="navigation_bottom"><a href="' + config.full_address + '/system-status' + '">Статус системы</a></td>')
     result.append('</tr></table>')
     return '\n'.join(result)
 

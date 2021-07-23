@@ -10,11 +10,13 @@ from wh_app.config_and_backup import table_headers
 functions.info_string(__name__)
 
 
-def find_page(preview_page):
-    return web_template.result_page(uhtml.find_table(), preview_page)
+def find_page(preview_page, stylesheet_number: str) -> str:
+    return web_template.result_page(uhtml.find_table(),
+                                    preview_page,
+                                    str(stylesheet_number))
 
 
-def find_method(data, method):
+def find_method(data, method, stylesheet_number: str) -> str:
     if method == "POST":
         find_request = data[uhtml.FIND_REQUEST]
         find_from_table = data[uhtml.FIND_IN_TABLE]
@@ -30,13 +32,13 @@ def find_method(data, method):
         elif find_from_table == uhtml.EQUIPS:
             return redirect('/find/equip/{0}/page/1'.format(find_request))
         else:
-            return web_template.result_page('Not corrected selected in Find!', '/')
+            return web_template.result_page('Not corrected selected in Find!', '/', str(stylesheet_number))
 
     else:
-        return web_template.result_page('Method in Find Page not corrected!', '/')
+        return web_template.result_page('Method in Find Page not corrected!', '/', str(stylesheet_number))
 
 
-def find_work_paging(find_string: str, page_num: str) -> str:
+def find_work_paging(find_string: str, page_num: str, stylesheet_number: str) -> str:
     with Database() as base:
         connection, cursor = base
         works = select_operations.get_all_works_like_word_limit(cursor, find_string, int(page_num))
@@ -48,10 +50,11 @@ def find_work_paging(find_string: str, page_num: str) -> str:
         pages_table = uhtml.paging_table('/find/work/{0}/page'.format(find_string),
                                          pages_list,
                                          int(page_num))
-        return web_template.result_page(result + pages_table, '/find')
+        return web_template.result_page(result + pages_table, '/find', str(stylesheet_number))
 
 
-def find_work_like_date_paging(find_string: str, data_start: str, data_stop: str, page_num: str) -> str:
+def find_work_like_date_paging(find_string: str, data_start: str,
+                               data_stop: str, page_num: str, stylesheet_number: str) -> str:
     with Database() as base:
         connection, cursor = base
         date_start_correct = data_start.replace('T', ' ')
@@ -74,10 +77,10 @@ def find_work_like_date_paging(find_string: str, data_start: str, data_stop: str
                                                                               date_stop_correct),
                                          pages_list,
                                          int(page_num))
-        return web_template.result_page(result + pages_table, '/find')
+        return web_template.result_page(result + pages_table, '/find', str(stylesheet_number))
 
 
-def find_point_page(find_string: str, page_num: str) -> str:
+def find_point_page(find_string: str, page_num: str, stylesheet_number: str) -> str:
     with Database() as base:
         connection, cursor = base
         points = select_operations.get_all_points_list_from_like_str_limit(cursor, find_string, int(page_num))
@@ -89,10 +92,10 @@ def find_point_page(find_string: str, page_num: str) -> str:
                                        True,
                                        links_list)
         pages_table = uhtml.paging_table('/find/point/{0}/page'.format(find_string), pages_list, int(page_num))
-        return web_template.result_page(result + pages_table, '/find')
+        return web_template.result_page(result + pages_table, '/find', str(stylesheet_number))
 
 
-def find_equip_page(find_string: str, page_num: str) -> str:
+def find_equip_page(find_string: str, page_num: str, stylesheet_number: str) -> str:
     with Database() as base:
         connection, cursor = base
         equips = select_operations.get_all_equips_list_from_like_str_limit(cursor, find_string, int(page_num))
@@ -104,4 +107,4 @@ def find_equip_page(find_string: str, page_num: str) -> str:
                                        True,
                                        links_list)
         pages_table = uhtml.paging_table('/find/equip/{0}/page'.format(find_string), pages_list, int(page_num))
-        return web_template.result_page(result + pages_table, '/find')
+        return web_template.result_page(result + pages_table, '/find', str(stylesheet_number))

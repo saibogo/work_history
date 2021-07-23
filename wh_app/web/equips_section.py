@@ -11,15 +11,15 @@ from wh_app.config_and_backup import table_headers
 functions.info_string(__name__)
 
 
-def equips_menu():
+def equips_menu(stylesheet_number) -> str:
     name = 'Действия с оборудованием'
     menu = [(1, 'Все зарегестрированное оборудование'), (2, 'Поиск по ID')]
     links_list = ['/all-equips', '/find-equip-to-id']
     table = uhtml.universal_table(name, ['№', 'Доступное действие'], menu, True, links_list)
-    return web_template.result_page(table, '/')
+    return web_template.result_page(table, '/', str(stylesheet_number))
 
 
-def equip_to_point_limit(point_id, page_num):
+def equip_to_point_limit(point_id, page_num, stylesheet_number: str) -> str:
     with Database() as base:
         connection, cursor = base
         all_equips = select_operations.get_equip_in_point_limit(cursor, point_id, page_num)
@@ -33,10 +33,10 @@ def equip_to_point_limit(point_id, page_num):
                                                                                                 str(point_id))),
                                    int(page_num))
         table2 = uhtml.add_new_equip(point_id) if point_id != '0' else ""
-        return web_template.result_page(table1 + pages + table2, '/all-points')
+        return web_template.result_page(table1 + pages + table2, '/all-points', str(stylesheet_number))
 
 
-def find_equip_to_id_page():
+def find_equip_to_id_page(stylesheet_number: str) -> str:
     with Database() as base:
         connection, cursor = base
         max_equip_id = select_operations.get_maximal_equip_id(cursor)
@@ -45,10 +45,10 @@ def find_equip_to_id_page():
         find_table.append('<form action="/select-equip-to-id" method="post">')
         find_table.append('<tr><td><input type="number" name="id" min="0" max="' + max_equip_id + '"></td></tr>')
         find_table.append('<tr><td><input type="submit" value="Найти"></td></tr>')
-        return web_template.result_page("\n".join(find_table), '/equips')
+        return web_template.result_page("\n".join(find_table), '/equips', str(stylesheet_number))
 
 
-def select_equip_to_id_page(data, method):
+def select_equip_to_id_page(data, method, stylesheet_number: str) -> str:
     pre_adr = '/equips'
     if method == "POST":
         equip_id = data['id']
@@ -61,12 +61,12 @@ def select_equip_to_id_page(data, method):
             table1 = uhtml.universal_table(table_headers.equips_table_name,
                                            table_headers.equips_table, [equip], True,
                                            links_list)
-            return web_template.result_page(table1, pre_adr)
+            return web_template.result_page(table1, pre_adr, str(stylesheet_number))
     else:
-        return web_template.result_page("Method in Select Equip not corrected!", pre_adr)
+        return web_template.result_page("Method in Select Equip not corrected!", pre_adr, str(stylesheet_number))
 
 
-def add_equip_method(data, method):
+def add_equip_method(data, method, stylesheet_number: str) -> str:
     if method == "POST":
         point_id = data[uhtml.POINT_ID]
         equip_name = data[uhtml.EQUIP_NAME]
@@ -88,9 +88,13 @@ def add_equip_method(data, method):
                 else:
                     insert_operations.create_new_equip(cursor, point_id, equip_name, model, serial_num, pre_id)
                 connection.commit()
-                return web_template.result_page(uhtml.operation_completed(), '/equip/' + str(point_id))
+                return web_template.result_page(uhtml.operation_completed(),
+                                                '/equip/' + str(point_id),
+                                                str(stylesheet_number))
         else:
-            return web_template.result_page(uhtml.pass_is_not_valid(), '/equip/' + str(point_id))
+            return web_template.result_page(uhtml.pass_is_not_valid(),
+                                            '/equip/' + str(point_id),
+                                            str(stylesheet_number))
 
     else:
-        return web_template.result_page('Method in Add Equip not corrected!', '/all-points')
+        return web_template.result_page('Method in Add Equip not corrected!', '/all-points', str(stylesheet_number))

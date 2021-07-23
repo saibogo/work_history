@@ -1,11 +1,11 @@
-from flask import Flask, request, redirect, abort
+from flask import Flask, request, redirect, session
 from flask import send_from_directory
 
 import wh_app.web.template as web_template
 import wh_app.web.universal_html as uhtml
 from wh_app.config_and_backup import config
 from wh_app.supporting import functions
-from wh_app.web.any_section import main_web_menu, faq_page, statistics_page, system_status_page
+from wh_app.web.any_section import main_web_menu, faq_page, statistics_page, system_status_page, new_theme_page
 from wh_app.web.equips_section import equip_to_point_limit, find_equip_to_id_page, select_equip_to_id_page, \
     add_equip_method, equips_menu
 from wh_app.web.find_section import find_page, find_method, find_work_paging, find_work_like_date_paging, \
@@ -22,76 +22,91 @@ from wh_app.web.orders_section import all_customers_table, orders_main_menu, all
 
 
 app = Flask(__name__, static_folder=config.static_dir)
+app.secret_key = 'gleykh secret key'
 functions.info_string(__name__)
+
+THEME_NUMBER = 'theme_number'
+THEMES_MAXIMAL = 2
+
+
+def stylesheet_number() -> str:
+    """Function return string contains number decors themes"""
+    if THEME_NUMBER in session:
+        session[THEME_NUMBER] = session.get(THEME_NUMBER)
+    else:
+        session[THEME_NUMBER] = 0  # default number theme
+
+    return session.get(THEME_NUMBER)
 
 
 @app.route("/")
 def main_page():
-    return main_web_menu()
+    return main_web_menu(stylesheet_number())
 
 
 @app.route('/favicon.ico')
 def favicon():
     return send_from_directory(config.static_dir, 'favicon.ico')
 
-@app.route('/syyles.css')
-def styles():
-    return send_from_directory(config.static_dir, 'style.css')
+
+@app.route('/style<number>.css')
+def styles(number):
+    return send_from_directory(config.static_dir, 'style{0}.css'.format(number))
 
 
-@app.route('/image/background.jpg')
-def get_background_image():
-    return send_from_directory(config.static_dir, 'image/background.jpg')
+@app.route('/image/background<number>.jpg')
+def get_background_image(number):
+    return send_from_directory(config.static_dir, 'image/background{0}.jpg'.format(number))
 
 
 @app.route("/equips")
 def equips():
-    return equips_menu()
+    return equips_menu(stylesheet_number())
 
 
 @app.route("/points")
 def points():
-    return points_operations()
+    return points_operations(stylesheet_number())
 
 
 @app.route("/all-points")
 def all_points():
-    return all_points_table()
+    return all_points_table(stylesheet_number())
 
 
 @app.route("/create-new-point")
 def create_new_point():
-    return create_new_point_page()
+    return create_new_point_page(stylesheet_number())
 
 
 @app.route('/add-point', methods=['POST'])
 def add_point():
-    return add_point_method(functions.form_to_data(request.form), request.method)
+    return add_point_method(functions.form_to_data(request.form), request.method, stylesheet_number())
 
 
 @app.route("/works-points")
 def works_points():
-    return all_works_points_table()
+    return all_works_points_table(stylesheet_number())
 
 
 @app.route("/edit-point/<point_id>")
 def edit_point(point_id: str):
-    return edit_point_method(point_id)
+    return edit_point_method(point_id, stylesheet_number())
 
 
 @app.route("/on-off-point/<point_id>")
 def on_off_point(point_id:str):
-    return on_off_point_method(point_id)
+    return on_off_point_method(point_id, stylesheet_number())
 
 
 @app.route("/upgrade-point-info", methods=['POST'])
 def upgrade_point_info():
-    return upgrade_point_method(functions.form_to_data(request.form), request.method)
+    return upgrade_point_method(functions.form_to_data(request.form), request.method, stylesheet_number())
 
 
 @app.route("/invert-point-status", methods=['POST'])
 def invert_point_status():
-    return invert_point_status_method(functions.form_to_data(request.form), request.method)
+    return invert_point_status_method(functions.form_to_data(request.form), request.method, stylesheet_number())
 
 
 @app.route("/equip/<point_id>")
@@ -106,42 +121,42 @@ def all_equips_table():
 
 @app.route("/equip/<point_id>/page/<page_num>")
 def equip_point_id_page(point_id, page_num):
-    return equip_to_point_limit(point_id, page_num)
+    return equip_to_point_limit(point_id, page_num, stylesheet_number())
 
 
 @app.route('/find-equip-to-id')
 def find_equip_to_id():
-    return find_equip_to_id_page()
+    return find_equip_to_id_page(stylesheet_number())
 
 
 @app.route("/select-equip-to-id", methods=['POST'])
 def select_equip_to_id():
-    return select_equip_to_id_page(functions.form_to_data(request.form), request.method)
+    return select_equip_to_id_page(functions.form_to_data(request.form), request.method, stylesheet_number())
 
 
 @app.route("/add-equip", methods=['POST'])
 def add_equip():
-    return add_equip_method(functions.form_to_data(request.form), request.method)
+    return add_equip_method(functions.form_to_data(request.form), request.method, stylesheet_number())
 
 
 @app.route("/works")
 def works_operations():
-    return works_menu()
+    return works_menu(stylesheet_number())
 
 
 @app.route('/find-work-to-id')
 def find_work_to_id():
-    return find_work_to_id_page()
+    return find_work_to_id_page(stylesheet_number())
 
 
 @app.route("/select-work-to-id", methods=['POST'])
 def select_work_to_id():
-    return select_work_to_id_method(functions.form_to_data(request.form), request.method)
+    return select_work_to_id_method(functions.form_to_data(request.form), request.method, stylesheet_number())
 
 
 @app.route("/work/<equip_id>/page/<page_id>")
 def work_equip_id_page_page_id(equip_id, page_id):
-    return work_to_equip_paging(equip_id, page_id)
+    return work_to_equip_paging(equip_id, page_id, stylesheet_number())
 
 
 @app.route("/work/<equip_id>")
@@ -156,107 +171,119 @@ def all_works():
 
 @app.route("/add-work", methods=['POST'])
 def add_work():
-    return add_work_method(functions.form_to_data(request.form), request.method)
+    return add_work_method(functions.form_to_data(request.form), request.method, stylesheet_number())
 
 
 @app.route("/workers")
 def workers():
-    return workers_menu()
+    return workers_menu(stylesheet_number())
 
 
 @app.route("/all-workers")
 def all_workers():
-    return all_workers_table()
+    return all_workers_table(stylesheet_number())
 
 
 @app.route("/works-days")
 def works_days():
-    return works_days_page()
+    return works_days_page(stylesheet_number())
 
 
 @app.route("/performer/<performer_id>", methods=['GET'])
 def performer_performer_id(performer_id):
-    return works_from_performers_table(performer_id, request.args.get('page', default=config.full_address, type=str))
+    return works_from_performers_table(performer_id,
+                                       request.args.get('page', default=config.full_address, type=str),
+                                       stylesheet_number())
 
 
 @app.route("/add-performer-to-work/<work_id>", methods=['GET'])
 def add_performer_to_work_work_id(work_id):
-    return add_performer_to_work(work_id, request.args.get('page', default=config.full_address, type=str))
+    return add_performer_to_work(work_id,
+                                 request.args.get('page', default=config.full_address, type=str),
+                                 stylesheet_number())
 
 
 @app.route('/add-performer-result', methods=['POST'])
 def add_performer_result():
-    return add_performer_result_method(functions.form_to_data(request.form), request.method)
+    return add_performer_result_method(functions.form_to_data(request.form),
+                                       request.method,
+                                       stylesheet_number())
 
 
 @app.route("/FAQ", methods=['GET'])
 def faq():
-    return faq_page(request.args.get('page', default=config.full_address, type=str))
+    return faq_page(request.args.get('page', default=config.full_address, type=str),
+                    stylesheet_number())
 
 
 @app.route('/statistics', methods=['GET'])
 def statistics():
-    return statistics_page(request.args.get('page', default=config.full_address, type=str))
+    return statistics_page(request.args.get('page', default=config.full_address, type=str),
+                           stylesheet_number())
 
 
 @app.route('/system-status', methods=['GET'])
 def system_status():
-    return system_status_page(request.args.get('page', default=config.full_address, type=str))
+    return system_status_page(request.args.get('page', default=config.full_address, type=str),
+                              stylesheet_number())
 
 
 @app.route('/find', methods=['GET'])
 def find():
-    return find_page(request.args.get('page', default=config.full_address, type=str))
+    return find_page(request.args.get('page', default=config.full_address, type=str),
+                     stylesheet_number())
 
 
 @app.route('/findresult', methods=['POST'])
 def findresult():
-    return find_method(functions.form_to_data(request.form), request.method)
+    return find_method(functions.form_to_data(request.form),
+                       request.method,
+                       stylesheet_number())
 
 
 @app.route('/find/work/<find_string>/page/<page_num>')
 def find_work_find_string_page_page_num(find_string: str, page_num: str) -> str:
-    return find_work_paging(find_string, page_num)
+    return find_work_paging(find_string, page_num, stylesheet_number())
 
 
 @app.route('/find/work/<find_string>/<data_start>/<data_stop>/page/<page_num>')
 def find_work_data_to_data(find_string: str, data_start: str, data_stop: str, page_num: str) -> str:
-    return find_work_like_date_paging(find_string, data_start, data_stop, page_num)
+    return find_work_like_date_paging(find_string, data_start, data_stop, page_num, stylesheet_number())
 
 
 @app.route('/find/point/<find_string>/page/<page_num>')
 def find_point(find_string: str, page_num: str) -> str:
-    return find_point_page(find_string, page_num)
+    return find_point_page(find_string, page_num, stylesheet_number())
 
 
 @app.route('/find/equip/<find_string>/page/<page_num>')
 def find_equip(find_string: str, page_num: str) -> str:
-    return find_equip_page(find_string, page_num)
+    return find_equip_page(find_string, page_num, stylesheet_number())
 
 
 @app.route('/bugs')
 def bugs():
-    return bugs_menu()
+    return bugs_menu(stylesheet_number())
 
 
 @app.route('/all-bugs')
 def all_bugs():
-    return all_bugs_table()
+    return all_bugs_table(stylesheet_number())
 
 
 @app.route('/all-bugs-in-work')
 def all_bugs_in_work():
-    return all_bugs_in_work_table()
+    return all_bugs_in_work_table(stylesheet_number())
 
 
 @app.route('/add-bug')
 def add_bug():
-    return web_template.result_page(uhtml.new_bug_input_table(), '/bugs')
+    return web_template.result_page(uhtml.new_bug_input_table(), '/bugs', stylesheet_number())
 
 
 @app.route('/add-bug-result', methods=['POST'])
 def add_bug_result():
-    return add_bugs_result_table(functions.form_to_data(request.form), request.method)
+    return add_bugs_result_table(functions.form_to_data(request.form), request.method, stylesheet_number())
 
 
 @app.route('/server-ready-to-shutdown')
@@ -273,32 +300,43 @@ def server_ready_to_shutdown():
 
 @app.route('/orders-and-customers')
 def orders_and_customers():
-    return orders_main_menu()
+    return orders_main_menu(stylesheet_number())
 
 
 @app.route('/all-customers-table')
 def all_customers_table_server():
-    return all_customers_table()
+    return all_customers_table(stylesheet_number())
 
 
 @app.route('/all-registred-orders')
 def all_registred_orders():
-    return all_registred_orders_table()
+    return all_registred_orders_table(stylesheet_number())
+
+
+@app.route('/next-themes')
+def next_themes() -> str:
+    if THEME_NUMBER in session:
+        session[THEME_NUMBER] = session.get(THEME_NUMBER) + 1
+    else:
+        session[THEME_NUMBER] = 0  # default number theme
+    session[THEME_NUMBER] %= THEMES_MAXIMAL
+    session.modified=True
+    return new_theme_page(session[THEME_NUMBER])
 
 
 @app.errorhandler(404)
 def page_not_found(error):
-    return web_template.result_page(uhtml.html_page_not_found(), '/')
+    return web_template.result_page(uhtml.html_page_not_found(), '/', stylesheet_number())
 
 
 @app.errorhandler(405)
 def method_not_allowed(error):
-    return web_template.result_page(uhtml.html_page_not_found(), '/')
+    return web_template.result_page(uhtml.html_page_not_found(), '/', stylesheet_number())
 
 
 @app.errorhandler(500)
 def page_internal_server_error(error):
-    return web_template.result_page(uhtml.html_internal_server_error(), '/')
+    return web_template.result_page(uhtml.html_internal_server_error(), '/', stylesheet_number())
 
 
 @app.route('/not_found')

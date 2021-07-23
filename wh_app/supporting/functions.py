@@ -143,4 +143,6 @@ def list_of_pages(all_records: list) -> list:
     return result if len(all_records) > 0 else [1]
 
 
+
+
 info_string(__name__)

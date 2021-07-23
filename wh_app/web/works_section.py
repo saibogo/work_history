@@ -11,15 +11,15 @@ from wh_app.config_and_backup import table_headers
 functions.info_string(__name__)
 
 
-def works_menu():
+def works_menu(stylesheet_number: str) -> str:
     name = 'Действия с ремонтами и диагностиками'
     menu = [(1, 'Все зарегистрированные работы'), (2, 'Поиск работы по ID')]
     links_list = ['/all-works', '/find-work-to-id']
     table = uhtml.universal_table(name, ['№', 'Доступное действие'], menu, True, links_list)
-    return web_template.result_page(table, '/')
+    return web_template.result_page(table, '/', str(stylesheet_number))
 
 
-def find_work_to_id_page():
+def find_work_to_id_page(stylesheet_number: str) -> str:
     with Database() as base:
         connection, cursor = base
         max_work_id = select_operations.get_maximal_work_id(cursor)
@@ -28,10 +28,10 @@ def find_work_to_id_page():
         find_table.append('<form action="/select-work-to-id" method="post">')
         find_table.append('<tr><td><input type="number" name="id" min="0" max="' + max_work_id + '"></td></tr>')
         find_table.append('<tr><td><input type="submit" value="Найти"></td></tr>')
-        return web_template.result_page("\n".join(find_table), '/works')
+        return web_template.result_page("\n".join(find_table), '/works', str(stylesheet_number))
 
 
-def select_work_to_id_method(data, method):
+def select_work_to_id_method(data, method, stylesheet_number: str) -> str:
     pre_adr = '/works'
     if method == "POST":
         work_id = data['id']
@@ -44,12 +44,12 @@ def select_work_to_id_method(data, method):
             table1 = uhtml.universal_table(table_headers.works_table_name,
                                            table_headers.works_table,
                                            work)
-            return web_template.result_page(table1, pre_adr)
+            return web_template.result_page(table1, pre_adr, str(stylesheet_number))
     else:
-        return web_template.result_page("Method in Select Work not corrected!", pre_adr)
+        return web_template.result_page("Method in Select Work not corrected!", pre_adr, str(stylesheet_number))
 
 
-def work_to_equip_paging(equip_id, page_id):
+def work_to_equip_paging(equip_id, page_id, stylesheet_number: str) -> str:
 
     with Database() as base:
         connection, cursor = base
@@ -65,10 +65,10 @@ def work_to_equip_paging(equip_id, page_id):
                                           functions.list_of_pages(select_operations.get_works_from_equip_id(cursor,
                                                                                                             equip_id)),
                                           int(page_id))
-        return web_template.result_page(table1 + table_paging + table2, pre_adr)
+        return web_template.result_page(table1 + table_paging + table2, pre_adr, str(stylesheet_number))
 
 
-def add_work_method(data, method):
+def add_work_method(data, method, stylesheet_number: str) -> str:
     if method == "POST":
         password = data[uhtml.PASSWORD]
         equip_id = data[uhtml.EQUIP_ID]
@@ -79,14 +79,14 @@ def add_work_method(data, method):
         perfomer = data[uhtml.PERFORMER]
         if functions.is_valid_password(password):
             if work.replace(" ", "") == '':
-                return web_template.result_page(uhtml.data_is_not_valid(), pre_adr)
+                return web_template.result_page(uhtml.data_is_not_valid(), pre_adr, str(stylesheet_number))
             else:
                 with Database() as base:
                     connection, cursor = base
                     insert_operations.create_new_work(cursor, equip_id, work_datetime, query, work, perfomer)
                     connection.commit()
-                    return web_template.result_page(uhtml.operation_completed(), pre_adr)
+                    return web_template.result_page(uhtml.operation_completed(), pre_adr, str(stylesheet_number))
         else:
-            return web_template.result_page(uhtml.pass_is_not_valid(), pre_adr)
+            return web_template.result_page(uhtml.pass_is_not_valid(), pre_adr, str(stylesheet_number))
     else:
-        return web_template.result_page("Method in Add Work not corrected!", '/')
+        return web_template.result_page("Method in Add Work not corrected!", '/', str(stylesheet_number))

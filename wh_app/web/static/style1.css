@@ -1,7 +1,7 @@
 body {
     background: Khaki;
-    color: MidnightBlue;
-    background-image: url("/image/background.jpg");
+    color: DarkRed;
+    background-image: url("/image/background1.jpg");
     background-size: 100%;
     }
 
@@ -21,9 +21,9 @@ table {
     }
 
 caption {
-    color: Navy;
+    color: Indigo;
     font-size: large;
-    font-style: italic;
+    font-style: bold;
     margin-bottom: 10px;
     }
 
@@ -39,10 +39,18 @@ td {
     border-top-left-radius: 10px;
     }
 
-tr:nth-child(even) {
+tr:nth-child(3n) {
     /*background-color: palegoldenrod;*/
-    background-image: url("/image/background.jpg");
+    background-color: Plum;
     }
+
+tr:nth-child(3n + 1) {
+    background-color: DarkKhaki;
+}
+
+tr:nth-child(3n + 2) {
+    background-color: Moccasin;
+}
 
 tr > :nth-child(3) {
     text-align: center;
@@ -53,25 +61,25 @@ tr > :nth-child(4) {
 }
 
 a:link {
-    color: DarkSlateGrey;
+    color: DarkRed;
     text-decoration: none;
     }
 
 a:visited {
-    color: DarkSlateGrey;
+    color: DarkRed;
     text-decoration: none;
     }
 
 a:hover {
-    color: Purple;
+    color: DarkRed;
     text-decoration: none;
-    background: DarkKhaki;
+    background: Olive;
     transition: color 1.5s ease-in,
      background 1s ease-in;
     }
 
 a:active {
-    color: DarkSlateGrey;
+    color: Crimson;
     text-decoration: none;
     font-size: large;
     }
@@ -87,6 +95,9 @@ table#pages_table {
 
 .paging_td {
     border: 0px;
+    background-color: Gainsboro;
+    border-radius: 0px;
+    transform:rotate(-2deg);
     }
 
 textarea {
@@ -94,8 +105,31 @@ textarea {
     border-top-left-radius: 10px;
     }
 
+table.navigation_menu {
+    border: 0px;
+    border-spacing: 10px;
+}
+
+td.navigation_bottom {
+    border-radius: 20px;
+}
+
+input[type="text"], textarea {
+  background-color: Moccasin;
+}
+
+
+input[type="password"], textarea {
+  background-color: Moccasin;
+}
+
+
+input[type="datetime-local"] {
+  background-color: Moccasin;
+}
+
 li.faq_question {
-    color: MidnightBlue;
+    color: Maroon;
     font-style: normal;
 }
 
@@ -103,4 +137,5 @@ li.faq_question > ul {
     color: DarkSlateGray;
     font-style: italic;
 }
+
 
