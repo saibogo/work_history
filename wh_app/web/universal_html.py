@@ -1,4 +1,5 @@
 from flask import request
+import datetime
 
 from wh_app.config_and_backup import config
 from wh_app.postgresql.database import Database
@@ -12,6 +13,7 @@ PASSWORD = 'password'
 POINT_NAME = 'point_name'
 POINT_ADDRESS = 'point_address'
 POINT_ID = 'point_id'
+NEW_POINT_ID = 'new_point_id'
 EQUIP_NAME = 'equip_name'
 MODEL = 'model'
 SERIAL_NUM = 'serial_num'
@@ -109,7 +111,7 @@ def add_new_work(equip_id: str) -> str:
         performers = select_operations.get_table_current_workers(cursor)
 
     result = list()
-    result.append('<table><caption>Зарегестрировать произведенные работы</caption>')
+    result.append('<table><caption>Зарегистрировать произведенные работы</caption>')
     result.append('<tr><th>ID оборудования</th><th>Причина ремонта</th><th>описание работ</th><th>Дата и время</th>'
                   '<th>Исполнители</th><th>Пароль доступа</th><th>Отправить</th></tr>')
     result.append('<form action="/add-work" method="post"><tr>')
@@ -259,6 +261,88 @@ def edit_point_information(point: list) -> str:
     return "\n".join(result)
 
 
+def edit_equip_information(equip: list) -> str:
+    """Return editable table about selected point"""
+
+    result = list()
+    result.append('<table><caption>Редактировать сведения об оборудовании</caption>')
+    result.append('<tr><th>№</th><th>Параметр</th><th>Значение</th></tr>')
+
+    result.append('<form action="/upgrade-equip-info" method = "post">')
+    result.append('<tr><td>1</td><td>ID</td><td>' + equip[0] + '</td></tr>')
+    result.append('<input type="hidden" name="' + EQUIP_ID + '" value="' + equip[0] + '"></input>')
+    result.append('<tr><td>2</td><td>Предприятие</td><td>' + equip[1] + '</td></tr>')
+
+    result.append('<tr><td>3</td><td>Наименование</td>')
+    result.append('<td><textarea name="' + EQUIP_NAME + '">' + equip[2] + '</textarea></td></tr>')
+
+    result.append('<tr><td>4</td><td>Модель</td>')
+    result.append('<td><textarea rows=2 name="' + MODEL + '">' + equip[3] + '</textarea></td></tr>')
+
+    result.append('<tr><td>5</td><td>Серийный номер</td>')
+    result.append('<td><textarea rows=2 name="' + SERIAL_NUM + '">' + equip[4] + '</textarea></td></tr>')
+
+    result.append('<tr><td>6</td><td>Предыдущий ID</td>')
+    result.append('<td><textarea rows=1 name="' + PRE_ID + '">' + str(equip[5]) + '</textarea></td></tr>')
+
+    result.append('<tr><td>7</td><td>Пароль доступа</td>')
+    result.append('<td><input type="password" name="' + PASSWORD + '"></input></td></tr>')
+
+    result.append('<tr><td>8</td><td>Применить изменения</td>')
+    result.append('<td><input type="submit" value="Отправить"></input></td></tr>')
+
+    result.append('</form></table>')
+
+    return "\n".join(result)
+
+
+def select_point_form(equip: list, point_id: str) -> str:
+    """Create form to generate html-page to remove equip in new point"""
+
+    result = list()
+    result.append('<table><caption>Перемещение оборудования</caption>')
+    result.append('<tr><th>№</th><th>Параметр</th><th>Значение</th></tr>')
+
+    result.append('<form action="/remove-equip" method = "post">')
+    result.append('<tr><td>1</td><td>ID</td><td>' + equip[0] + '</td></tr>')
+    result.append('<input type="hidden" name="' + EQUIP_ID + '" value="' + equip[0] + '"></input>')
+
+    result.append('<tr><td>2</td><td>Текущее предприятие</td><td>' + equip[1] + '</td></tr>')
+    result.append('<input type="hidden" name="' + POINT_ID + '" value="' + point_id + '"></input>')
+
+    result.append('<tr><td>3</td><td>Наименование</td><td>' + equip[2] + '</td></tr>')
+    result.append('<input type="hidden" name="' + EQUIP_NAME + '" value="' + equip[2] + '"></input>')
+
+    result.append('<tr><td>4</td><td>Модель</td><td>' + equip[3] + '</td></tr>')
+    result.append('<input type="hidden" name="' + MODEL + '" value="' + equip[3] + '"></input>')
+
+    result.append('<tr><td>5</td><td>Серийный номер</td><td>' + equip[4] + '</td></tr>')
+    result.append('<input type="hidden" name="' + SERIAL_NUM + '" value="' + equip[4] + '"></input>')
+
+    result.append('<tr><td>6</td><td>Предыдущий ID</td><td>' + str(equip[5]) + '</td></tr>')
+    result.append('<input type="hidden" name="' + PRE_ID + '" value="' + str(equip[5]) + '"></input>')
+
+    result.append('<tr><td>7</td><td>Точка перемещения</td><td><select name="' + NEW_POINT_ID + '">')
+    new_points = []
+    with Database() as base:
+        connection, cursor = base
+        new_points  = select_operations.get_all_point_except_id(cursor, str(point_id))
+        for point in new_points:
+            result.append('<option value="' + str(point[0]) + '">' + str(point[1]) + '</option>')
+
+    result.append('</select></td></tr>')
+
+    result.append('<tr><td>7</td><td>Пароль доступа</td>')
+    result.append('<td><input type="password" name="' + PASSWORD + '"></input></td></tr>')
+
+    result.append('<tr><td>8</td><td>Применить изменения</td>')
+    result.append('<td><input type="submit" value="Отправить"></input></td></tr>')
+
+    result.append('</form></table>')
+
+    return "\n".join(result)
+
+
 def on_off_point_table(point: list) -> str:
     """Return table, contain dialog ON/OFF selected point"""
 
@@ -298,7 +382,9 @@ def html_page_not_found() -> str:
 def html_internal_server_error() -> str:
     """Return html contain INTERNAL SERVER ERROR"""
 
-    return '<h1>Произошла ошибка сервера. Обратитесь к администратору сайта или разработчику</h1>'
+    message = '<h1>Произошла ошибка сервера. Обратитесь к администратору сайта или разработчику</h1>' +\
+              '<h2>Время возникновения ошибки: {}</h2>'.format(datetime.datetime.now().strftime("%d-%m-%Y %H:%M"))
+    return message
 
 
 def info_from_alter_works() -> str:
@@ -315,15 +401,92 @@ def paging_table(link: str, all_elems: list, current: int) -> str:
         result = [""]
     else:
         result = ['<br><table id="pages_table">']
-        for tr in range(len(all_elems) // config.max_pages_in_tr + 1):
+        if len(all_elems) < 2 * config.max_pages_in_tr:
+            for tr in range(len(all_elems) // config.max_pages_in_tr + 1):
+                result.append('<tr>')
+                for td in range(min(config.max_pages_in_tr, len(all_elems) - tr * config.max_pages_in_tr)):
+                    result.append('<td class="paging_td">')
+                    elem = all_elems[tr * config.max_pages_in_tr + td]
+                    result.append(str(elem) if elem == current else '<a href="{0}/{1}">{1}</a>'.format(link, elem))
+                    result.append('</td>')
+                result.append('</tr>')
+        else:
             result.append('<tr>')
-            for td in range(min(config.max_pages_in_tr, len(all_elems) - tr * config.max_pages_in_tr)):
-                result.append('<td class="paging_td">')
-                elem = all_elems[tr * config.max_pages_in_tr + td]
-                result.append(str(elem) if elem == current else '<a href="{0}/{1}">{1}</a>'.format(link, elem))
-                result.append('</td>')
+            result.append('<td class="paging_td"><a href="{0}/{1}">&laquo;</a>'.format(link, all_elems[0]))
+            result.append('</td>')
+            down_page_number = max(1, current - 10)
+            result.append('<td class="paging_td" title="page {1}"><a href="{0}/{1}">&lt</a>'.
+                          format(link, down_page_number))
+            result.append('</td>')
+            list_of_intervals = [[], [], []]
+            len_of_interval = config.max_pages_in_tr // 4
+
+            if 0 < current < len_of_interval:
+                start_index = max(0, current - 3)
+                stop_index = start_index + 6
+                list_of_intervals[0] = [i for i in range(start_index, stop_index)]
+
+                start_index = len(all_elems) // 2 - 3
+                stop_index = start_index + 6
+                list_of_intervals[1] = [i for i in range(start_index, stop_index)]
+
+                start_index = len(all_elems) - 6
+                stop_index = len(all_elems)
+                list_of_intervals[2] = [i for i in range(start_index, stop_index)]
+
+            elif len(all_elems) - len_of_interval < current <= len(all_elems):
+                start_index = 0
+                stop_index = start_index + 6
+                list_of_intervals[0] = [i for i in range(start_index, stop_index)]
+
+                start_index = len(all_elems) // 2 - 3
+                stop_index = start_index + 6
+                list_of_intervals[1] = [i for i in range(start_index, stop_index)]
+
+                stop_index = min(len(all_elems), current + 3)
+                start_index = stop_index - 6
+                list_of_intervals[2] = [i for i in range(start_index, stop_index)]
+
+            else:
+                start_index = 0
+                stop_index = start_index + 6
+                list_of_intervals[0] = [i for i in range(start_index, stop_index)]
+
+                start_index = current - 3
+                stop_index = start_index + 6
+                list_of_intervals[1] = [i for i in range(start_index, stop_index)]
+
+                stop_index = len(all_elems)
+                start_index = stop_index - 6
+                list_of_intervals[2] = [i for i in range(start_index, stop_index)]
+
+            result.append(create_td_in_paging_table(all_elems, link, list_of_intervals[0], current))
+            result.append('<td class="paging_td">...</td>')
+
+            result.append(create_td_in_paging_table(all_elems, link, list_of_intervals[1], current))
+            result.append('<td class="paging_td">...</td>')
+
+            result.append(create_td_in_paging_table(all_elems, link, list_of_intervals[2], current))
+
+            up_page_number = min(len(all_elems), current + 10)
+            result.append('<td class="paging_td" title="page {1}"><a href="{0}/{1}">&gt</a>'.
+                          format(link, up_page_number))
+            result.append('</td>')
+
+            result.append('<td class="paging_td"><a href="{0}/{1}">&raquo;</a>'.format(link, all_elems[-1]))
+            result.append('</td>')
+
             result.append('</tr>')
         result.append('</table>')
+    return "\n".join(result)
+
+
+def create_td_in_paging_table(all_elems: list, link: str, list_of_interval: list, current: int) -> str:
+    result = []
+    for i in list_of_interval:
+        result.append('<td class="paging_td">')
+        result.append(str(i + 1) if i == current - 1
+                      else '<a href="{0}/{1}">{1}</a></td>'.format(link, all_elems[i]))
     return "\n".join(result)
 
 

@@ -1,3 +1,4 @@
+"""This module implements database backup"""
 import subprocess
 
 from wh_app.supporting import functions

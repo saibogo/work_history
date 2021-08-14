@@ -3,7 +3,7 @@ import psycopg2
 from wh_app.postgresql.database import Database
 from wh_app.supporting import functions
 from wh_app.supporting import stop_start_web
-from wh_app.supporting.auto_save_Thread import AutoSaveThread
+from wh_app.supporting.auto_save_thread import AutoSaveThread
 
 functions.info_string(__name__)
 

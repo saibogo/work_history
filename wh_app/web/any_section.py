@@ -7,6 +7,7 @@ from wh_app.supporting import functions
 from wh_app.supporting import system_status
 from wh_app.config_and_backup import table_headers
 from wh_app.web.universal_html import selected_new_theme
+from wh_app.supporting.metadata import changelog
 
 functions.info_string(__name__)
 
@@ -19,14 +20,18 @@ def main_web_menu(stylesheet_number: str) -> str:
             (4, 'Операции с сотрудниками'),
             (5, 'Баг-трекер системы'),
             (6, 'Работа с заявками'),
-            (7, 'Изменить тему оформления')]
+            (7, 'Изменить тему оформления'),
+            (8, 'Изменения в системе'),
+            ]
     links_list = ['/points',
                   '/equips',
                   '/works',
                   '/workers',
                   '/bugs',
                   '/orders-and-customers',
-                  '/next-themes']
+                  '/next-themes',
+                  '/changelog-page',
+                  ]
     table = uhtml.universal_table(name, ['№', 'выполнить:'], menu, True, links_list)
     return web_template.result_page(table, "", stylesheet_number)
 
@@ -87,5 +92,12 @@ def system_status_page(preview_page, stylesheet_number: str) -> str:
     return web_template.result_page(result, preview_page, str(stylesheet_number))
 
 
-def new_theme_page(stylesheet_number) -> str:
+def new_theme_page(stylesheet_number: str) -> str:
     return web_template.result_page(selected_new_theme(), "/", str(stylesheet_number))
+
+
+def viev_changelog(stylesheet_number: str) -> str:
+    table = uhtml.universal_table(table_headers.changelog_table_name,
+                                  table_headers.changelog_table,
+                                  changelog)
+    return web_template.result_page(table, '/', str(stylesheet_number))

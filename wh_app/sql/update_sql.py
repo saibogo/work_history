@@ -15,6 +15,16 @@ def sql_update_point(point_id:str, point_name: str, point_address: str) -> str:
                         point_id)
 
 
+def sql_update_equip(equip_id: str, equip_name: str, equip_model: str,
+                     equip_serial: str, equip_pre_id: str) -> str:
+    """Return the query string to update equip information"""
+
+    query = """UPDATE %(oborudovanie)s SET %(name)s = '{0}', %(model)s = '{1}', %(serial_num)s = '{2}', 
+    %(pre_id)s = '{3}' WHERE %(id)s = '{4}';""" % sql_consts_dict
+
+    return query.format(str(equip_name), str(equip_model), str(equip_serial), str(equip_pre_id), str(equip_id))
+
+
 def sql_inverse_points_status(point_id:str) -> str:
     """Return the query string to invert is_work section"""
 

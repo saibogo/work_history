@@ -1,4 +1,7 @@
+import datetime
+
 import psycopg2
+from typing import *
 
 from wh_app.supporting import functions
 from wh_app.sql import select_sql
@@ -12,32 +15,37 @@ def commit(connection: psycopg2.connect) -> None:
     connection.commit()
 
 
-def get_selected(cursor, sql: str) -> list:
+def get_selected(cursor, sql: str) -> List:
     """Returns a list of database objects that match the query."""
 
     cursor.execute(sql)
     return cursor.fetchall()
 
 
-def get_point(cursor, point_id: str) -> list:
-    """Returns a list object containing the selected point"""
+def get_point(cursor, point_id: str) -> List[Tuple]:
+    """Returns a list object containing the selected point
+    [elem] while elem = (point_id, point_name, point_address, point_status)"""
 
     return get_selected(cursor, select_sql.sql_select_point(point_id))
 
 
-def get_all_points(cursor) -> list:
-    """Return a list object containing all points"""
+def get_all_points(cursor) -> List[Tuple]:
+    """Return a list object containing all points
+    See get_point: return value [elem, elem1, ..., elem_n]"""
 
     return get_point(cursor, '0')
 
 
-def get_all_works_points(cursor) -> list:
-    """Return a list object containing all points haves status 'in work' """
+def get_all_works_points(cursor) -> List[Tuple]:
+    """Return a list object containing all points haves status 'in work'
+    See also get_point: return value [elem, elem1, .... elem_n]"""
+
     return get_selected(cursor, select_sql.sql_select_all_works_points())
 
 
-def get_equip_in_point(cursor, point_id: str) -> list:
-    """Returns all equipment for this point"""
+def get_equip_in_point(cursor, point_id: str) -> List[Tuple]:
+    """Returns all equipment for this point
+    Return value [elem, elem1, ..., elem_n] while elem = (equip_id, point_name, equip_name, model, serial, pre_id)"""
 
     sql = select_sql.sql_select_all_equipment \
         if point_id == '' or point_id == '0' \
@@ -45,8 +53,9 @@ def get_equip_in_point(cursor, point_id: str) -> list:
     return get_selected(cursor, sql)
 
 
-def get_equip_in_point_limit(cursor, point_id: str, page_num: int) -> list:
-    """Returns all equipment for this point use LIMIT and OFFSET"""
+def get_equip_in_point_limit(cursor, point_id: str, page_num: int) -> List[Tuple]:
+    """Returns all equipment for this point use LIMIT and OFFSET
+    Return value see get_equip_in_point"""
 
     sql = select_sql.sql_select_all_equipment_limit(page_num) \
         if point_id == '' or point_id == '0' \
@@ -54,17 +63,21 @@ def get_equip_in_point_limit(cursor, point_id: str, page_num: int) -> list:
     return get_selected(cursor, sql)
 
 
-def get_works_from_equip_id(cursor, id: str) -> list:
-    """Returns a list object containing all jobs for a given piece of equipment"""
+def get_works_from_equip_id(cursor, id: str) -> List[Tuple]:
+    """Returns a list object containing all jobs for a given piece of equipment
+    [elem1, elem2, ..., elem_n] while elem = (work_ID, point_name, equip_name, model, serial, datetime,
+     problem, result, performer_name)"""
 
     sql = select_sql.sql_select_all_works() \
         if id == '' or id == '0' \
         else select_sql.sql_select_work_to_equipment_id(id)
+
     return get_selected(cursor, sql)
 
 
-def get_works_from_equip_id_limit(cursor, id: str, page_num: int) -> list:
-    """Returns a list object containing all jobs for a given piece of equipment use LIMIT and OFFSET"""
+def get_works_from_equip_id_limit(cursor, id: str, page_num: int) -> List[Tuple]:
+    """Returns a list object containing all jobs for a given piece of equipment use LIMIT and OFFSET
+    See also get_works_from_equip_id"""
 
     sql = select_sql.sql_select_all_works_limit(page_num) \
         if id == '' or id == '0' \
@@ -83,8 +96,9 @@ def get_works_from_point_and_equip(cursor, point_id: str, equip_id: str) -> list
     return works
 
 
-def get_full_point_information(cursor, point_id: str) -> list:
-    """Returns the object list containing complete information about the given point"""
+def get_full_point_information(cursor, point_id: str) -> List[str]:
+    """Returns the object list containing complete information about the given point
+    return value = [point_name, point_address, point_status]"""
 
     return list(get_selected(cursor, select_sql.sql_select_information_to_point(point_id))[0])
 
@@ -95,14 +109,16 @@ def get_full_information_list_points(cursor, ls: list) -> list:
     return [get_full_point_information(cursor, elem[0]) for elem in ls]
 
 
-def get_full_equip_information(cursor, equip_id: str) -> list:
-    """Returns a list object containing complete information about a given piece of equipment"""
+def get_full_equip_information(cursor, equip_id: str) -> List[str]:
+    """Returns a list object containing complete information about a given piece of equipment
+    Return value [point_name, equip_name, model, serial, pre_ID]"""
 
     return list(get_selected(cursor, select_sql.sql_select_full_equips_info(equip_id))[0])
 
 
-def get_full_information_to_work(cursor, work_id: str) -> list:
-    """Returns a list object containing complete information about the work done with the specified number"""
+def get_full_information_to_work(cursor, work_id: str) -> List[str]:
+    """Returns a list object containing complete information about the work done with the specified number
+    Result value [work_ID, point_name, equip_name, model, number, datetime, problem, result, names_of_performers]"""
 
     return list(get_selected(cursor, select_sql.sql_select_work_from_id(work_id))[0])
 
@@ -113,27 +129,30 @@ def get_full_info_from_works_list(cursor, ls: list) -> list:
     return [get_full_information_to_work(cursor, elem[0]) for elem in ls]
 
 
-def get_all_equips_list_from_like_str(cursor, s: str) -> list:
-    """Return all equips names contain s-string"""
+def get_all_equips_list_from_like_str(cursor, s: str) -> List[Tuple]:
+    """Return all equips names contain s-string
+    [elem1, elem2, ..., elem_n] while elem = (equip_ID, point_name, model, serial, pre_ID)"""
 
     return get_selected(cursor, select_sql.sql_select_equip_from_like_str(s))
 
 
-def get_all_equips_list_from_like_str_limit(cursor, s: str, page_num: int) -> list:
-    """Return all equips names contain s-string use LIMIT and OFFSET"""
+def get_all_equips_list_from_like_str_limit(cursor, s: str, page_num: int) -> List[Tuple]:
+    """Return all equips names contain s-string use LIMIT and OFFSET
+    See also get_all_equips_list_from_like_str"""
 
     return get_selected(cursor, select_sql.sql_select_equip_from_like_str_limit(s, str(page_num)))
 
 
-
-def get_all_points_list_from_like_str(cursor, s:str) -> list:
-    """Return all points names contain s-string"""
+def get_all_points_list_from_like_str(cursor, s:str) -> List[Tuple[int, str, str, bool]]:
+    """Return all points names contain s-string
+    Return value [elem1, elem2, ..., elem_n] while elem = (point_ID, point_name, point_address, point_status)"""
 
     return get_selected(cursor, select_sql.sql_select_point_from_like_str(s))
 
 
-def get_all_points_list_from_like_str_limit(cursor, s:str, page_num: int) -> list:
-    """Return all points names contain s-string use LIMIT and OFFSET"""
+def get_all_points_list_from_like_str_limit(cursor, s:str, page_num: int) -> List[Tuple[int, str, str, bool]]:
+    """Return all points names contain s-string use LIMIT and OFFSET
+    see also get_all_points_list_from_like_str"""
 
     return get_selected(cursor, select_sql.sql_select_point_from_like_str_limit(s, str(page_num)))
 
@@ -171,26 +190,35 @@ def get_point_id_from_equip_id(cursor, equip_id: str) -> str:
     return str(get_selected(cursor, select_sql.sql_select_point_id_from_equip_id(equip_id))[0][0])
 
 
-def get_all_works_like_word(cursor, word: str) -> list:
-    """Function return list contain ID work likes word"""
+def get_all_works_like_word(cursor, word: str) -> List[Tuple[int, str, str, str, str,
+                                                             datetime.datetime, str, str, str]]:
+    """Function return list contain ID work likes word
+    Return value [elem1, elem2, ..., elem_n] while elem = (work_ID, point_name, equip_name, model, serial,
+    datetime, problem, result, performers_names)"""
 
     return get_selected(cursor, select_sql.sql_select_all_works_from_like_str(word))
 
 
-def get_all_works_like_word_limit(cursor, word: str, page_num: int) -> list:
-    """Function return list contain ID work likes word"""
+def get_all_works_like_word_limit(cursor, word: str, page_num: int) -> List[Tuple[int, str, str, str, str,
+                                                             datetime.datetime, str, str, str]]:
+    """Function return list contain ID work likes word
+    See also get_all_works_like_word"""
 
     return get_selected(cursor, select_sql.sql_select_all_works_from_like_str_limit(word, str(page_num)))
 
 
-def get_all_works_like_word_and_date(cursor, word: str, date_start: str, date_stop: str) -> list:
-    """Function return list contain all works in date-date interval and like word"""
+def get_all_works_like_word_and_date(cursor, word: str, date_start: str, date_stop: str) -> \
+        List[Tuple[int, str, str, str, str, datetime.datetime, str, str, str]]:
+    """Function return list contain all works in date-date interval and like word
+    See also get_all_works_like_word"""
 
     return get_selected(cursor, select_sql.sql_select_all_works_from_like_str_and_date(word, date_start, date_stop))
 
 
-def get_all_works_like_word_and_date_limit(cursor, word: str, date_start: str, date_stop: str, page_num: int) -> list:
-    """Function return list contain all works in date-date interval and like word use LIMIT and OFFSET"""
+def get_all_works_like_word_and_date_limit(cursor, word: str, date_start: str, date_stop: str, page_num: int) \
+        -> List[Tuple[int, str, str, str, str, datetime.datetime, str, str, str]]:
+    """Function return list contain all works in date-date interval and like word use LIMIT and OFFSET
+    See also get_all_works_like_word"""
 
     return get_selected(cursor, select_sql.sql_select_all_works_from_like_str_and_date_limit(word,
                                                                                              date_start,
@@ -198,14 +226,17 @@ def get_all_works_like_word_and_date_limit(cursor, word: str, date_start: str, d
                                                                                              str(page_num)))
 
 
-def get_statistic(cursor) -> list:
-    """Function return list contain stat info from all points"""
+def get_statistic(cursor) -> List[Tuple[int, str, int, int, datetime.datetime]]:
+    """Function return list contain stat info from all points
+    Return value [elem1, elem2, ..., elem_n] while elem = (point_id, point_name, equips_num,
+     works_num, last_works_date)"""
 
+    print(get_selected(cursor, select_sql.sql_select_statistic()))
     return get_selected(cursor, select_sql.sql_select_statistic())
 
 
 def get_size_database(cursor) -> str:
-    """Function return size workhistory database"""
+    """Function return size workhistory database in humans view"""
 
     return get_selected(cursor, select_sql.sql_select_size_database())[0][0]
 
@@ -222,20 +253,26 @@ def get_count_unique_works(cursor) -> int:
     return get_selected(cursor, select_sql.sql_select_count_uniques_works())[0][0]
 
 
-def get_all_workers(cursor) -> list:
-    """Function return list contain all workers"""
+def get_all_workers(cursor) -> List[Tuple[int, str, str, str, str, str]]:
+    """Function return list contain all workers
+    Return value [elem1, elem2, ..., elem_n] while elem = (worker_id, second_name, first_name, phone, status, grade)"""
 
     return get_selected(cursor, select_sql.sql_select_all_workers())
 
 
-def get_table_current_workers(cursor) -> list:
-    """Function return list contain current workers"""
+def get_table_current_workers(cursor) -> List[Tuple[int, str, str, bool, str, int]]:
+    """Function return list contain current workers
+    Return value [elem1, elem2, ..., elem_n] while elem = (worker_id, first_name,
+    second_name, status, phone, post_id)"""
 
     return get_selected(cursor, select_sql.sql_select_table_current_workers())
 
 
-def get_all_works_from_worker_id(cursor, worker_id: str) -> list:
-    """Function return list contain all formatting works from current performers"""
+def get_all_works_from_worker_id(cursor, worker_id: str) -> List[Tuple[int, str, str, str, str,
+                                                                       datetime.datetime, str, str, str]]:
+    """Function return list contain all formatting works from current performers
+    Return value [elem1, elem2, ..., elem_n] while elem = (work_id, point_name, equip_name, model, serial,
+    datetime, problem, work resume, performers names)"""
 
     return get_selected(cursor, select_sql.sql_select_works_from_worker(worker_id))
 
@@ -275,3 +312,14 @@ def get_all_orders(cursor) -> list:
 
     return get_selected(cursor, select_sql.sql_select_all_orders())
 
+
+def get_all_point_except_id(cursor, id: str) -> list:
+    """Function return all points except point_id == id"""
+
+    return get_selected(cursor, select_sql.sql_select_all_point_except_id(str(id)))
+
+
+def get_point_name_from_id(cursor, id: str) -> list:
+    """Function return string-name of point"""
+
+    return get_selected(cursor, select_sql.sql_select_name_from_point_id(str(id)))[0][0]

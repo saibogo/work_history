@@ -5,9 +5,11 @@ import wh_app.web.template as web_template
 import wh_app.web.universal_html as uhtml
 from wh_app.config_and_backup import config
 from wh_app.supporting import functions
-from wh_app.web.any_section import main_web_menu, faq_page, statistics_page, system_status_page, new_theme_page
+from wh_app.web.any_section import main_web_menu, faq_page, statistics_page, system_status_page, new_theme_page,\
+    viev_changelog
 from wh_app.web.equips_section import equip_to_point_limit, find_equip_to_id_page, select_equip_to_id_page, \
-    add_equip_method, equips_menu
+    add_equip_method, equips_menu, edit_equip_method, upgrade_equip_method, select_point_to_equip_method, \
+    move_equip_method, remove_table_page
 from wh_app.web.find_section import find_page, find_method, find_work_paging, find_work_like_date_paging, \
     find_point_page, find_equip_page
 from wh_app.web.points_section import points_operations, all_points_table, create_new_point_page, \
@@ -124,6 +126,16 @@ def equip_point_id_page(point_id, page_num):
     return equip_to_point_limit(point_id, page_num, stylesheet_number())
 
 
+@app.route("/edit-equip/<equip_id>")
+def edit_equip_page(equip_id: str) -> str:
+    return edit_equip_method(str(equip_id), stylesheet_number())
+
+
+@app.route("/upgrade-equip-info", methods=['POST'])
+def upgrade_equip_info():
+    return upgrade_equip_method(functions.form_to_data(request.form), request.method, stylesheet_number())
+
+
 @app.route('/find-equip-to-id')
 def find_equip_to_id():
     return find_equip_to_id_page(stylesheet_number())
@@ -132,6 +144,11 @@ def find_equip_to_id():
 @app.route("/select-equip-to-id", methods=['POST'])
 def select_equip_to_id():
     return select_equip_to_id_page(functions.form_to_data(request.form), request.method, stylesheet_number())
+
+
+@app.route("/change-point/<equip_id>")
+def change_point_to_equip(equip_id: str) -> str:
+    return select_point_to_equip_method(str(equip_id), stylesheet_number())
 
 
 @app.route("/add-equip", methods=['POST'])
@@ -162,6 +179,16 @@ def work_equip_id_page_page_id(equip_id, page_id):
 @app.route("/work/<equip_id>")
 def work_to_equip(equip_id):
     return redirect('/work/{0}/page/1'.format(equip_id))
+
+
+@app.route("/remove-equip", methods=['POST'])
+def remove_equip_method():
+    return move_equip_method(functions.form_to_data(request.form), request.method, stylesheet_number())
+
+
+@app.route("/remove-table/<equip_id>")
+def remove_table(equip_id: str):
+    return remove_table_page(str(equip_id), stylesheet_number())
 
 
 @app.route("/all-works")
@@ -322,6 +349,11 @@ def next_themes() -> str:
     session[THEME_NUMBER] %= THEMES_MAXIMAL
     session.modified=True
     return new_theme_page(session[THEME_NUMBER])
+
+
+@app.route('/changelog-page')
+def changelog_page() -> str:
+    return viev_changelog(stylesheet_number())
 
 
 @app.errorhandler(404)

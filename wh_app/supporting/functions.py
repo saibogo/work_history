@@ -11,6 +11,7 @@ def info_string(name_module):
                                                                           metadata.__author__,
                                                                           metadata.__license__))
 
+
 from wh_app.web.universal_html import FIND_REQUEST
 
 

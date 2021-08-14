@@ -473,3 +473,20 @@ def sql_select_all_orders() -> str:
 	ORDER BY %(id)s""" % sql_consts_dict
 
     return query
+
+
+def sql_select_all_point_except_id(id: str) -> str:
+    """Return all point except point_id == id"""
+
+    query = """SELECT %(point_id)s, %(point_name)s FROM %(workspoints)s 
+    WHERE %(point_id)s != {0} and %(is_work)s = true;""" % sql_consts_dict
+
+    return query.format(id)
+
+
+def sql_select_name_from_point_id(id: str) -> str:
+    """Return point_name from point_id == id"""
+
+    query = """SELECT %(point_name)s FROM %(workspoints)s WHERE %(point_id)s = {0};""" % sql_consts_dict
+
+    return query.format(str(id))

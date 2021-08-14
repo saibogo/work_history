@@ -1,3 +1,5 @@
+"""This module implements the command line interface"""
+
 from wh_app.supporting import stop_start_web
 from wh_app.supporting import backup_operations as bcp_oper
 from wh_app.supporting import functions
@@ -8,7 +10,8 @@ from wh_app.supporting import users_operation
 functions.info_string(__name__)
 
 
-def print_help():
+def print_help() -> None:
+    """Implement --help argument in command line interface"""
     print('python3 /path/to/main.py [command] [argument]')
     print('-h, --help : View this help')
     print('--startserver : Start WebServer in not running')
@@ -22,15 +25,15 @@ def print_help():
     print('if not arguments - start GUI')
 
 
-commands = {'--startserver': stop_start_web.start_server,
+COMMANDS = {'--startserver': stop_start_web.start_server,
             '--stopserver': stop_start_web.stop_server,
             '--help': print_help,
             '-h': print_help,
-            '--statusserver': lambda : print("Веб-сервер работает" if stop_start_web.status_server()
-            else "Веб-сервер не запущен"),
+            '--statusserver': lambda: print("Веб-сервер работает" if stop_start_web.status_server()
+                                            else "Веб-сервер не запущен"),
             '--cleardb': cleardb.drop_all_data,
             '--adduser': users_operation.create_new_user}
 
-commands_ext = {'--savedb': bcp_oper.create_dump,
+COMMANDS_EXT = {'--savedb': bcp_oper.create_dump,
                 '--updatepassword': users_operation.update_password,
                 '--saystop': stop_start_web.say_stop}
