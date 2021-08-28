@@ -1,17 +1,20 @@
-import datetime
+"""This module implements stop/start operation from web-server"""
 
-import wh_app.config_and_backup.config as config
+import datetime
 import threading
 import requests
 import psutil
 
+import wh_app.config_and_backup.config as config
 import wh_app.web.server as webserver
 from wh_app.supporting import functions
+from wh_app.supporting.auto_save_thread import AutoSaveThread
 
 functions.info_string(__name__)
 
 
 def start_server() -> None:
+    """Start server subprogram"""
     if status_server():
         print("Веб-сервер уже запущен")
     else:
@@ -26,6 +29,7 @@ def start_server() -> None:
 
 
 def stop_server() -> None:
+    """Stop server subprogram"""
     if not status_server():
         print("Веб-сервер не запущен")
     else:
@@ -39,7 +43,15 @@ def stop_server() -> None:
                     print("Веб-сервер остановлен")
 
 
+def all_start() -> None:
+    """Start server and autosave procedure"""
+    start_server()
+    autosave = AutoSaveThread.get_instance()
+    autosave.start()
+
+
 def status_server() -> bool:
+    """Function return current status web-servers"""
     try:
         _ = requests.get("http://" + config.ip_address + ":" + config.port + '/add-work')
         for process in psutil.process_iter():
@@ -53,9 +65,11 @@ def status_server() -> bool:
 
 
 def say_stop(comment: str) -> None:
+    """Function create new message for all user in ONLINE"""
     if status_server():
         try:
-            stop_time = datetime.datetime.now() + datetime.timedelta(milliseconds=(config.timeout_message) * 2)
+            stop_time = datetime.datetime.now() +\
+                        datetime.timedelta(milliseconds=(config.timeout_message) * 2)
 
             message = open(config.path_to_messages, 'w')
             message.write("Внимание! В {0} сервер будет остановлен для проведения работ.\n".
@@ -71,6 +85,7 @@ def say_stop(comment: str) -> None:
             message.close()
 
         except FileNotFoundError:
-            print("Невозможно передать сообщение. Нет доступа к файлу {0}".format(config.path_to_messages))
+            print("Невозможно передать сообщение. Нет доступа к файлу {0}".
+                  format(config.path_to_messages))
     else:
         print("Сервер уже остановлен")

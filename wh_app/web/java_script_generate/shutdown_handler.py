@@ -1,3 +1,5 @@
+"""This module contain functions to send message to user from browser"""
+
 from wh_app.config_and_backup.config import timeout_message, full_address
 
 

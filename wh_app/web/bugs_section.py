@@ -1,3 +1,5 @@
+"""This module implements methods for bugs-section web-pages"""
+
 import wh_app.web.template as web_template
 import wh_app.web.universal_html as uhtml
 from wh_app.postgresql.database import Database
@@ -10,6 +12,7 @@ functions.info_string(__name__)
 
 
 def bugs_menu(stylesheet_number: str) -> str:
+    """Method create main bugs-page"""
     menu = [(1, 'Отобразить все'),
             (2, 'Отобразить незакрытые'),
             (3, 'Зарегистрировать проблемму')]
@@ -20,6 +23,7 @@ def bugs_menu(stylesheet_number: str) -> str:
 
 
 def all_bugs_table(stylesheet_number: str) -> str:
+    """Method create page, contain all registred bugs"""
     with Database() as base:
         _, cursor = base
         bugs_list = select_operations.get_all_bugz_in_bugzilla(cursor)
@@ -30,6 +34,7 @@ def all_bugs_table(stylesheet_number: str) -> str:
 
 
 def all_bugs_in_work_table(stylesheet_number: str) -> str:
+    """Method create page. contain all unclosed bugs"""
     with Database() as base:
         _, cursor = base
         bugs_list = select_operations.get_all_bugz_in_work_in_bugzilla(cursor)
@@ -44,15 +49,21 @@ def add_bugs_result_table(data, method, stylesheet_number: str) -> str:
 
     if method == 'POST':
         bug_description = data[uhtml.DESCRIPTION]
-        password = data[uhtml.PASSWORD];
+        password = data[uhtml.PASSWORD]
         pre_adr = '/bugs'
         if functions.is_valid_password(password):
             with Database() as base:
                 connection, cursor = base
                 insert_operations.add_new_bug_in_bugzilla(cursor, bug_description)
                 connection.commit()
-                return web_template.result_page(uhtml.operation_completed(), pre_adr, str(stylesheet_number))
+                return web_template.result_page(uhtml.operation_completed(),
+                                                pre_adr,
+                                                str(stylesheet_number))
         else:
-            return web_template.result_page(uhtml.pass_is_not_valid(), pre_adr, str(stylesheet_number))
+            return web_template.result_page(uhtml.pass_is_not_valid(),
+                                            pre_adr,
+                                            str(stylesheet_number))
     else:
-        return web_template.result_page('Method in Add New Bug not corrected!', '/bugs', str(stylesheet_number))
+        return web_template.result_page('Method in Add New Bug not corrected!',
+                                        '/bugs',
+                                        str(stylesheet_number))

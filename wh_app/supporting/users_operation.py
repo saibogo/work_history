@@ -1,3 +1,5 @@
+"""This module implement operations from any users"""
+
 import getpass
 
 from wh_app.supporting import functions
@@ -18,8 +20,10 @@ def update_password(username: str) -> None:
         users = functions.read_all_users()
         password = getpass.getpass("Требуется пароль администратора системы:")
         if functions.is_superuser_password(password):
-            password = getpass.getpass("Ввведите новый пароль для пользователя {0} :".format(username))
-            password1 = getpass.getpass("Повторите новый пароль для пользователя {0} :".format(username))
+            password = getpass.getpass("Ввведите новый пароль для пользователя {0} :"
+                                       .format(username))
+            password1 = getpass.getpass("Повторите новый пароль для пользователя {0} :"
+                                        .format(username))
             if password == password1:
                 users[username] = functions.create_hash(password)
                 functions.save_all_users(users)
@@ -42,6 +46,7 @@ def create_new_user() -> None:
             users = functions.read_all_users()
             users[username] = functions.create_hash(username)
             functions.save_all_users(users)
-            print("Создан пользователь {0} с паролем по умолчанию {0} . Обязательно измените пароль!".format(username))
+            print(("Создан пользователь {0} с паролем по умолчанию {0}." +
+                   " Обязательно измените пароль!").format(username))
         else:
             print("Неверный пароль суперпользователя! В доступе отказано!")

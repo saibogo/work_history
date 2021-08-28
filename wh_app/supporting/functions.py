@@ -1,3 +1,5 @@
+"""This module contain any supporing functions"""
+
 import hashlib
 from datetime import datetime
 
@@ -6,6 +8,7 @@ from wh_app.supporting import metadata
 
 
 def info_string(name_module):
+    """This function printing module-info while module loading"""
     print('Import module {}. Version: {}, Author: {}, License: {}'.format(name_module,
                                                                           metadata.__version__,
                                                                           metadata.__author__,
@@ -15,17 +18,17 @@ def info_string(name_module):
 from wh_app.web.universal_html import FIND_REQUEST
 
 
-def str_to_str_n(s: str, max_len: int) -> str:
+def str_to_str_n(old_string: str, max_len: int) -> str:
     """Function return new string, separated \n"""
 
-    tmp = s
+    tmp = old_string
     chunks = []
     if max_len == 0:
-        return str_to_str_n(s, 1)
+        return str_to_str_n(old_string, 1)
     while len(tmp) >= max_len:
         chunks.append(tmp[:max_len])
         tmp = tmp[max_len:]
-    if len(tmp) != 0:
+    if tmp:
         chunks.append(tmp)
     return '\n'.join(chunks)
 
@@ -44,7 +47,11 @@ def full_equip_to_view(equip: list) -> list:
     if len(equip) != len_equip_record:
         result = []
     else:
-        result =  list(map(str, [equip[point], equip[name], equip[model], equip[serial], equip[pre_id]]))
+        result = list(map(str, [equip[point],
+                                equip[name],
+                                equip[model],
+                                equip[serial],
+                                equip[pre_id]]))
 
     return result
 
@@ -73,10 +80,10 @@ def save_all_users(users: dict) -> None:
     file_passwords.close()
 
 
-def create_hash(s: str) -> int:
+def create_hash(pattern: str) -> int:
     """Create hash from string"""
 
-    return int(hashlib.sha256(s.encode('utf-8')).hexdigest(), 16)
+    return int(hashlib.sha256(pattern.encode('utf-8')).hexdigest(), 16)
 
 
 def is_valid_password(password: str) -> bool:
@@ -89,7 +96,7 @@ def is_superuser_password(password: str) -> bool:
     """Function compare password and superuser password hash"""
 
     try:
-        return read_all_users()["saibogo"] ==  create_hash(password)
+        return read_all_users()["saibogo"] == create_hash(password)
     except KeyError:
         return False
 
@@ -116,7 +123,8 @@ def date_to_browser() -> str:
     month = str(curr_datetime.month) if curr_datetime.month > 9 else '0' + str(curr_datetime.month)
     day = str(curr_datetime.day) if curr_datetime.day > 9 else '0' + str(curr_datetime.day)
     hour = str(curr_datetime.hour) if curr_datetime.hour > 9 else '0' + str(curr_datetime.hour)
-    minute = str(curr_datetime.minute) if curr_datetime.minute > 9 else '0' + str(curr_datetime.minute)
+    minute = str(curr_datetime.minute) if curr_datetime.minute > 9 \
+        else '0' + str(curr_datetime.minute)
     return "{}-{}-{}T{}:{}".format(year, month, day, hour, minute)
 
 
@@ -130,7 +138,8 @@ def works_table_add_new_performer(works: list) -> list:
         for elem in work:
             new_works[-1].append(str(elem))
         if work != []:
-            new_works[-1][-1] += ('<a href="/add-performer-to-work/' + str(new_works[-1][0]) + '">+</a>')
+            new_works[-1][-1] += ('<a href="/add-performer-to-work/' +
+                                  str(new_works[-1][0]) + '">+</a>')
 
     return new_works
 
@@ -141,9 +150,7 @@ def list_of_pages(all_records: list) -> list:
     result = [i + 1 for i in range(len(all_records) // config.max_records_in_page)]
     if len(all_records) % config.max_records_in_page != 0:
         result.append(len(result) + 1)
-    return result if len(all_records) > 0 else [1]
-
-
+    return result if all_records else [1]
 
 
 info_string(__name__)

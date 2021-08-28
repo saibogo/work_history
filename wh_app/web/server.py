@@ -20,7 +20,7 @@ from wh_app.web.workers_section import workers_menu, all_workers_table, works_da
 from wh_app.web.works_section import works_menu, find_work_to_id_page, select_work_to_id_method, \
     work_to_equip_paging, add_work_method
 from wh_app.web.bugs_section import bugs_menu, all_bugs_table, all_bugs_in_work_table, add_bugs_result_table
-from wh_app.web.orders_section import all_customers_table, orders_main_menu, all_registred_orders_table
+from wh_app.web.orders_section import all_customers_table, orders_main_menu, all_registered_orders_table
 
 
 app = Flask(__name__, static_folder=config.static_dir)
@@ -337,7 +337,7 @@ def all_customers_table_server():
 
 @app.route('/all-registred-orders')
 def all_registred_orders():
-    return all_registred_orders_table(stylesheet_number())
+    return all_registered_orders_table(stylesheet_number())
 
 
 @app.route('/next-themes')

@@ -1,3 +1,5 @@
+"""This module contain functions to create all orders-pages"""
+
 import wh_app.web.template as web_template
 import wh_app.web.universal_html as uhtml
 from wh_app.postgresql.database import Database
@@ -9,6 +11,7 @@ functions.info_string(__name__)
 
 
 def orders_main_menu(stylesheet_number: str) -> str:
+    """Function create main page in ORDERS section"""
     menu = [(1, 'Все заказчики'),
             (2, 'Все зарегистрированные заявки')]
     links = ['/all-customers-table',
@@ -21,6 +24,7 @@ def orders_main_menu(stylesheet_number: str) -> str:
 
 
 def all_customers_table(stylesheet_number: str) -> str:
+    """Functions create page, contain list of all customer in system"""
     with Database() as base:
         _, cursor = base
         table = uhtml.universal_table(table_headers.customers_table_name,
@@ -30,7 +34,8 @@ def all_customers_table(stylesheet_number: str) -> str:
         return web_template.result_page(table, '/orders-and-customers', str(stylesheet_number))
 
 
-def all_registred_orders_table(stylesheet_number: str) -> str:
+def all_registered_orders_table(stylesheet_number: str) -> str:
+    """Function create page. contain list of all registered orders"""
     with Database() as base:
         _, cursor = base
         table = uhtml.universal_table(table_headers.orders_table_name,

@@ -231,7 +231,6 @@ def get_statistic(cursor) -> List[Tuple[int, str, int, int, datetime.datetime]]:
     Return value [elem1, elem2, ..., elem_n] while elem = (point_id, point_name, equips_num,
      works_num, last_works_date)"""
 
-    print(get_selected(cursor, select_sql.sql_select_statistic()))
     return get_selected(cursor, select_sql.sql_select_statistic())
 
 

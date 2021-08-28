@@ -1,3 +1,5 @@
+"""This module delete all views and all data in workhistory database"""
+
 import getpass
 
 from wh_app.postgresql import database
@@ -6,15 +8,15 @@ from wh_app.supporting import backup_operations
 
 functions.info_string(__name__)
 
-views_list = ['all_workers',
+VIEWS_LIST = ['all_workers',
               'firsts_bindings',
               'seconds_bindings',
               'statistic',
               'works_from_worker',
-              'works_likes'];
+              'works_likes']
 
 
-tables_list = ['bindings',
+TABLES_LIST = ['bindings',
                'days_names',
                'performers',
                'works_days',
@@ -38,12 +40,12 @@ def drop_all_data() -> None:
             backup_operations.create_dump()
             with database.Database() as base:
                 connection, cursor = base
-                for view in views_list:
+                for view in VIEWS_LIST:
                     sql = """DROP VIEW IF EXISTS {0}""".format(view)
                     cursor.execute(sql)
                     connection.commit()
 
-                for table in tables_list:
+                for table in TABLES_LIST:
                     sql = """DROP TABLE IF EXISTS {0}""".format(table)
                     cursor.execute(sql)
                     connection.commit()
