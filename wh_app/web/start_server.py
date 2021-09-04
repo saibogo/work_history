@@ -1,3 +1,5 @@
+"""This module starting development server"""
+
 import wh_app.web.server
 from wh_app.supporting import functions
 

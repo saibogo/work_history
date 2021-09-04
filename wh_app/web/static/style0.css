@@ -1,7 +1,7 @@
 body {
     background: Khaki;
     color: MidnightBlue;
-    background-image: url("/image/background.jpg");
+    background-image: url("/image/background0.jpg");
     background-size: 100%;
     }
 
@@ -41,7 +41,7 @@ td {
 
 tr:nth-child(even) {
     /*background-color: palegoldenrod;*/
-    background-image: url("/image/background.jpg");
+    background-image: url("/image/background0.jpg");
     }
 
 tr > :nth-child(3) {

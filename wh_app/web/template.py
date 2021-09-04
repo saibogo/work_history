@@ -1,3 +1,5 @@
+"""This module contain templates to web pages"""
+
 from wh_app.supporting import functions
 from wh_app.web.universal_html import list_to_ul, style_custom, navigations_menu
 from wh_app.web.java_script_generate.shutdown_handler import generate_message_shutdown_server
@@ -41,27 +43,29 @@ def update_system_in_future_list() -> list:
 
     return ['Планируется изменение структуры базы данных и внедрение многопользовательского режима',
             'В планах внедрение возможности редактирования записей',
-            'Планируется  расширение работы с аргументами командной строки для десктопного приложения',
+            'Планируется  расширение работы с аргументами командной строки' +
+            ' для десктопного приложения',
             'Планируется переработка GUI для клиентского приложения с использованием Qt',
-            'Также планируется реализация всех возможностей вэб-интерфейса в GUI десктопного приложения',
+            'Также планируется реализация всех возможностей вэб-интерфейса в GUI' +
+            ' десктопного приложения',
             'Планируется добавить возможность просмотра истории переносов оборудования']
 
 
 def faq_state_machine(section: str) -> str:
     """Return ul - element from section FAQ"""
 
-    ls = [];
+    result_list = []
     if section == 'hardware':
-        ls = hardware_needs_list()
+        result_list = hardware_needs_list()
     elif section == 'tecnology':
-        ls = used_tecnology_list()
+        result_list = used_tecnology_list()
     elif section == 'multiuser':
-        ls = how_many_users_list()
+        result_list = how_many_users_list()
     elif section == 'update':
-        ls = update_system_in_future_list()
+        result_list = update_system_in_future_list()
     else:
         pass
-    return list_to_ul(ls)
+    return list_to_ul(result_list)
 
 
 def result_page(main_page: str, preview_adr: str="", stylesheet_number: str="0") -> str:
