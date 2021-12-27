@@ -1,3 +1,5 @@
+"""This module contain all names from database"""
+
 from wh_app.supporting import functions
 
 functions.info_string(__name__)
@@ -50,9 +52,11 @@ equip_const = {"oborudovanie": "oborudovanie",
 
 replace_consts = {"cast_open_close": "CASE WHEN is_work = true THEN 'Работает' ELSE 'Закрыто' END",
                   "point_working": "is_work = true",
-                  "select_main_binding": "SELECT sub_name FROM workers WHERE workers.id = bindings.worker_id "
+                  "select_main_binding": "SELECT sub_name FROM workers WHERE" +
+                                         " workers.id = bindings.worker_id " +
                                          "AND bindings.is_main = true",
-                  "worker_status": "CASE WHEN workers.is_work=true THEN 'Работает' ELSE 'Уволен' END",
+                  "worker_status": "CASE WHEN workers.is_work=true THEN 'Работает'" +
+                                   " ELSE 'Уволен' END",
                   "bug_in_work": "CASE WHEN status = true THEN 'В работе' ELSE 'Исправлено' END"
                   }
 

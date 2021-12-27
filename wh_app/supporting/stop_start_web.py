@@ -61,7 +61,7 @@ def status_server() -> bool:
                     return True
     except requests.ConnectionError:
         return False
-    return False
+    return True
 
 
 def say_stop(comment: str) -> None:

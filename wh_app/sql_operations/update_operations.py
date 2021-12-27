@@ -20,3 +20,16 @@ def update_equip_information(cursor, equip_id: str, equip_name: str, equip_model
     """Update equip info in database"""
 
     cursor.execute(sql_update_equip(equip_id, equip_name, equip_model, equip_serial, equip_pre_id))
+
+
+def invert_worker_status(cursor, worker_id: str) -> None:
+    """Invert current worker-status"""
+
+    cursor.execute(sql_inverse_worker_status(worker_id))
+
+
+def update_worker_info(cursor, worker_id: str, name: str, sub_name: str, phone_number: str,
+                       post_id: str) -> None:
+    """Update information for selected worker in workers-table"""
+
+    cursor.execute(sql_update_worker_info(worker_id, name, sub_name, phone_number, post_id))

@@ -259,6 +259,12 @@ def get_all_workers(cursor) -> List[Tuple[int, str, str, str, str, str]]:
     return get_selected(cursor, select_sql.sql_select_all_workers())
 
 
+def get_info_from_worker(cursor, worker_id: str) -> Tuple[int, str, str, str, str, str]:
+    """Function return full info in tuple from worker where id = worker_id"""
+
+    return get_selected(cursor, select_sql.sql_select_worker_info(worker_id))[0]
+
+
 def get_table_current_workers(cursor) -> List[Tuple[int, str, str, bool, str, int]]:
     """Function return list contain current workers
     Return value [elem1, elem2, ..., elem_n] while elem = (worker_id, first_name,
@@ -322,3 +328,9 @@ def get_point_name_from_id(cursor, id: str) -> list:
     """Function return string-name of point"""
 
     return get_selected(cursor, select_sql.sql_select_name_from_point_id(str(id)))[0][0]
+
+
+def get_all_posts(cursor) -> list:
+    """Function return all post in POSTS-table"""
+
+    return get_selected(cursor, select_sql.sql_select_all_posts())

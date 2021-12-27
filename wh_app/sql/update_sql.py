@@ -1,3 +1,5 @@
+"""This module contain function. create RAW-query to UPDATE in database"""
+
 from wh_app.supporting import functions
 from wh_app.sql.sql_constant import sql_consts_dict
 
@@ -7,8 +9,8 @@ functions.info_string(__name__)
 def sql_update_point(point_id:str, point_name: str, point_address: str) -> str:
     """Returns the query string to update point information """
 
-    query = """UPDATE %(workspoints)s SET %(point_name)s = '{0}', %(point_address)s = '{1}' 
-    WHERE %(point_id)s = '{2}';""" % sql_consts_dict
+    query = ("""UPDATE %(workspoints)s SET %(point_name)s = '{0}', %(point_address)s = '{1}'""" +
+             """ WHERE %(point_id)s = '{2}';""") % sql_consts_dict
 
     return query.format(point_name,
                         point_address,
@@ -19,17 +21,36 @@ def sql_update_equip(equip_id: str, equip_name: str, equip_model: str,
                      equip_serial: str, equip_pre_id: str) -> str:
     """Return the query string to update equip information"""
 
-    query = """UPDATE %(oborudovanie)s SET %(name)s = '{0}', %(model)s = '{1}', %(serial_num)s = '{2}', 
-    %(pre_id)s = '{3}' WHERE %(id)s = '{4}';""" % sql_consts_dict
+    query = ("""UPDATE %(oborudovanie)s SET %(name)s = '{0}', %(model)s = '{1}',""" +
+             """ %(serial_num)s = '{2}', %(pre_id)s = '{3}'""" +
+             """ WHERE %(id)s = '{4}';""") % sql_consts_dict
 
-    return query.format(str(equip_name), str(equip_model), str(equip_serial), str(equip_pre_id), str(equip_id))
+    return query.format(str(equip_name),
+                        str(equip_model),
+                        str(equip_serial),
+                        str(equip_pre_id),
+                        str(equip_id))
 
 
-def sql_inverse_points_status(point_id:str) -> str:
+def sql_inverse_points_status(point_id: str) -> str:
     """Return the query string to invert is_work section"""
 
-    query = """UPDATE %(workspoints)s SET %(is_work)s = NOT %(is_work)s WHERE %(point_id)s = '{0}';""" % sql_consts_dict
-    print(query)
+    query = ("""UPDATE %(workspoints)s SET %(is_work)s = NOT %(is_work)s""" +
+             """ WHERE %(point_id)s = '{0}';""") % sql_consts_dict
 
     return query.format(point_id)
 
+
+def sql_inverse_worker_status(worker_id: str) -> str:
+    """Return the query string to invert is_work column in workers-table"""
+
+    query = ("""UPDATE %(workers)s SET %(is_work)s = NOT %(is_work)s where ID = {0}""") % sql_consts_dict
+    return query.format(worker_id)
+
+
+def sql_update_worker_info(worker_id: str, name: str, sub_name: str,phone_number: str, post_id: str) -> str:
+    """Return the query string to update worker information"""
+
+    query = ("""UPDATE %(workers)s SET %(name)s = '{0}', %(sub_name)s = '{1}', """ +
+             """ %(phone_number)s = '{2}', %(post_id)s = {3} WHERE %(id)s = {4}""") % sql_consts_dict
+    return query.format(name, sub_name, phone_number, post_id, worker_id)

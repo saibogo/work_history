@@ -35,11 +35,11 @@ class AutoSaveThread(threading.Thread):
         """Method return current status autosave-object"""
         return cls.get_instance().is_alive()
 
-    def stop(self):
+    def stop(self) -> None:
         """Method stopping autosave-object"""
         self.thread_work = False
 
-    def run(self):
+    def run(self) -> None:
         while self.thread_work:
             time_now = datetime.datetime.now()
             current_time = datetime.time(hour=time_now.hour,

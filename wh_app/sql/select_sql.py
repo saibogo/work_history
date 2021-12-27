@@ -464,6 +464,13 @@ def sql_select_all_workers() -> str:
     return """SELECT * FROM %(all_workers)s""" % sql_consts_dict
 
 
+def sql_select_worker_info(worker_id: str) -> str:
+    """Return full info from worker where ID = worker_id"""
+
+    query = """SELECT * FROM %(all_workers)s WHERE ID = {0}""" % sql_consts_dict
+    return query.format(worker_id)
+
+
 def sql_select_table_current_workers() -> str:
     """Return SQL-query contain table workers"""
 
@@ -559,3 +566,10 @@ def sql_select_name_from_point_id(point_id: str) -> str:
              """ WHERE %(point_id)s = {0};""") % sql_consts_dict
 
     return query.format(str(point_id))
+
+
+def sql_select_all_posts() -> str:
+    """Return SELECT-query to ALL POST in database"""
+
+    query = ("""SELECT * FROM %(posts)s""") % sql_consts_dict
+    return query
