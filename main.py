@@ -2,7 +2,6 @@
 
 import sys
 
-from wh_app.simple_gui import tkinter_gui as gui
 from wh_app.sql_operations import view_operation
 from wh_app.postgresql.database import Database
 from wh_app.supporting.cli import COMMANDS, COMMANDS_EXT
@@ -31,11 +30,9 @@ if len(sys.argv) > 1:
 
 else:
     AUTO_SAVE_OBJ = AutoSaveThread.get_instance()
-    if not AUTO_SAVE_OBJ.is_alive():
+    if not AutoSaveThread.get_status():
         AUTO_SAVE_OBJ.start()
-    """
-    gui.main_window()
-    """
+    print("Autosave is work" if AutoSaveThread.get_status() else "Autosave not work")
     app, window = create_window()
     start_window(app, window)
-    print("Autosave is work" if AutoSaveThread.get_status() else "Autosave not work")
+

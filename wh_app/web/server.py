@@ -1,14 +1,17 @@
 """This module contain all rules WEB-section"""
 
-from flask import Flask, request, redirect, session
-from flask import send_from_directory
+from flask import Flask, request, redirect, session, Response
+from flask import send_from_directory, send_file
+from typing import Callable, Any
+import time
+from fpdf import FPDF
 
 import wh_app.web.template as web_template
 import wh_app.web.universal_html as uhtml
 from wh_app.config_and_backup import config
 from wh_app.supporting import functions
 from wh_app.web.any_section import main_web_menu, faq_page, statistics_page,\
-    system_status_page, new_theme_page, viev_changelog
+    system_status_page, new_theme_page, viev_changelog, login_input_page
 from wh_app.web.equips_section import equip_to_point_limit, find_equip_to_id_page,\
     select_equip_to_id_page, add_equip_method, equips_menu, edit_equip_method,\
     upgrade_equip_method, select_point_to_equip_method, move_equip_method,\
@@ -28,6 +31,9 @@ from wh_app.web.bugs_section import bugs_menu, all_bugs_table, all_bugs_in_work_
     add_bugs_result_table
 from wh_app.web.orders_section import all_customers_table, orders_main_menu,\
     all_registered_orders_table
+from wh_app.web.universal_html import LOGIN, PASSWORD, access_denided, access_allowed, logout_user
+from wh_app.web.template import result_page
+from wh_app.supporting.pdf_operations.pdf import equips_in_point, works_from_equip
 
 
 app = Flask(__name__, static_folder=config.static_dir)
@@ -36,6 +42,8 @@ functions.info_string(__name__)
 
 THEME_NUMBER = 'theme_number'
 THEMES_MAXIMAL = 2
+LOGIN_IS_CORRECT = 'access_is_allowed'
+TIME_LOGIN = 'time_login'
 
 
 def stylesheet_number() -> str:
@@ -48,366 +56,446 @@ def stylesheet_number() -> str:
     return session.get(THEME_NUMBER)
 
 
+def access_is_allowed() -> bool:
+    """Function return if user input correct login and password"""
+    if (LOGIN_IS_CORRECT in session) and\
+            (TIME_LOGIN in session) and\
+            (time.time() - session[TIME_LOGIN] < config.max_session_time):
+        session[LOGIN_IS_CORRECT] = session.get(LOGIN_IS_CORRECT)
+        session[TIME_LOGIN] = time.time()
+    else:
+        session[LOGIN_IS_CORRECT] = False
+    session.modified = True
+    return session.get(LOGIN_IS_CORRECT)
+
+
+def goto_or_redirect(function: Callable) -> Any:
+    if access_is_allowed():
+        return function()
+    else:
+        return redirect('/login')
+
+
+@app.route('/login')
+def login_page() -> str:
+    """Redirect to LOGIN-form"""
+
+    return login_input_page()
+
+
+@app.route('/logout')
+def logout_page() -> str:
+    """Function call logout-function for user and redirect to LOGOUT-page"""
+
+    session[LOGIN_IS_CORRECT] = False
+    session.modified = True
+    return result_page(logout_user(), '/login', stylesheet_number())
+
+
+@app.route('/login-verification',  methods=['POST'])
+def login_verification() -> str:
+    """Function compare pair login-password with data in system and redirect to new page"""
+
+    if functions.is_login_and_password_correct(request.form[LOGIN], request.form[PASSWORD]):
+        print("Успешная верификация пользователя ", request.form[LOGIN])
+        session[LOGIN_IS_CORRECT] = True
+        session[TIME_LOGIN] = time.time()
+        session.modified = True
+        result = access_allowed(request.form[LOGIN])
+    else:
+        print("Неудачная попытка входа пользователя ", request.form[LOGIN])
+        result = access_denided(request.form[LOGIN])
+    return result_page(result, '/')
+
+
 @app.route("/")
-def main_page():
+def main_page() -> Response:
     """Return main web-page"""
-    return main_web_menu(stylesheet_number())
+    return goto_or_redirect(lambda:  main_web_menu(stylesheet_number()))
 
 
 @app.route('/favicon.ico')
-def favicon():
+def favicon() -> Any:
     """Return static favicon-logo to web-page"""
     return send_from_directory(config.static_dir, 'favicon.ico')
 
 
 @app.route('/style<number>.css')
-def styles(number):
+def styles(number: int) -> Response:
     """Return selected CSS-page from static folder"""
     return send_from_directory(config.static_dir, 'style{0}.css'.format(number))
 
 
 @app.route('/image/background<number>.jpg')
-def get_background_image(number):
+def get_background_image(number: int) -> Response:
     """Return selected background from static folder"""
     return send_from_directory(config.static_dir, 'image/background{0}.jpg'.format(number))
 
 
 @app.route("/equips")
-def equips():
+def equips_section() -> Response:
     """Return main page EQUIPS-section"""
-    return equips_menu(stylesheet_number())
+    return goto_or_redirect(lambda: equips_menu(stylesheet_number()))
 
 
 @app.route("/points")
-def points():
+def points() -> Response:
     """Return main page POINTS-section"""
-    return points_operations(stylesheet_number())
+    return goto_or_redirect(lambda: points_operations(stylesheet_number()))
 
 
 @app.route("/all-points")
-def all_points():
+def all_points() -> Response:
     """Return page, contain all points in database """
-    return all_points_table(stylesheet_number())
+    return goto_or_redirect(lambda: all_points_table(stylesheet_number()))
 
 
 @app.route("/create-new-point")
-def create_new_point():
+def create_new_point() -> Response:
     """Return page to create new workspoint"""
-    return create_new_point_page(stylesheet_number())
+    return goto_or_redirect(lambda: create_new_point_page(stylesheet_number()))
 
 
 @app.route('/add-point', methods=['POST'])
-def add_point():
+def add_point() -> Response:
     """Redirect to method create new workspoint"""
-    return add_point_method(functions.form_to_data(request.form),
-                            request.method,
-                            stylesheet_number())
+    return goto_or_redirect(lambda: add_point_method(functions.form_to_data(request.form),
+                                                     request.method,
+                                                     stylesheet_number()))
 
 
 @app.route("/works-points")
-def works_points():
+def works_points() -> Response:
     """Return page, contain all points in database. where status WORK=True"""
-    return all_works_points_table(stylesheet_number())
+    return goto_or_redirect(lambda: all_works_points_table(stylesheet_number()))
 
 
 @app.route("/edit-point/<point_id>")
-def edit_point(point_id: str):
+def edit_point(point_id: int) -> Response:
     """Return page to edit current workspoint"""
-    return edit_point_method(point_id, stylesheet_number())
+    return goto_or_redirect(lambda: edit_point_method(str(point_id), stylesheet_number()))
 
 
 @app.route("/on-off-point/<point_id>")
-def on_off_point(point_id:str):
+def on_off_point(point_id: int) -> Response:
     """Return page invert status WORK"""
-    return on_off_point_method(point_id, stylesheet_number())
+    return goto_or_redirect(lambda: on_off_point_method(str(point_id), stylesheet_number()))
 
 
 @app.route("/upgrade-point-info", methods=['POST'])
-def upgrade_point_info():
+def upgrade_point_info() -> Response:
     """Redirect to method upgraded data from point in database"""
-    return upgrade_point_method(functions.form_to_data(request.form),
-                                request.method,
-                                stylesheet_number())
+    return goto_or_redirect(lambda: upgrade_point_method(functions.form_to_data(request.form),
+                                                         request.method,
+                                                         stylesheet_number()))
 
 
 @app.route("/invert-point-status", methods=['POST'])
-def invert_point_status():
-    """Redirect to method update WORK status in dtabase from current point"""
-    return invert_point_status_method(functions.form_to_data(request.form),
-                                      request.method,
-                                      stylesheet_number())
+def invert_point_status() -> Response:
+    """Redirect to method update WORK status in database from current point"""
+    return goto_or_redirect(lambda: invert_point_status_method(functions.form_to_data(request.form),
+                                                               request.method,
+                                                               stylesheet_number()))
 
 
 @app.route("/equip/<point_id>")
-def equip_to_point(point_id):
+def equip_to_point(point_id: int) -> Response:
     """Return first page in ALL EQUIP in current Point"""
-    return redirect('/equip/{0}/page/1'.format(point_id))
+    return goto_or_redirect(lambda: redirect('/equip/{0}/page/1'.format(point_id)))
 
 
 @app.route("/all-equips")
-def all_equips_table():
+def all_equips_table() -> Response:
     """Return page, contain ALL EQUIP"""
-    return equip_to_point('0')
+    return goto_or_redirect(lambda: equip_to_point(0))
 
 
 @app.route("/equip/<point_id>/page/<page_num>")
-def equip_point_id_page(point_id, page_num):
-    """Retutn page №page_num in ALL EQUIP in current point"""
-    return equip_to_point_limit(point_id, page_num, stylesheet_number())
+def equip_point_id_page(point_id: int, page_num: int):
+    """Return page №page_num in ALL EQUIP in current point"""
+    return goto_or_redirect(lambda: equip_to_point_limit(point_id, page_num, stylesheet_number()))
 
 
 @app.route("/edit-equip/<equip_id>")
-def edit_equip_page(equip_id: str) -> str:
+def edit_equip_page(equip_id: str) -> Response:
     """Return page to EDIT current EQUIP"""
-    return edit_equip_method(str(equip_id), stylesheet_number())
+    return goto_or_redirect(lambda: edit_equip_method(str(equip_id), stylesheet_number()))
 
 
 @app.route("/upgrade-equip-info", methods=['POST'])
-def upgrade_equip_info():
+def upgrade_equip_info() -> Response:
     """Redirect to method UPGRADE EQUIP INFO in database"""
-    return upgrade_equip_method(functions.form_to_data(request.form),
-                                request.method,
-                                stylesheet_number())
+    return goto_or_redirect(lambda: upgrade_equip_method(functions.form_to_data(request.form),
+                                                         request.method,
+                                                         stylesheet_number()))
 
 
 @app.route('/find-equip-to-id')
-def find_equip_to_id():
+def find_equip_to_id() -> Response:
     """Return page, contain FIND FORM in EQUIPS List in database"""
-    return find_equip_to_id_page(stylesheet_number())
+    return goto_or_redirect(lambda: find_equip_to_id_page(stylesheet_number()))
 
 
 @app.route("/select-equip-to-id", methods=['POST'])
-def select_equip_to_id():
+def select_equip_to_id() -> Response:
     """Redirect to method, returned full information to EQUIP"""
-    return select_equip_to_id_page(functions.form_to_data(request.form),
-                                   request.method,
-                                   stylesheet_number())
+    return goto_or_redirect(lambda: select_equip_to_id_page(functions.form_to_data(request.form),
+                                                            request.method,
+                                                            stylesheet_number()))
 
 
 @app.route("/change-point/<equip_id>")
-def change_point_to_equip(equip_id: str) -> str:
+def change_point_to_equip(equip_id: int) -> Response:
     """Return page, contain FORM to CHANGE new point-location from selected EQUIP"""
-    return select_point_to_equip_method(str(equip_id), stylesheet_number())
+    return goto_or_redirect(lambda: select_point_to_equip_method(str(equip_id), stylesheet_number()))
 
 
 @app.route("/add-equip", methods=['POST'])
-def add_equip():
+def add_equip() -> Response:
     """Redirect to method append new equip in current point"""
-    return add_equip_method(functions.form_to_data(request.form),
-                            request.method,
-                            stylesheet_number())
+    return goto_or_redirect(lambda: add_equip_method(functions.form_to_data(request.form),
+                                                     request.method,
+                                                     stylesheet_number()))
+
+
+@app.route("/table-to-pdf/<data>")
+def html_table_to_pdf(data:str) -> Response:
+    """Redirect to method generate pdf-version current main-table
+    correct adr /table-to-pdf/<section>=<value>"""
+
+    section, value = data.split('=')
+    pdf: FPDF = FPDF()
+    if section == "point":
+        pdf = equips_in_point(value)
+    elif section == "equip":
+        pdf = works_from_equip(int(value))
+    else:
+        pass
+
+    pdf.output(config.path_to_pdf)
+    return goto_or_redirect(lambda : send_file(config.path_to_pdf))
 
 
 @app.route("/works")
-def works_operations():
+def works_operations() -> Response:
     """Return main page in WORKS-section"""
-    return works_menu(stylesheet_number())
+    return goto_or_redirect(lambda: works_menu(stylesheet_number()))
 
 
 @app.route('/find-work-to-id')
-def find_work_to_id():
+def find_work_to_id() -> Response:
     """Return page to FIND WORK"""
-    return find_work_to_id_page(stylesheet_number())
+    return goto_or_redirect(lambda: find_work_to_id_page(stylesheet_number()))
 
 
 @app.route("/select-work-to-id", methods=['POST'])
-def select_work_to_id():
+def select_work_to_id() -> Response:
     """Redirect to method, returned full information from selected work"""
-    return select_work_to_id_method(functions.form_to_data(request.form),
-                                    request.method,
-                                    stylesheet_number())
+    return goto_or_redirect(lambda: select_work_to_id_method(functions.form_to_data(request.form),
+                                                             request.method,
+                                                             stylesheet_number()))
 
 
 @app.route("/work/<equip_id>/page/<page_id>")
-def work_equip_id_page_page_id(equip_id, page_id):
+def work_equip_id_page_page_id(equip_id: int, page_id: int) -> Response:
     """Return page=page_id in ALL work from current EQUIP"""
-    return work_to_equip_paging(equip_id, page_id, stylesheet_number())
+    return goto_or_redirect(lambda: work_to_equip_paging(equip_id, page_id, stylesheet_number()))
 
 
 @app.route("/work/<equip_id>")
-def work_to_equip(equip_id):
+def work_to_equip(equip_id: int) -> Response:
     """Redirect to first page in ALL work from EQUIP where EQUIP_ID=equip_id"""
-    return redirect('/work/{0}/page/1'.format(equip_id))
+    return goto_or_redirect(lambda: redirect('/work/{0}/page/1'.format(equip_id)))
 
 
 @app.route("/remove-equip", methods=['POST'])
-def remove_equip_method():
+def remove_equip_method() -> Response:
     """Redirect to method removed EQUIP to new point"""
-    return move_equip_method(functions.form_to_data(request.form),
-                             request.method,
-                             stylesheet_number())
+    return goto_or_redirect(lambda: move_equip_method(functions.form_to_data(request.form),
+                                                      request.method,
+                                                      stylesheet_number()))
 
 
 @app.route("/remove-table/<equip_id>")
-def remove_table(equip_id: str):
+def remove_table(equip_id: int) -> Response:
     """Return page with all move current EQUIP"""
-    return remove_table_page(str(equip_id), stylesheet_number())
+    return goto_or_redirect(lambda: remove_table_page(str(equip_id), stylesheet_number()))
 
 
 @app.route("/all-works")
-def all_works():
+def all_works() -> Response:
     """Return page contain all works"""
-    return work_to_equip('0')
+    return goto_or_redirect(lambda: work_to_equip(0))
 
 
 @app.route("/add-work", methods=['POST'])
-def add_work():
+def add_work() -> Response:
     """Redirect to method added work to current EQUIP"""
-    return add_work_method(functions.form_to_data(request.form),
-                           request.method,
-                           stylesheet_number())
+    return goto_or_redirect(lambda: add_work_method(functions.form_to_data(request.form),
+                                                    request.method,
+                                                    stylesheet_number()))
 
 
 @app.route("/workers")
-def workers():
+def workers() -> Response:
     """Return main page WORKERS-section"""
-    return workers_menu(stylesheet_number())
+    return goto_or_redirect(lambda: workers_menu(stylesheet_number()))
 
 
 @app.route("/all-workers")
-def all_workers():
+def all_workers() -> Response:
     """Return page, contain All WORKERS"""
-    return all_workers_table(stylesheet_number())
+    return goto_or_redirect(lambda: all_workers_table(stylesheet_number()))
 
 
 @app.route("/works-days")
-def works_days():
+def works_days() -> Response:
     """Return page current SHEDULE"""
-    return works_days_page(stylesheet_number())
+    return goto_or_redirect(lambda: works_days_page(stylesheet_number()))
 
 
 @app.route("/performer/<performer_id>", methods=['GET'])
-def performer_performer_id(performer_id):
+def performer_performer_id(performer_id: int) -> Response:
     """Return ALL works where worker == performer_id"""
-    return works_from_performers_table(performer_id,
-                                       request.args.get('page',
-                                                        default=config.full_address,
-                                                        type=str),
-                                       stylesheet_number())
+    return goto_or_redirect(lambda: works_from_performers_table(performer_id,
+                                                                request.args.get('page',
+                                                                                 default=config.full_address,
+                                                                                 type=str),
+                                                                stylesheet_number()))
 
 
 @app.route("/add-performer-to-work/<work_id>", methods=['GET'])
-def add_performer_to_work_work_id(work_id):
+def add_performer_to_work_work_id(work_id: int) -> Response:
     """Redirect to form append performer in current work"""
-    return add_performer_to_work(work_id,
-                                 request.args.get('page',
-                                                  default=config.full_address,
-                                                  type=str),
-                                 stylesheet_number())
+    return goto_or_redirect(lambda: add_performer_to_work(work_id,
+                                                          request.args.get('page',
+                                                                           default=config.full_address,
+                                                                           type=str),
+                                                          stylesheet_number()))
 
 
 @app.route('/add-performer-result', methods=['POST'])
-def add_performer_result():
+def add_performer_result() -> Response:
     """Redirect to method add performer in current work"""
-    return add_performer_result_method(functions.form_to_data(request.form),
-                                       request.method,
-                                       stylesheet_number())
+    return goto_or_redirect(lambda: add_performer_result_method(functions.form_to_data(request.form),
+                                                                request.method,
+                                                                stylesheet_number()))
 
 
 @app.route("/FAQ", methods=['GET'])
-def faq():
+def faq() -> Response:
     """Return FAQ-page"""
-    return faq_page(request.args.get('page',
-                                     default=config.full_address,
-                                     type=str),
-                    stylesheet_number())
+    return goto_or_redirect(lambda: faq_page(request.args.get('page',
+                                                              default=config.full_address,
+                                                              type=str),
+                                             stylesheet_number()))
 
 
 @app.route('/statistics', methods=['GET'])
-def statistics():
+def statistics() -> Response:
     """Return STATISTIC-page"""
-    return statistics_page(request.args.get('page',
-                                            default=config.full_address,
-                                            type=str),
-                           stylesheet_number())
+    return goto_or_redirect(lambda: statistics_page(request.args.get('page',
+                                                                     default=config.full_address,
+                                                                     type=str),
+                                                    stylesheet_number()))
 
 
 @app.route('/system-status', methods=['GET'])
-def system_status():
+def system_status() -> Response:
     """Return page, contain status all system components"""
-    return system_status_page(request.args.get('page', default=config.full_address, type=str),
-                              stylesheet_number())
+    return goto_or_redirect(lambda: system_status_page(request.args.get('page',
+                                                                        default=config.full_address,
+                                                                        type=str),
+                                                       stylesheet_number()))
 
 
 @app.route('/find', methods=['GET'])
-def find():
+def find() -> Response:
     """Return main FIND-page"""
-    return find_page(request.args.get('page', default=config.full_address, type=str),
-                     stylesheet_number())
+    return goto_or_redirect(lambda: find_page(request.args.get('page',
+                                                               default=config.full_address,
+                                                               type=str),
+                                              stylesheet_number()))
 
 
 @app.route('/findresult', methods=['POST'])
-def findresult():
+def findresult() -> Response:
     """Redirect to method selected find-type"""
-    return find_method(functions.form_to_data(request.form),
-                       request.method,
-                       stylesheet_number())
+    return goto_or_redirect(lambda: find_method(functions.form_to_data(request.form),
+                                                request.method,
+                                                stylesheet_number()))
 
 
 @app.route('/find/work/<find_string>/page/<page_num>')
-def find_work_find_string_page_page_num(find_string: str, page_num: str) -> str:
+def find_work_find_string_page_page_num(find_string: str, page_num: int) -> Response:
     """Return result find work page"""
-    return find_work_paging(find_string, page_num, stylesheet_number())
+    return goto_or_redirect(lambda: find_work_paging(find_string,
+                                                     str(page_num),
+                                                     stylesheet_number()))
 
 
 @app.route('/find/work/<find_string>/<data_start>/<data_stop>/page/<page_num>')
-def find_work_data_to_data(find_string: str, data_start: str, data_stop: str, page_num: str) -> str:
+def find_work_data_to_data(find_string: str, data_start: str, data_stop: str, page_num: int) -> Response:
     """Return page, contain result like WORK_NAME and WORK_DATE"""
-    return find_work_like_date_paging(find_string,
-                                      data_start,
-                                      data_stop,
-                                      page_num,
-                                      stylesheet_number())
+    return goto_or_redirect(lambda: find_work_like_date_paging(find_string,
+                                                               data_start,
+                                                               data_stop,
+                                                               str(page_num),
+                                                               stylesheet_number()))
 
 
 @app.route('/find/point/<find_string>/page/<page_num>')
-def find_point(find_string: str, page_num: str) -> str:
+def find_point(find_string: str, page_num: int) -> Response:
     """Return result find point"""
-    return find_point_page(find_string, page_num, stylesheet_number())
+    return goto_or_redirect(lambda: find_point_page(find_string,
+                                                    str(page_num),
+                                                    stylesheet_number()))
 
 
 @app.route('/find/equip/<find_string>/page/<page_num>')
-def find_equip(find_string: str, page_num: str) -> str:
+def find_equip(find_string: str, page_num: int) -> Response:
     """return result find EQUIP"""
-    return find_equip_page(find_string, page_num, stylesheet_number())
+    return goto_or_redirect(lambda: find_equip_page(find_string,
+                                                    str(page_num),
+                                                    stylesheet_number()))
 
 
 @app.route('/bugs')
-def bugs():
+def bugs() -> Response:
     """Return main page to BUGS-section"""
-    return bugs_menu(stylesheet_number())
+    return goto_or_redirect(lambda: bugs_menu(stylesheet_number()))
 
 
 @app.route('/all-bugs')
-def all_bugs():
+def all_bugs() -> Response:
     """Return all registered problem"""
-    return all_bugs_table(stylesheet_number())
+    return goto_or_redirect(lambda: all_bugs_table(stylesheet_number()))
 
 
 @app.route('/all-bugs-in-work')
-def all_bugs_in_work():
+def all_bugs_in_work() -> Response:
     """return all unclosed bugs page"""
-    return all_bugs_in_work_table(stylesheet_number())
+    return goto_or_redirect(lambda: all_bugs_in_work_table(stylesheet_number()))
 
 
 @app.route('/add-bug')
-def add_bug():
+def add_bug() -> Response:
     """Return form to create new bug"""
-    return web_template.result_page(uhtml.new_bug_input_table(),
-                                    '/bugs',
-                                    stylesheet_number())
+    return goto_or_redirect(lambda: web_template.result_page(uhtml.new_bug_input_table(),
+                                                             '/bugs',
+                                                             stylesheet_number()))
 
 
 @app.route('/add-bug-result', methods=['POST'])
-def add_bug_result():
+def add_bug_result() -> Response:
     """Redirect to method append bug in database"""
-    return add_bugs_result_table(functions.form_to_data(request.form),
-                                 request.method,
-                                 stylesheet_number())
+    return goto_or_redirect(lambda: add_bugs_result_table(functions.form_to_data(request.form),
+                                                          request.method,
+                                                          stylesheet_number()))
 
 
 @app.route('/server-ready-to-shutdown')
-def server_ready_to_shutdown():
+def server_ready_to_shutdown() -> str:
     """Return message from admin"""
     message = ""
     try:
@@ -420,21 +508,21 @@ def server_ready_to_shutdown():
 
 
 @app.route('/orders-and-customers')
-def orders_and_customers():
+def orders_and_customers() -> Response:
     """Return main page ORDERS-sections"""
-    return orders_main_menu(stylesheet_number())
+    return goto_or_redirect(lambda: orders_main_menu(stylesheet_number()))
 
 
 @app.route('/all-customers-table')
-def all_customers_table_server():
+def all_customers_table_server() -> Response:
     """Return ALL CUSTOMERS page"""
-    return all_customers_table(stylesheet_number())
+    return goto_or_redirect(lambda: all_customers_table(stylesheet_number()))
 
 
 @app.route('/all-registred-orders')
-def all_registred_orders():
+def all_registred_orders() -> Response:
     """Return ALL ORDERS page"""
-    return all_registered_orders_table(stylesheet_number())
+    return goto_or_redirect(lambda: all_registered_orders_table(stylesheet_number()))
 
 
 @app.route('/next-themes')
@@ -445,35 +533,41 @@ def next_themes() -> str:
     else:
         session[THEME_NUMBER] = 0  # default number theme
     session[THEME_NUMBER] %= THEMES_MAXIMAL
-    session.modified=True
+    session.modified = True
     return new_theme_page(session[THEME_NUMBER])
 
 
 @app.route('/changelog-page')
-def changelog_page() -> str:
+def changelog_page() -> Response:
     """Return ALL CHANGELOG page"""
-    return viev_changelog(stylesheet_number())
+    return goto_or_redirect(lambda: viev_changelog(stylesheet_number()))
 
 
 @app.errorhandler(404)
-def page_not_found(error):
+def page_not_found(error: Any) -> Response:
     """Return network error handling page 404"""
     print(error)
-    return web_template.result_page(uhtml.html_page_not_found(), '/', stylesheet_number())
+    return goto_or_redirect(lambda: web_template.result_page(uhtml.html_page_not_found(),
+                                                             '/',
+                                                             stylesheet_number()))
 
 
 @app.errorhandler(405)
-def method_not_allowed(error):
+def method_not_allowed(error: Any) -> Response:
     """Return network error handling page 405"""
     print(error)
-    return web_template.result_page(uhtml.html_page_not_found(), '/', stylesheet_number())
+    return goto_or_redirect(lambda: web_template.result_page(uhtml.html_page_not_found(),
+                                                             '/',
+                                                             stylesheet_number()))
 
 
 @app.errorhandler(500)
-def page_internal_server_error(error):
+def page_internal_server_error(error: Any) -> Response:
     """Return network error handling page 500"""
     print(error)
-    return web_template.result_page(uhtml.html_internal_server_error(), '/', stylesheet_number())
+    return goto_or_redirect(lambda: web_template.result_page(uhtml.html_internal_server_error(),
+                                                             '/',
+                                                             stylesheet_number()))
 
 
 @app.route('/not_found')

@@ -101,6 +101,15 @@ def is_superuser_password(password: str) -> bool:
         return False
 
 
+def is_login_and_password_correct(login: str, password: str) -> bool:
+    """Function examine login and password pair"""
+
+    try:
+        return read_all_users()[login] == create_hash(password)
+    except KeyError:
+        return False
+
+
 def form_to_data(form: dict) -> dict:
     """Function create dict contain all data in form"""
 
@@ -137,7 +146,7 @@ def works_table_add_new_performer(works: list) -> list:
         new_works.append([])
         for elem in work:
             new_works[-1].append(str(elem))
-        if work != []:
+        if work:
             new_works[-1][-1] += ('<a href="/add-performer-to-work/' +
                                   str(new_works[-1][0]) + '">+</a>')
 

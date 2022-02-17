@@ -68,9 +68,12 @@ def faq_state_machine(section: str) -> str:
     return list_to_ul(result_list)
 
 
-def result_page(main_page: str, preview_adr: str="", stylesheet_number: str="0") -> str:
+def result_page(main_page: str, preview_adr: str="", stylesheet_number: str="0",
+                to_pdf: bool=False, current_adr: str="") -> str:
     """Return complete HTML page"""
     return "{0}\n{1}\n{2}\n{3}\n".format(style_custom(stylesheet_number),
                                  generate_message_shutdown_server(),
                                  main_page,
-                                 navigations_menu(preview_adr) if preview_adr != "" else "")
+                                 navigations_menu(preview_adr,
+                                                  to_pdf,
+                                                  current_adr) if preview_adr != "" else "")

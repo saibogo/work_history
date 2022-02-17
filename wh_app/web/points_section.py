@@ -32,9 +32,9 @@ def all_points_table(stylesheet_number: str) -> str:
         rows = [[point[i] for i in range(1, len(point))] for point in all_points]
         for row_num, row in enumerate(rows):
             edit_link = "<a href='/edit-point/{0}' title='Редактировать {2}'>{1}</a>" \
-                .format(str(row[0]), '&#9998', str(row[1]))
+                .format(str(all_points[row_num][0]), '&#9998', str(row[0]))
             on_off_link = "<a href='/on-off-point/{0}' title='ON/OFF'>{1}</a>" \
-                .format(str(row[0]), '&#9211')
+                .format(str(all_points[row_num][0]), '&#9211')
             rows[row_num].append(edit_link + " " + on_off_link)
 
         table1 =  uhtml.universal_table(table_headers.points_table_name,
@@ -115,6 +115,7 @@ def on_off_point_method(point_id: str, stylesheet_number: str) -> str:
 
     with Database() as base:
         _, cursor = base
+        print("point_id = ", point_id)
         point = select_operations.get_full_point_information(cursor, point_id)
         point.insert(0, point_id)
         return web_template.result_page(uhtml.on_off_point_table(point),

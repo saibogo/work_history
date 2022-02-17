@@ -60,7 +60,9 @@ def equip_to_point_limit(point_id, page_num, stylesheet_number: str) -> str:
         table2 = uhtml.add_new_equip(point_id) if point_id != '0' else ""
         return web_template.result_page(table1 + pages + table2,
                                         '/all-points',
-                                        str(stylesheet_number))
+                                        str(stylesheet_number),
+                                        True,
+                                        'point={0}'.format(point_id))
 
 
 def remove_table_page(equip_id: str, stylesheet_number: str) -> str:

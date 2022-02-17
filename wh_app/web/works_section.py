@@ -83,7 +83,9 @@ def work_to_equip_paging(equip_id, page_id, stylesheet_number: str) -> str:
                                           int(page_id))
         return web_template.result_page(table1 + table_paging + table2,
                                         pre_adr,
-                                        str(stylesheet_number))
+                                        str(stylesheet_number),
+                                        True,
+                                        "equip={0}".format(equip_id))
 
 
 def add_work_method(data, method, stylesheet_number: str) -> str:

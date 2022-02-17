@@ -24,7 +24,7 @@ class AutoSaveThread(threading.Thread):
             AutoSaveThread.__instance = self
 
     @classmethod
-    def get_instance(cls) -> object:
+    def get_instance(cls) -> threading.Thread:
         """Method return singletone autosave-object"""
         if not cls.__instance:
             cls.__instance = AutoSaveThread()

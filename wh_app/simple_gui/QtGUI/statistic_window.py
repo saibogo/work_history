@@ -9,7 +9,7 @@ from wh_app.config_and_backup.table_headers import statistics_table
 from wh_app.simple_gui.QtGUI.support_functions import hide_all_children, show_all_children_in_list
 
 
-def stat_window(window: SimpleGui, main_layout: QLayout):
+def stat_window(window: SimpleGui, main_layout: QLayout) -> None:
     """This function repaint main window from statistic table"""
     children: list = window.children()
     hide_all_children(window)
@@ -39,7 +39,7 @@ def stat_window(window: SimpleGui, main_layout: QLayout):
 
         main_layout.addWidget(table)
 
-    def return_function():
+    def return_function() -> None:
         """This function delete all new widgets and repair old"""
         return_button.hide()
         main_layout.removeWidget(return_button)

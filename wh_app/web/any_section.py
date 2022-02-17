@@ -8,7 +8,7 @@ from wh_app.sql_operations import select_operations
 from wh_app.supporting import functions
 from wh_app.supporting import system_status
 from wh_app.config_and_backup import table_headers
-from wh_app.web.universal_html import selected_new_theme
+from wh_app.web.universal_html import selected_new_theme, logpass_table
 from wh_app.supporting.metadata import CHANGELOG
 
 functions.info_string(__name__)
@@ -25,6 +25,7 @@ def main_web_menu(stylesheet_number: str) -> str:
             (6, 'Работа с заявками'),
             (7, 'Изменить тему оформления'),
             (8, 'Изменения в системе'),
+             (9, 'Выйти из системы')
             ]
     links_list = ['/points',
                   '/equips',
@@ -34,6 +35,7 @@ def main_web_menu(stylesheet_number: str) -> str:
                   '/orders-and-customers',
                   '/next-themes',
                   '/changelog-page',
+                  '/logout'
                   ]
     table = uhtml.universal_table(name, ['№', 'выполнить:'], menu, True, links_list)
     return web_template.result_page(table, "", stylesheet_number)
@@ -115,3 +117,8 @@ def viev_changelog(stylesheet_number: str) -> str:
                                   table_headers.changelog_table,
                                   CHANGELOG)
     return web_template.result_page(table, '/', str(stylesheet_number))
+
+
+def login_input_page() -> str:
+    """Function create new form to input login and page"""
+    return web_template.result_page(logpass_table(), '/')

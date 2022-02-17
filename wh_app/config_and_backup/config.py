@@ -2,6 +2,7 @@ from tkinter import GROOVE
 
 
 path_to_project = '/home/saibogo/PycharmProjects/work_history/'
+path_to_pdf = "/home/saibogo/Документы/report.pdf"
 database_name = 'workhistory'
 user_name = 'saibogo'
 user_password = 'begemot100'
@@ -26,3 +27,8 @@ path_to_messages = path_to_project + 'wh_app/config_and_backup/.message_to_shutd
 max_width_for_date = 7
 max_height_for_date = 6
 timeout_message = 5 * 60 * 1000 # Use in java script handler. Time in ms.
+
+max_session_time = 6 * 60 * 60 # Max length session in seconds
+
+start_width_qt = 500
+start_height_qt = 220

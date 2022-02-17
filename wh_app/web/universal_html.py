@@ -12,6 +12,7 @@ from wh_app.config_and_backup import table_headers
 functions.info_string(__name__)
 
 PASSWORD = 'password'
+LOGIN = 'login'
 POINT_NAME = 'point_name'
 POINT_ADDRESS = 'point_address'
 POINT_ID = 'point_id'
@@ -169,8 +170,10 @@ def selected_new_theme() -> str:
     return '<h1>Произведена смена темы оформления</h1>'
 
 
-def navigations_menu(pre_html: str) -> str:
-    """Function return string contain navigations bar"""
+def navigations_menu(pre_html: str, save_to_pdf: bool=False, current_adr: str="") -> str:
+    """Function return string contain navigations bar
+    save_to_pdf=True create button "Save" in navigation menu
+    """
     result = list()
     result.append('<table class="navigation_menu"><caption>Навигация</caption><tr>')
     result.append('<td class="navigation_bottom"><a href="' +
@@ -195,6 +198,10 @@ def navigations_menu(pre_html: str) -> str:
     result.append('<td class="navigation_bottom"><a href="' +
                   config.full_address +
                   '/system-status' + '">Статус системы</a></td>')
+    if save_to_pdf and current_adr != "":
+        result.append('<td class="navigation_bottom"><a href="'
+                      + config.full_address +
+                      '/table-to-pdf/{0}'.format(current_adr) + '">Сохранить в PDF</a></td>')
     result.append('</tr></table>')
     return '\n'.join(result)
 
@@ -560,3 +567,36 @@ def new_bug_input_table() -> str:
                   '" placeholder="Обязательно"></td>')
     result.append('<td><input type="submit" value="Отправить"></td></tr></form></table>')
     return "\n".join(result)
+
+
+def logpass_table() -> str:
+    """Return new form to input login and password"""
+
+    result = list()
+    result.append('<table><caption>Получение доступа к системе</caption>')
+    result.append('<tr><th>Логин</th><th>Пароль</th><th>Действие</th></tr>')
+    result.append('<form action="/login-verification" method="post">')
+    result.append('<tr><td><textarea name="' + LOGIN + '" placeholder="Обязательное поле"></textarea></td>')
+    result.append('<td><input type="password" name = "' +
+                  PASSWORD +
+                  '" placeholder="Обязательно"></td>')
+    result.append('<td><input type="submit" value="Отправить"></td></tr></form></table>')
+    return "\n".join(result)
+
+
+def access_denided(name: str) -> str:
+    """Function return page from not correct login or password"""
+
+    return "<h1>Ошибка доступа для пользователя {0}. Попробуйте еще раз!</h1>".format(name)
+
+
+def access_allowed(name: str) -> str:
+    """Function return page from correct login and password"""
+
+    return "<h1>С возвращением, {0}!</h1>".format(name)
+
+
+def logout_user() -> str:
+    """Function return BYE-page"""
+
+    return "<h1>Осуществлен выход из системы</h1>"

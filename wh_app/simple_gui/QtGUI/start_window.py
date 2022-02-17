@@ -54,9 +54,11 @@ def start_window(app: QApplication, window: SimpleGui) -> None:
         stat_window(window, vbox)
 
     def new_bugz_window() -> None:
+        """Repaint main window to Bugs-window"""
         bugzilla(window, vbox)
 
     def new_workers_window() -> None:
+        """Repaint main window to Workers-window"""
         workers(window, vbox)
 
     print("Переход на главное окно")
