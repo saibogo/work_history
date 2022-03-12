@@ -1,5 +1,5 @@
 """This module contain all rules WEB-section"""
-
+import flask
 from flask import Flask, request, redirect, session, Response
 from flask import send_from_directory, send_file
 from typing import Callable, Any
@@ -24,7 +24,7 @@ from wh_app.web.points_section import points_operations, all_points_table,\
     invert_point_status_method
 from wh_app.web.workers_section import workers_menu, all_workers_table,\
     works_days_page, works_from_performers_table, add_performer_to_work,\
-    add_performer_result_method
+    add_performer_result_method, weekly_chart_page
 from wh_app.web.works_section import works_menu, find_work_to_id_page,\
     select_work_to_id_method, work_to_equip_paging, add_work_method
 from wh_app.web.bugs_section import bugs_menu, all_bugs_table, all_bugs_in_work_table,\
@@ -33,7 +33,8 @@ from wh_app.web.orders_section import all_customers_table, orders_main_menu,\
     all_registered_orders_table
 from wh_app.web.universal_html import LOGIN, PASSWORD, access_denided, access_allowed, logout_user
 from wh_app.web.template import result_page
-from wh_app.supporting.pdf_operations.pdf import equips_in_point, works_from_equip
+from wh_app.supporting.pdf_operations.pdf import equips_in_point, works_from_equip,\
+    works_from_performer, weekly_charts_pdf, move_equip
 
 
 app = Flask(__name__, static_folder=config.static_dir)
@@ -269,11 +270,19 @@ def html_table_to_pdf(data:str) -> Response:
         pdf = equips_in_point(value)
     elif section == "equip":
         pdf = works_from_equip(int(value))
+    elif section == "performer":
+        pdf = works_from_performer(int(value))
+    elif section == "weekly":
+        pdf = weekly_charts_pdf()
+    elif section == "move-equip-pdf":
+        pdf = move_equip(int(value))
     else:
         pass
 
     pdf.output(config.path_to_pdf)
-    return goto_or_redirect(lambda : send_file(config.path_to_pdf))
+    return send_file(config.path_to_pdf) \
+        if section == "weekly" \
+        else goto_or_redirect(lambda : send_file(config.path_to_pdf))
 
 
 @app.route("/works")
@@ -339,19 +348,26 @@ def add_work() -> Response:
 @app.route("/workers")
 def workers() -> Response:
     """Return main page WORKERS-section"""
-    return goto_or_redirect(lambda: workers_menu(stylesheet_number()))
+    return flask.make_response(workers_menu(stylesheet_number()))
 
 
 @app.route("/all-workers")
 def all_workers() -> Response:
     """Return page, contain All WORKERS"""
-    return goto_or_redirect(lambda: all_workers_table(stylesheet_number()))
+    return flask.make_response(all_workers_table(stylesheet_number()))
+
+
+@app.route("/weekly-chart")
+def weekly_chart() -> Response:
+    """Return page, contain all works-days to all workers"""
+
+    return flask.make_response(weekly_chart_page(stylesheet_number()))
 
 
 @app.route("/works-days")
 def works_days() -> Response:
     """Return page current SHEDULE"""
-    return goto_or_redirect(lambda: works_days_page(stylesheet_number()))
+    return flask.make_response(works_days_page(stylesheet_number()))
 
 
 @app.route("/performer/<performer_id>", methods=['GET'])

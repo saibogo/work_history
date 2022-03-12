@@ -464,6 +464,12 @@ def sql_select_all_workers() -> str:
     return """SELECT * FROM %(all_workers)s""" % sql_consts_dict
 
 
+def sql_select_all_workers_real() -> str:
+    """Also sql_select_all_workers() where is_work == TRUE"""
+
+    return """SELECT * FROM %(all_workers)s WHERE %(all_workers)s.%(case)s = 'Работает'""" % sql_consts_dict
+
+
 def sql_select_worker_info(worker_id: str) -> str:
     """Return full info from worker where ID = worker_id"""
 
@@ -572,4 +578,15 @@ def sql_select_all_posts() -> str:
     """Return SELECT-query to ALL POST in database"""
 
     query = ("""SELECT * FROM %(posts)s""") % sql_consts_dict
+    return query
+
+
+def sql_select_all_weekly_chart() -> str:
+    """Return SELECT-query to ALL WORKS DAYS From ALL Workers"""
+
+    query = ("""SELECT %(workers)s.%(sub_name)s, day1, day2, day3, day4, day5, day6, day7 """ +
+             """FROM %(works_days)s JOIN %(workers)s """ +
+             """ON %(works_days)s.%(worker_id)s = %(workers)s.%(id)s AND %(workers)s.%(is_work)s = True """ +
+             """ORDER BY %(workers)s.%(sub_name)s;""") % sql_consts_dict
+
     return query

@@ -84,7 +84,7 @@ def remove_table_page(equip_id: str, stylesheet_number: str) -> str:
                                  result,
                                  True,
                                  links)
-    return web_template.result_page(page, "/", str(stylesheet_number))
+    return web_template.result_page(page, "/", str(stylesheet_number), True, 'move-equip-pdf={0}'.format(equip_id))
 
 
 def edit_equip_method(equip_id: str, stylesheet_number: str) -> str:

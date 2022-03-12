@@ -14,8 +14,8 @@ functions.info_string(__name__)
 def workers_menu(stylesheet_number: str) -> str:
     """Return main page from WORKERS section"""
     name = 'Действия с сотрудниками'
-    menu = [(1, 'Все зарегистрированные сотрудники'), (2, 'Базовый график')]
-    links_list = ['/all-workers', '/works-days']
+    menu = [(1, 'Все зарегистрированные сотрудники'), (2, 'Привязки по предприятиям'), (3, 'Рабочие дни')]
+    links_list = ['/all-workers', '/works-days', 'weekly-chart']
     table = uhtml.universal_table(name, ['№', 'Доступное действие'], menu, True, links_list)
     return web_template.result_page(table, '/', str(stylesheet_number))
 
@@ -32,6 +32,26 @@ def all_workers_table(stylesheet_number: str) -> str:
         return web_template.result_page(table,
                                         '/workers',
                                         str(stylesheet_number))
+
+
+def weekly_chart_page(stylesheet_number: str) -> str:
+    """Return page, contain all works days from all workers"""
+    with Database() as base:
+        _, cursor = base
+        days = select_operations.get_weekly_chart(cursor)
+        days_human_view = list()
+        for human in days:
+            days_human_view.append(list())
+            days_human_view[-1].append(human[0])
+            for i in range(1, len(human)):
+                days_human_view[-1].append("Работает" if human[i] else "Выходной")
+        table = uhtml.universal_table(table_headers.workers_days_table_name,
+                                      table_headers.workers_days_table,
+                                      days_human_view)
+        return web_template.result_page(table,
+                                        '/workers',
+                                        str(stylesheet_number),
+                                        True, "weekly=all")
 
 
 def works_days_page(stylesheet_number: str) -> str:
@@ -61,7 +81,10 @@ def works_from_performers_table(performer_id, pre_adr: str,
         table = uhtml.universal_table(table_headers.works_table_name,
                                       table_headers.works_table,
                                       full_works)
-        return web_template.result_page(table, pre_adr, str(stylesheet_number))
+        return web_template.result_page(table, pre_adr,
+                                        str(stylesheet_number),
+                                        True,
+                                        'performer={0}'.format(performer_id))
 
 
 def add_performer_to_work(work_id, pre_adr: str, stylesheet_number: str) -> str:

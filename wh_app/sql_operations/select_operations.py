@@ -259,6 +259,12 @@ def get_all_workers(cursor) -> List[Tuple[int, str, str, str, str, str]]:
     return get_selected(cursor, select_sql.sql_select_all_workers())
 
 
+def get_all_workers_real(cursor) -> list:
+    """Return all workers where is_work == TRUE"""
+
+    return get_selected(cursor, select_sql.sql_select_all_workers_real())
+
+
 def get_info_from_worker(cursor, worker_id: str) -> Tuple[int, str, str, str, str, str]:
     """Function return full info in tuple from worker where id = worker_id"""
 
@@ -334,3 +340,9 @@ def get_all_posts(cursor) -> list:
     """Function return all post in POSTS-table"""
 
     return get_selected(cursor, select_sql.sql_select_all_posts())
+
+
+def get_weekly_chart(cursor) -> list:
+    """Function return all works days from all workers in weekly"""
+
+    return get_selected(cursor, select_sql.sql_select_all_weekly_chart())

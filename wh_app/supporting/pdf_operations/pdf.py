@@ -39,6 +39,81 @@ def works_from_equip(equip_id: int) -> FPDF:
         return pdf
 
 
+def move_equip(equip_id: int) -> FPDF:
+    """Create pdf contain all records from current equip"""
+
+    with Database() as base:
+        _, cursor = base
+        all_records = []
+        equip_info = [str(equip_id)] + \
+                     select_operations.get_full_equip_information(cursor, str(equip_id))
+        all_records.insert(0, equip_info)
+        while str(equip_info[0]) != str(equip_info[5]):
+            old_equip_id = str(equip_info[5])
+            equip_info = [old_equip_id] + \
+                         select_operations.get_full_equip_information(cursor, old_equip_id)
+            all_records.insert(0, equip_info)
+        pdf = create_document('Portrait')
+        pdf.write_html(make_html_table(all_records, table_headers.remove_table, 'Portrait'),
+                       table_line_separators=True)
+        return pdf
+
+
+def works_from_performer(performer_id: int) -> FPDF:
+    """Create PDF contain all works from current performer"""
+
+    with Database() as base:
+        _, cursor = base
+        all_works = select_operations.get_all_works_from_worker_id(cursor, str(performer_id))
+        pdf = create_document('Landscape')
+        pdf.write_html(make_html_table(all_works, table_headers.works_table, 'Landscape'),
+                       table_line_separators=True)
+        return pdf
+
+
+def weekly_charts_pdf() -> FPDF:
+    """Create PDF contain all works days to all workers"""
+
+    with Database() as base:
+        _, cursor = base
+        days = select_operations.get_weekly_chart(cursor)
+        days_human_view = list()
+        for human in days:
+            days_human_view.append(list())
+            days_human_view[-1].append(human[0])
+            for i in range(1, len(human)):
+                days_human_view[-1].append("Работает" if human[i] else "Выходной")
+        pdf = create_document('Landscape')
+        print(pdf.font_family)
+        html = list()
+        html.append('<h3 align="center">По дням недели</h3>')
+        html.append('<table border="1"><tbody><tr>')
+        for name in table_headers.workers_days_table:
+            html.append('<td width="{1}%">{0}</td>'.format(name, int(100 / len(table_headers.workers_days_table))))
+        html.append('</tr>')
+        for human in days_human_view:
+            html.append('<tr>')
+            for elem in human:
+                html.append('<td>{0}</td>'.format(elem))
+            html.append('</tr>')
+        html.append('</tbody></table>')
+        html.append('<h3 align="center">Контакты</h3>')
+        html.append('<table border="1"><tbody><tr>')
+        humans = select_operations.get_all_workers_real(cursor)
+        workers_short_table = [('ФИО', '30%'), ('Телефон', '15%'), ('Должность', '55%')]
+        for cell in workers_short_table:
+            html.append('<td width="{1}">{0}</td>'.format(cell[0], cell[1]))
+        html.append('</tr>')
+        for human in humans:
+            html.append('<tr><td>{0} {1}</td>'.format(human[1], human[2]))
+            html.append('<td>{0}</td>'.format(human[3]))
+            html.append('<td>{0}</td></tr>'.format(human[5]))
+        html.append('</tbody></table>')
+        html.append('<h3 align="center">Данный график не учитывает праздничные, больничные и отпускные</h3>')
+        pdf.write_html("".join(html), table_line_separators=True)
+        return pdf
+
+
 def create_document(orientation: str) -> HTML2PDF:
     """Create main document/ Orientation may be Landscape or Portrait"""
 
