@@ -288,6 +288,15 @@ def get_all_works_from_worker_id(cursor, worker_id: str) -> List[Tuple[int, str,
     return get_selected(cursor, select_sql.sql_select_works_from_worker(worker_id))
 
 
+def get_all_works_from_worker_id_limit(cursor, worker_id: str, page_num: int) -> List[Tuple[int, str, str,
+                                                                                            str, str,
+                                                                                            datetime.datetime,
+                                                                                            str, str, str]]:
+    """See also get_all_works_from_worker_id/ But records in view-page <= size in config-file"""
+
+    return get_selected(cursor, select_sql.sql_select_works_from_worker_limit(worker_id, page_num))
+
+
 def get_works_days_table(cursor) -> list:
     """Function return table contain points, workers and days of week"""
 

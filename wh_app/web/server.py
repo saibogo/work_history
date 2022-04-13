@@ -374,6 +374,19 @@ def works_days() -> Response:
 def performer_performer_id(performer_id: int) -> Response:
     """Return ALL works where worker == performer_id"""
     return goto_or_redirect(lambda: works_from_performers_table(performer_id,
+                                                                1,
+                                                                request.args.get('page',
+                                                                                 default=config.full_address,
+                                                                                 type=str),
+                                                                stylesheet_number()))
+
+
+@app.route("/performer/<performer_id>/page/<page_num>", methods=['GET'])
+def performer_id_page(performer_id: int, page_num: int) -> Response:
+    """See also performer_performer_id but use paging"""
+
+    return goto_or_redirect(lambda: works_from_performers_table(performer_id,
+                                                                page_num,
                                                                 request.args.get('page',
                                                                                  default=config.full_address,
                                                                                  type=str),

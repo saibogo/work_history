@@ -7,6 +7,7 @@ from wh_app.sql_operations import insert_operations
 from wh_app.sql_operations import select_operations
 from wh_app.supporting import functions
 from wh_app.config_and_backup import table_headers
+from wh_app.config_and_backup.config import max_records_in_page
 
 functions.info_string(__name__)
 
@@ -71,17 +72,32 @@ def works_days_page(stylesheet_number: str) -> str:
                                         str(stylesheet_number))
 
 
-def works_from_performers_table(performer_id, pre_adr: str,
+def works_from_performers_table(performer_id: int,
+                                page_num: int,
+                                pre_adr: str,
                                 stylesheet_number: str) -> str:
     """Return all works from current performer"""
     with Database() as base:
         _, cursor = base
-        full_works = select_operations.get_all_works_from_worker_id(cursor, performer_id)
+        full_works = select_operations.get_all_works_from_worker_id(cursor, str(performer_id))
+        create_paging = False
+        if len(full_works) > max_records_in_page:
+            create_paging = True
+            full_works = select_operations.get_all_works_from_worker_id_limit(cursor, str(performer_id), page_num)
         full_works = functions.works_table_add_new_performer(full_works)
         table = uhtml.universal_table(table_headers.works_table_name,
                                       table_headers.works_table,
                                       full_works)
-        return web_template.result_page(table, pre_adr,
+        if create_paging:
+            page = uhtml.paging_table("/performer/{0}/page".format(performer_id),
+                                      functions.list_of_pages(select_operations.
+                                                              get_all_works_from_worker_id(cursor,
+                                                                                           str(performer_id))),
+                                      int(page_num))
+        else:
+            page = ""
+
+        return web_template.result_page(table + page, pre_adr,
                                         str(stylesheet_number),
                                         True,
                                         'performer={0}'.format(performer_id))

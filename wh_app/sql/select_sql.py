@@ -503,6 +503,20 @@ def sql_select_works_from_worker(id_worker: str) -> str:
     return query.format(id_worker)
 
 
+def sql_select_works_from_worker_limit(id_worker: str, page_num: int) -> str:
+    """See also sql_select_works_from_worker. Only use limit records in page"""
+
+    query = ("""SELECT %(works_from_worker)s.%(id)s, %(point_name)s, %(name)s,""" +
+             """ %(model)s, %(serial_num)s, %(date)s, %(problem)s, %(result)s,""" +
+             """ %(all_workers)s FROM %(works_from_worker)s JOIN %(performers)s """ +
+             """ON %(performers)s.%(worker_id)s = {0} AND %(works_from_worker)s.%(id)s""" +
+             """ = %(performers)s.%(work_id)s ORDER BY %(date)s LIMIT {1} OFFSET {2}""") % sql_consts_dict
+
+    return query.format(id_worker,
+                        config.max_records_in_page,
+                        (int(page_num) - 1) * config.max_records_in_page)
+
+
 def sql_select_works_days() -> str:
     """Return SQL-query contain points, workers and days of week"""
 
