@@ -54,3 +54,10 @@ def sql_update_worker_info(worker_id: str, name: str, sub_name: str,phone_number
     query = ("""UPDATE %(workers)s SET %(name)s = '{0}', %(sub_name)s = '{1}', """ +
              """ %(phone_number)s = '{2}', %(post_id)s = {3} WHERE %(id)s = {4}""") % sql_consts_dict
     return query.format(name, sub_name, phone_number, post_id, worker_id)
+
+
+def sql_update_work_info(work_id: str, order_info: str, description: str) -> str:
+    """return the query string to update work information"""
+
+    query = ("""UPDATE %(works)s SET %(problem)s = '{1}', %(result)s = '{2}' WHERE id = {0}""") % sql_consts_dict
+    return query.format(work_id, order_info, description)

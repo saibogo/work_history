@@ -297,6 +297,14 @@ def get_all_works_from_worker_id_limit(cursor, worker_id: str, page_num: int) ->
     return get_selected(cursor, select_sql.sql_select_works_from_worker_limit(worker_id, page_num))
 
 
+def get_count_all_works_from_worker_id(cursor, worker_id: str) -> int:
+    """Return Len(get_all_works_from_worker_id)"""
+
+    return functions.get_first_non_list(get_selected(
+        cursor,
+        select_sql.sql_counter(select_sql.sql_select_works_from_worker(worker_id))))
+
+
 def get_works_days_table(cursor) -> list:
     """Function return table contain points, workers and days of week"""
 

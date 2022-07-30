@@ -7,6 +7,12 @@ from wh_app.supporting import functions
 functions.info_string(__name__)
 
 
+def sql_counter(sql_query: str) -> str:
+    """Return SELECT likes SELECT COUNT..."""
+
+    return """SELECT COUNT (*) FROM ({0}) AS foo""".format(sql_query)
+
+
 def sql_select_point(id_point: str) -> str:
     """Returns the string of the query for selecting a point by a unique number
     Example:
@@ -168,6 +174,7 @@ def sql_select_equip_from_like_str(pattern: str) -> str:
         FROM oborudovanie
         JOIN workspoints ON oborudovanie.point_id = workspoints.point_id
         WHERE LOWER(name) LIKE LOWER('HuraKan')
+        OR LOWER(model) LIKE LOWER('HR-2000')
         ORDER BY name
         """
 
@@ -177,7 +184,8 @@ def sql_select_equip_from_like_str(pattern: str) -> str:
                  """%(name)s, %(model)s, %(serial_num)s, %(pre_id)s FROM %(oborudovanie)s""" +
                  """ JOIN %(workspoints)s ON %(oborudovanie)s.%(point_id)s = """ +
                  """ %(workspoints)s.%(point_id)s WHERE LOWER(%(name)s)""" +
-                 """ LIKE LOWER('{0}') ORDER BY %(name)s""") % sql_consts_dict
+                 """ LIKE LOWER('{0}') OR LOWER(%(model)s) LIKE LOWER('{0}')""" +
+                 """ OR LOWER(%(serial_num)s) LIKE LOWER('{0}') ORDER BY %(name)s""") % sql_consts_dict
         result = query.format(words)
     else:
         query = ("""SELECT %(id)s, %(workspoints)s.%(point_name)s, """ +
@@ -197,6 +205,7 @@ def sql_select_equip_from_like_str_limit(pattern: str, page_num: str) -> str:
         JOIN workspoints
         ON oborudovanie.point_id = workspoints.point_id
         WHERE LOWER(name) LIKE LOWER('RaTiONaL')
+        OR LOWER(model) LIKE LOWER('RatioNal')
         ORDER BY name LIMIT 10 OFFSET 30
         """
 
@@ -206,7 +215,8 @@ def sql_select_equip_from_like_str_limit(pattern: str, page_num: str) -> str:
                  """ %(model)s, %(serial_num)s, %(pre_id)s FROM %(oborudovanie)s """ +
                  """JOIN %(workspoints)s ON %(oborudovanie)s.%(point_id)s =""" +
                  """ %(workspoints)s.%(point_id)s WHERE LOWER(%(name)s)""" +
-                 """ LIKE LOWER('{0}') ORDER BY %(name)s """ +
+                 """ LIKE LOWER('{0}') OR LOWER(%(model)s) LIKE LOWER('{0}') """ +
+                 """OR LOWER(%(serial_num)s) LIKE LOWER('{0}')  ORDER BY %(name)s """ +
                  """LIMIT {1} OFFSET {2}""") % sql_consts_dict
         result = query.format(words,
                               config.max_records_in_page,

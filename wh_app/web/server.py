@@ -26,7 +26,7 @@ from wh_app.web.workers_section import workers_menu, all_workers_table,\
     works_days_page, works_from_performers_table, add_performer_to_work,\
     add_performer_result_method, weekly_chart_page
 from wh_app.web.works_section import works_menu, find_work_to_id_page,\
-    select_work_to_id_method, work_to_equip_paging, add_work_method
+    select_work_to_id_method, work_to_equip_paging, add_work_method, create_edit_work_form, update_work_method
 from wh_app.web.bugs_section import bugs_menu, all_bugs_table, all_bugs_in_work_table,\
     add_bugs_result_table
 from wh_app.web.orders_section import all_customers_table, orders_main_menu,\
@@ -309,6 +309,23 @@ def select_work_to_id() -> Response:
 def work_equip_id_page_page_id(equip_id: int, page_id: int) -> Response:
     """Return page=page_id in ALL work from current EQUIP"""
     return goto_or_redirect(lambda: work_to_equip_paging(equip_id, page_id, stylesheet_number()))
+
+
+@app.route("/work-edit/<work_id>")
+def work_edit(work_id: int) -> Response:
+    """Return form to EDIT some work"""
+    return goto_or_redirect(lambda : create_edit_work_form(work_id, stylesheet_number()))
+
+
+@app.route("/update-work-to-id/<work_id>", methods=['POST'])
+def update_work_to_id(work_id: int) -> Response:
+    """Go to method update work info"""
+
+    return goto_or_redirect(lambda: update_work_method(work_id,
+                                                       functions.form_to_data(request.form),
+                                                       request.method,
+                                                       stylesheet_number()))
+
 
 
 @app.route("/work/<equip_id>")

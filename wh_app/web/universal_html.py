@@ -37,6 +37,7 @@ WORK_DATETIME_START = 'work_datetime_start'
 WORK_DATETIME_STOP = 'work_datetime_stop'
 WORK_ID = 'work_id'
 DESCRIPTION = "description"
+ORDER_INFO = "order_info"
 
 
 def link_or_str(elem: str, link_type: bool = False, link: str = '') -> str:
@@ -258,13 +259,13 @@ def add_performer_in_work(work: list) -> str:
     result = list()
     result.append('<table><caption>Добавить исполнителя</caption>')
     result.append('<tr><th>№</th><th>Параметр</th><th>Содержимое</th></tr>')
-    for i in range(len(table_headers.works_table)):
+    for i in range(len(work[0])):
         result.append('<tr><td>' + str(i) + '</td><td>' +
                       table_headers.works_table[i] + '</td><td>' +
                       str(work[0][i]) +
                       '</td></tr>')
     result.append('<form action="/add-performer-result" method="post">')
-    result.append('<tr><td>' + str(len(table_headers.works_table)) + '</td>')
+    result.append('<tr><td>' + str(len(work[0])) + '</td>')
     result.append('<td>Добавить исполнителя</td><td><select name="' + PERFORMER + '">')
     for worker in performers:
         result.append('<option value="' + str(worker[0]) + '">' + str(worker[2]) + '</option>')

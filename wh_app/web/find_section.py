@@ -126,7 +126,7 @@ def find_equip_page(find_string: str, page_num: str, stylesheet_number: str) -> 
                                              get_all_equips_list_from_like_str(cursor, find_string))
         links_list = ['/work/' + str(equip[0]) for equip in equips]
         result = uhtml.universal_table(table_headers.equips_table_name,
-                                       table_headers.equips_table,
+                                       table_headers.equips_table[: len(table_headers.equips_table) - 1],
                                        [[equip[i] for i in range(1, len(equip))]
                                         for equip in equips],
                                        True,

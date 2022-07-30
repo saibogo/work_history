@@ -2,6 +2,7 @@
 
 import hashlib
 from datetime import datetime
+from typing import Iterable, Any
 
 from wh_app.config_and_backup import config
 from wh_app.supporting import metadata
@@ -161,5 +162,14 @@ def list_of_pages(all_records: list) -> list:
         result.append(len(result) + 1)
     return result if all_records else [1]
 
+
+def get_first_non_list(collection: Iterable) -> Any:
+    """Return first element non-collection"""
+
+    try:
+        elem = collection[0]
+        return get_first_non_list(elem)
+    except TypeError:
+        return collection
 
 info_string(__name__)

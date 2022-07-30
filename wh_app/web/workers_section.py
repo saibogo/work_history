@@ -79,11 +79,13 @@ def works_from_performers_table(performer_id: int,
     """Return all works from current performer"""
     with Database() as base:
         _, cursor = base
-        full_works = select_operations.get_all_works_from_worker_id(cursor, str(performer_id))
+        full_works_count = select_operations.get_count_all_works_from_worker_id(cursor, str(performer_id))
         create_paging = False
-        if len(full_works) > max_records_in_page:
+        if full_works_count > max_records_in_page:
             create_paging = True
             full_works = select_operations.get_all_works_from_worker_id_limit(cursor, str(performer_id), page_num)
+        else:
+            full_works = select_operations.get_all_works_from_worker_id(cursor, str(performer_id))
         full_works = functions.works_table_add_new_performer(full_works)
         table = uhtml.universal_table(table_headers.works_table_name,
                                       table_headers.works_table,

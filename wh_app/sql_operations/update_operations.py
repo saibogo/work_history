@@ -33,3 +33,9 @@ def update_worker_info(cursor, worker_id: str, name: str, sub_name: str, phone_n
     """Update information for selected worker in workers-table"""
 
     cursor.execute(sql_update_worker_info(worker_id, name, sub_name, phone_number, post_id))
+
+
+def update_work_info(cursor, work_id: str, order_info: str, description: str) -> None:
+    """Update information for selected work"""
+
+    cursor.execute(sql_update_work_info(work_id, order_info, description))
