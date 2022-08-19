@@ -21,7 +21,7 @@ from wh_app.web.find_section import find_page, find_method, find_work_paging,\
 from wh_app.web.points_section import points_operations, all_points_table,\
     create_new_point_page, add_point_method, all_works_points_table,\
     edit_point_method, upgrade_point_method, on_off_point_method, \
-    invert_point_status_method
+    invert_point_status_method, point_tech_info
 from wh_app.web.workers_section import workers_menu, all_workers_table,\
     works_days_page, works_from_performers_table, add_performer_to_work,\
     add_performer_result_method, weekly_chart_page
@@ -34,7 +34,7 @@ from wh_app.web.orders_section import all_customers_table, orders_main_menu,\
 from wh_app.web.universal_html import LOGIN, PASSWORD, access_denided, access_allowed, logout_user
 from wh_app.web.template import result_page
 from wh_app.supporting.pdf_operations.pdf import equips_in_point, works_from_equip,\
-    works_from_performer, weekly_charts_pdf, move_equip
+    works_from_performer, weekly_charts_pdf, move_equip, point_tech_information
 
 
 app = Flask(__name__, static_folder=config.static_dir)
@@ -143,6 +143,13 @@ def equips_section() -> Response:
 def points() -> Response:
     """Return main page POINTS-section"""
     return goto_or_redirect(lambda: points_operations(stylesheet_number()))
+
+
+@app.route("/tech-info/<point_num>")
+def tech_info(point_num: str) -> Response:
+    """Return page. contain all technical information from current point"""
+
+    return Response(point_tech_info(int(point_num), stylesheet_number()))
 
 
 @app.route("/all-points")
@@ -264,20 +271,18 @@ def html_table_to_pdf(data:str) -> Response:
     """Redirect to method generate pdf-version current main-table
     correct adr /table-to-pdf/<section>=<value>"""
 
+    command_table = {"point": equips_in_point,
+                     "equip": works_from_equip,
+                     "performer": works_from_performer,
+                     "weekly": weekly_charts_pdf,
+                     "move-equip-pdf": move_equip,
+                     "point-tech": point_tech_information}
     section, value = data.split('=')
-    pdf: FPDF = FPDF()
-    if section == "point":
-        pdf = equips_in_point(value)
-    elif section == "equip":
-        pdf = works_from_equip(int(value))
-    elif section == "performer":
-        pdf = works_from_performer(int(value))
-    elif section == "weekly":
-        pdf = weekly_charts_pdf()
-    elif section == "move-equip-pdf":
-        pdf = move_equip(int(value))
-    else:
-        pass
+
+    try:
+        pdf = command_table[section](value)
+    except:
+        pdf: FPDF = FPDF()
 
     pdf.output(config.path_to_pdf)
     return send_file(config.path_to_pdf) \

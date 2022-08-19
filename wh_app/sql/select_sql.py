@@ -614,3 +614,38 @@ def sql_select_all_weekly_chart() -> str:
              """ORDER BY %(workers)s.%(sub_name)s;""") % sql_consts_dict
 
     return query
+
+
+def sql_select_electric_info(point_id: str) -> str:
+    """Return SELECT-string for get electric information to point"""
+
+    query = ("""SELECT * FROM %(electric)s WHERE point_id={0}""") % sql_consts_dict
+    return query.format(point_id)
+
+
+def sql_select_cold_water_info(point_id: str) -> str:
+    """Return SELECT-string for get cold_water information to point"""
+
+    query = ("""SELECT * FROM %(cold_water)s WHERE point_id={0}""") % sql_consts_dict
+    return query.format(point_id)
+
+
+def sql_select_hot_water_info(point_id: str) -> str:
+    """Return SELECT-string for get hot_water information to point"""
+
+    query = ("""SELECT * FROM %(hot_water)s WHERE point_id={0}""") % sql_consts_dict
+    return query.format(point_id)
+
+
+def sql_select_heating_info(point_id: str) -> str:
+    """Return SELECT-string for get heating information to point"""
+
+    query = ("""SELECT * FROM %(heating)s WHERE point_id={0}""") % sql_consts_dict
+    return query.format(point_id)
+
+
+def sql_select_sewerage_info(point_id: str) -> str:
+    """Return SELECT-string for get sewerage information to point"""
+
+    query = ("""SELECT * FROM %(sewerage)s WHERE point_id={0}""") % sql_consts_dict
+    return query.format(point_id)

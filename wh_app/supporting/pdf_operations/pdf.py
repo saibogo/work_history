@@ -34,7 +34,8 @@ def works_from_equip(equip_id: int) -> FPDF:
         _, cursor = base
         all_works = select_operations.get_works_from_equip_id(cursor, str(equip_id))
         pdf = create_document('Landscape')
-        pdf.write_html(make_html_table(all_works, table_headers.works_table, 'Landscape'),
+        pdf.write_html(make_html_table(all_works, table_headers.works_table[:len(table_headers.works_table) - 1],
+                                       'Landscape'),
                        table_line_separators=True)
         return pdf
 
@@ -66,12 +67,44 @@ def works_from_performer(performer_id: int) -> FPDF:
         _, cursor = base
         all_works = select_operations.get_all_works_from_worker_id(cursor, str(performer_id))
         pdf = create_document('Landscape')
-        pdf.write_html(make_html_table(all_works, table_headers.works_table, 'Landscape'),
+        pdf.write_html(make_html_table(all_works,
+                                       table_headers.works_table[: len(table_headers.works_table) - 1],
+                                       'Landscape'),
                        table_line_separators=True)
         return pdf
 
 
-def weekly_charts_pdf() -> FPDF:
+def point_tech_information(point_num: int) -> FPDF:
+    """Create PDF contain all technical information from current point"""
+
+    def if_tech_list_empthy(lst: list) -> list:
+        """Replace data if data not found"""
+
+        if not lst:
+            return ["Нет данных"] * 4
+        else:
+            return lst[0]
+
+    pdf = create_document('Landscape')
+
+    with Database() as base:
+        _, cursor = base
+        info_list = [select_operations.get_electric_point_info(cursor, str(point_num)),
+                     select_operations.get_cold_water_point_info(cursor, str(point_num)),
+                     select_operations.get_hot_water_point_info(cursor, str(point_num)),
+                     select_operations.get_heating_point_info(cursor, str(point_num)),
+                     select_operations.get_sewerage_point_info(cursor, str(point_num))]
+        table = table_headers.point_tech_table[1: ]
+        for i in range(len(info_list)):
+            tmp_table = make_html_table([if_tech_list_empthy(info_list[i])[ 2 : ]],
+                                        ['{0} Договор'.format(table[i]), '{0} Описание'.format(table[i])],
+                                        'Landscape')
+            pdf.write_html(tmp_table)
+
+    return pdf
+
+
+def weekly_charts_pdf(values: Any) -> FPDF:
     """Create PDF contain all works days to all workers"""
 
     with Database() as base:

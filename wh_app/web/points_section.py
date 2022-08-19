@@ -1,5 +1,5 @@
 """This module implement any web-pages from work to workpoints"""
-
+import wh_app.config_and_backup.table_headers
 import wh_app.web.template as web_template
 import wh_app.web.universal_html as uhtml
 from wh_app.postgresql.database import Database
@@ -36,6 +36,8 @@ def all_points_table(stylesheet_number: str) -> str:
             on_off_link = "<a href='/on-off-point/{0}' title='ON/OFF'>{1}</a>" \
                 .format(str(all_points[row_num][0]), '&#9211')
             rows[row_num].append(edit_link + " " + on_off_link)
+            rows[row_num].append("<a href='/tech-info/{0}' title='Договора ресурсоснабжения'>&#128441;</a>".
+                                 format(str(all_points[row_num][0])))
 
         table1 =  uhtml.universal_table(table_headers.points_table_name,
                                         table_headers.points_table,
@@ -90,6 +92,8 @@ def all_works_points_table(stylesheet_number: str) -> str:
             on_off_link = "<a href='/on-off-point/{0}' title='ON/OFF'>{1}</a>"\
                 .format(str(all_points[row_num][0]), '&#9211')
             rows[row_num].append(edit_link + " " + on_off_link)
+            rows[row_num].append("<a href='/tech-info/{0}' title='Договора ресурсоснабжения'>&#128441</a>".
+                                 format(str(all_points[row_num][0])))
         table1 =  uhtml.universal_table(table_headers.points_table_name,
                                         table_headers.points_table,
                                         rows,
@@ -167,3 +171,45 @@ def upgrade_point_method(data, method, stylesheet_number: str) -> str:
     else:
         page = "Method in Edit Point not corrected!"
     return web_template.result_page(page, pre_adr, str(stylesheet_number))
+
+
+def point_tech_info(point_num: int, stylesheet_number: str) -> str:
+    """Create page contain all technical information from current point"""
+
+    def if_tech_list_empthy(lst: list) -> list:
+        """Replace data if data not found"""
+
+        if not lst:
+            return ["Нет данных"] * 4
+        else:
+            return lst[0]
+
+    with Database() as base:
+        _, cursor = base
+        table = list()
+        table.append('<table><caption>{0}</caption>'.format(wh_app.config_and_backup.
+                                                            table_headers.point_tech_table_name))
+        table_header = wh_app.config_and_backup.table_headers.point_tech_table
+        table.append('<tr><td colspan=2>{0}: {1}</td></tr>'.format(table_header[0],
+                     (select_operations.get_full_point_information(cursor, str(point_num)))[0]))
+
+        list_info = [select_operations.get_electric_point_info(cursor, str(point_num)),
+                     select_operations.get_cold_water_point_info(cursor, str(point_num)),
+                     select_operations.get_hot_water_point_info(cursor, str(point_num)),
+                     select_operations.get_heating_point_info(cursor, str(point_num)),
+                     select_operations.get_sewerage_point_info(cursor, str(point_num))]
+
+        for i in range(1, len(table_header)):
+            table.append('<tr><td colspan=2>{0}</td></tr>'.format(table_header[i]))
+            info = if_tech_list_empthy(list_info[i - 1])
+            table.append('<tr><td>Договор</td><td>{0}</td></tr>'.format(info[2]))
+            table.append('<tr><td>Описание</td><td>{0}</td></tr>'.format(info[3]))
+
+        table.append('</table>')
+        result = web_template.result_page("".join(table),
+                                          '/points',
+                                          str(stylesheet_number),
+                                          to_pdf=True,
+                                          current_adr='point-tech={0}'.format(point_num))
+
+    return result

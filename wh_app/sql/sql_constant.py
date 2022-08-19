@@ -15,7 +15,12 @@ any_consts = {"id": "id",
               "phone_number": "phone_number",
               "bugzilla": "bugzilla",
               "status": "status",
-              "customer_table": "customer"
+              "customer_table": "customer",
+              "electric": "electric",
+              "cold_water": "cold_water",
+              "hot_water": "hot_water",
+              "heating": "heating",
+              "sewerage": "sewerage"
               }
 
 workers_const = {"all_workers": "all_workers",
@@ -67,7 +72,9 @@ point_consts = {"point_id": "point_id",
                 "workspoints": "workspoints",
                 "point": "point",
                 "name_point": "name_point",
-                "is_work": "is_work"
+                "is_work": "is_work",
+                "treaty": "treaty",
+                "resume": "resume"
                 }
 
 any_consts.update(point_consts)

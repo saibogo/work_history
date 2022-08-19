@@ -52,6 +52,10 @@ tr > :nth-child(4) {
     text-align: center;
 }
 
+tr > :nth-child(5) {
+    text-align: center;
+}
+
 a:link {
     color: DarkSlateGrey;
     text-decoration: none;

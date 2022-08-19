@@ -363,3 +363,33 @@ def get_weekly_chart(cursor) -> list:
     """Function return all works days from all workers in weekly"""
 
     return get_selected(cursor, select_sql.sql_select_all_weekly_chart())
+
+
+def get_electric_point_info(cursor, point_id: str) -> list:
+    """Return electric point information"""
+
+    return get_selected(cursor, select_sql.sql_select_electric_info(point_id))
+
+
+def get_cold_water_point_info(cursor, point_id: str) -> list:
+    """Return cold_water point information"""
+
+    return get_selected(cursor, select_sql.sql_select_cold_water_info(point_id))
+
+
+def get_hot_water_point_info(cursor, point_id: str) -> list:
+    """Return hot_water point information"""
+
+    return get_selected(cursor, select_sql.sql_select_hot_water_info(point_id))
+
+
+def get_heating_point_info(cursor, point_id: str) -> list:
+    """Return heating point information"""
+
+    return get_selected(cursor, select_sql.sql_select_heating_info(point_id))
+
+
+def get_sewerage_point_info(cursor, point_id: str) -> list:
+    """Return sewerage point information"""
+
+    return get_selected(cursor, select_sql.sql_select_sewerage_info(point_id))
