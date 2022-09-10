@@ -393,3 +393,9 @@ def get_sewerage_point_info(cursor, point_id: str) -> list:
     """Return sewerage point information"""
 
     return get_selected(cursor, select_sql.sql_select_sewerage_info(point_id))
+
+
+def get_database_version(cursor) -> list:
+    """Return info from current database"""
+
+    return get_selected(cursor, select_sql.sql_select_database_version())

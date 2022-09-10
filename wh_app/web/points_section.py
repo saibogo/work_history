@@ -36,7 +36,8 @@ def all_points_table(stylesheet_number: str) -> str:
             on_off_link = "<a href='/on-off-point/{0}' title='ON/OFF'>{1}</a>" \
                 .format(str(all_points[row_num][0]), '&#9211')
             rows[row_num].append(edit_link + " " + on_off_link)
-            rows[row_num].append("<a href='/tech-info/{0}' title='Договора ресурсоснабжения'>&#128441;</a>".
+            rows[row_num].append("<a href='/tech-info/{0}' title='Договора ресурсоснабжения'>&#128441;</a>"
+                                 "<a href='/svu/{0}' title='СВУ электроснабжение'>&#9889;</a>".
                                  format(str(all_points[row_num][0])))
 
         table1 =  uhtml.universal_table(table_headers.points_table_name,
@@ -92,7 +93,8 @@ def all_works_points_table(stylesheet_number: str) -> str:
             on_off_link = "<a href='/on-off-point/{0}' title='ON/OFF'>{1}</a>"\
                 .format(str(all_points[row_num][0]), '&#9211')
             rows[row_num].append(edit_link + " " + on_off_link)
-            rows[row_num].append("<a href='/tech-info/{0}' title='Договора ресурсоснабжения'>&#128441</a>".
+            rows[row_num].append("<a href='/tech-info/{0}' title='Договора ресурсоснабжения'>&#128441;</a>"
+                                 "<a href='/svu/{0}' title='СВУ электроснабжение'>&#9889;</a>".
                                  format(str(all_points[row_num][0])))
         table1 =  uhtml.universal_table(table_headers.points_table_name,
                                         table_headers.points_table,

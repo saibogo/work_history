@@ -594,6 +594,15 @@ def changelog_page() -> Response:
     return goto_or_redirect(lambda: viev_changelog(stylesheet_number()))
 
 
+@app.route("/svu/<point_id>")
+def get_svu(point_id: str) -> Response:
+    """Return electric scheme if avaliable"""
+    try:
+        return send_from_directory(config.static_dir, 'image/svu/svu_{0}.jpg'.format(point_id))
+    except:
+        return page_not_found(404)
+
+
 @app.errorhandler(404)
 def page_not_found(error: Any) -> Response:
     """Return network error handling page 404"""

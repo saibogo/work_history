@@ -649,3 +649,9 @@ def sql_select_sewerage_info(point_id: str) -> str:
 
     query = ("""SELECT * FROM %(sewerage)s WHERE point_id={0}""") % sql_consts_dict
     return query.format(point_id)
+
+
+def sql_select_database_version() -> str:
+    """Return select-string for get current version database"""
+
+    return """SELECT VERSION()"""
