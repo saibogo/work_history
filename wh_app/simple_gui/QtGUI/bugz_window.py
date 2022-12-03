@@ -20,15 +20,17 @@ def bugzilla(window: SimpleGui, main_layout: QLayout) -> None:
         _, cursor = base
         bugs = get_all_bugz_in_bugzilla(cursor)
         table = QTableWidget()
-        table.setColumnCount(len(bugs_table))
+        bugs_table_ext = bugs_table + ["Изменить статус"]
+        table.setColumnCount(len(bugs_table_ext))
         table.setRowCount(len(bugs))
         minimal_width = 40
 
-        for col in range(len(bugs_table)):
-            table.setHorizontalHeaderItem(col, QTableWidgetItem(bugs_table[col]))
+        for col in range(len(bugs_table_ext)):
+            table.setHorizontalHeaderItem(col, QTableWidgetItem(bugs_table_ext[col]))
         for row in range(len(bugs)):
             for col in range(len(bugs[0])):
                 table.setItem(row, col, QTableWidgetItem(str(bugs[row][col])))
+            table.setCellWidget(row, len(bugs_table_ext) - 1, QPushButton("Изменить статус"))
 
         table.resizeColumnsToContents()
         table.verticalHeader().setVisible(False)

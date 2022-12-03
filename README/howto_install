@@ -1,2 +1,32 @@
 1. Install your liked OS. I prefer Debian Linux
-2.
+2. In command lone use next command: python3 --version 
+    if all correct then next step. Else install python3
+3. Install git in your system. Also apt install git
+4. Create folder workhistory. Also mkdir /home/user_name/workhistory
+5. cd /home/user_name/workhistory
+6. git clone https://github.com/saibogo/work_history.git
+7. apt install pip
+8. apt install python3-psycopg2
+9. apt install python3-tk
+10. apt install python3-flask
+11. apt install python3-psutil
+12. pip3 install fpdf
+13. apt install python3-pyqt5
+14. apt install postgresql
+15. su  (And insert your superuser password)
+16. su - postgres
+17. psql -Upostgres
+18. =# CREATE USER saibogo WITH PASSWORD 'myPassword';
+19. =# CREATE DATABASE workhistory;
+20. =# GRANT ALL PRIVILEGES ON DATABASE "workhistory" to saibogo;
+21. =# \c workhistory
+22. workhistory=# GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO "saibogo";
+23. exit to normal terminal
+24. psql workhistory < /path/to/your/dump.db
+25. python3 /path/to/main.py --help
+Well Done!
+26. edit config.py in your favorite editor (patches and ip)
+27. python3 /path/to/main.py
+28. start web-server
+29. in your browser go to to http://your_ip:5000
+Well Done!
