@@ -15,7 +15,7 @@ def bugs_menu(stylesheet_number: str) -> str:
     """Method create main bugs-page"""
     menu = [(1, 'Отобразить все'),
             (2, 'Отобразить незакрытые'),
-            (3, 'Зарегистрировать проблемму')]
+            (3, 'Зарегистрировать проблему')]
     headers = ['№', 'Выполнить']
     links_list = ['/all-bugs', '/all-bugs-in-work', '/add-bug']
     table = uhtml.universal_table('Возможные действия', headers, menu, True, links_list)

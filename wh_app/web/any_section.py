@@ -17,27 +17,13 @@ functions.info_string(__name__)
 def main_web_menu(stylesheet_number: str) -> str:
     """Function create main web-page"""
     name = "Доступные действия в базе ремонтов Малахит-Екатеринбург"
-    menu = [(1, 'Операции с предприятиями'),
-            (2, 'Операции с оборудованием'),
-            (3, 'Операции с ремонтами'),
-            (4, 'Операции с сотрудниками'),
-            (5, 'Баг-трекер системы'),
-            (6, 'Работа с заявками'),
-            (7, 'Изменить тему оформления'),
-            (8, 'Изменения в системе'),
-             (9, 'Выйти из системы')
-            ]
-    links_list = ['/points',
-                  '/equips',
-                  '/works',
-                  '/workers',
-                  '/bugs',
-                  '/orders-and-customers',
-                  '/next-themes',
-                  '/changelog-page',
-                  '/logout'
-                  ]
-    table = uhtml.universal_table(name, ['№', 'выполнить:'], menu, True, links_list)
+    menu_items = ['Операции с предприятиями', 'Операции с оборудованием', 'Операции с ремонтами',
+                  'Операции с сотрудниками', 'Баг-трекер системы', 'Работа с заявками',
+                  'Изменить тему оформления', 'Изменения в системе', 'Выйти из системы']
+    links_list = ['/points', '/equips', '/works', '/workers', '/bugs', '/orders-and-customers', '/next-themes',
+                  '/changelog-page', '/logout']
+    table = uhtml.universal_table(name, ['№', 'Перейти к'], [(i + 1, menu_items[i]) for i in range(len(menu_items))],
+                                  True, links_list)
     return web_template.result_page(table, "", stylesheet_number)
 
 

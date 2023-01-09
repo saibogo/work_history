@@ -98,7 +98,7 @@ def edit_equip_method(equip_id: str, stylesheet_number: str) -> str:
 
 
 def select_point_to_equip_method(equip_id: str, stylesheet_number: str) -> str:
-    """Create form to select new point to current equip"""
+    """Create form to select new point to curent equip"""
 
     with Database() as base:
         _, cursor = base

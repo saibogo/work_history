@@ -106,7 +106,8 @@ def create_edit_work_form(work_id: int, stylesheet_number: str) -> str:
         result.append('<tr><td>Оборудование</td><td>{0}</td></tr>'.format(works_info[2]))
         result.append('<tr><td>Модель оборудования</td><td>{0}</td></tr>'.format(works_info[3]))
         result.append('<tr><td>Серийный номер</td><td>{0}</td></tr>'.format(works_info[4]))
-        result.append('<tr><td>Окончание работ</td><td>{0}</td></tr>'.format(works_info[5]))
+        result.append('<tr><td>Окончание работ</td><td><input type="datetime-local" name="work_datetime"'
+                      ' value="{0}"></td></tr>'.format(works_info[5]))
         result.append('<tr><td>Состав заявки</td><td><textarea rows=3 name="{1}">{0}</textarea></td></tr>'
                       .format(works_info[6], uhtml.ORDER_INFO))
         result.append('<tr><td>Описание произведенных работ</td><td><textarea rows=6 name="{1}">{0}'
@@ -121,20 +122,21 @@ def create_edit_work_form(work_id: int, stylesheet_number: str) -> str:
 
 
 def update_work_method(work_id: int, data, method, stylesheet_number: str) -> str:
-    """Use UPDATE procedure to Database"""
+    """UPDATE selected work-string in work-table in DATABASE"""
 
     pre_adr = '/works'
     if method == "POST":
         password = data[uhtml.PASSWORD]
         order_info = data[uhtml.ORDER_INFO]
         description = data[uhtml.DESCRIPTION]
+        work_datetime = data[uhtml.WORK_DATETIME].replace("T", ' ') + ':00'
         if functions.is_superuser_password(password):
             if order_info.replace(" ", "") == '' or description.replace(" ", "") == '':
                 page = uhtml.data_is_not_valid()
             else:
                 with Database() as base:
                     connection, cursor = base
-                    update_operations.update_work_info(cursor, str(work_id), order_info, description)
+                    update_operations.update_work_info(cursor, str(work_id), order_info, description, work_datetime)
                     connection.commit()
                     page = uhtml.operation_completed()
         else:

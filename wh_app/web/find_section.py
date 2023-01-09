@@ -53,11 +53,12 @@ def find_work_paging(find_string: str, page_num: str, stylesheet_number: str) ->
         _, cursor = base
         works = select_operations.get_all_works_like_word_limit(cursor, find_string, int(page_num))
         works = functions.works_table_add_new_performer(works)
+        works = functions.works_table_add_edit(works)
         pages_list = functions.list_of_pages(select_operations.
                                              get_all_works_like_word(cursor, find_string))
         result = uhtml.universal_table(table_headers.works_table_name,
                                        table_headers.works_table,
-                                       [list(work) for work in works])
+                                       [list(work)  for work in works])
         pages_table = uhtml.paging_table('/find/work/{0}/page'.format(find_string),
                                          pages_list,
                                          int(page_num))
@@ -67,6 +68,7 @@ def find_work_paging(find_string: str, page_num: str, stylesheet_number: str) ->
 def find_work_like_date_paging(find_string: str, data_start: str,
                                data_stop: str, page_num: str, stylesheet_number: str) -> str:
     """Create table contain result find from works and data"""
+
     with Database() as base:
         _, cursor = base
         date_start_correct = data_start.replace('T', ' ')
@@ -82,6 +84,7 @@ def find_work_like_date_paging(find_string: str, data_start: str,
                                                                          date_stop_correct,
                                                                          int(page_num))
         works = functions.works_table_add_new_performer(works)
+        works = functions.works_table_add_edit(works)
         result = uhtml.universal_table(table_headers.works_table_name,
                                        table_headers.works_table,
                                        [list(work) for work in works])

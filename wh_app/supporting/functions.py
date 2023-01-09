@@ -1,4 +1,4 @@
-"""This module contain any supporing functions"""
+"""This module contain any supporting functions"""
 
 import hashlib
 from datetime import datetime
@@ -17,6 +17,7 @@ def info_string(name_module):
 
 
 from wh_app.web.universal_html import FIND_REQUEST
+from wh_app.web.equips_section import EDIT_CHAR
 
 
 def str_to_str_n(old_string: str, max_len: int) -> str:
@@ -148,9 +149,18 @@ def works_table_add_new_performer(works: list) -> list:
         for elem in work:
             new_works[-1].append(str(elem))
         if work:
-            new_works[-1][-1] += ('<a href="/add-performer-to-work/' +
-                                  str(new_works[-1][0]) + '">+</a>')
+            new_works[-1][-1] += ('<a href="/add-performer-to-work/{0}">+</a>'.format(new_works[-1][0]))
 
+    return new_works
+
+
+def works_table_add_edit(works: list) -> list:
+    """Add to all works string EDIT-link"""
+
+    new_works = []
+    for work in works:
+        new_works.append([str(elem) for elem in work] +
+                         ['<a href="/work-edit/{0}"> {1} </a>'.format(work[0], EDIT_CHAR)])
     return new_works
 
 
