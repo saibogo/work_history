@@ -1,7 +1,9 @@
 """This module contain templates to web pages"""
 
+from flask import render_template
+
 from wh_app.supporting import functions
-from wh_app.web.universal_html import list_to_ul, style_custom, navigations_menu
+from wh_app.web.universal_html import list_to_ul, style_custom, navigations_menu, remove_extended_chars
 from wh_app.web.java_script_generate.shutdown_handler import generate_message_shutdown_server
 
 functions.info_string(__name__)
@@ -71,9 +73,10 @@ def faq_state_machine(section: str) -> str:
 def result_page(main_page: str, preview_adr: str="", stylesheet_number: str="0",
                 to_pdf: bool=False, current_adr: str="") -> str:
     """Return complete HTML page"""
-    return "{0}\n{1}\n{2}\n{3}\n".format(style_custom(stylesheet_number),
-                                 generate_message_shutdown_server(),
-                                 main_page,
-                                 navigations_menu(preview_adr,
-                                                  to_pdf,
-                                                  current_adr) if preview_adr != "" else "")
+    tmp = render_template('universal_page.html', style_section=style_custom(stylesheet_number),
+                          scrypt_section=generate_message_shutdown_server(),
+                          main_section=main_page,
+                          navigation_section=navigations_menu(preview_adr,
+                                                              to_pdf,
+                                                              current_adr) if preview_adr != "" else "")
+    return remove_extended_chars(tmp)

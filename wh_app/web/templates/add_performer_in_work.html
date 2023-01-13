@@ -1,0 +1,48 @@
+<table>
+    <caption>Добавить исполнителя</caption>
+    <tr>
+        <th>№</th>
+        <th>Параметр</th>
+        <th>Содержимое</th>
+    </tr>
+    {% for string in table %}
+        <tr>
+            <td>{{string[0]}}</td>
+            <td>{{string[1]}}</td>
+            <td>{{string[2]}}</td>
+        </tr>
+    {% endfor %}
+    <form action="/add-performer-result" method="post">
+    <tr>
+        <td>{{string_num}}</td>
+        <td>Добавить исполнителя</td>
+        <td>
+            <select name="{{performer}}">
+                {% for worker in performers %}
+                <option value="{{worker[0]}}">{{worker[2]}}</option>
+                {% endfor %}
+            </select>
+        </td>
+    </tr>
+        <tr>
+            <td>
+                <input type="hidden" name="{{work_id_name}}" value="{{work_id}}">
+            </td>
+            <td>
+                Пароль
+            </td>
+            <td>
+                <input type="password" name="{{password}}"  placeholder="Обязательно">
+            </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                Выполнить
+            </td>
+            <td>
+                <input type="submit" value="Добавить">
+            </td>
+        </tr>
+    </form>
+</table>

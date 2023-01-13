@@ -1,0 +1,37 @@
+<table>
+    <caption>Добавить новое оборудование</caption>
+    <tr>
+        <th>ID предприятия.</th>
+        <th>Наименование</th>
+        <th>Модель</th>
+        <th>Серийник</th>
+        <th>Предыдущий ID</th>
+        <th>Пароль доступа</th>
+        <th>Отправить</th>
+    </tr>
+        <form action="/add-equip" method="post">
+            <tr>
+                <td>
+                    <input name="{{point_id_name}}" value="{{point_id}}" readonly>
+                </td>
+                <td>
+                    <input name="{{equip_name}}"  placeholder="Обязательно">
+                </td>
+                <td>
+                    <input name="{{model}}" placeholder="Если есть">
+                </td>
+                <td>
+                    <input name="{{serial_num}}" placeholder="Если есть">
+                </td>
+                <td>
+                    <input name="{{pre_id}}" placeholder="Если есть">
+                </td>
+                <td>
+                    <input type="password" name="{{password}}"  placeholder="Обязательно">
+                </td>
+                <td>
+                    <input type="submit" value="Отправить">
+                </td>
+            </tr>
+        </form>
+</table>

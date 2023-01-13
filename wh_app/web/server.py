@@ -37,7 +37,7 @@ from wh_app.supporting.pdf_operations.pdf import equips_in_point, works_from_equ
     works_from_performer, weekly_charts_pdf, move_equip, point_tech_information
 
 
-app = Flask(__name__, static_folder=config.static_dir)
+app = Flask(__name__, static_folder=config.static_dir, template_folder=config.template_folder)
 app.secret_key = 'gleykh secret key'
 functions.info_string(__name__)
 

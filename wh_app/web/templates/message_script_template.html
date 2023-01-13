@@ -1,0 +1,11 @@
+<script type="text/javascript">
+    function handl() {
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", "{{full_address}}/server-ready-to-shutdown", false);
+        xhr.send();
+        if (xhr.responseText) {
+            alert( xhr.responseText );
+            }
+    }
+    setInterval(handl, {{timeout_message}});
+</script>

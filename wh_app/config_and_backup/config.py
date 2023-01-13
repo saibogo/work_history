@@ -9,6 +9,7 @@ user_password = 'begemot100'
 database_host = '127.0.0.1'
 database_port = '5432'
 static_dir = path_to_project + 'wh_app/web/static/'
+template_folder= path_to_project + 'wh_app/web/templates'
 str_interrupted = 'Interrupted'
 max_size_column = 40
 rows_pxls = 25

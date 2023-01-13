@@ -1,0 +1,15 @@
+<table>
+    <caption>{{table_name}}</caption>
+    <tr>
+        {% for header in headers %}
+        <th>{{header}}</th>
+        {% endfor%}
+    </tr>
+    {% for string in data %}
+    <tr>
+        {% for elem in string %}
+            <td>{{elem}}</td>
+        {% endfor %}
+    </tr>
+    {% endfor %}
+</table>

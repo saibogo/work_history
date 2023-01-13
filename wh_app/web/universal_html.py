@@ -1,7 +1,8 @@
 """This module contain all universal HTML-section for pages"""
 
 import datetime
-from flask import request
+from flask import request, render_template
+import re
 
 from wh_app.config_and_backup import config
 from wh_app.postgresql.database import Database
@@ -45,17 +46,30 @@ def link_or_str(elem: str, link_type: bool = False, link: str = '') -> str:
     return '<a href="' + str(link) + '">' + str(elem) + '</a>' if link_type else str(elem)
 
 
+def remove_extended_chars(html: str) -> str:
+    """Remove all extended chars in html-string"""
+    return html.replace('&lt;', '<').\
+        replace('&gt;', '>').\
+        replace('&#34;', '"').\
+        replace('&amp;', '&').\
+        replace('&#39;', '')
+
+
+def list_to_ul(data_list: list) -> str:
+    """Function return html-string contain notnumeric html-list"""
+    result = list()
+    result.append('<ul>')
+    for elem in data_list:
+        result.append('<li>' + str(elem) + '</li>')
+    result.append('</ul>')
+    return '\n'.join(result)
+
+
 def style_custom(stylesheet_number=0) -> str:
     """Function return string contain sections <style>"""
-    result = list()
-    result.append('<head><link rel="shortcut icon" href="' + config.full_address +
-                  '/favicon.ico" sizes="32x32" type="image/x-icon" ' +
-                  ' title="История произведенных работ">')
-    result.append('<title>История произведенных ремонтов</title></head>')
-    stylesheet_name = "/style{0}.css".format(stylesheet_number)
-    result.append('<link rel="stylesheet" href="{0}">'.format(stylesheet_name))
-    result.append('</head>')
-    return '\n'.join(result)
+    return render_template('style_template.html',
+                           ico_addres=config.full_address + '/favicon.ico',
+                           stylesheet_name="/style{0}.css".format(stylesheet_number))
 
 
 def universal_table(name: str, headers: list, data: list, links: bool = False,
@@ -63,54 +77,25 @@ def universal_table(name: str, headers: list, data: list, links: bool = False,
     """Function return string contain html-table"""
     if links_list is None:
         links_list = []
-    result = list()
-    result.append('<table><caption>' + str(name) + '</caption>')
-    result.append('<tr>' + "".join(['<th>' + str(elem) + '</th>' for elem in headers]) + '</tr>')
+    new_data = list()
     for i in range(len(data)):
-        result.append('<tr>' +
-                      "".join(['<td>' + link_or_str(elem,
-                                                    links,
-                                                    links_list[i] if links else '') +
-                               '</td>' for elem in data[i]]) + '</tr>')
-    result.append('</table>')
-    return "\n".join(result)
+        new_data.append(list())
+        for elem in data[i]:
+            new_data[-1].append(link_or_str(elem, links, links_list[i] if links else ''))
+    tmp = render_template('universal_table.html', table_name=str(name), headers=headers, data=new_data)
+    return remove_extended_chars(tmp)
 
 
 def add_new_point() -> str:
     """Function return string contain form to add new point"""
-    result = list()
-    result.append('<table><caption> Добавить новое предприятие</caption>')
-    result.append('<tr><th>Название</th><th>Адрес</th><th>Пароль доступа</th><th></th></tr>')
-    result.append('<form action="/add-point" method="post"><tr>')
-    result.append('<td><input name="' + POINT_NAME + '" placeholder="Обязательно"></td>')
-    result.append('<td><input name="' + POINT_ADDRESS + '" placeholder="Обязательно"></td>')
-    result.append('<td><input type="password" name="' +
-                  PASSWORD +
-                  '" placeholder="Обязательно"></td>')
-    result.append('<td><input type="submit" value="Отправить"></td>')
-    result.append('</tr></form></table>')
-    return "\n".join(result)
+    return render_template('add_new_point.html', point_name=POINT_NAME, point_address=POINT_ADDRESS, password=PASSWORD)
 
 
 def add_new_equip(point_id: str) -> str:
     """Function return string contain form to add new equipment"""
-    result = list()
-    result.append('<table><caption>Добавить новое оборудование</caption>')
-    result.append('<tr><th>ID предприятия.</th><th>Наименование</th><th>Модель</th>' +
-                  '<th>Серийник</th><th>Предыдущий ID</th><th>Пароль доступа</th>' +
-                  '<th>Отправить</th></tr>')
-    result.append('<form action="/add-equip" method="post"><tr>')
-    result.append('<td><input name="' + POINT_ID + '" value="' + str(point_id) + '" readonly></td>')
-    result.append('<td><input name="' + EQUIP_NAME + '"  placeholder="Обязательно"></td>')
-    result.append('<td><input name="' + MODEL + '" placeholder="Если есть"></td>')
-    result.append('<td><input name="' + SERIAL_NUM + '" placeholder="Если есть"></td>')
-    result.append('<td><input name="' + PRE_ID + '" placeholder="Если есть"></td>')
-    result.append('<td><input type="password" name="' +
-                  PASSWORD +
-                  '"  placeholder="Обязательно"></td>')
-    result.append('<td><input type="submit" value="Отправить"></td>')
-    result.append('</tr></form></table>')
-    return "\n".join(result)
+    return render_template('add_new_equip.html', point_id_name=POINT_ID, point_id=str(point_id),
+                           equip_name=EQUIP_NAME, model=MODEL, serial_num=SERIAL_NUM, pre_id=PRE_ID,
+                           password=PASSWORD)
 
 
 def add_new_work(equip_id: str) -> str:
@@ -122,33 +107,9 @@ def add_new_work(equip_id: str) -> str:
         _, cursor = base
         performers = select_operations.get_table_current_workers(cursor)
 
-    result = list()
-    result.append('<table><caption>Зарегистрировать произведенные работы</caption>')
-    result.append('<tr><th>ID оборудования</th><th>Причина ремонта</th>' +
-                  '<th>описание работ</th><th>Дата и время</th>' +
-                  '<th>Исполнители</th><th>Пароль доступа</th><th>Отправить</th></tr>')
-    result.append('<form action="/add-work" method="post"><tr>')
-    result.append('<td><input name="' + EQUIP_ID + '" value="' + str(equip_id) + '" readonly></td>')
-    result.append('<td><textarea name="' + QUERY + '" placeholder="Необязательно"></textarea></td>')
-    result.append('<td><textarea name="' + WORK + '" placeholder="Обязательно"></textarea></td>')
-    result.append('<td><input type="datetime-local" name="' +
-                  WORK_DATETIME +
-                  '" value="' +
-                  date_to_browser +
-                  '"></td>')
-    result.append('<td><select  name="' + PERFORMER + '">')
-    for perfomer in performers:
-        result.append('<option value=\'' +
-                      str(perfomer[0]) +
-                      '\'>' + str(perfomer[2]) +
-                      '</option>')
-    result.append('</select></td>')
-    result.append('<td><input type="password" name="' +
-                  PASSWORD +
-                  '"  placeholder="Обязательно"></td>')
-    result.append('<td><input type="submit" value="Отправить"></td>')
-    result.append('</tr></form></table>')
-    return "\n".join(result)
+    return render_template('add_new_work.html', equip_id_name=EQUIP_ID, equip_id=str(equip_id), query=QUERY,
+                           work=WORK, work_datetime=WORK_DATETIME, date_to_browser=date_to_browser,
+                           performer_name=PERFORMER, performers=performers, password=PASSWORD)
 
 
 def pass_is_not_valid() -> str:
@@ -175,77 +136,18 @@ def navigations_menu(pre_html: str, save_to_pdf: bool=False, current_adr: str=""
     """Function return string contain navigations bar
     save_to_pdf=True create button "Save" in navigation menu
     """
-    result = list()
-    result.append('<table class="navigation_menu"><caption>Навигация</caption><tr>')
-    result.append('<td class="navigation_bottom"><a href="' +
-                  pre_html +
-                  '">В предыдущее меню</a></td>')
-    result.append('<td class="navigation_bottom"><a href="' +
-                  config.full_address +
-                  '">Главное меню</a></td>')
-    result.append('<td class="navigation_bottom">' +
-                  '<a href="mailto:gleykh@malachite.ru">Обратная связь</a></td>')
-    result.append('<td class="navigation_bottom"><a href="' +
-                  config.full_address +
-                  '/FAQ?page=' +
-                  request.url +
-                  '">Частые вопросы</a></td>')
-    result.append('<td class="navigation_bottom"><a href="' +
-                  config.full_address +
-                  '/find' + '">Поиск</a></td>')
-    result.append('<td class="navigation_bottom"><a href="' +
-                  config.full_address +
-                  '/statistics' + '">Статистика</a></td>')
-    result.append('<td class="navigation_bottom"><a href="' +
-                  config.full_address +
-                  '/system-status' + '">Статус системы</a></td>')
-    if save_to_pdf and current_adr != "":
-        result.append('<td class="navigation_bottom"><a href="'
-                      + config.full_address +
-                      '/table-to-pdf/{0}'.format(current_adr) + '">Сохранить в PDF</a></td>')
-    result.append('</tr></table>')
-    return '\n'.join(result)
-
-
-def list_to_ul(data_list: list) -> str:
-    """Function return html-string contain notnumeric html-list"""
-    result = list()
-    result.append('<ul>')
-    for elem in data_list:
-        result.append('<li>' + str(elem) + '</li>')
-    result.append('</ul>')
-    return '\n'.join(result)
+    return render_template('navigation_template.html', pre_html=pre_html, address=config.full_address,
+                           request_url=request.url, to_pdf=True if save_to_pdf and current_adr != "" else None,
+                           current_adress=current_adr)
 
 
 def find_table() -> str:
     """Function return table to select find-string"""
     date_to_browser = functions.date_to_browser()
-
-    result = list()
-    result.append('<table><caption>Встроенная поисковая система</caption>')
-    result.append('<tr><th>Примечание к поиску</th><th>Строка поиска</th><th>Где искать</th>' +
-                  '<th>Дата от(Только для работ)</th>' +
-                  '<th>Дата до(Только для работ)</th><th>Отправить</th></tr>')
-    result.append('<form action="/findresult" method="post"><tr>')
-    result.append('<td><input name="' + COMMENT +
-                  '" value="Введите строку поиска.(Регистр сиволов не важен)" readonly></td>')
-    result.append('<td><input name="' + FIND_REQUEST + '"  placeholder="Обязательно"></td>')
-    result.append('<td><select name="' + FIND_IN_TABLE + '">')
-    result.append('<option selected value="' + WORKS + '">В работах</option>')
-    result.append('<option selected value="' +
-                  WORKS_IGNORED_DATE +
-                  '">В работах не учитывая дату</option>')
-    result.append('<option value="' + WORKS_POINTS + '">В предприятиях</option>')
-    result.append('<option value="' + EQUIPS + '">В оборудовании</option>')
-    result.append('</select></td>')
-    result.append('<td><input type="datetime-local" name="' + WORK_DATETIME_START +
-                  '" value="' + date_to_browser + '"></td>')
-    result.append('<td><input type="datetime-local" name="' + WORK_DATETIME_STOP +
-                  '" value="' + date_to_browser + '"></td>')
-
-    result.append('<td><input type="submit" value="Отправить"></td>')
-    result.append('</tr></form></table>')
-    return "\n".join(result)
+    return render_template('find_template.html', comment=COMMENT, find_request=FIND_REQUEST,
+                           find_in_table=FIND_IN_TABLE, works=WORKS, works_ignored_date=WORKS_IGNORED_DATE,
+                           works_points=WORKS_POINTS, equips=EQUIPS, work_datetime_start=WORK_DATETIME_START,
+                           work_datetime_stop=WORK_DATETIME_STOP, date_to_browser=date_to_browser)
 
 
 def add_performer_in_work(work: list) -> str:
@@ -255,62 +157,18 @@ def add_performer_in_work(work: list) -> str:
     with Database() as base:
         _, cursor = base
         performers = select_operations.get_table_current_workers(cursor)
+    table = [(i + 1, table_headers.works_table[i], re.sub(r"<a href.*a>", '', str(work[0][i])))
+             for i in range(len(work[0]))]
 
-    result = list()
-    result.append('<table><caption>Добавить исполнителя</caption>')
-    result.append('<tr><th>№</th><th>Параметр</th><th>Содержимое</th></tr>')
-    for i in range(len(work[0])):
-        result.append('<tr><td>' + str(i) + '</td><td>' +
-                      table_headers.works_table[i] + '</td><td>' +
-                      str(work[0][i]) +
-                      '</td></tr>')
-    result.append('<form action="/add-performer-result" method="post">')
-    result.append('<tr><td>' + str(len(work[0])) + '</td>')
-    result.append('<td>Добавить исполнителя</td><td><select name="' + PERFORMER + '">')
-    for worker in performers:
-        result.append('<option value="' + str(worker[0]) + '">' + str(worker[2]) + '</option>')
-    result.append('</tr><tr></select></td></tr><tr><td><input type="hidden" name="' +
-                  WORK_ID + '" value="' +
-                  str(work[0][0]) + '"></td>')
-    result.append('<td>Пароль</td><td><input type="password" name="' + PASSWORD +
-                  '"  placeholder="Обязательно"></td></tr>')
-    result.append('<tr><td></td><td>Выполнить</td>' +
-                  '<td><input type="submit" value="Добавить"></td></tr></form></table>')
-
-    return  "\n".join(result)
+    return render_template('add_performer_in_work.html', table=table, string_num=str(len(work[0])),
+                           performer=PERFORMER, performers=performers, work_id_name=WORK_ID, work_id=str(work[0][0]),
+                           password=PASSWORD)
 
 
 def edit_point_information(point: list) -> str:
     """Return editable table about selected point"""
-
-    result = list()
-    result.append('<table><caption>Редактировать сведения о предприятии</caption>')
-    result.append('<tr><th>№</th><th>Параметр</th><th>Значение</th></tr>')
-
-    result.append('<form action="/upgrade-point-info" method = "post">')
-    result.append('<tr><td>1</td><td>ID</td><td>' + point[0] + '</td></tr>')
-    result.append('<input type="hidden" name="' + POINT_ID + '" value="' + point[0] + '"></input>')
-
-    result.append('<tr><td>2</td><td>Служебное название</td>')
-    result.append('<td><textarea name="' + POINT_NAME + '">' + point[1] + '</textarea></td></tr>')
-
-    result.append('<tr><td>3</td><td>Адрес</td>')
-    result.append('<td><textarea rows=2 name="' +
-                  POINT_ADDRESS + '">' + point[2] +
-                  '</textarea></td></tr>')
-
-    result.append('<tr><td>4</td><td>Статус</td>')
-    result.append('<td>' + point[3] + '</td></tr>')
-
-    result.append('<tr><td>5</td><td>Пароль доступа</td>')
-    result.append('<td><input type="password" name="' + PASSWORD + '"></input></td></tr>')
-
-    result.append('<tr><td>6</td><td>Применить изменения</td>')
-    result.append('<td><input type="submit" value="Отправить"></input></td></tr>')
-
-    result.append('</form></table>')
-
-    return "\n".join(result)
+    return render_template('edit_point_information.html', point_id=POINT_ID, point=point, point_name=POINT_NAME,
+                           point_address=POINT_ADDRESS, password=PASSWORD)
 
 
 def edit_equip_information(equip: list) -> str:
