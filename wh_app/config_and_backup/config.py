@@ -1,5 +1,3 @@
-from tkinter import GROOVE
-
 
 path_to_project = '/home/saibogo/PycharmProjects/work_history/'
 path_to_pdf = "/home/saibogo/Документы/report.pdf"
@@ -14,7 +12,7 @@ str_interrupted = 'Interrupted'
 max_size_column = 40
 rows_pxls = 25
 max_pxls_in_canvas = 600
-relief = GROOVE
+
 ip_address = '192.168.6.242'
 port = '5000'
 full_address = "http://" + ip_address + ":" + port

@@ -1,0 +1,63 @@
+<table>
+    <caption>Редактировать сведения об оборудовании</caption>
+    <tr>
+        <th>№</th>
+        <th>Параметр</th>
+        <th>Значение</th>
+    </tr>
+    <form action="/upgrade-equip-info" method = "post">
+        <tr>
+            <td>1</td>
+            <td>ID</td>
+            <td>{{equip[0]}}</td>
+        </tr>
+        <input type="hidden" name="{{equip_id_name}}" value="{{equip[0]}}"></input>
+        <tr>
+            <td>2</td>
+            <td>Предприятие</td>
+            <td>{{equip[1]}}</td>
+        </tr>
+        <tr>
+            <td>3</td>
+            <td>Наименование</td>
+            <td>
+                <textarea name="{{equip_name}}">{{equip[2]}}</textarea>
+            </td>
+        </tr>
+        <tr>
+            <td>4</td>
+            <td>Модель</td>
+            <td>
+                <textarea rows=2 name="{{model}}">{{equip[3]}}</textarea>
+            </td>
+        </tr>
+        <tr>
+            <td>5</td>
+            <td>Серийный номер</td>
+            <td>
+                <textarea rows=2 name="{{serial_num}}">{{equip[4]}}</textarea>
+            </td>
+        </tr>
+        <tr>
+            <td>6</td>
+            <td>Предыдущий ID</td>
+            <td>
+                <textarea rows=1 name="{{pre_id}}">{{equip[5]}}</textarea>
+            </td>
+        </tr>
+        <tr>
+            <td>7</td>
+            <td>Пароль доступа</td>
+            <td>
+                <input type="password" name="{{password}}"></input>
+            </td>
+        </tr>
+        <tr>
+            <td>8</td>
+            <td>Применить изменения</td>
+            <td>
+                <input type="submit" value="Отправить"></input>
+            </td>
+        </tr>
+    </form>
+</table>

@@ -2,6 +2,7 @@
 
 import datetime
 from flask import request, render_template
+from typing import Callable, Any
 import re
 
 from wh_app.config_and_backup import config
@@ -46,23 +47,20 @@ def link_or_str(elem: str, link_type: bool = False, link: str = '') -> str:
     return '<a href="' + str(link) + '">' + str(elem) + '</a>' if link_type else str(elem)
 
 
-def remove_extended_chars(html: str) -> str:
-    """Remove all extended chars in html-string"""
-    return html.replace('&lt;', '<').\
-        replace('&gt;', '>').\
-        replace('&#34;', '"').\
-        replace('&amp;', '&').\
-        replace('&#39;', '')
+def replace_decor(func: Callable) -> Callable:
+    """Replaces all invalid characters"""
+    def wrap(*args: Any) -> str:
+        return func(*args).replace('&lt;', '<').\
+            replace('&gt;', '>').\
+            replace('&#34;', '"').\
+            replace('&amp;', '&').\
+            replace('&#39;', '')
+    return wrap
 
 
 def list_to_ul(data_list: list) -> str:
     """Function return html-string contain notnumeric html-list"""
-    result = list()
-    result.append('<ul>')
-    for elem in data_list:
-        result.append('<li>' + str(elem) + '</li>')
-    result.append('</ul>')
-    return '\n'.join(result)
+    return render_template('list.html', list=data_list)
 
 
 def style_custom(stylesheet_number=0) -> str:
@@ -72,6 +70,7 @@ def style_custom(stylesheet_number=0) -> str:
                            stylesheet_name="/style{0}.css".format(stylesheet_number))
 
 
+@replace_decor
 def universal_table(name: str, headers: list, data: list, links: bool = False,
                     links_list: list = None) -> str:
     """Function return string contain html-table"""
@@ -83,7 +82,7 @@ def universal_table(name: str, headers: list, data: list, links: bool = False,
         for elem in data[i]:
             new_data[-1].append(link_or_str(elem, links, links_list[i] if links else ''))
     tmp = render_template('universal_table.html', table_name=str(name), headers=headers, data=new_data)
-    return remove_extended_chars(tmp)
+    return tmp
 
 
 def add_new_point() -> str:
@@ -174,137 +173,34 @@ def edit_point_information(point: list) -> str:
 def edit_equip_information(equip: list) -> str:
     """Return editable table about selected point"""
 
-    result = list()
-    result.append('<table><caption>Редактировать сведения об оборудовании</caption>')
-    result.append('<tr><th>№</th><th>Параметр</th><th>Значение</th></tr>')
-
-    result.append('<form action="/upgrade-equip-info" method = "post">')
-    result.append('<tr><td>1</td><td>ID</td><td>' + equip[0] + '</td></tr>')
-    result.append('<input type="hidden" name="' + EQUIP_ID + '" value="' + equip[0] + '"></input>')
-    result.append('<tr><td>2</td><td>Предприятие</td><td>' + equip[1] + '</td></tr>')
-
-    result.append('<tr><td>3</td><td>Наименование</td>')
-    result.append('<td><textarea name="' + EQUIP_NAME + '">' + equip[2] + '</textarea></td></tr>')
-
-    result.append('<tr><td>4</td><td>Модель</td>')
-    result.append('<td><textarea rows=2 name="' + MODEL + '">' + equip[3] + '</textarea></td></tr>')
-
-    result.append('<tr><td>5</td><td>Серийный номер</td>')
-    result.append('<td><textarea rows=2 name="' +
-                  SERIAL_NUM + '">' + equip[4] +
-                  '</textarea></td></tr>')
-
-    result.append('<tr><td>6</td><td>Предыдущий ID</td>')
-    result.append('<td><textarea rows=1 name="' + PRE_ID +
-                  '">' + str(equip[5]) + '</textarea></td></tr>')
-
-    result.append('<tr><td>7</td><td>Пароль доступа</td>')
-    result.append('<td><input type="password" name="' + PASSWORD + '"></input></td></tr>')
-
-    result.append('<tr><td>8</td><td>Применить изменения</td>')
-    result.append('<td><input type="submit" value="Отправить"></input></td></tr>')
-
-    result.append('</form></table>')
-
-    return "\n".join(result)
+    return render_template('add_equip_information.html', equip_id_name=EQUIP_ID, equip=equip, equip_name=EQUIP_NAME,
+                           model=MODEL, serial_num=SERIAL_NUM, pre_id=PRE_ID, password=PASSWORD)
 
 
 def select_point_form(equip: list, point_id: str) -> str:
     """Create form to generate html-page to remove equip in new point"""
-
-    result = list()
-    result.append('<table><caption>Перемещение оборудования</caption>')
-    result.append('<tr><th>№</th><th>Параметр</th><th>Значение</th></tr>')
-
-    result.append('<form action="/remove-equip" method = "post">')
-    result.append('<tr><td>1</td><td>ID</td><td>' + equip[0] + '</td></tr>')
-    result.append('<input type="hidden" name="' + EQUIP_ID + '" value="' + equip[0] + '"></input>')
-
-    result.append('<tr><td>2</td><td>Текущее предприятие</td><td>' + equip[1] + '</td></tr>')
-    result.append('<input type="hidden" name="' + POINT_ID + '" value="' + point_id + '"></input>')
-
-    result.append('<tr><td>3</td><td>Наименование</td><td>' + equip[2] + '</td></tr>')
-    result.append('<input type="hidden" name="' + EQUIP_NAME +
-                  '" value="' + equip[2] + '"></input>')
-
-    result.append('<tr><td>4</td><td>Модель</td><td>' + equip[3] + '</td></tr>')
-    result.append('<input type="hidden" name="' + MODEL + '" value="' + equip[3] + '"></input>')
-
-    result.append('<tr><td>5</td><td>Серийный номер</td><td>' + equip[4] + '</td></tr>')
-    result.append('<input type="hidden" name="' +
-                  SERIAL_NUM +
-                  '" value="' + equip[4] + '"></input>')
-
-    result.append('<tr><td>6</td><td>Предыдущий ID</td><td>' + str(equip[5]) + '</td></tr>')
-    result.append('<input type="hidden" name="' +
-                  PRE_ID +
-                  '" value="' + str(equip[5]) + '"></input>')
-
-    result.append('<tr><td>7</td><td>Точка перемещения</td><td><select name="' +
-                  NEW_POINT_ID + '">')
     new_points = []
     with Database() as base:
         _, cursor = base
         new_points  = select_operations.get_all_point_except_id(cursor, str(point_id))
-        for point in new_points:
-            result.append('<option value="' + str(point[0]) + '">' + str(point[1]) + '</option>')
 
-    result.append('</select></td></tr>')
-
-    result.append('<tr><td>7</td><td>Пароль доступа</td>')
-    result.append('<td><input type="password" name="' + PASSWORD + '"></input></td></tr>')
-
-    result.append('<tr><td>8</td><td>Применить изменения</td>')
-    result.append('<td><input type="submit" value="Отправить"></input></td></tr>')
-
-    result.append('</form></table>')
-
-    return "\n".join(result)
+    return render_template('redirect_equip.html', equip_id=EQUIP_ID, equip=equip, point_id_name=POINT_ID,
+                           point_id=point_id, equip_name=EQUIP_NAME, model=MODEL, serial_num=SERIAL_NUM,
+                           pre_id=PRE_ID, new_point_id=NEW_POINT_ID, points=new_points, password=PASSWORD)
 
 
 def on_off_point_table(point: list) -> str:
     """Return table, contain dialog ON/OFF selected point"""
-
-    result = list()
-    result.append('<table><caption>Изменение статуса предприятия</caption>')
-    result.append('<tr><th>№</th><th>Параметр</th><th>Значение</th></tr>')
-    result.append('<form action="/invert-point-status" method = "post">')
-
-    result.append('<tr><td>1</td><td>ID</td><td>' + point[0] + '</td></tr>')
-    result.append('<input type="hidden" name="' +
-                  POINT_ID +
-                  '" value="' + point[0] + '"></input>')
-
-    result.append('<tr><td>2</td><td>Служебное название</td>')
-    result.append('<td>' + str(point[1]) + '</td></tr>')
-
-    result.append('<tr><td>3</td><td>Адрес</td>')
-    result.append('<td>' + str(point[2]) + '</td></tr>')
-
-    result.append('<tr><td>4</td><td>Статус</td>')
-    result.append('<td>' + point[3] + '</td></tr>')
-
-    result.append('<tr><td>5</td><td>Пароль доступа</td>')
-    result.append('<td><input type="password" name="' +
-                  PASSWORD +
-                  '"></input></td></tr>')
-
-    result.append('<tr><td>6</td><td>Изменить статус</td>')
-    result.append('<td><input type="submit" value="Изменить"></input></td></tr>')
-
-    result.append('</form></table>')
-    return "\n".join(result)
+    return render_template('on_off_point.html', point_id=POINT_ID, point=point, password=PASSWORD)
 
 
 def html_page_not_found() -> str:
     """Return html contain PAGE NOT FOUND"""
-
     return '<h1>Блииннн.. А такой страницы нет...</h1>'
 
 
 def html_internal_server_error() -> str:
     """Return html contain INTERNAL SERVER ERROR"""
-
     message = '<h1>Произошла ошибка сервера. ' +\
               ' Обратитесь к администратору сайта или разработчику</h1>' +\
               '<h2>Время возникновения ошибки: {}</h2>'.format(
@@ -321,34 +217,25 @@ def info_from_alter_works() -> str:
            ' предприятием дополнительно и сегодня на смене.<h3>'
 
 
+@replace_decor
+@replace_decor
 def paging_table(link: str, all_elems: list, current: int) -> str:
     """Return simple table contain paging links"""
 
     if len(all_elems) == 1:
-        result = [""]
+        tmp = ""
     else:
-        result = ['<br><table id="pages_table">']
         if len(all_elems) < 2 * config.max_pages_in_tr:
+            rows = []
             for row in range(len(all_elems) // config.max_pages_in_tr + 1):
-                result.append('<tr>')
-                for cell in range(min(config.max_pages_in_tr,
-                                    len(all_elems) - row * config.max_pages_in_tr)):
-                    result.append('<td class="paging_td">')
+                cells = []
+                for cell in range(min(config.max_pages_in_tr, len(all_elems) - row * config.max_pages_in_tr)):
                     elem = all_elems[row * config.max_pages_in_tr + cell]
-                    result.append(str(elem)
-                                  if elem == current
-                                  else '<a href="{0}/{1}">{1}</a>'.format(link, elem))
-                    result.append('</td>')
-                result.append('</tr>')
+                    cells.append(str(elem) if elem == current else '<a href="{0}/{1}">{1}</a>'.format(link, elem))
+                rows.append(render_template('paging/paging_string_v1.html', cells=cells))
+            tmp = render_template('paging/paging_table_v1.html', rows=rows)
         else:
-            result.append('<tr>')
-            result.append('<td class="paging_td"><a href="{0}/{1}">&laquo;</a>'.format(
-                link, all_elems[0]))
-            result.append('</td>')
             down_page_number = max(1, current - 10)
-            result.append('<td class="paging_td" title="page {1}"><a href="{0}/{1}">&lt</a>'.
-                          format(link, down_page_number))
-            result.append('</td>')
             list_of_intervals = [[], [], []]
             len_of_interval = config.max_pages_in_tr // 4
 
@@ -377,70 +264,33 @@ def paging_table(link: str, all_elems: list, current: int) -> str:
 
                 list_of_intervals[2] = list(range(len(all_elems) - 6, len(all_elems)))
 
-            result.append(create_td_in_paging_table(all_elems, link, list_of_intervals[0], current))
-            result.append('<td class="paging_td">...</td>')
-
-            result.append(create_td_in_paging_table(all_elems, link, list_of_intervals[1], current))
-            result.append('<td class="paging_td">...</td>')
-
-            result.append(create_td_in_paging_table(all_elems, link, list_of_intervals[2], current))
-
             up_page_number = min(len(all_elems), current + 10)
-            result.append('<td class="paging_td" title="page {1}"><a href="{0}/{1}">&gt</a>'.
-                          format(link, up_page_number))
-            result.append('</td>')
-
-            result.append('<td class="paging_td"><a href="{0}/{1}">&raquo;</a>'.format(
-                link, all_elems[-1]))
-            result.append('</td>')
-
-            result.append('</tr>')
-        result.append('</table>')
-    return "\n".join(result)
+            tmp = render_template('paging/paging_table_v2.html', link=link, first_page=all_elems[0],
+                                  down_page=down_page_number,
+                                  interval1=create_td_in_paging_table(all_elems, link, list_of_intervals[0], current),
+                                  interval2=create_td_in_paging_table(all_elems, link, list_of_intervals[1], current),
+                                  interval3=create_td_in_paging_table(all_elems, link, list_of_intervals[2], current),
+                                  up_page=up_page_number, last_page=all_elems[-1])
+    return tmp
 
 
+@replace_decor
 def create_td_in_paging_table(all_elems: list, link: str,
                               list_of_interval: list, current: int) -> str:
     """Support function for paging_table()"""
-    result = []
-    for i in list_of_interval:
-        result.append('<td class="paging_td">')
-        result.append(str(i + 1) if i == current - 1
-                      else '<a href="{0}/{1}">{1}</a></td>'.format(link, all_elems[i]))
-    return "\n".join(result)
+    tmp = list(map(lambda i: str(i + 1) if i == current - 1 else '<a href="{0}/{1}">{1}</a>'.
+                   format(link, all_elems[i]), list_of_interval))
+    return render_template('paging/td_in_paging_table.html', interval=tmp)
 
 
 def new_bug_input_table() -> str:
     """Return form to input new bug in bag tracker"""
-
-    result = list()
-    result.append('<table><caption>Зарегистрировать проблему работы с сервером</caption>')
-    result.append('<tr><th>Описание проблемы, включая время</th>' +
-                  '<th>Пароль</th><th>Действие</th></tr>')
-    result.append('<form action="/add-bug-result" method="post">')
-    result.append('<tr><td><textarea name="' +
-                  DESCRIPTION +
-                  '" placeholder="Обязательное поле"></textarea></td>')
-    result.append('<td><input type="password" name = "' +
-                  PASSWORD +
-                  '" placeholder="Обязательно"></td>')
-    result.append('<td><input type="submit" value="Отправить"></td></tr></form></table>')
-    return "\n".join(result)
+    return render_template('bug_input_table.html', description=DESCRIPTION, password=PASSWORD)
 
 
 def logpass_table() -> str:
     """Return new form to input login and password"""
-
-    result = list()
-    result.append('<table><caption>Получение доступа к системе</caption>')
-    result.append('<tr><th>Логин</th><th>Пароль</th><th>Действие</th></tr>')
-    result.append('<form action="/login-verification" method="post">')
-    result.append('<tr><td><textarea name="' + LOGIN + '" placeholder="Обязательное поле"></textarea></td>')
-    result.append('<td><input type="password" name = "' +
-                  PASSWORD +
-                  '" placeholder="Обязательно"></td>')
-    result.append('<td><input type="submit" value="Отправить"></td></tr></form></table>')
-    return "\n".join(result)
+    return render_template('logpass.html', login=LOGIN, password=PASSWORD)
 
 
 def access_denided(name: str) -> str:

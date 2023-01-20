@@ -1,0 +1,21 @@
+<table>
+    <caption>Получение доступа к системе</caption>
+    <tr>
+        <th>Логин</th>
+        <th>Пароль</th>
+        <th>Действие</th>
+    </tr>
+    <form action="/login-verification" method="post">
+        <tr>
+            <td>
+                <textarea name="{{login}}" placeholder="Обязательное поле"></textarea>
+            </td>
+            <td>
+                <input type="password" name = "{{password}}" placeholder="Обязательно">
+            </td>
+            <td>
+                <input type="submit" value="Отправить">
+            </td>
+        </tr>
+    </form>
+</table>

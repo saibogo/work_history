@@ -7,26 +7,25 @@
 6. git clone https://github.com/saibogo/work_history.git
 7. apt install pip
 8. apt install python3-psycopg2
-9. apt install python3-tk
-10. apt install python3-flask
-11. apt install python3-psutil
-12. pip3 install fpdf
-13. apt install python3-pyqt5
-14. apt install postgresql
-15. su  (And insert your superuser password)
-16. su - postgres
-17. psql -Upostgres
-18. =# CREATE USER saibogo WITH PASSWORD 'myPassword';
-19. =# CREATE DATABASE workhistory;
-20. =# GRANT ALL PRIVILEGES ON DATABASE "workhistory" to saibogo;
-21. =# \c workhistory
-22. workhistory=# GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO "saibogo";
-23. exit to normal terminal
-24. psql workhistory < /path/to/your/dump.db
-25. python3 /path/to/main.py --help
+9. apt install python3-flask
+10. apt install python3-psutil
+11. pip3 install fpdf
+12. apt install python3-pyqt5
+13. apt install postgresql
+14. su  (And insert your superuser password)
+15. su - postgres
+16. psql -Upostgres
+17. =# CREATE USER saibogo WITH PASSWORD 'myPassword';
+18. =# CREATE DATABASE workhistory;
+19. =# GRANT ALL PRIVILEGES ON DATABASE "workhistory" to saibogo;
+20. =# \c workhistory
+21. workhistory=# GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO "saibogo";
+22. exit to normal terminal
+23. psql workhistory < /path/to/your/dump.db
+24. python3 /path/to/main.py --help
 Well Done!
-26. edit config.py in your favorite editor (patches and ip)
-27. python3 /path/to/main.py
-28. start web-server
-29. in your browser go to to http://your_ip:5000
+25. edit config.py in your favorite editor (patches and ip)
+26. python3 /path/to/main.py
+27. start web-server
+28. in your browser go to to http://your_ip:5000
 Well Done!

@@ -1,0 +1,71 @@
+<table>
+    <caption>Перемещение оборудования</caption>
+    <tr>
+        <th>№</th>
+        <th>Параметр</th>
+        <th>Значение</th>
+    </tr>
+    <form action="/remove-equip" method = "post">
+        <tr>
+            <td>1</td>
+            <td>ID</td>
+            <td>{{equip[0]}}</td>
+        </tr>
+        <input type="hidden" name="{{equip_id}}" value="{{equip[0]}}"></input>
+        <tr>
+            <td>2</td>
+            <td>Текущее предприятие</td>
+            <td>{{equip[1]}}</td>
+        </tr>
+        <input type="hidden" name="{{point_id_name}}" value="{{point_id}}"></input>
+        <tr>
+            <td>3</td>
+            <td>Наименование</td>
+            <td>{{equip[2]}}</td>
+        </tr>
+        <input type="hidden" name="{{equip_name}}" value="{{equip[2]}}"></input>
+        <tr>
+            <td>4</td>
+            <td>Модель</td>
+            <td>{{equip[3]}}</td>
+        </tr>
+        <input type="hidden" name="{{model}}" value="{{equip[3]}}"></input>
+        <tr>
+            <td>5</td>
+            <td>Серийный номер</td>
+            <td>{{equip[4]}}</td>
+        </tr>
+        <input type="hidden" name="{{serial_num}}" value="{{equip[4]}}"></input>
+        <tr>
+            <td>6</td>
+            <td>Предыдущий ID</td>
+            <td>{{equip[5]}}</td>
+        </tr>
+        <input type="hidden" name="{{pre_id}}" value="{{equip[5]}}"></input>
+        <tr>
+            <td>7</td>
+            <td>Точка перемещения</td>
+            <td>
+                <select name="{{new_point_id}}">
+                    {% for point in points %}
+                    <option value="{{point[0]}}">{{point[1]}}</option>
+                    {% endfor %}
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td>7</td>
+            <td>Пароль доступа</td>
+            <td>
+                <input type="password" name="{{password}}"></input>
+            </td>
+        </tr>
+        <tr>
+            <td>8</td>
+            <td>Применить изменения</td>
+            <td>
+                <input type="submit" value="Отправить"></input>
+            </td>
+        </tr>
+    </form>
+</table>

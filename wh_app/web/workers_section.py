@@ -8,6 +8,7 @@ from wh_app.sql_operations import select_operations
 from wh_app.supporting import functions
 from wh_app.config_and_backup import table_headers
 from wh_app.config_and_backup.config import max_records_in_page
+from wh_app.web.equips_section import EDIT_CHAR
 
 functions.info_string(__name__)
 
@@ -87,6 +88,7 @@ def works_from_performers_table(performer_id: int,
         else:
             full_works = select_operations.get_all_works_from_worker_id(cursor, str(performer_id))
         full_works = functions.works_table_add_new_performer(full_works)
+        full_works = [work + ['<a href="/work-edit/{1}">{0}</a>'.format(EDIT_CHAR, work[0])] for work in full_works]
         table = uhtml.universal_table(table_headers.works_table_name,
                                       table_headers.works_table,
                                       full_works)

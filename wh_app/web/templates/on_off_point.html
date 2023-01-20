@@ -1,0 +1,45 @@
+<table>
+    <caption>Изменение статуса предприятия</caption>
+    <tr>
+        <th>№</th>
+        <th>Параметр</th>
+        <th>Значение</th>
+    </tr>
+    <form action="/invert-point-status" method = "post">
+        <tr>
+            <td>1</td>
+            <td>ID</td>
+            <td>{{point[0]}}</td>
+        </tr>
+        <input type="hidden" name="{{point_id}}" value="{{point[0]}}"></input>
+        <tr>
+            <td>2</td>
+            <td>Служебное название</td>
+            <td>{{point[1]}}</td>
+        </tr>
+        <tr>
+            <td>3</td>
+            <td>Адрес</td>
+            <td>{{point[2]}}</td>
+        </tr>
+        <tr>
+            <td>4</td>
+            <td>Статус</td>
+            <td>{{point[3]}}</td>
+        </tr>
+        <tr>
+            <td>5</td>
+            <td>Пароль доступа</td>
+            <td>
+                <input type="password" name="{{password}}"></input>
+            </td>
+        </tr>
+        <tr>
+            <td>6</td>
+            <td>Изменить статус</td>
+            <td>
+                <input type="submit" value="Изменить"></input>
+            </td>
+        </tr>
+    </form>
+</table>

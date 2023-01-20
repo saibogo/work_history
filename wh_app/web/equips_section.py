@@ -1,6 +1,6 @@
 """This module implement all pages from equip-operations"""
 
-from flask import redirect
+from flask import render_template, redirect
 
 import wh_app.web.template as web_template
 import wh_app.web.universal_html as uhtml
@@ -21,7 +21,7 @@ TABLE_REMOVE_CHAR = '&#8694'
 def equips_menu(stylesheet_number) -> str:
     """Method create main EQUIP-page"""
     name = 'Действия с оборудованием'
-    menu = [(1, 'Все зарегестрированное оборудование'), (2, 'Поиск по ID')]
+    menu = [(1, 'Все зарегистрированное оборудование'), (2, 'Поиск по ID')]
     links_list = ['/all-equips', '/find-equip-to-id']
     table = uhtml.universal_table(name, ['№', 'Доступное действие'], menu, True, links_list)
     return web_template.result_page(table, '/', str(stylesheet_number))
@@ -185,13 +185,7 @@ def find_equip_to_id_page(stylesheet_number: str) -> str:
     with Database() as base:
         _, cursor = base
         max_equip_id = select_operations.get_maximal_equip_id(cursor)
-        find_table = list()
-        find_table.append('<table><caption>Поиск оборудования по уникальному ID</caption>')
-        find_table.append('<form action="/select-equip-to-id" method="post">')
-        find_table.append('<tr><td><input type="number" name="id" min="0" max="' +
-                          max_equip_id + '"></td></tr>')
-        find_table.append('<tr><td><input type="submit" value="Найти"></td></tr>')
-        return web_template.result_page("\n".join(find_table),
+        return web_template.result_page(render_template('find_equip_to_id.html', max_equip_id=max_equip_id),
                                         '/equips',
                                         str(stylesheet_number))
 

@@ -1,6 +1,6 @@
 """This module contain all pages implements to WORKS section database"""
 
-from flask import redirect
+from flask import redirect, render_template
 
 import wh_app.web.template as web_template
 import wh_app.web.universal_html as uhtml
@@ -29,14 +29,7 @@ def find_work_to_id_page(stylesheet_number: str) -> str:
     with Database() as base:
         _, cursor = base
         max_work_id = select_operations.get_maximal_work_id(cursor)
-        find_table = list()
-        find_table.append('<table><caption>Поиск выполненной работы по уникальному ID</caption>')
-        find_table.append('<form action="/select-work-to-id" method="post">')
-        find_table.append('<tr><td><input type="number" name="id" min="0" max="' +
-                          max_work_id +
-                          '"></td></tr>')
-        find_table.append('<tr><td><input type="submit" value="Найти"></td></tr>')
-        return web_template.result_page("\n".join(find_table),
+        return web_template.result_page(render_template('find_work_to_id.html', max_work_id=max_work_id),
                                         '/works',
                                         str(stylesheet_number))
 
@@ -98,27 +91,10 @@ def create_edit_work_form(work_id: int, stylesheet_number: str) -> str:
         _, cursor = base
         pre_adr = '/works'
         works_info = select_operations.get_full_information_to_work(cursor, str(work_id))
-        result = list()
-        result.append('<table><caption>Редактирование отчета</caption><tr><th>Поле</th><th>Значение/Действие</th><tr>')
-        result.append('<form action="/update-work-to-id/{0}" method="post">'.format(work_id))
-        result.append('<tr><td>ID</td><td>{0}</td></tr>'.format(work_id))
-        result.append('<tr><td>Обьект</td><td>{0}</td></tr>'.format(works_info[1]))
-        result.append('<tr><td>Оборудование</td><td>{0}</td></tr>'.format(works_info[2]))
-        result.append('<tr><td>Модель оборудования</td><td>{0}</td></tr>'.format(works_info[3]))
-        result.append('<tr><td>Серийный номер</td><td>{0}</td></tr>'.format(works_info[4]))
-        result.append('<tr><td>Окончание работ</td><td><input type="datetime-local" name="work_datetime"'
-                      ' value="{0}"></td></tr>'.format(works_info[5]))
-        result.append('<tr><td>Состав заявки</td><td><textarea rows=3 name="{1}">{0}</textarea></td></tr>'
-                      .format(works_info[6], uhtml.ORDER_INFO))
-        result.append('<tr><td>Описание произведенных работ</td><td><textarea rows=6 name="{1}">{0}'
-                      '</textarea></td></tr>'.format(works_info[7], uhtml.DESCRIPTION))
-        result.append('<tr><td>Перечень исполнителей</td><td>{0}</td></tr>'.format(works_info[8]))
-        result.append('<tr><td>Пароль суперпользователя</td><td><input type="password" name="{0}">'
-                      '</input></td></tr>'.format(uhtml.PASSWORD))
-        result.append('<tr><td>Применить изменения</td><td><input type="submit" value="Отправить"></input></td></tr>')
-
-        result.append('</form></table>')
-    return web_template.result_page("".join(result), pre_adr, stylesheet_number)
+        main_table = render_template('edit_work.html', work_id=work_id, works_info=works_info,
+                                     order_info=uhtml.ORDER_INFO, description=uhtml.DESCRIPTION,
+                                     password=uhtml.PASSWORD)
+    return web_template.result_page(main_table, pre_adr, stylesheet_number)
 
 
 def update_work_method(work_id: int, data, method, stylesheet_number: str) -> str:

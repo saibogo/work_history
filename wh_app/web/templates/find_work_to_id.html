@@ -1,0 +1,15 @@
+<table>
+    <caption>Поиск выполненной работы по уникальному ID</caption>
+    <form action="/select-work-to-id" method="post">
+        <tr>
+            <td>
+                <input type="number" name="id" min="0" max="{{max_work_id}}">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input type="submit" value="Найти">
+            </td>
+        </tr>
+    </form>
+</table>

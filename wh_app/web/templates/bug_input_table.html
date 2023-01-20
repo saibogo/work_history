@@ -1,0 +1,21 @@
+<table>
+    <caption>Зарегистрировать проблему работы с сервером</caption>
+    <tr>
+        <th>Описание проблемы, включая время</th>
+        <th>Пароль</th>
+        <th>Действие</th>
+    </tr>
+    <form action="/add-bug-result" method="post">
+        <tr>
+            <td>
+                <textarea name="{{description}}" placeholder="Обязательное поле"></textarea>
+            </td>
+            <td>
+                <input type="password" name ="{{password}}" placeholder="Обязательно">
+            </td>
+            <td>
+                <input type="submit" value="Отправить">
+            </td>
+        </tr>
+    </form>
+</table>

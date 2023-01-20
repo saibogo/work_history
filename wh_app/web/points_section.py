@@ -121,7 +121,6 @@ def on_off_point_method(point_id: str, stylesheet_number: str) -> str:
 
     with Database() as base:
         _, cursor = base
-        print("point_id = ", point_id)
         point = select_operations.get_full_point_information(cursor, point_id)
         point.insert(0, point_id)
         return web_template.result_page(uhtml.on_off_point_table(point),
@@ -211,7 +210,7 @@ def point_tech_info(point_num: int, stylesheet_number: str) -> str:
         result = web_template.result_page("".join(table),
                                           '/points',
                                           str(stylesheet_number),
-                                          to_pdf=True,
-                                          current_adr='point-tech={0}'.format(point_num))
+                                          True,
+                                          'point-tech={0}'.format(point_num))
 
     return result

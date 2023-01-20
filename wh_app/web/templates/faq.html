@@ -1,0 +1,22 @@
+<table>
+    <caption>Наиболее частые вопросы по системе:</caption>
+    <tr>
+        <td>
+            <ul>
+                <li class="faq_question">Что нужно для использования системы? {{hardware}}</li>
+                <li class="faq_question">С использованием каких технологий написана система? {{tecnology}}</li>
+                <li class="faq_question">Сколько пользователей поддерживает система? {{multiuser}}</li>
+                <li class="faq_question">Планируется ли развитие системы?{{update}}</li>
+                <li class="faq_question">Сколько записей зарегистрированно на данный момент?
+                    <ul>
+                        {% for record in records %}
+                        <li>{{record}}</li>
+                        {% endfor %}
+                    </ul>
+                </li>
+                <li class="faq_question">Текущий размер базы данных : {{database_size}}</li>
+                <li class="faq_question">Среднее количество работ на смену : {{average_works_in_date}}</li>
+            </ul>
+        </td>
+    </tr>
+</table>
