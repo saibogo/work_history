@@ -11,6 +11,9 @@
 10. apt install python3-psutil
 11. pip3 install fpdf
 12. apt install python3-pyqt5
+12.1. pip3 install aiogram
+12.2. create bot. get token and create file 'telegram_token.txt'
+12.3. edit config.py section path_to_telegram_token
 13. apt install postgresql
 14. su  (And insert your superuser password)
 15. su - postgres

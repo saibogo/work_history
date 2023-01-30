@@ -41,5 +41,6 @@ class SystemStatus:
                   "Веб-сервер":
                       "Работает" if cls.flask_is_work() else "Не работает",
                   "Автосохранение базы данных":
-                      "Включено" if cls.autosave_database_is_work() else "Выключено"}
+                      "Включено" if cls.autosave_database_is_work() else "Выключено",
+                  "Версия ПО": functions.metadata.__version__}
         return result

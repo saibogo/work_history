@@ -9,6 +9,7 @@ import wh_app.config_and_backup.config as config
 import wh_app.web.server as webserver
 from wh_app.supporting import functions
 from wh_app.supporting.auto_save_thread import AutoSaveThread
+from wh_app.telegram_bot.bot_init import start_telegram_bot
 
 functions.info_string(__name__)
 
@@ -26,6 +27,11 @@ def start_server() -> None:
             print("Нет доступа к файлу сообщений для пользователей")
 
         threading.Thread(target=webserver.start_server).start()
+
+
+def start_bot_session() -> None:
+    """Create thread with new session telegram-bot"""
+    start_telegram_bot()
 
 
 def stop_server() -> None:
@@ -48,6 +54,7 @@ def all_start() -> None:
     start_server()
     autosave = AutoSaveThread.get_instance()
     autosave.start()
+    start_bot_session()
 
 
 def status_server() -> bool:

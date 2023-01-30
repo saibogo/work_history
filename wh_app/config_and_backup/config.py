@@ -1,6 +1,7 @@
 
 path_to_project = '/home/saibogo/PycharmProjects/work_history/'
 path_to_pdf = "/home/saibogo/Документы/report.pdf"
+path_to_telegram_token = '/home/saibogo/telegram_token.txt'
 database_name = 'workhistory'
 user_name = 'saibogo'
 user_password = 'begemot100'
@@ -31,3 +32,4 @@ max_session_time = 6 * 60 * 60 # Max length session in seconds
 
 start_width_qt = 500
 start_height_qt = 220
+telegram_delete_message_pause = 60 * 60 *2 #Auto delete messages from telegram bot
