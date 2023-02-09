@@ -16,6 +16,18 @@ functions.info_string(__name__)
 EDIT_CHAR = '&#9998'
 REMOVE_CHAR = 'A&#8646;B'
 TABLE_REMOVE_CHAR = '&#8694'
+SPACE_CHAR = '&nbsp;'
+
+
+def create_full_edit_links(equip_id: str, removed: bool=False) -> str:
+    """Create EDIT, MOVE and TABLE_REMOVE links"""
+    result = list()
+    result.append('<a href="/edit-equip/{0}" title="Редактировать">{1}</a>'.format(equip_id, EDIT_CHAR))
+    result.append('<a href="/change-point/{0}" title="Переместить на другой обьект">{1}</a>'.format(equip_id, REMOVE_CHAR))
+    if removed:
+        result.append('<a href="/remove-table/{0}" title="Таблица перемещений">{1}</a>'.format(equip_id, TABLE_REMOVE_CHAR))
+
+    return SPACE_CHAR.join(result)
 
 
 def equips_menu(stylesheet_number) -> str:
@@ -35,17 +47,7 @@ def equip_to_point_limit(point_id, page_num, stylesheet_number: str) -> str:
         links_list = ['/work/{}'.format(equip[0]) for equip in all_equips]
         data = [[equip[i] for i in range(0, len(equip))] for equip in all_equips]
         for i, row in enumerate(data):
-            extended_links = ['<a href="/edit-equip/{0}" title="Редактировать">{1}</a>'.
-                              format(row[0], EDIT_CHAR) +
-                              '&nbsp;' +
-                              ('<a href="/change-point/{0}" title="Переместить ' +
-                               'на другой обьект">{1}</a>').
-                              format(row[0], REMOVE_CHAR)]
-            if row[0] != row[5]:
-                extended_links[0] += '&nbsp;' + \
-                                     '<a href="/remove-table/{0}" title="' \
-                                     'Таблица перемещений">{1}</a>'. \
-                                         format(row[0], TABLE_REMOVE_CHAR)
+            extended_links = [create_full_edit_links(row[0], row[0] != row[5])]
             data[i] = row[1:] + extended_links
         table1 = uhtml.universal_table(table_headers.equips_table_name,
                                        table_headers.equips_table,
@@ -77,7 +79,8 @@ def remove_table_page(equip_id: str, stylesheet_number: str) -> str:
             old_equip_id = str(equip_info[5])
             equip_info = [old_equip_id] +\
                          select_operations.get_full_equip_information(cursor, old_equip_id)
-            result.insert(0, equip_info)
+            result.insert(0, equip_info + [''])
+        result[-1].append(create_full_edit_links(equip_id))
     links = ['/work/{0}'.format(elem[0]) for elem in result]
     page = uhtml.universal_table(table_headers.remove_table_name,
                                  table_headers.remove_table,
@@ -200,6 +203,7 @@ def select_equip_to_id_page(data, method, stylesheet_number: str) -> str:
         with Database() as base:
             _, cursor = base
             equip = select_operations.get_full_equip_information(cursor, str(equip_id))
+            equip.append(create_full_edit_links(equip_id, equip_id != str(equip[4])))
             links_list = ['/work/' + str(equip_id)]
             table1 = uhtml.universal_table(table_headers.equips_table_name,
                                            table_headers.equips_table, [equip], True,

@@ -110,6 +110,22 @@ def sql_select_work_to_equipment_id(id_equip: str) -> str:
     return query.format(id_equip)
 
 
+def sql_select_last_work_to_equipment_id(id_equip: str) -> str:
+    """Returns the query string to select max_records_in_page * 2 last repairs corresponding
+    to the equipment with the given number
+    Example:
+        SELECT * FROM(SELECT * FROM works_likes
+        WHERE id IN (SELECT id FROM works WHERE id_obor = 30)
+        ORDER BY date DESC LIMIT 20) tmp ORDER BY date;
+        """
+
+    query = ("""SELECT * FROM(SELECT * FROM %(works_likes)s WHERE %(id)s IN """ +
+             """(SELECT %(id)s FROM %(works)s WHERE %(id_obor)s = {0})""" +
+             """ ORDER BY %(date)s DESC LIMIT {1}) tmp ORDER BY %(date)s""") % sql_consts_dict
+
+    return query.format(id_equip, config.max_records_in_page * 2)
+
+
 def sql_select_work_from_equip_id_limit(id_equip: str, page_num: int) -> str:
     """Return the query string to select limited all repairs corresponding
      to the equips with the given number

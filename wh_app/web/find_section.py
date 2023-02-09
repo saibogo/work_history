@@ -8,6 +8,7 @@ from wh_app.postgresql.database import Database
 from wh_app.sql_operations import select_operations
 from wh_app.supporting import functions
 from wh_app.config_and_backup import table_headers
+from wh_app.web.points_section import create_edit_links, create_tech_links
 
 functions.info_string(__name__)
 
@@ -107,9 +108,10 @@ def find_point_page(find_string: str, page_num: str, stylesheet_number: str) -> 
                                              get_all_points_list_from_like_str(cursor,
                                                                                find_string))
         links_list = ['/equip/' + str(elem[0]) for elem in points]
+        full_points = [[point[1], point[2], point[3], create_edit_links(point[0]), create_tech_links(point[0])] for point in points]
         result = uhtml.universal_table(table_headers.points_table_name,
                                        table_headers.points_table,
-                                       [[point[1], point[2], point[3]] for point in points],
+                                       full_points,
                                        True,
                                        links_list)
         pages_table = uhtml.paging_table('/find/point/{0}/page'.format(find_string),

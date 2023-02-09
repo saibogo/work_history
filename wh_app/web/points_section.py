@@ -8,8 +8,25 @@ from wh_app.sql_operations import select_operations
 from wh_app.sql_operations import update_operations
 from wh_app.supporting import functions
 from wh_app.config_and_backup import table_headers
+from wh_app.web.equips_section import EDIT_CHAR
 
 functions.info_string(__name__)
+
+ON_OFF_CHAR = '&#9211'
+PAPERS_CHAR = '&#128441;'
+SVU_CHAR = '&#9889;'
+
+
+def create_edit_links(point_id: str) -> str:
+    """Create EDIT and ON-OFF links"""
+    return '<a href="/edit-point/{0}">{1}</a> <a href="/on-off-point/{0}">{2}</a>'. \
+        format(point_id, EDIT_CHAR, ON_OFF_CHAR)
+
+
+def create_tech_links(point_id: str) -> str:
+    """Create technical info links"""
+    return '<a href="/tech-info/{0}">{1}</a> <a href="/svu/{0}">{2}</a>'. \
+        format(point_id, PAPERS_CHAR, SVU_CHAR)
 
 
 def points_operations(stylesheet_number: str) -> str:
@@ -31,14 +48,8 @@ def all_points_table(stylesheet_number: str) -> str:
         links_list = ['/equip/' + str(elem[0]) for elem in all_points]
         rows = [[point[i] for i in range(1, len(point))] for point in all_points]
         for row_num, row in enumerate(rows):
-            edit_link = "<a href='/edit-point/{0}' title='Редактировать {2}'>{1}</a>" \
-                .format(str(all_points[row_num][0]), '&#9998', str(row[0]))
-            on_off_link = "<a href='/on-off-point/{0}' title='ON/OFF'>{1}</a>" \
-                .format(str(all_points[row_num][0]), '&#9211')
-            rows[row_num].append(edit_link + " " + on_off_link)
-            rows[row_num].append("<a href='/tech-info/{0}' title='Договора ресурсоснабжения'>&#128441;</a>"
-                                 "<a href='/svu/{0}' title='СВУ электроснабжение'>&#9889;</a>".
-                                 format(str(all_points[row_num][0])))
+            rows[row_num].append(create_edit_links(all_points[row_num][0]))
+            rows[row_num].append(create_tech_links(all_points[row_num][0]))
 
         table1 =  uhtml.universal_table(table_headers.points_table_name,
                                         table_headers.points_table,
@@ -88,14 +99,8 @@ def all_works_points_table(stylesheet_number: str) -> str:
         links_list = ['/equip/' + str(elem[0]) for elem in all_points]
         rows = [[point[i] for i in range(1, len(point))] for point in all_points]
         for row_num, row in enumerate(rows):
-            edit_link = "<a href='/edit-point/{0}' title='Редактировать {2}'>{1}</a>"\
-                .format(str(all_points[row_num][0]), '&#9998', str(row[0]))
-            on_off_link = "<a href='/on-off-point/{0}' title='ON/OFF'>{1}</a>"\
-                .format(str(all_points[row_num][0]), '&#9211')
-            rows[row_num].append(edit_link + " " + on_off_link)
-            rows[row_num].append("<a href='/tech-info/{0}' title='Договора ресурсоснабжения'>&#128441;</a>"
-                                 "<a href='/svu/{0}' title='СВУ электроснабжение'>&#9889;</a>".
-                                 format(str(all_points[row_num][0])))
+            rows[row_num].append(create_edit_links(all_points[row_num][0]))
+            rows[row_num].append(create_tech_links(all_points[row_num][0]))
         table1 =  uhtml.universal_table(table_headers.points_table_name,
                                         table_headers.points_table,
                                         rows,

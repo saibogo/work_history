@@ -114,6 +114,15 @@ def get_works_from_equip_id(cursor, id: str) -> List[Tuple]:
 
 
 @get_selected_decorator
+def get_last_works_from_equip_id(cursor, id: str) -> List[Tuple]:
+    """Returns a list object containing all jobs for a given piece of equipment
+    [elem1, elem2, ..., elem_n] while elem = (work_ID, point_name, equip_name, model, serial, datetime,
+     problem, result, performer_name)"""
+
+    return select_sql.sql_select_last_work_to_equipment_id(id)
+
+
+@get_selected_decorator
 def get_works_from_equip_id_limit(cursor, id: str, page_num: int) -> List[Tuple]:
     """Returns a list object containing all jobs for a given piece of equipment use LIMIT and OFFSET
     See also get_works_from_equip_id"""

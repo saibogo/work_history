@@ -15,6 +15,11 @@ from wh_app.web.equips_section import EDIT_CHAR
 functions.info_string(__name__)
 
 
+def create_work_edit_link(work_id: str) -> str:
+    """Create EDIT link to current work"""
+    return '<a href="/work-edit/{0}">{1}</a>'.format(work_id, EDIT_CHAR)
+
+
 def works_menu(stylesheet_number: str) -> str:
     """Return main menu in WORKS section"""
     name = 'Действия с ремонтами и диагностиками'
@@ -45,6 +50,7 @@ def select_work_to_id_method(data, method, stylesheet_number: str) -> str:
             _, cursor = base
             work = select_operations.get_full_information_to_work(cursor, str(work_id))
             work = functions.works_table_add_new_performer([work])
+            work[0].append(create_work_edit_link(work_id))
             table1 = uhtml.universal_table(table_headers.works_table_name,
                                            table_headers.works_table,
                                            work)
@@ -67,7 +73,7 @@ def work_to_equip_paging(equip_id, page_id, stylesheet_number: str) -> str:
         full_works = select_operations.get_works_from_equip_id_limit(cursor, equip_id, page_id)
         full_works = functions.works_table_add_new_performer(full_works)
         for work in full_works:
-            work.append('<a href="/work-edit/{1}">{0}</a>'.format(EDIT_CHAR, work[0]))
+            work.append(create_work_edit_link(work[0]))
         table1 = uhtml.universal_table(table_headers.works_table_name,
                                        table_headers.works_table,
                                        full_works)
@@ -105,7 +111,9 @@ def update_work_method(work_id: int, data, method, stylesheet_number: str) -> st
         password = data[uhtml.PASSWORD]
         order_info = data[uhtml.ORDER_INFO]
         description = data[uhtml.DESCRIPTION]
-        work_datetime = data[uhtml.WORK_DATETIME].replace("T", ' ') + ':00'
+        work_datetime = data[uhtml.WORK_DATETIME].replace("T", ' ')
+        if work_datetime.count(':') < 2: #YYYY-MM-DD HH:MM:SS
+            work_datetime += ':00'
         if functions.is_superuser_password(password):
             if order_info.replace(" ", "") == '' or description.replace(" ", "") == '':
                 page = uhtml.data_is_not_valid()

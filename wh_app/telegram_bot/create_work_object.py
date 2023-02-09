@@ -7,11 +7,13 @@ from wh_app.sql_operations.insert_operations import create_new_work
 
 
 class CreateWorkObject:
+    """This class create new Work Object to next save in Database"""
 
     __timepattern = '%Y-%m-%d %H:%M:%S'
 
-    def __init__(self, equip_id: str):
+    def __init__(self, equip_id: str, user_id: str):
         """Init new object"""
+        self._user_id = user_id
         self._worktime = datetime.datetime.now()
         self._equip_id = equip_id
         self._malachite_user_id = None
@@ -40,9 +42,13 @@ class CreateWorkObject:
                len(self._problem) > 0 and\
                len(self._work) > 0
 
-    def set_user_id(self, user_id):
+    def set_malachite_user_id(self, malachite_user_id):
         """Write malachite worker ID"""
-        self._malachite_user_id = user_id
+        self._malachite_user_id = malachite_user_id
+
+    def get_user_id(self):
+        """Return telegram id"""
+        return self._user_id
 
     def __str__(self):
         """return all elems in object"""
