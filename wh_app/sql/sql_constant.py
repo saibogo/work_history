@@ -74,7 +74,8 @@ point_consts = {"point_id": "point_id",
                 "name_point": "name_point",
                 "is_work": "is_work",
                 "treaty": "treaty",
-                "resume": "resume"
+                "resume": "resume",
+                "deleted": "deleted"
                 }
 
 any_consts.update(point_consts)

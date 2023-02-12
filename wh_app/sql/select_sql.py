@@ -58,6 +58,7 @@ def sql_select_equipment_in_point(point: str) -> str:
              """ %(oborudovanie)s.%(serial_num)s, %(oborudovanie)s.%(pre_id)s""" +
              """ FROM %(oborudovanie)s JOIN %(workspoints)s ON """ +
              """%(workspoints)s.%(point_id)s = %(oborudovanie)s.%(point_id)s {0}""" +
+             """ AND %(oborudovanie)s.%(deleted)s = false""" +
              """ ORDER BY %(oborudovanie)s.%(name)s""") % sql_consts_dict
 
     return query.format(formatter)
@@ -81,8 +82,9 @@ def sql_select_equipment_in_point_limit(point: str, page_num: int) -> str:
              """ %(oborudovanie)s.%(name)s, %(oborudovanie)s.%(model)s,""" +
              """ %(oborudovanie)s.%(serial_num)s, %(oborudovanie)s.%(pre_id)s """ +
              """FROM %(oborudovanie)s JOIN %(workspoints)s """ +
-             """ON %(workspoints)s.%(point_id)s = %(oborudovanie)s.%(point_id)s """ +
-             """{0} ORDER BY %(oborudovanie)s.%(name)s""") % sql_consts_dict
+             """ON %(workspoints)s.%(point_id)s = %(oborudovanie)s.%(point_id)s {0}""" +
+             """ AND %(oborudovanie)s.%(deleted)s = false""" +
+             """ ORDER BY %(oborudovanie)s.%(name)s""") % sql_consts_dict
 
     query = query.format(formatter) + """ LIMIT {0} OFFSET {1}"""
     return query.format(config.max_records_in_page,
@@ -671,3 +673,10 @@ def sql_select_database_version() -> str:
     """Return select-string for get current version database"""
 
     return """SELECT VERSION()"""
+
+
+def sql_select_equip_deleted_status(equip_id: str) -> str:
+    """Return query like select deleted from oborudovanie where id = 761"""
+
+    query = """SELECT %(deleted)s FROM %(oborudovanie)s WHERE %(id)s = {}""" % sql_consts_dict
+    return query.format(equip_id)

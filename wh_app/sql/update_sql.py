@@ -62,3 +62,10 @@ def sql_update_work_info(work_id: str, order_info: str, description: str, work_d
     query = ("""UPDATE %(works)s SET %(problem)s = '{1}', %(result)s = '{2}', %(date)s = '{3}'
      WHERE id = {0}""") % sql_consts_dict
     return query.format(work_id, order_info, description, work_datetime)
+
+
+def sql_set_deleted_status(equip_id: str) -> str:
+    """Create query to set deleted = true """
+
+    query = """UPDATE %(oborudovanie)s SET %(deleted)s = true WHERE %(id)s = {}""" % sql_consts_dict
+    return query.format(equip_id)

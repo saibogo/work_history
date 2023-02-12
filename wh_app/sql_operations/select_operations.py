@@ -59,6 +59,13 @@ def list_to_first_int_decorator(func: Callable) -> Callable:
     return wrap
 
 
+def list_to_first_bool_decorator(func: Callable) -> Callable:
+    """List[Tuple[Any]] -> String"""
+    def wrap(*args) -> bool:
+        return func(*args)[0][0]
+    return wrap
+
+
 @get_selected_decorator
 def get_point(cursor, point_id: str) -> List[Tuple]:
     """Returns a list object containing the selected point
@@ -227,6 +234,14 @@ def get_works_list_from_equips_list(cursor, list_equips: list) -> list:
 def get_maximal_equip_id(cursor) -> str:
     """Return string number of maximal id in table oborudovanie"""
     return select_sql.sql_select_max_id_equip()
+
+
+@list_to_first_bool_decorator
+@get_selected_decorator
+def get_equip_deleted_status(cursor, equip_id: str) -> bool:
+    """Return current deleted-status from equip with id = equip_id"""
+
+    return select_sql.sql_select_equip_deleted_status(equip_id)
 
 
 @list_to_first_str_decorator

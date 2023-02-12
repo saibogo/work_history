@@ -39,3 +39,9 @@ def update_work_info(cursor, work_id: str, order_info: str, description: str, wo
     """Update information for selected work"""
 
     cursor.execute(sql_update_work_info(work_id, order_info, description, work_datetime))
+
+
+def set_deleted_status(cursor, equip_id: str) -> None:
+    """Create label DELETED to equip"""
+
+    cursor.execute(sql_set_deleted_status(equip_id))

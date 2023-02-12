@@ -2,7 +2,7 @@ import asyncio
 
 from wh_app.telegram_bot.support_bot import *
 from wh_app.sql_operations.select_operations import get_full_equip_information, get_last_works_from_equip_id,\
-    get_works_from_equip_id, get_point, get_maximal_equip_id
+    get_works_from_equip_id, get_point, get_maximal_equip_id, get_equip_deleted_status
 from wh_app.telegram_bot.create_equip_object import CreateEquipObject
 
 functions.info_string(__name__)
@@ -45,16 +45,18 @@ async def equip_info(message: types.Message):
         try:
             msg_del = await message.answer('\n'.join(msg))
             asyncio.create_task(delete_message(msg_del, telegram_delete_message_pause))
-            msg_del1 = await message.answer('Зарегистрировать выполнение работы?', reply_markup=standart_keyboard(kb))
-            asyncio.create_task(delete_message(msg_del1, telegram_delete_message_pause))
+            if not get_equip_deleted_status(cursor, equip_id):
+                msg_del1 = await message.answer('Зарегистрировать выполнение работы?', reply_markup=standart_keyboard(kb))
+                asyncio.create_task(delete_message(msg_del1, telegram_delete_message_pause))
         except aiogram.utils.exceptions.MessageIsTooLong:
             tmp = '\n'.join(msg)
             msg_dels = list()
             for i in range(0, len(tmp), MAX_CHAR_IN_MSG):
                 msg_dels.append(await message.answer(tmp[i : i + MAX_CHAR_IN_MSG]))
                 asyncio.create_task(delete_message(msg_dels[-1], telegram_delete_message_pause))
-            msg_del = await message.answer('Зарегистрировать выполнение работы?', reply_markup=standart_keyboard(kb))
-            asyncio.create_task(delete_message(msg_del, telegram_delete_message_pause))
+            if not get_equip_deleted_status(cursor, equip_id):
+                msg_del = await message.answer('Зарегистрировать выполнение работы?', reply_markup=standart_keyboard(kb))
+                asyncio.create_task(delete_message(msg_del, telegram_delete_message_pause))
 
 
 async def start_add_new_equip(message: types.Message):

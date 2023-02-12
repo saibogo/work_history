@@ -15,7 +15,7 @@ class Database:
                                                host=config.database_host,
                                                port=config.database_port)
             self.cursor = self.connection.cursor()
-        except psycopg2.ConnectionException:
+        except psycopg2.error.ConnectionException:
             print("База данных недоступна!")
             exit(1)
 

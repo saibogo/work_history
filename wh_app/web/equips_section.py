@@ -19,11 +19,12 @@ TABLE_REMOVE_CHAR = '&#8694'
 SPACE_CHAR = '&nbsp;'
 
 
-def create_full_edit_links(equip_id: str, removed: bool=False) -> str:
+def create_full_edit_links(equip_id: str, removed: bool=False, deleted: bool=False) -> str:
     """Create EDIT, MOVE and TABLE_REMOVE links"""
     result = list()
     result.append('<a href="/edit-equip/{0}" title="Редактировать">{1}</a>'.format(equip_id, EDIT_CHAR))
-    result.append('<a href="/change-point/{0}" title="Переместить на другой обьект">{1}</a>'.format(equip_id, REMOVE_CHAR))
+    if not deleted:
+        result.append('<a href="/change-point/{0}" title="Переместить на другой обьект">{1}</a>'.format(equip_id, REMOVE_CHAR))
     if removed:
         result.append('<a href="/remove-table/{0}" title="Таблица перемещений">{1}</a>'.format(equip_id, TABLE_REMOVE_CHAR))
 
@@ -174,6 +175,7 @@ def move_equip_method(data, method, stylesheet_number: str) -> str:
                                                        data[uhtml.MODEL],
                                                        str(data[uhtml.SERIAL_NUM]),
                                                        str(data[uhtml.EQUIP_ID]))
+                    update_operations.set_deleted_status(cursor, str(data[uhtml.EQUIP_ID]))
                     connection.commit()
                     page = uhtml.operation_completed()
         else:
@@ -203,7 +205,9 @@ def select_equip_to_id_page(data, method, stylesheet_number: str) -> str:
         with Database() as base:
             _, cursor = base
             equip = select_operations.get_full_equip_information(cursor, str(equip_id))
-            equip.append(create_full_edit_links(equip_id, equip_id != str(equip[4])))
+            equip.append(create_full_edit_links(equip_id,
+                                                equip_id != str(equip[4]),
+                                                select_operations.get_equip_deleted_status(cursor, equip_id)))
             links_list = ['/work/' + str(equip_id)]
             table1 = uhtml.universal_table(table_headers.equips_table_name,
                                            table_headers.equips_table, [equip], True,
