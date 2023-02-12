@@ -22,8 +22,7 @@ def load_token() -> str:
 
 
 MAX_CHAR_IN_MSG = 4000
-#API_TOKEN = load_token()
-API_TOKEN = '5686080899:AAEWYdXTp4q8i11oLdoDvQLui44ZJpmX0XA'
+API_TOKEN = load_token()
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot)
 
