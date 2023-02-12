@@ -929,15 +929,12 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 59	2	холодильник PolAIR №29	not model	not number	59	f
 60	9	кипятильник Animo	WKT 10n VA	30140 / 3W 19116	60	f
 61	9	декор стены темное дерево	not model	not number	61	f
-62	9	пастоварка Tecnoinox	CP35E7	5126369	62	f
 64	2	рукомойник помповый горячий цех	not model	not number	64	f
 65	2	стены горячий цех (гипсокартон + плитка)	not model	not number	65	f
 66	2	система электроснабжения холодный цех	not model	not number	66	f
 67	4	ВРУ № 1 (коридор)	not model	not number	67	f
-68	3	конвекционная печь Wiesheu	B4E21S600	10115774	68	f
 69	10	мармит подогревающий встраиваемый нерж. сталь.	not model	not number	69	f
 70	1	посудомоечная машина DIHR	HT11 DIHR 2014 ECO	DWI1014108	70	f
-71	8	кофемашина Franke Evolution	FRANKE Evolution Top	not number	71	f
 72	1	поручень металлический лестница кухня	not model	not number	72	f
 73	3	унитаз гостевой(ближе к раздаче)	not model	not number	73	f
 294	17	ВРУ	not model	not number	294	f
@@ -946,6 +943,7 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 47	13	посудомоечная машина Electrolux	NHT8DD	31410001	47	f
 74	2	мойка двухсекционная пекарня	not model	not number	74	f
 221	10	слайсер настольный	not model	not number	221	f
+62	9	пастоварка Tecnoinox	CP35E7	5126369	62	t
 75	20	система водоснабжения	not model	not number	75	f
 76	2	мойка трехсекционная кремовый цех	not model	not number	76	f
 77	12	кофемашина Franke Flair	P 2M HD CE2	not number	77	f
@@ -1015,7 +1013,6 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 115	2	кондиционер Mitsubishi	MS-GF60VA	6000332	115	f
 89	9	посудомоечная машина COMENDA	LC 700M	DA0029100313	89	f
 145	6	вспомогательное оборудование кухня	not model	not number	145	f
-781	3	печь пиццерийная	AMS1	AMS101122020001	781	f
 146	7	стеллаж перфорированный 600*1000	not model	not number	146	f
 147	7	система освещения	not model	not number	147	f
 149	10	система канализации кухня	not model	not number	149	f
@@ -1060,7 +1057,6 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 191	26	стеллаж неперфорированный 4 полки	not model	not number	191	f
 192	26	посудомоечная машина	FAST	not number	192	f
 193	26	Плита индукционная 4 комфорки	KRONUS	not number	193	f
-194	26	кипятильник автоматический	not model	not number	194	f
 195	26	куттер RobotCoupe настольный	not model	not number	195	f
 196	26	холодильный шкаф POLAIR	CB107-S	not number	196	f
 197	26	холодильный шкаф POLAIR	CM107-S	not number	197	f
@@ -1077,7 +1073,6 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 210	1	мойка инвентаря(второй этаж)	not model	not number	210	f
 212	7	система водоснабжения	not model	not number	212	f
 213	2	система электроснабжения овощной цех	not model	not number	213	f
-214	6	посудомоечная машина SMEG	CWC511D	1 240237 50703 0651 0300	214	f
 215	9	входная  группа (внешняя дверь)	not model	not number	215	f
 216	9	входная группа (внутренняя дверь)	not model	not number	216	f
 179	26	пароконвектомат Rational	EM CD 101	58376	179	f
@@ -1087,6 +1082,8 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 200	26	коктейльный аппарат Taylor	Taylor 430	not number	200	t
 190	26	кофемашина Franke Evolution	FRANKE Evolution Top	not number	71	t
 178	26	овощечистка fIMAR	PPN5X40050T	120506070	178	t
+194	26	кипятильник автоматический	not model	not number	194	t
+214	6	посудомоечная машина SMEG	CWC511D	1 240237 50703 0651 0300	214	t
 222	27	система водоснабжения	not model	not number	222	f
 223	2	куттер RobotCoupe	R 5 A plus	Z136015911	223	f
 224	2	фритюрница APACH	APFE-47P	not number	224	f
@@ -1211,7 +1208,6 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 351	1	телевизор LG (зона витрин)	not model	not number	351	f
 352	4	плита индукционная INDOKOR 2 комфорки	IN-7000D	022015111656	352	f
 353	2	камера низкотемпературная(склад подвал)	not model	not number	353	f
-335	12	конвекционная печь Wiesheu Minimat 64L	X1220-A-CECABC Minimat 64-L	10183344	335	f
 354	13	дверь филенчатая сухой склад	not model	not number	354	f
 292	2	печь ротационная MIWE (правая)	RI 1.0608-TL	not number	292	f
 289	37	кровля над пристроем	not model	not number	289	f
@@ -1301,7 +1297,6 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 435	7	весы в ассортименте настольные	not model	not number	435	f
 436	4	система вентиляции	not model	not number	436	f
 437	3	рекламное оборудование в ассортименте	not model	not number	437	f
-438	3	плита индукционная Техно ТТ 2 комфорки	not model	not number	438	f
 439	2	камера экспедиции низкотемпературная №3	not model	not number	439	f
 440	3	кофемашина холдерная 3 группы	not model	not number	440	f
 441	22	холодильник для напитков	not model	not number	441	f
@@ -1473,7 +1468,6 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 611	29	ВРУ	not model	not number	611	f
 612	3	витрина для выпечки	not model	not number	612	f
 613	9	система электроснабжения раздача	not model	not number	613	f
-614	11	кипятильник Animo	WKT 10n VA	not number	614	f
 615	5	пастоварка Tecnoinox	not model	not number	615	f
 616	31	насос канализационный (мойка фарфора)	Grundfos Sololift-2 C3	not number	616	f
 617	13	декор зал в ассортименте	not model	not number	617	f
@@ -1486,7 +1480,6 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 625	1	вспомогательное санитарное оборудование	not model	not number	625	f
 626	4	вспомогательное санитарное оборудование	not model	not number	626	f
 695	11	столы деревянные в ассортименте	not model	not number	695	f
-572	21	посудомоечная машина Elettobar	Fast 51T	915484	572	f
 627	10	вспомогательное санитарное оборудование	not model	not number	627	f
 628	5	вспомогательное санитарное оборудование	not model	not number	628	f
 629	9	вспомогательное санитарное оборудование	not model	not number	629	f
@@ -1498,10 +1491,10 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 635	2	вспомогательное санитарное оборудование	not model	not number	635	f
 636	4	акустическая система	not model	not number	636	f
 598	26	кофемашина Franke Flair	not model	not number	598	t
+614	11	кипятильник Animo	WKT 10n VA	not number	614	t
 637	6	вспомогательное санитарное оборудование	not model	not number	637	f
 638	13	печь конвекционная Wiesheu	Minimat 64-L	not number	638	f
 639	5	вводное устройство ГВС	not model	not number	639	f
-640	25	кофемашина Termoplan	not model	not number	640	f
 641	2	тепловая пушка 6кВт пекарня	not model	not number	641	f
 642	3	витрина десертная	not model	not number	642	f
 643	30	система отопления	not model	not number	643	f
@@ -1512,7 +1505,6 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 648	13	печь пиццерийная EvroChef	not model	not number	648	f
 649	13	Щит Распределительный Малый	not model	not number	649	f
 650	21	ВРУ	not model	not number	650	f
-651	13	печь пиццерийная дровяная	Morella Forni	Wood oven PAx 110	651	f
 652	8	плита индукционная 4 комфорки	ИПП-4	not number	652	f
 653	8	весы в ассортименте настольные	not model	not number	653	f
 654	8	мойка двухсекционная фарфор	not model	not number	654	f
@@ -1543,7 +1535,6 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 679	2	тестомес GASTRO (пельменный цех)	not model	not number	679	f
 680	2	стены, потолки цех пасты	not model	not number	680	f
 681	5	плита индукционная Техно-ТТ 4 комфорки	not model	not number	681	f
-682	6	супница	HURAKAN	not number	682	f
 683	6	дверь барная с люком (менеджерская)	not model	not number	683	f
 684	26	система освещения зал	not model	not number	684	f
 685	10	дверь в раздевалку персонала	not model	not number	685	f
@@ -1567,6 +1558,7 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 705	33	система вентиляции	not model	not number	705	f
 706	21	мойка двухсекционная фарфор	not model	not number	706	f
 707	2	туалет менеджерский	not model	not number	707	f
+682	6	супница	HURAKAN	not number	682	t
 708	6	холодильный стол с баром начинок	not model	not number	708	f
 709	8	рукомойник кухня	not model	not number	709	f
 710	5	дверь деревянная на мойку	not model	not number	710	f
@@ -2006,6 +1998,14 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 1132	19	кофемашина Termoplan	not model	not number	758	f
 1133	19	овощечистка fIMAR	PPN5X40050T	120506070	178	f
 1134	19	телевизор Samsung 43	not model	not number	755	f
+68	3	конвекционная печь Wiesheu	B4E21S600	10115774	68	t
+335	12	конвекционная печь Wiesheu Minimat 64L	X1220-A-CECABC Minimat 64-L	10183344	335	t
+71	8	кофемашина Franke Evolution	FRANKE Evolution Top	not number	71	t
+640	25	кофемашина Termoplan	not model	not number	640	t
+781	3	печь пиццерийная	AMS1	AMS101122020001	781	t
+651	13	печь пиццерийная дровяная	Morella Forni	Wood oven PAx 110	651	t
+438	3	плита индукционная Техно ТТ 2 комфорки	not model	not number	438	t
+572	21	посудомоечная машина Elettobar	Fast 51T	915484	572	t
 \.
 
 
