@@ -77,8 +77,8 @@ def work_to_equip_paging(equip_id, page_id, stylesheet_number: str) -> str:
         table1 = uhtml.universal_table(table_headers.works_table_name,
                                        table_headers.works_table,
                                        full_works)
-        if str(equip_id) != 0 and not select_operations.get_equip_deleted_status(cursor, equip_id):
-            table2 = uhtml.add_new_work(equip_id)
+        if str(equip_id) != '0' and not select_operations.get_equip_deleted_status(cursor, equip_id):
+                table2 = uhtml.add_new_work(equip_id)
         else:
             table2 = ""
 

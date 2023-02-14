@@ -1,15 +1,19 @@
 """This module is creating new session telegram-bot"""
+import asyncio
 
 from aiogram import Bot, Dispatcher, executor, types, filters
+from aiogram.utils.exceptions import MessageTextIsEmpty
 
 from wh_app.supporting import functions
-from wh_app.config_and_backup.config import path_to_telegram_token
+from wh_app.config_and_backup.config import path_to_telegram_token, path_to_messages
 from wh_app.telegram_bot.point_bot import all_points, send_statistic, point_info, not_create_record, get_svu
 from wh_app.telegram_bot.equip_bot import equip_info, start_add_new_equip, save_new_equip, equip_repler
 from wh_app.telegram_bot.any_bot import send_welcome, send_help, send_status, send_command_not_found
 from wh_app.telegram_bot.bugs_bot import all_bugs, start_create_new_bug, new_bug_repler
 from wh_app.telegram_bot.work_bot import start_create_record
 from wh_app.telegram_bot.work_bot import problem_repler, work_repler
+from wh_app.telegram_bot.read_bot_access import chats
+from wh_app.telegram_bot.support_bot import delete_message, telegram_delete_message_pause
 
 functions.info_string(__name__)
 
@@ -25,11 +29,45 @@ MAX_CHAR_IN_MSG = 4000
 API_TOKEN = load_token()
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot)
+TIMEOUT_TO_SEND_INFO_MESSAGE = 60
+bot_is_restarted = True
+
+
+def repeat(coro, loop):
+    """Create event loop for telegram bot"""
+    asyncio.ensure_future(coro(), loop=loop)
+    loop.call_later(TIMEOUT_TO_SEND_INFO_MESSAGE, repeat, coro, loop)
 
 
 def start_telegram_bot():
     """This function starting session"""
-    executor.start_polling(dp)
+    loop = asyncio.get_event_loop()
+    loop.call_later(TIMEOUT_TO_SEND_INFO_MESSAGE, repeat, start_message, loop)
+    executor.start_polling(dp, loop=loop)
+
+
+async def start_message():
+    """Send all users in chats-list starting message"""
+    global bot_is_restarted
+    messages_del = []
+    if bot_is_restarted:
+        for chat in chats:
+            messages_del.append(await bot.send_message(chat, 'Произведен перезапуск телеграмм-бота!'))
+            asyncio.create_task(delete_message(messages_del[-1], telegram_delete_message_pause))
+        bot_is_restarted = False
+    else:
+        message = ""
+        try:
+            message_file = open(path_to_messages, 'r')
+            for line in message_file:
+                message += line
+            for chat in chats:
+                messages_del.append(await bot.send_message(chat, message))
+                asyncio.create_task(delete_message(messages_del[-1], telegram_delete_message_pause))
+        except FileNotFoundError:
+            pass
+        except MessageTextIsEmpty:
+            pass
 
 
 @dp.message_handler(commands=['start'])

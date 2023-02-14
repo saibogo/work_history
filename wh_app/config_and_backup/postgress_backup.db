@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 13.9 (Debian 13.9-0+deb11u1)
--- Dumped by pg_dump version 13.9 (Debian 13.9-0+deb11u1)
+-- Dumped from database version 11.19 (Debian 11.19-1.pgdg110+1)
+-- Dumped by pg_dump version 11.19 (Debian 11.19-1.pgdg110+1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -18,7 +18,7 @@ SET row_security = off;
 
 SET default_tablespace = '';
 
-SET default_table_access_method = heap;
+SET default_with_oids = false;
 
 --
 -- Name: posts; Type: TABLE; Schema: public; Owner: saibogo
@@ -891,7 +891,6 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 16	2	куттер RobotCoupe	CL 50 E Ultra	not number	16	f
 17	2	куттер RobotCoupe	R 301 Ultra D	H4660224401	17	f
 18	2	холодильный шкаф PoLAIR №28 кремовый цех	not model	not number	18	f
-19	1	печь конвекционная Wiesheu	Minimat 64-L	10308620	19	f
 20	1	расстоечный шкаф Wiesheu	GS 64-L	10295253	20	f
 21	2	планетарный миксер GASTRO	HS 20	YF70077	21	f
 22	9	стеллаж 700*700	not model	not number	22	f
@@ -946,7 +945,6 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 62	9	пастоварка Tecnoinox	CP35E7	5126369	62	t
 75	20	система водоснабжения	not model	not number	75	f
 76	2	мойка трехсекционная кремовый цех	not model	not number	76	f
-77	12	кофемашина Franke Flair	P 2M HD CE2	not number	77	f
 78	2	вытяжная вентиляция подвал около насоса склад	not model	not number	78	f
 79	1	дверь входная служебная	not model	not number	79	f
 80	1	телевизор LG(зона выдачи пасты)	not model	not number	80	f
@@ -1096,7 +1094,6 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 231	2	мойка односекционная овощной цех(возле картофелечистки)	not model	not number	231	f
 232	25	ледогенератор чешуйчатого льда BREMA	GB 1540W-Q	2014020667678	232	f
 233	25	магистральная фильтровальная станция АКВАФОР трехступенчатая	not model	not number	233	f
-234	9	плита индукционная двухкомфорочная	IN-7000D	0420171001434	234	f
 235	10	плитка напольная раздача	not model	not number	235	f
 236	9	кофемашина Nuova SIMONELLI	APPIA II	not number	236	f
 237	10	система освещения и рекламы фасад	not model	not number	237	f
@@ -1288,7 +1285,6 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 426	2	линия освещения горячий цех	not model	not number	426	f
 427	1	вспомогательное оборудование зал	not model	not number	427	f
 428	1	система вентиляции	not model	not number	428	f
-429	2	кипятильник Animo(цех питания)	WKT 10n VA	not number	429	f
 430	25	холодильник  Polair №2	not model	not number	430	f
 431	1	система кондиционирования зал	not model	not number	431	f
 432	10	вспомогательное оборудование раздача	not model	not number	432	f
@@ -1457,7 +1453,6 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 600	4	туалет гостевой правый	not model	not number	600	f
 601	10	система освещения раздача	not model	not number	601	f
 602	10	телевизор Samsung 43" LED возле касс	not model	not number	602	f
-603	8	витрины модульные	not model	not number	603	f
 604	5	дверь гостевой туалет левый	not model	not number	604	f
 605	21	витрина охлаждаемая десертная	not model	not number	605	f
 606	23	весы CAS настольные	SW-05	not number	606	f
@@ -1478,6 +1473,7 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 622	25	вспомогательное санитарное оборудование	not model	not number	622	f
 623	13	вспомогательное санитарное оборудование	not model	not number	623	f
 625	1	вспомогательное санитарное оборудование	not model	not number	625	f
+831	4	туалет персонала	not model	not number	831	f
 626	4	вспомогательное санитарное оборудование	not model	not number	626	f
 695	11	столы деревянные в ассортименте	not model	not number	695	f
 627	10	вспомогательное санитарное оборудование	not model	not number	627	f
@@ -1566,7 +1562,6 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 713	5	плита индукционная однокомфорочная INDOKOR	IN-3500	032017040856	713	f
 714	11	жалюзи электрические	not model	not number	714	f
 715	2	лапшерезка	TLB 4	3971	715	f
-716	7	плита индукционная WOK	BT-350A2-1	0116/4500014916	716	f
 717	8	столы деревянные в ассортименте	not model	not number	717	f
 718	7	система канализации кухня	not model	not number	718	f
 719	5	мармит подогревающий для бизнес-ланчей встраиваемый	not model	not number	719	f
@@ -1675,12 +1670,10 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 823	32	плита индукционная двухкомфорочная	IN-7000D	0420171001434	234	f
 824	9	плита индукционная двухкомфорочная INDOKOR	IN-7000D	072021031502703	824	f
 825	34	система освещения зал	not model	not number	825	f
-826	13	кофемолка MAZZER LUIGI	KONY ELECTRONIC	1137653	826	f
 827	26	мойка двухсекционная овощной цех	not model	not number	827	f
 829	4	система освещения служебные помещения	not model	not number	829	f
 830	34	пастоварка	not model	not number	830	f
 775	2	шкаф шокерной заморозки	Tecnomatic E20	not number	775	f
-831	4	туалет персонала	not model	not number	831	f
 832	6	витрина стеклянная зона пасты	not model	not number	832	f
 833	2	тестомес напольный 	ItPizza	not number	833	f
 834	4	система видеонаблюдения	not model	not number	834	f
@@ -1890,7 +1883,6 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 211	38	система внешней канализации(колодцы, магистраль)	not model	not number	211	f
 1030	19	посудомоечная машина SMEG	CWC511D	1 240237 50703 0651 0300	214	f
 1031	6	посудомоечная машина Tatra	TW H50+DR+DD	59561	1031	f
-1032	19	печь Wiesheu Minimat с автономной системой парообразования	not model	not number	1032	f
 1033	40	пастоварка KOGAST	EKT-T40	5344300147	1033	f
 1034	12	плита индукционная WOK	not model	not number	1034	f
 1035	19	печь пиццерийная дровяная	Morella Forni	Wood oven PAx 110	651	f
@@ -2006,6 +1998,16 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 651	13	печь пиццерийная дровяная	Morella Forni	Wood oven PAx 110	651	t
 438	3	плита индукционная Техно ТТ 2 комфорки	not model	not number	438	t
 572	21	посудомоечная машина Elettobar	Fast 51T	915484	572	t
+1135	13	туалет гостевой (тамбур)	not model	not number	1135	f
+234	9	плита индукционная двухкомфорочная	IN-7000D	0420171001434	234	t
+826	13	кофемолка MAZZER LUIGI	KONY ELECTRONIC	1137653	826	t
+77	12	кофемашина Franke Flair	P 2M HD CE2	not number	77	t
+1032	19	печь Wiesheu Minimat с автономной системой парообразования	not model	not number	1032	t
+19	1	печь конвекционная Wiesheu	Minimat 64-L	10308620	19	t
+429	2	кипятильник Animo(цех питания)	WKT 10n VA	not number	429	t
+603	8	витрины модульные	not model	not number	603	t
+716	7	плита индукционная WOK	BT-350A2-1	0116/4500014916	716	t
+1136	2	мойка односекционная овощной цех	not model	not number	1136	f
 \.
 
 
@@ -6260,6 +6262,17 @@ COPY public.performers (id, work_id, worker_id) FROM stdin;
 4237	3888	1
 4238	3889	1
 4239	3890	1
+4240	3891	1
+4241	3892	7
+4242	3893	5
+4243	3894	8
+4244	3894	9
+4245	3895	8
+4246	3896	8
+4247	3896	9
+4248	3897	8
+4249	3897	9
+4250	3898	1
 \.
 
 
@@ -10204,6 +10217,14 @@ COPY public.works (id, id_obor, date, problem, result) FROM stdin;
 3888	758	2023-02-12 15:29:00	Перемещение оборудования	Перемещено из Мак Пик Дирижабль в Склад Толедова.
 3889	178	2023-02-12 15:31:00	Перемещение оборудования	Перемещено из Мак Пик Дирижабль в Склад Толедова.
 3890	755	2023-02-12 15:42:00	Перемещение оборудования	Перемещено из ПБ Алатырь в Склад Толедова.
+3891	365	2023-02-14 08:00:00	замена уплотнителя двери	заменен на новый (Перфи Урал)
+3892	562	2023-02-13 14:15:00	текущий ремонт	передан в сервисный центр Керхер через транспортную компанию CDEK
+3893	40	2023-02-14 08:30:00	текущий ремонт вытяжной установки горячий цех	Двигатель демонтирован для замены подшипников и очистки турбины
+3894	523	2023-02-13 16:00:00	текущий ремонт	заменена одна плата взамен сгоревшей. на плате перепаяны FGA25N120ANTDTU 2 шт(МЭК). На снятой аналогично сгорели транзисторы
+3895	541	2023-02-13 08:30:00	текущий ремонт	прикручены латунные декораторы и деревянная обналичка
+3896	1135	2023-02-13 17:00:00	течет вода из под раковины	раскрутился сифон. Протянуты все соединения
+3897	747	2023-02-13 17:30:00	не уходит вода	заломлен и перекручен сливной шланг. Выправлено и продуто
+3898	1136	2023-02-14 09:30:00	не уходит вода из сифона	прочищен сифон и труба до тройника магистрали
 \.
 
 
@@ -10346,7 +10367,7 @@ SELECT pg_catalog.setval('public.orders_id_seq', 2, true);
 -- Name: performers_id_seq; Type: SEQUENCE SET; Schema: public; Owner: saibogo
 --
 
-SELECT pg_catalog.setval('public.performers_id_seq', 4239, true);
+SELECT pg_catalog.setval('public.performers_id_seq', 4250, true);
 
 
 --
