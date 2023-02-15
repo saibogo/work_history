@@ -16,7 +16,13 @@ VIEWS_LIST = ['all_workers',
               'works_likes']
 
 
-TABLES_LIST = ['bindings',
+TABLES_LIST = ['electric',
+               'heating',
+               'hot_water',
+               'cold_water',
+               'sewerage',
+               'bindings',
+               'bugzilla',
                'days_names',
                'performers',
                'works_days',
@@ -24,7 +30,9 @@ TABLES_LIST = ['bindings',
                'posts',
                'works',
                'oborudovanie',
-               'workspoints']
+               'workspoints',
+               'orders',
+               'customer']
 
 
 def drop_all_data() -> None:
@@ -42,11 +50,13 @@ def drop_all_data() -> None:
                 connection, cursor = base
                 for view in VIEWS_LIST:
                     sql = """DROP VIEW IF EXISTS {0}""".format(view)
+                    print(sql)
                     cursor.execute(sql)
                     connection.commit()
 
                 for table in TABLES_LIST:
                     sql = """DROP TABLE IF EXISTS {0}""".format(table)
+                    print(sql)
                     cursor.execute(sql)
                     connection.commit()
         else:
