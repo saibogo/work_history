@@ -45,3 +45,9 @@ def set_deleted_status(cursor, equip_id: str) -> None:
     """Create label DELETED to equip"""
 
     cursor.execute(sql_set_deleted_status(equip_id))
+
+
+def invert_bug_status_in_bugzilla(cursor, bug_id: str) -> None:
+    """On-OFF bug-status in database"""
+
+    cursor.execute(sql_invert_bug_status(bug_id))

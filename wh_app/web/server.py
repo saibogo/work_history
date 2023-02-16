@@ -28,7 +28,7 @@ from wh_app.web.workers_section import workers_menu, all_workers_table,\
 from wh_app.web.works_section import works_menu, find_work_to_id_page,\
     select_work_to_id_method, work_to_equip_paging, add_work_method, create_edit_work_form, update_work_method
 from wh_app.web.bugs_section import bugs_menu, all_bugs_table, all_bugs_in_work_table,\
-    add_bugs_result_table
+    add_bugs_result_table, create_invert_bug_status_form, invert_bug_status_method
 from wh_app.web.orders_section import all_customers_table, orders_main_menu,\
     all_registered_orders_table
 from wh_app.web.universal_html import LOGIN, PASSWORD, access_denided, access_allowed, logout_user
@@ -543,6 +543,20 @@ def add_bug_result() -> Response:
     return goto_or_redirect(lambda: add_bugs_result_table(functions.form_to_data(request.form),
                                                           request.method,
                                                           stylesheet_number()))
+
+
+@app.route('/invert-bug-status/<bug_num>')
+def invert_bug_status(bug_num: str) -> Response:
+    """Redirect to form inverting bug status"""
+    return goto_or_redirect(lambda: create_invert_bug_status_form(bug_num, stylesheet_number()))
+
+
+@app.route('/common-invert-bug-status', methods=['POST'])
+def common_invert_bug_status() -> Response:
+    """Redirect to method inverted bug-status"""
+    return goto_or_redirect(lambda: invert_bug_status_method(functions.form_to_data(request.form),
+                                                             request.method,
+                                                             stylesheet_number()))
 
 
 @app.route('/server-ready-to-shutdown')

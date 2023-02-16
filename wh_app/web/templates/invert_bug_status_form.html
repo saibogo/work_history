@@ -1,0 +1,37 @@
+<table>
+    <tr>
+        <th>
+            Параметр
+        </th>
+        <th>
+            Значение
+        </th>
+    </tr>
+    {% for elem in description %}
+        <tr>
+            <td>
+                {{elem[0]}}
+            </td>
+            <td>
+                {{elem[1]}}
+            </td>
+        </tr>
+    {% endfor %}
+    <form action="/common-invert-bug-status" method="post">
+        <tr>
+            <td>
+                <input type="hidden" name="{{bug_id_name}}" value="{{bug_id}}">
+            </td>
+            <td>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Пароль
+            </td>
+            <td>
+                <input type="password" name="{{password}}"  placeholder="Обязательно">
+            </td>
+        </tr>
+    </form>
+</table>

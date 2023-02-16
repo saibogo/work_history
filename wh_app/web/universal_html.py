@@ -40,6 +40,7 @@ WORK_DATETIME_STOP = 'work_datetime_stop'
 WORK_ID = 'work_id'
 DESCRIPTION = "description"
 ORDER_INFO = "order_info"
+BUG_ID = "bug_id"
 
 
 def link_or_str(elem: str, link_type: bool = False, link: str = '') -> str:
