@@ -19,8 +19,8 @@ async def equip_info(message: types.Message):
         equip_id = full_command[1]
         only_last_works = True if len(full_command) < 3 else False
         try:
-            user_id = message['from']['id']
-            user_name = message['from']['username']
+            user_id = message.from_id
+            user_name = message.from_user
         except:
             user_name = 'User ID {}'.format(user_id)
         try:
@@ -34,29 +34,31 @@ async def equip_info(message: types.Message):
                 else get_works_from_equip_id(cursor, equip_id)
             for work in works:
                 msg += work_message(work)
-        except IndexError:
-            msg = ['Оборудование с ID = {} не найдено'.format(equip_id)]
-        except KeyError:
-            msg = [user_not_access_read(user_name)]
-        kb = [
-            [InlineKeyboardButton(text='Регистрация (ID={})'.format(equip_id)),
-             InlineKeyboardButton(text='Отмена')]
-        ]
-        try:
-            msg_del = await message.answer('\n'.join(msg))
-            asyncio.create_task(delete_message(msg_del, telegram_delete_message_pause))
+            msg_del = await message.answer('\n'.join(msg), reply_markup=ReplyKeyboardRemove())
+            standart_delete_message(msg_del)
             if not get_equip_deleted_status(cursor, equip_id):
-                msg_del1 = await message.answer('Зарегистрировать выполнение работы?', reply_markup=standart_keyboard(kb))
-                asyncio.create_task(delete_message(msg_del1, telegram_delete_message_pause))
+                kb = [
+                    [InlineKeyboardButton(text='Регистрация (ID={})'.format(equip_id)),
+                     InlineKeyboardButton(text='Отмена')]
+                ]
+                msg_del1 = await message.answer('Зарегистрировать выполнение работы?',
+                                                reply_markup=standart_keyboard(kb))
+                standart_delete_message(msg_del1)
+        except IndexError:
+            msg_del = await message.answer('Оборудование с ID = {} не найдено'.format(equip_id))
+            standart_delete_message(msg_del)
+        except KeyError:
+            msg_del = await message.answer(user_not_access_read(user_name))
+            standart_delete_message(msg_del)
         except aiogram.utils.exceptions.MessageIsTooLong:
             tmp = '\n'.join(msg)
             msg_dels = list()
             for i in range(0, len(tmp), MAX_CHAR_IN_MSG):
                 msg_dels.append(await message.answer(tmp[i : i + MAX_CHAR_IN_MSG]))
-                asyncio.create_task(delete_message(msg_dels[-1], telegram_delete_message_pause))
+                standart_delete_message(msg_dels[-1])
             if not get_equip_deleted_status(cursor, equip_id):
                 msg_del = await message.answer('Зарегистрировать выполнение работы?', reply_markup=standart_keyboard(kb))
-                asyncio.create_task(delete_message(msg_del, telegram_delete_message_pause))
+                standart_delete_message(msg_del)
 
 
 async def start_add_new_equip(message: types.Message):
@@ -70,25 +72,25 @@ async def start_add_new_equip(message: types.Message):
                'Используйте функцию ОТВЕТ на 4 сообщения ниже.',
                'Нажмите кнопку ЗАПИСАТЬ и оборудование будет внесено в базу данных']
         msg_del = await message.answer('\n'.join(msg), reply_markup=ReplyKeyboardRemove())
-        asyncio.create_task(delete_message(msg_del, telegram_delete_message_pause))
+        standart_delete_message(msg_del)
         create_equips_list.append(CreateEquipObject(point_id, str(message.from_id)))
         kb = [
             [InlineKeyboardButton(text='ЗАПИСАТЬ ID={}'.format(point_id))]
         ]
         msg_del1 = await message.answer('/equip_name point_ID={}\nНаименование оборудования'.format(point_id),
                                         reply_markup=standart_keyboard(kb))
-        asyncio.create_task(delete_message(msg_del1, telegram_delete_message_pause))
+        standart_delete_message(msg_del1)
         msg_del2 = await message.\
             answer('/equip_model point_ID={}\nМодель(Если есть. Иначе не отвечайте на это сообщение)'.format(point_id))
-        asyncio.create_task(delete_message(msg_del2, telegram_delete_message_pause))
+        standart_delete_message(msg_del2)
         msg_del3 = await message.\
             answer('/equip_serial point_ID={}\nСерийный номер(Если есть. Иначе не отвечайте на это сообщение)'.
                    format(point_id))
-        asyncio.create_task(delete_message(msg_del3, telegram_delete_message_pause))
+        standart_delete_message(msg_del3)
         msg_del4 = await message.\
             answer('/equip_pre_id point_ID={}\nПредыдущий ID(Если есть. Иначе не отвечайте на это сообщение)'.
                    format(point_id))
-        asyncio.create_task(delete_message(msg_del4, telegram_delete_message_pause))
+        standart_delete_message(msg_del4)
 
 
 async def equip_repler(message: types.Message, category: str):
@@ -97,7 +99,7 @@ async def equip_repler(message: types.Message, category: str):
     worker_id = get_malachite_id(user_id)
     if worker_id is None:
         msg_del = await message.answer(write_not_access)
-        asyncio.create_task(delete_message(msg_del, telegram_delete_message_pause))
+        standart_delete_message(msg_del)
     else:
         start_message = message.reply_to_message.text
         point_id = start_message.split('=')[1].split()[0]
@@ -112,7 +114,7 @@ async def equip_repler(message: types.Message, category: str):
             create_object.create_pre_id(message.text)
         else:
             msg_del = await message.answer(error_in_create_field)
-            asyncio.create_task(delete_message(msg_del, telegram_delete_message_pause))
+            standart_delete_message(msg_del)
 
 
 async def save_new_equip(message: types.Message):
@@ -121,7 +123,7 @@ async def save_new_equip(message: types.Message):
     worker_id = get_malachite_id(user_id)
     if worker_id is None:
         msg_del = await message.answer(write_not_access)
-        asyncio.create_task(delete_message(msg_del, telegram_delete_message_pause))
+        standart_delete_message(msg_del)
     else:
         point_id = message.text.split('=')[1]
         create_object = find_in_object_list(point_id, str(message.from_id))
@@ -135,12 +137,12 @@ async def save_new_equip(message: types.Message):
                     equip_id = get_maximal_equip_id(cursor)
                     equip = [equip_id] + get_full_equip_information(cursor, equip_id)
                     msg_del1 = await message.answer('\n'.join(equip_message(equip)))
-                    asyncio.create_task(delete_message(msg_del1, telegram_delete_message_pause))
+                    standart_delete_message(msg_del1)
             else:
                 msg_del = await message.answer('Введенных данных недостаточно!')
         else:
             msg_del = await message.answer(error_in_create_field)
-        asyncio.create_task(delete_message(msg_del, telegram_delete_message_pause))
+        standart_delete_message(msg_del)
 
 
 def find_in_object_list(point_id: str, user_id: str) -> CreateEquipObject:

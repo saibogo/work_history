@@ -51,7 +51,7 @@ def standart_keyboard(keyboard):
 async def not_create_record(message: types.Message):
     """Clear keyboard"""
     msg_del = await message.answer('Отмена операции' ,reply_markup=ReplyKeyboardRemove())
-    asyncio.create_task(delete_message(msg_del, telegram_delete_message_pause))
+    standart_delete_message(msg_del)
 
 
 def work_message(work: List[Any]) -> List[str]:
@@ -77,3 +77,8 @@ def get_malachite_id(telegram_id: str) -> str:
     """Return data from Write Access List Malachite Database"""
 
     return write_access_dict[telegram_id] if telegram_id in write_access_dict else None
+
+
+def standart_delete_message(msg: types.Message):
+    """Create standart message and create task to delete them for standart interval"""
+    asyncio.create_task(delete_message(msg, telegram_delete_message_pause))

@@ -8,12 +8,13 @@ from wh_app.supporting import functions
 from wh_app.config_and_backup.config import path_to_telegram_token, path_to_messages
 from wh_app.telegram_bot.point_bot import all_points, send_statistic, point_info, not_create_record, get_svu
 from wh_app.telegram_bot.equip_bot import equip_info, start_add_new_equip, save_new_equip, equip_repler
-from wh_app.telegram_bot.any_bot import send_welcome, send_help, send_status, send_command_not_found
-from wh_app.telegram_bot.bugs_bot import all_bugs, start_create_new_bug, new_bug_repler
+from wh_app.telegram_bot.any_bot import send_welcome, send_help, send_status, send_command_not_found, send_changelog
+from wh_app.telegram_bot.bugs_bot import all_bugs, start_create_new_bug, new_bug_repler, bug_from_bug_id,\
+    invert_bug_status_from_bot
 from wh_app.telegram_bot.work_bot import start_create_record
 from wh_app.telegram_bot.work_bot import problem_repler, work_repler
 from wh_app.telegram_bot.read_bot_access import chats
-from wh_app.telegram_bot.support_bot import delete_message, telegram_delete_message_pause
+from wh_app.telegram_bot.support_bot import standart_delete_message
 
 functions.info_string(__name__)
 
@@ -53,7 +54,7 @@ async def start_message():
     if bot_is_restarted:
         for chat in chats:
             messages_del.append(await bot.send_message(chat, 'Произведен перезапуск телеграмм-бота!'))
-            asyncio.create_task(delete_message(messages_del[-1], telegram_delete_message_pause))
+            standart_delete_message(messages_del[-1])
         bot_is_restarted = False
     else:
         message = ""
@@ -63,7 +64,7 @@ async def start_message():
                 message += line
             for chat in chats:
                 messages_del.append(await bot.send_message(chat, message))
-                asyncio.create_task(delete_message(messages_del[-1], telegram_delete_message_pause))
+                standart_delete_message(messages_del[-1])
         except FileNotFoundError:
             pass
         except MessageTextIsEmpty:
@@ -97,6 +98,11 @@ async def points_command(message: types.Message):
     await all_points(message)
 
 
+@dp.message_handler(commands=['changelog'])
+async def changelog_command(message: types.Message):
+    await send_changelog(message)
+
+
 @dp.message_handler(regexp='point\s+[0-9]{1,}')
 async def point_command(message: types.Message):
     await point_info(message)
@@ -113,6 +119,12 @@ async def bugs_command(message: types.Message):
     await all_bugs(message)
 
 
+@dp.message_handler(regexp='/bug\s+[0-9]{1,}')
+async def bug_from_id_command(message: types.Message):
+    """Return bug with id == bug_id"""
+    await bug_from_bug_id(message)
+
+
 @dp.message_handler(lambda message: message.text and 'Новая проблема' in message.text)
 async def new_bug_command(message: types.Message):
     await start_create_new_bug(message)
@@ -121,6 +133,11 @@ async def new_bug_command(message: types.Message):
 @dp.message_handler(lambda message: message.reply_to_message and '/new_bug' in message.reply_to_message.text)
 async def new_bug_done_message(message: types.Message):
     await new_bug_repler(message)
+
+
+@dp.message_handler(lambda message: message.text and 'Изменить статус ID=' in message.text)
+async def invert_bug_status_message(message: types.Message):
+    await invert_bug_status_from_bot(message)
 
 
 @dp.message_handler(lambda message: message.text and 'Новое оборудование' in message.text)

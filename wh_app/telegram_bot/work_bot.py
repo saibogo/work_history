@@ -12,20 +12,20 @@ async def start_create_record(message: types.Message):
     """Start registration new work"""
     with Database() as base:
         _, cursor = base
-        first_num = message['text'].index('=')
-        last_num = message['text'].index(')')
-        equip_id = message['text'][first_num + 1 : last_num]
+        first_num = message.text.index('=')
+        last_num = message.text.index(')')
+        equip_id = message.text[first_num + 1 : last_num]
         equip_name = get_full_equip_information(cursor, equip_id)[1]
         msg_del = await message.answer('Начинаем регистрацию работ по "{}"\n'
                                        'Используйте функцию ОТВЕТ на два сообщения ниже и произведенные работы будут записаны'.
                                        format(equip_name) ,
                                        reply_markup=ReplyKeyboardRemove())
-        asyncio.create_task(delete_message(msg_del, telegram_delete_message_pause))
+        standart_delete_message(msg_del)
         create_works_list.append(CreateWorkObject(equip_id, str(message.from_id)))
         msg_del1 = await message.answer('/problem ID={}\nПричина производства работ'.format(equip_id))
-        asyncio.create_task(delete_message(msg_del1, telegram_delete_message_pause))
+        standart_delete_message(msg_del1)
         msg_del2 = await message.answer('/exec ID={}\nЧто произведено?'.format(equip_id))
-        asyncio.create_task(delete_message(msg_del2, telegram_delete_message_pause))
+        standart_delete_message(msg_del2)
 
 
 async def exec_or_problem_handler(message: types.Message, select: str='work'):
@@ -48,12 +48,12 @@ async def exec_or_problem_handler(message: types.Message, select: str='work'):
     create_object.set_malachite_user_id(worker_id)
     if worker_id is None:
         msg_del = await message.answer(write_not_access)
-        asyncio.create_task(delete_message(msg_del, telegram_delete_message_pause))
+        standart_delete_message(msg_del)
     elif create_object.is_complete_data():
         create_object.write_in_database()
         remove_from_object_list(equip_id)
-        msg_del = await message.answer(add_work_message(equip_id))
-        asyncio.create_task(delete_message(msg_del, telegram_delete_message_pause))
+        msg_del = await message.answer(add_work_message(equip_id), reply_markup=ReplyKeyboardRemove())
+        standart_delete_message(msg_del)
 
 
 def remove_from_object_list(equip_id: str):
