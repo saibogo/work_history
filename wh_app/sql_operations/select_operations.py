@@ -490,3 +490,18 @@ def get_sewerage_point_info(cursor, point_id: str) -> list:
 def get_database_version(cursor) -> list:
     """Return info from current database"""
     return select_sql.sql_select_database_version()
+
+
+@list_to_first_str_decorator
+@get_selected_decorator
+def get_worker_id_from_name(cursor, name: str) -> str:
+    """Return worker_id from name or sub_name pattern"""
+    return select_sql.sql_select_worker_id_like_str(name)
+
+
+@get_selected_decorator
+def get_works_from_performer_and_date(cursor, worker_id: str, date_start: str, date_stop: str, page_num: str = 0) -> List[Tuple]:
+    """Return list with all works where worker = worker_id in dateinterval [date_satrt, date_stop]
+    if page_num == 0 then ot use limit for record in page"""
+
+    return select_sql.sql_select_works_from_performer_and_date(worker_id, date_start, date_stop, page_num)

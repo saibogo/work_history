@@ -522,7 +522,7 @@ def sql_select_works_from_worker(id_worker: str) -> str:
         ORDER BY date
         """
 
-    query = ("""SELECT %(works_from_worker)s.%(id)s, %(point_name)s, %(name)s,""" +
+    query = ("""SELECT DISTINCT %(works_from_worker)s.%(id)s, %(point_name)s, %(name)s,""" +
              """ %(model)s, %(serial_num)s, %(date)s, %(problem)s, %(result)s,""" +
              """ %(all_workers)s FROM %(works_from_worker)s JOIN %(performers)s """ +
              """ON %(performers)s.%(worker_id)s = {0} AND %(works_from_worker)s.%(id)s""" +
@@ -534,7 +534,7 @@ def sql_select_works_from_worker(id_worker: str) -> str:
 def sql_select_works_from_worker_limit(id_worker: str, page_num: int) -> str:
     """See also sql_select_works_from_worker. Only use limit records in page"""
 
-    query = ("""SELECT %(works_from_worker)s.%(id)s, %(point_name)s, %(name)s,""" +
+    query = ("""SELECT DISTINCT %(works_from_worker)s.%(id)s, %(point_name)s, %(name)s,""" +
              """ %(model)s, %(serial_num)s, %(date)s, %(problem)s, %(result)s,""" +
              """ %(all_workers)s FROM %(works_from_worker)s JOIN %(performers)s """ +
              """ON %(performers)s.%(worker_id)s = {0} AND %(works_from_worker)s.%(id)s""" +
@@ -543,6 +543,22 @@ def sql_select_works_from_worker_limit(id_worker: str, page_num: int) -> str:
     return query.format(id_worker,
                         config.max_records_in_page,
                         (int(page_num) - 1) * config.max_records_in_page)
+
+
+def sql_select_works_from_performer_and_date(id_worker: str, date_start: str, date_stop: str, page_num: int) -> str:
+    """See also sql_select_works_from_worker_limit. Only use date interval. If page_num == 0 then not use limits"""
+    query = ("""SELECT DISTINCT %(works_from_worker)s.%(id)s, %(point_name)s, %(name)s, """ +
+             """%(model)s, %(serial_num)s, %(date)s, %(problem)s, %(result)s, %(all_workers)s """ +
+             """FROM %(works_from_worker)s JOIN %(performers)s """ +
+             """ON %(performers)s.%(worker_id)s = {0} AND %(works_from_worker)s.%(id)s = %(performers)s.%(work_id)s """ +
+             """WHERE %(date)s >= '{1}' and %(date)s <= '{2}' """ +
+             """ORDER BY %(date)s """) % sql_consts_dict
+    query = query + 'LIMIT {3} OFFSET {4}' if page_num != 0 else query
+    return query.format(id_worker, date_start, date_stop,
+                        config.max_records_in_page,
+                        (int(page_num) - 1) * config.max_records_in_page
+                        ) \
+        if page_num != 0 else query.format(id_worker, date_start, date_stop)
 
 
 def sql_select_works_days() -> str:
@@ -687,3 +703,11 @@ def sql_select_equip_deleted_status(equip_id: str) -> str:
 
     query = """SELECT %(deleted)s FROM %(oborudovanie)s WHERE %(id)s = {}""" % sql_consts_dict
     return query.format(equip_id)
+
+
+def sql_select_worker_id_like_str(pattern: str) -> str:
+    """Return query like worker name or sub_name liked pattern"""
+
+    query = """SELECT %(id)s FROM %(workers)s WHERE LOWER(%(name)s) = LOWER('{0}') 
+    OR LOWER(%(sub_name)s) = LOWER('{0}')""" % sql_consts_dict
+    return query.format(pattern)

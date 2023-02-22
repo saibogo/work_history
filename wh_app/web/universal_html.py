@@ -28,6 +28,7 @@ QUERY = 'query'
 WORK = 'work'
 WORK_DATETIME = 'work_datetime'
 PERFORMER = 'performer'
+PERFORMER_WITH_DATE = 'performer_with_date'
 COMMENT = 'comment'
 FIND_REQUEST = 'find_request'
 FIND_IN_TABLE = 'find_in_table'
@@ -147,7 +148,8 @@ def find_table() -> str:
     return render_template('find_template.html', comment=COMMENT, find_request=FIND_REQUEST,
                            find_in_table=FIND_IN_TABLE, works=WORKS, works_ignored_date=WORKS_IGNORED_DATE,
                            works_points=WORKS_POINTS, equips=EQUIPS, work_datetime_start=WORK_DATETIME_START,
-                           work_datetime_stop=WORK_DATETIME_STOP, date_to_browser=date_to_browser)
+                           work_datetime_stop=WORK_DATETIME_STOP, date_to_browser=date_to_browser,
+                           performer=PERFORMER, performer_with_date=PERFORMER_WITH_DATE)
 
 
 def add_performer_in_work(work: list) -> str:

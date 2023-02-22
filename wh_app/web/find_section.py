@@ -36,7 +36,20 @@ def find_method(data, method, stylesheet_number: str) -> str:
 
         elif find_from_table == uhtml.EQUIPS:
             page = redirect('/find/equip/{0}/page/1'.format(find_request))
-
+        elif find_from_table == uhtml.PERFORMER or find_from_table == uhtml.PERFORMER_WITH_DATE:
+            with Database() as base:
+                _, cursor = base
+                try:
+                    worker_id = select_operations.get_worker_id_from_name(cursor, find_request)
+                    if find_from_table == uhtml.PERFORMER:
+                        page = redirect('/performer/{0}/page/1'.format(worker_id))
+                    else:
+                        page = redirect('/find/performer/{0}/{1}/{2}/page/1'.format(worker_id,
+                                                                                    data[uhtml.WORK_DATETIME_START],
+                                                                                    data[uhtml.WORK_DATETIME_STOP]))
+                except IndexError:
+                    page = web_template.result_page('<h1>Данных не найдено!</h1>', '/find', str(stylesheet_number))
+                    return page
         else:
             page = web_template.result_page('Not corrected selected in Find!',
                                             '/',
@@ -92,6 +105,36 @@ def find_work_like_date_paging(find_string: str, data_start: str,
         pages_table = uhtml.paging_table('/find/work/{0}/{1}/{2}/page'.format(find_string,
                                                                               date_start_correct,
                                                                               date_stop_correct),
+                                         pages_list,
+                                         int(page_num))
+        return web_template.result_page(result + pages_table, '/find', str(stylesheet_number))
+
+
+def find_work_like_performer_and_date_paging(performer_id: str, data_start: str,
+                                             data_stop: str, page_num: str, stylesheet_number: str) -> str:
+    """Create table contain result find from works and data"""
+
+    with Database() as base:
+        _, cursor = base
+        date_start_correct = data_start.replace('T', ' ')
+        date_stop_correct = data_stop.replace('T', ' ')
+        pages_list = functions.list_of_pages(select_operations.
+                                             get_works_from_performer_and_date(cursor,
+                                                                              performer_id,
+                                                                              date_start_correct,
+                                                                              date_stop_correct))
+        works = select_operations.get_works_from_performer_and_date(cursor, performer_id,
+                                                                    date_start_correct,
+                                                                    date_stop_correct,
+                                                                    int(page_num))
+        works = functions.works_table_add_new_performer(works)
+        works = functions.works_table_add_edit(works)
+        result = uhtml.universal_table(table_headers.works_table_name,
+                                       table_headers.works_table,
+                                       [list(work) for work in works])
+        pages_table = uhtml.paging_table('/find/performer/{0}/{1}/{2}/page'.format(performer_id,
+                                                                                   date_start_correct,
+                                                                                   date_stop_correct),
                                          pages_list,
                                          int(page_num))
         return web_template.result_page(result + pages_table, '/find', str(stylesheet_number))

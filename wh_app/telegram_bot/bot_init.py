@@ -15,6 +15,7 @@ from wh_app.telegram_bot.work_bot import start_create_record
 from wh_app.telegram_bot.work_bot import problem_repler, work_repler
 from wh_app.telegram_bot.read_bot_access import chats
 from wh_app.telegram_bot.support_bot import standart_delete_message
+from wh_app.telegram_bot.find_bot import main_find_menu, find_menu, find_repler
 
 functions.info_string(__name__)
 
@@ -170,7 +171,7 @@ async def save_new_equip_command(message: types.message):
     await save_new_equip(message)
 
 
-@dp.message_handler(filters.RegexpCommandsFilter(regexp_commands=['equip\s+[0-9]{1,}\s+f', 'equip\s+[0-9]{1,}']))
+@dp.message_handler(filters.RegexpCommandsFilter(regexp_commands=['equip\s+[0-9]{1,}\s+all', 'equip\s+[0-9]{1,}']))
 async def equip_info_command(message: types.Message):
     await equip_info(message)
 
@@ -196,6 +197,60 @@ async def problem_in_new_work(message: types.Message):
 async def exec_in_new_work(message: types.Message):
     """Handler to reply message"""
     await work_repler(message)
+
+
+@dp.message_handler(commands=['find'])
+async def find_command(message: types.Message):
+    """Start menu select find-type"""
+    await main_find_menu(message)
+
+
+@dp.message_handler(lambda message: 'Предприятие' in message.text)
+async def find_point_command(message: types.Message):
+    """Start find point menu"""
+    await find_menu(message, 'point')
+
+
+@dp.message_handler(lambda message: message.reply_to_message and '/find_point' in message.reply_to_message.text)
+async def find_point_repler_command(message: types.Message):
+    """Start find in workspoints"""
+    await find_repler(message, 'point')
+
+
+@dp.message_handler(lambda message: 'Оборудование' in message.text)
+async def find_equip_command(message: types.Message):
+    """Start find point menu"""
+    await find_menu(message, 'equip')
+
+
+@dp.message_handler(lambda message: message.reply_to_message and '/find_equip' in message.reply_to_message.text)
+async def find_equip_repler_command(message: types.Message):
+    """Start find in workspoints"""
+    await find_repler(message, 'equip')
+
+
+@dp.message_handler(lambda message: 'Работы' in message.text)
+async def find_work_command(message: types.Message):
+    """Start find point menu"""
+    await find_menu(message, 'work')
+
+
+@dp.message_handler(lambda message: message.reply_to_message and '/find_work' in message.reply_to_message.text)
+async def find_work_repler_command(message: types.Message):
+    """Start find in workspoints"""
+    await find_repler(message, 'work')
+
+
+@dp.message_handler(lambda message: 'Исполнители' in message.text)
+async def find_performer_command(message: types.Message):
+    """Start find point menu"""
+    await find_menu(message, 'performer')
+
+
+@dp.message_handler(lambda message: message.reply_to_message and '/find_performer' in message.reply_to_message.text)
+async def find_performer_repler_command(message: types.Message):
+    """Start find in workspoints"""
+    await find_repler(message, 'performer')
 
 
 @dp.message_handler()

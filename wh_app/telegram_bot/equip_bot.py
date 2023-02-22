@@ -18,6 +18,10 @@ async def equip_info(message: types.Message):
         full_command = message.text.split()
         equip_id = full_command[1]
         only_last_works = True if len(full_command) < 3 else False
+        kb = [
+            [InlineKeyboardButton(text='Регистрация (ID={})'.format(equip_id)),
+             InlineKeyboardButton(text='Отмена')]
+        ]
         try:
             user_id = message.from_id
             user_name = message.from_user
@@ -37,10 +41,6 @@ async def equip_info(message: types.Message):
             msg_del = await message.answer('\n'.join(msg), reply_markup=ReplyKeyboardRemove())
             standart_delete_message(msg_del)
             if not get_equip_deleted_status(cursor, equip_id):
-                kb = [
-                    [InlineKeyboardButton(text='Регистрация (ID={})'.format(equip_id)),
-                     InlineKeyboardButton(text='Отмена')]
-                ]
                 msg_del1 = await message.answer('Зарегистрировать выполнение работы?',
                                                 reply_markup=standart_keyboard(kb))
                 standart_delete_message(msg_del1)
