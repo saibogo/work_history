@@ -9,6 +9,7 @@ import wh_app.config_and_backup.config as config
 import wh_app.web.server as webserver
 from wh_app.supporting import functions
 from wh_app.supporting.auto_save_thread import AutoSaveThread
+from wh_app.supporting.auto_load_config import AutoLoadConfig
 from wh_app.telegram_bot.bot_init import start_telegram_bot
 
 functions.info_string(__name__)
@@ -52,8 +53,13 @@ def stop_server() -> None:
 def all_start() -> None:
     """Start server and autosave procedure"""
     start_server()
+
     autosave = AutoSaveThread.get_instance()
     autosave.start()
+
+    autoload = AutoLoadConfig.get_instance()
+    autoload.start()
+
     start_bot_session()
 
 

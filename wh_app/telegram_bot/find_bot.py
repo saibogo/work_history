@@ -63,7 +63,7 @@ async def find_repler(message: types.Message, target: str):
                 msgs = ['\n'.join(point_message(point)) for point in find_result]
             elif target == 'equip':
                 find_result = get_all_equips_list_from_like_str(cursor, pattern)
-                msgs = ['\n'.join(equip_message(equip)) for equip in find_result]
+                msgs = ['\n'.join(equip_message(equip, True)) for equip in find_result]
             elif target == 'work':
                 find_result = get_all_works_like_word(cursor, pattern)
                 msgs = ['\n'.join(work_message(work)) for work in find_result]

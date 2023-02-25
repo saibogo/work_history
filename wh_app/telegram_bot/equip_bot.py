@@ -136,7 +136,7 @@ async def save_new_equip(message: types.Message):
                     _, cursor = base
                     equip_id = get_maximal_equip_id(cursor)
                     equip = [equip_id] + get_full_equip_information(cursor, equip_id)
-                    msg_del1 = await message.answer('\n'.join(equip_message(equip)))
+                    msg_del1 = await message.answer('\n'.join(equip_message(equip, True)))
                     standart_delete_message(msg_del1)
             else:
                 msg_del = await message.answer('Введенных данных недостаточно!')

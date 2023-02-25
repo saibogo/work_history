@@ -87,7 +87,7 @@ def get_last_work_from_equip_id(equip_id: str) -> str:
         _, cursor = base
         work = get_works_from_equip_id(cursor, equip_id)[-1]
         equip = [equip_id] + get_full_equip_information(cursor, equip_id)
-        msg = equip_message(equip)
+        msg = equip_message(equip, True)
         msg += work_message(work)
         return "\n".join(msg)
 

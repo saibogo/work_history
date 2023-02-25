@@ -1,4 +1,5 @@
 import asyncio
+import importlib
 import aiogram.utils.exceptions
 from typing import List, Any
 from aiogram import types
@@ -6,11 +7,12 @@ from aiogram.utils.exceptions import MessageCantBeDeleted, MessageToDeleteNotFou
 from aiogram.types import InlineKeyboardButton, ReplyKeyboardRemove, ReplyKeyboardMarkup
 from contextlib import suppress
 
-from wh_app.telegram_bot.read_bot_access import read_dict, read_id_dict
 from wh_app.telegram_bot.write_bot_access import write_access_dict
 from wh_app.postgresql.database import Database
 from wh_app.config_and_backup.config import telegram_delete_message_pause, path_to_project
 from wh_app.supporting import functions
+from wh_app.sql_operations.select_operations import get_point_id_from_equip_id, get_point_name_from_id
+from wh_app.telegram_bot.read_bot_access import read_dict, read_id_dict
 
 functions.info_string(__name__)
 
@@ -32,10 +34,16 @@ async def delete_message(message: types.Message, sleep_time: int = 0):
         await message.delete()
 
 
-def equip_message(equip: List[Any]) -> List[str]:
+def equip_message(equip: List[Any], with_point: bool = False) -> List[str]:
     """Create equip-info message"""
     msg = list()
     msg.append(separator)
+    if with_point:
+        with Database() as base:
+            _, cursor = base
+            point_id = get_point_id_from_equip_id(cursor, str(equip[0]))
+            point_name = get_point_name_from_id(cursor, point_id)
+            msg.append('Предприятие: {}'.format(point_name))
     msg.append('ID = {}'.format(equip[0]))
     msg.append('{}'.format(equip[2]))
     msg.append('Мод. {}'.format(equip[3]))
@@ -81,4 +89,4 @@ def get_malachite_id(telegram_id: str) -> str:
 
 def standart_delete_message(msg: types.Message):
     """Create standart message and create task to delete them for standart interval"""
-    asyncio.create_task(delete_message(msg, telegram_delete_message_pause))
+    asyncio.create_task(delete_message(msg, telegram_delete_message_pause()))
