@@ -82,7 +82,7 @@ def works_from_performers_table(performer_id: int,
         _, cursor = base
         full_works_count = select_operations.get_count_all_works_from_worker_id(cursor, str(performer_id))
         create_paging = False
-        if full_works_count > max_records_in_page:
+        if full_works_count > max_records_in_page():
             create_paging = True
             full_works = select_operations.get_all_works_from_worker_id_limit(cursor, str(performer_id), page_num)
         else:

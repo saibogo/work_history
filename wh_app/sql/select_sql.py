@@ -87,8 +87,8 @@ def sql_select_equipment_in_point_limit(point: str, page_num: int) -> str:
              """ ORDER BY %(oborudovanie)s.%(name)s""") % sql_consts_dict
 
     query = query.format(formatter) + """ LIMIT {0} OFFSET {1}"""
-    return query.format(config.max_records_in_page,
-                        (int(page_num) - 1) * config.max_records_in_page)
+    return query.format(config.max_records_in_page(),
+                        (int(page_num) - 1) * config.max_records_in_page())
 
 
 def sql_select_all_equipment_limit(page_num: int) -> str:
@@ -125,7 +125,7 @@ def sql_select_last_work_to_equipment_id(id_equip: str) -> str:
              """(SELECT %(id)s FROM %(works)s WHERE %(id_obor)s = {0})""" +
              """ ORDER BY %(date)s DESC LIMIT {1}) tmp ORDER BY %(date)s""") % sql_consts_dict
 
-    return query.format(id_equip, config.max_records_in_page * 2)
+    return query.format(id_equip, config.max_records_in_page() * 2)
 
 
 def sql_select_work_from_equip_id_limit(id_equip: str, page_num: int) -> str:
@@ -143,8 +143,8 @@ def sql_select_work_from_equip_id_limit(id_equip: str, page_num: int) -> str:
              """ ORDER BY %(date)s LIMIT {1} OFFSET {2}""") % sql_consts_dict
 
     return query.format(id_equip,
-                        config.max_records_in_page,
-                        (int(page_num) - 1) * config.max_records_in_page)
+                        config.max_records_in_page(),
+                        (int(page_num) - 1) * config.max_records_in_page())
 
 
 def sql_select_all_works() -> str:
@@ -158,8 +158,8 @@ def sql_select_all_works_limit(page_num: int) -> str:
 
     query = ("""SELECT * FROM %(works_likes)s ORDER BY %(date)s""" +
              """ LIMIT {0} OFFSET {1}""") % sql_consts_dict
-    return query.format(config.max_records_in_page,
-                        (int(page_num) - 1) * config.max_records_in_page)
+    return query.format(config.max_records_in_page(),
+                        (int(page_num) - 1) * config.max_records_in_page())
 
 
 def sql_select_information_to_point(id_point: str) -> str:
@@ -237,8 +237,8 @@ def sql_select_equip_from_like_str_limit(pattern: str, page_num: str) -> str:
                  """OR LOWER(%(serial_num)s) LIKE LOWER('{0}')  ORDER BY %(name)s """ +
                  """LIMIT {1} OFFSET {2}""") % sql_consts_dict
         result = query.format(words,
-                              config.max_records_in_page,
-                              (int(page_num) - 1) * config.max_records_in_page)
+                              config.max_records_in_page(),
+                              (int(page_num) - 1) * config.max_records_in_page())
 
     else:
         query = ("""SELECT %(id)s, %(workspoints)s.%(point_name)s, %(name)s,""" +
@@ -246,8 +246,8 @@ def sql_select_equip_from_like_str_limit(pattern: str, page_num: str) -> str:
                  """ JOIN %(workspoints)s ON %(oborudovanie)s.%(point_id)s = """ +
                  """ %(workspoints)s.%(point_id)s ORDER BY %(name)s""" +
                  """ LIMIT {0} OFFSET {1}""") % sql_consts_dict
-        result = query.format(config.max_records_in_page,
-                              (int(page_num) - 1) * config.max_records_in_page)
+        result = query.format(config.max_records_in_page(),
+                              (int(page_num) - 1) * config.max_records_in_page())
     return result
 
 
@@ -294,14 +294,14 @@ def sql_select_point_from_like_str_limit(pattern: str, page_num: str) -> str:
                  """ %(point_name)s LIMIT {1} OFFSET {2}""") % sql_consts_dict
 
         result = query.format(like_string,
-                              config.max_records_in_page,
-                              (int(page_num) - 1) * config.max_records_in_page)
+                              config.max_records_in_page(),
+                              (int(page_num) - 1) * config.max_records_in_page())
     else:
         query = ("""SELECT %(point_id)s, %(point_name)s, %(point_address)s,""" +
                  """ %(cast_open_close)s FROM %(workspoints)s ORDER BY""" +
                  """ %(point_name)s LIMIT {0} OFFSET {1}""") % sql_consts_dict
-        result = query.format(config.max_records_in_page,
-                              (int(page_num) - 1) * config.max_records_in_page)
+        result = query.format(config.max_records_in_page(),
+                              (int(page_num) - 1) * config.max_records_in_page())
     return result
 
 
@@ -344,13 +344,13 @@ def sql_select_all_works_from_like_str_limit(pattern: str, page_num: str) -> str
                  """ ORDER BY %(date)s, %(name)s LIMIT {1} OFFSET {2}""") % sql_consts_dict
 
         result = query.format(like_string,
-                              config.max_records_in_page,
-                              (int(page_num) - 1) * config.max_records_in_page)
+                              config.max_records_in_page(),
+                              (int(page_num) - 1) * config.max_records_in_page())
     else:
         query = ("""SELECT * FROM %(works_likes)s ORDER BY""" +
                  """ %(date)s, %(name)s LIMIT {0} OFFSET {1}""") % sql_consts_dict
         result = query.format(config.max_records_in_page,
-                              (int(page_num) - 1) * config.max_records_in_page)
+                              (int(page_num) - 1) * config.max_records_in_page())
     return result
 
 
@@ -402,8 +402,8 @@ def sql_select_all_works_from_like_str_and_date_limit(pattern: str, date_start: 
         result = query.format(like_string,
                               date_start,
                               date_stop,
-                              config.max_records_in_page,
-                              (int(page_num) - 1) * config.max_records_in_page)
+                              config.max_records_in_page(),
+                              (int(page_num) - 1) * config.max_records_in_page())
 
     else:
         query = ("""SELECT * FROM works_likes WHERE date BETWEEN '{0}' AND '{1}' """ +
@@ -411,7 +411,7 @@ def sql_select_all_works_from_like_str_and_date_limit(pattern: str, date_start: 
         result = query.format(date_start,
                               date_stop,
                               config.max_records_in_page,
-                              (int(page_num) - 1) * config.max_records_in_page)
+                              (int(page_num) - 1) * config.max_records_in_page())
     return result
 
 
@@ -541,8 +541,8 @@ def sql_select_works_from_worker_limit(id_worker: str, page_num: int) -> str:
              """ = %(performers)s.%(work_id)s ORDER BY %(date)s LIMIT {1} OFFSET {2}""") % sql_consts_dict
 
     return query.format(id_worker,
-                        config.max_records_in_page,
-                        (int(page_num) - 1) * config.max_records_in_page)
+                        config.max_records_in_page(),
+                        (int(page_num) - 1) * config.max_records_in_page())
 
 
 def sql_select_works_from_performer_and_date(id_worker: str, date_start: str, date_stop: str, page_num: int) -> str:
@@ -555,8 +555,8 @@ def sql_select_works_from_performer_and_date(id_worker: str, date_start: str, da
              """ORDER BY %(date)s """) % sql_consts_dict
     query = query + 'LIMIT {3} OFFSET {4}' if page_num != 0 else query
     return query.format(id_worker, date_start, date_stop,
-                        config.max_records_in_page,
-                        (int(page_num) - 1) * config.max_records_in_page
+                        config.max_records_in_page(),
+                        (int(page_num) - 1) * config.max_records_in_page()
                         ) \
         if page_num != 0 else query.format(id_worker, date_start, date_stop)
 
@@ -586,8 +586,8 @@ def sql_select_all_bugs_in_bugzilla_limit(page_num: str) -> str:
 
     query = ("""SELECT %(id)s, %(problem)s, %(bug_in_work)s FROM %(bugzilla)s """ +
              """ ORDER BY %(id)s LIMIT {0} OFFSET {1}""") % sql_consts_dict
-    return query.format(config.max_records_in_page,
-                        (int(page_num) - 1) * config.max_records_in_page)
+    return query.format(config.max_records_in_page(),
+                        (int(page_num) - 1) * config.max_records_in_page())
 
 
 def sql_select_all_bugs_in_work_in_bugzilla() -> str:

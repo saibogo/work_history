@@ -43,15 +43,15 @@ class MyTestCaseFunctions(unittest.TestCase):
                              [1], 'Not corrected create pages list from []')
 
     def test_list_of_pages2(self):
-        self.assertListEqual(functions.list_of_pages([i for i in range(config.max_records_in_page - 1)]),
+        self.assertListEqual(functions.list_of_pages([i for i in range(config.max_records_in_page() - 1)]),
                              [1], 'Not corrected create pages list from [1, 2, ... max_size - 1]')
 
     def test_list_of_pages3(self):
-        self.assertListEqual(functions.list_of_pages([i for i in range(config.max_records_in_page)]),
+        self.assertListEqual(functions.list_of_pages([i for i in range(config.max_records_in_page())]),
                              [1], 'Not corrected create pages list from [1, 2, ... max_size]')
 
     def test_list_of_pages4(self):
-        self.assertListEqual(functions.list_of_pages([i for i in range(config.max_records_in_page + 1)]),
+        self.assertListEqual(functions.list_of_pages([i for i in range(config.max_records_in_page() + 1)]),
                              [1, 2], 'Not corrected create pages list from [1, 2, ... max_size + 1]')
 
     def test_works_table_add_new_performer1(self):

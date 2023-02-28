@@ -63,20 +63,20 @@ def read_all_users() -> dict:
 
     result = {}
     try:
-        file_passwords = open(config.path_to_passwords, mode='r')
+        file_passwords = open(config.path_to_passwords(), mode='r')
         for line in file_passwords:
             user, pass_hash = line.split()
             result[user] = int(pass_hash)
         file_passwords.close()
     except FileNotFoundError:
-        print("File {0} not found!".format(config.path_to_passwords))
+        print("File {0} not found!".format(config.path_to_passwords()))
     return result
 
 
 def save_all_users(users: dict) -> None:
     """Save users and hashes in file"""
 
-    file_passwords = open(config.path_to_passwords, mode='w')
+    file_passwords = open(config.path_to_passwords(), mode='w')
     for user in users:
         file_passwords.write('{0} {1}\n'.format(user, users[user]))
     file_passwords.close()
@@ -167,8 +167,8 @@ def works_table_add_edit(works: list) -> list:
 def list_of_pages(all_records: list) -> list:
     """Return list any elem is number page in html-view"""
 
-    result = [i + 1 for i in range(len(all_records) // config.max_records_in_page)]
-    if len(all_records) % config.max_records_in_page != 0:
+    result = [i + 1 for i in range(len(all_records) // config.max_records_in_page())]
+    if len(all_records) % config.max_records_in_page() != 0:
         result.append(len(result) + 1)
     return result if all_records else [1]
 

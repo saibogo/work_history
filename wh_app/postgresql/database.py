@@ -9,11 +9,11 @@ functions.info_string(__name__)
 class Database:
     def __init__(self):
         try:
-            self.connection = psycopg2.connect(database=config.database_name,
-                                               user=config.user_name,
-                                               password=config.user_password,
-                                               host=config.database_host,
-                                               port=config.database_port)
+            self.connection = psycopg2.connect(database=config.database_name(),
+                                               user=config.user_name(),
+                                               password=config.user_password(),
+                                               host=config.database_host(),
+                                               port=config.database_port())
             self.cursor = self.connection.cursor()
         except psycopg2.error.ConnectionException:
             print("База данных недоступна!")

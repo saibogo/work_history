@@ -41,9 +41,10 @@ def faq_page(pre_adr: str, stylesheet_number: str) -> str:
         tecnology = web_template.faq_state_machine('tecnology')
         multiuser = web_template.faq_state_machine('multiuser')
         update = web_template.faq_state_machine('update')
-        records = ['Единиц или групп оборудования: <a href="{0}/all-equips">{1}</a>'.format(config.full_address, max_equip_id),
-                   'Предприятий: <a href="{0}/all-points">{1}</a>'.format(config.full_address, max_point_id),
-                   'Произведенных работ: <a href="{0}/all-works">{1}</a>'.format(config.full_address, max_work_id)]
+        records = ['Единиц или групп оборудования: <a href="{0}/all-equips">{1}</a>'.format(config.full_address(),
+                                                                                            max_equip_id),
+                   'Предприятий: <a href="{0}/all-points">{1}</a>'.format(config.full_address(), max_point_id),
+                   'Произведенных работ: <a href="{0}/all-works">{1}</a>'.format(config.full_address(), max_work_id)]
         database_size = select_operations.get_size_database(cursor)
         average_works_in_date = "{:.2f}".format(select_operations.get_count_unique_works(cursor) /
                                                select_operations.get_count_unique_dates_in_works(cursor))

@@ -24,8 +24,8 @@ class SimpleGui(QWidget):
 
     def set_starting_size(self) -> None:
         """Set fixed size main window"""
-        self.setFixedWidth(start_width_qt)
-        self.setFixedHeight(start_height_qt)
+        self.setFixedWidth(start_width_qt())
+        self.setFixedHeight(start_height_qt())
         self.center()
 
     def closeEvent(self, event) -> None:

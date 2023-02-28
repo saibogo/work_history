@@ -22,7 +22,7 @@ functions.info_string(__name__)
 
 def load_token() -> str:
     """Load Telegram Api token from filesystem"""
-    with open(path_to_telegram_token, 'r') as token_file:
+    with open(path_to_telegram_token(), 'r') as token_file:
         result = token_file.readline().strip()
         return result
 
@@ -60,7 +60,7 @@ async def start_message():
     else:
         message = ""
         try:
-            message_file = open(path_to_messages, 'r')
+            message_file = open(path_to_messages(), 'r')
             for line in message_file:
                 message += line
             for chat in chats:

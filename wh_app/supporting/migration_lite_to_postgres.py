@@ -10,13 +10,13 @@ from wh_app.supporting import functions
 
 functions.info_string(__name__)
 
-CON_POSGRESQL = psycopg2.connect(database=config.database_name,
-                                 user=config.user_name,
-                                 password=config.user_password,
-                                 host=config.database_host,
-                                 port=config.database_port)
+CON_POSGRESQL = psycopg2.connect(database=config.database_name(),
+                                 user=config.user_name(),
+                                 password=config.user_password(),
+                                 host=config.database_host(),
+                                 port=config.database_port())
 
-CON_LITE = sqlite3.connect(config.database_name)
+CON_LITE = sqlite3.connect(config.database_name())
 
 CUR_POSGRESQL = CON_POSGRESQL.cursor()
 CUR_LITE = CON_LITE.cursor()

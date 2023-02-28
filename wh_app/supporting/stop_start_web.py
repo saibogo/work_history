@@ -22,7 +22,7 @@ def start_server() -> None:
     else:
         print("Запускаем веб-сервер")
         try:
-            message = open(config.path_to_messages, 'w')
+            message = open(config.path_to_messages(), 'w')
             message.close()
         except FileNotFoundError:
             print("Нет доступа к файлу сообщений для пользователей")
@@ -66,7 +66,7 @@ def all_start() -> None:
 def status_server() -> bool:
     """Function return current status web-servers"""
     try:
-        _ = requests.get("http://" + config.ip_address + ":" + config.port + '/add-work')
+        _ = requests.get("http://" + config.ip_address() + ":" + config.port() + '/add-work')
         for process in psutil.process_iter():
             data = process.as_dict(attrs=['cmdline', 'pid'])
             for elem in data['cmdline']:
@@ -82,16 +82,16 @@ def say_stop(comment: str) -> None:
     if status_server():
         try:
             stop_time = datetime.datetime.now() +\
-                        datetime.timedelta(milliseconds=(config.timeout_message) * 2)
+                        datetime.timedelta(milliseconds=(config.timeout_message()) * 2)
 
-            message = open(config.path_to_messages, 'w')
+            message = open(config.path_to_messages(), 'w')
             message.write("Внимание! В {0} сервер будет остановлен для проведения работ.\n".
                           format(stop_time.strftime("%A %d %B %Y %H:%M:%S")))
             message.write("Просьба завершить работу с вашими данными.\n")
             message.write("Причина остановки: {0}\n".format(comment))
             message.close()
 
-            message = open(config.path_to_messages, 'r')
+            message = open(config.path_to_messages(), 'r')
             print("Создано сообщение для пользователей:")
             for line in message:
                 print(line)
@@ -99,6 +99,6 @@ def say_stop(comment: str) -> None:
 
         except FileNotFoundError:
             print("Невозможно передать сообщение. Нет доступа к файлу {0}".
-                  format(config.path_to_messages))
+                  format(config.path_to_messages()))
     else:
         print("Сервер уже остановлен")

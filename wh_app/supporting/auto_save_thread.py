@@ -47,7 +47,7 @@ class AutoSaveThread(threading.Thread):
                                          second=time_now.second)
             if not self.database_saved:
                 if self.start_time < current_time < self.stop_time:
-                    create_dump(config.path_to_dump)
+                    create_dump(config.path_to_dump())
                     self.database_saved = True
             else:
                 if current_time < self.start_time:

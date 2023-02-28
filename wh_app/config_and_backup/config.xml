@@ -35,9 +35,5 @@
         <telegram_delete_message_pause>7200</telegram_delete_message_pause>
     </telegram>
     <any>
-        <str_interrupted>Interrupted</str_interrupted>
-        <max_size_column>40</max_size_column>
-        <rows_pxls>25</rows_pxls>
-        <max_pxls_in_canvas>600</max_pxls_in_canvas>
     </any>
 </vars>

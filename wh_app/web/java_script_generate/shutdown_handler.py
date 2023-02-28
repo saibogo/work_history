@@ -6,4 +6,5 @@ from wh_app.config_and_backup.config import timeout_message, full_address
 
 def generate_message_shutdown_server() -> str:
     """Create simple handler """
-    return render_template('message_script_template.html', full_address=full_address, timeout_message=timeout_message)
+    return render_template('message_script_template.html',
+                           full_address=full_address(), timeout_message=timeout_message())

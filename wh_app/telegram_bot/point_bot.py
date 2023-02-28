@@ -110,7 +110,7 @@ async def get_svu(message: types.Message):
             if point_id > int(get_maximal_points_id(cursor)) or point_id < 1:
                 raise IndexError
             try:
-                doc = open('{}wh_app/web/static/image/svu/svu_{}.jpg'.format(path_to_project, point_id), 'rb')
+                doc = open('{}wh_app/web/static/image/svu/svu_{}.jpg'.format(path_to_project(), point_id), 'rb')
                 msg_del = await message.reply_document(doc)
                 standart_delete_message(msg_del)
             except FileNotFoundError:

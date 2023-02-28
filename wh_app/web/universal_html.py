@@ -68,7 +68,7 @@ def list_to_ul(data_list: list) -> str:
 def style_custom(stylesheet_number=0) -> str:
     """Function return string contain sections <style>"""
     return render_template('style_template.html',
-                           ico_addres=config.full_address + '/favicon.ico',
+                           ico_addres=config.full_address() + '/favicon.ico',
                            stylesheet_name="/style{0}.css".format(stylesheet_number))
 
 
@@ -137,7 +137,7 @@ def navigations_menu(pre_html: str, save_to_pdf: bool=False, current_adr: str=""
     """Function return string contain navigations bar
     save_to_pdf=True create button "Save" in navigation menu
     """
-    return render_template('navigation_template.html', pre_html=pre_html, address=config.full_address,
+    return render_template('navigation_template.html', pre_html=pre_html, address=config.full_address(),
                            request_url=request.url, to_pdf=True if save_to_pdf and current_adr != "" else None,
                            current_adress=current_adr)
 
@@ -228,19 +228,19 @@ def paging_table(link: str, all_elems: list, current: int) -> str:
     if len(all_elems) == 1:
         tmp = ""
     else:
-        if len(all_elems) < 2 * config.max_pages_in_tr:
+        if len(all_elems) < 2 * config.max_pages_in_tr():
             rows = []
-            for row in range(len(all_elems) // config.max_pages_in_tr + 1):
+            for row in range(len(all_elems) // config.max_pages_in_tr() + 1):
                 cells = []
-                for cell in range(min(config.max_pages_in_tr, len(all_elems) - row * config.max_pages_in_tr)):
-                    elem = all_elems[row * config.max_pages_in_tr + cell]
+                for cell in range(min(config.max_pages_in_tr(), len(all_elems) - row * config.max_pages_in_tr())):
+                    elem = all_elems[row * config.max_pages_in_tr() + cell]
                     cells.append(str(elem) if elem == current else '<a href="{0}/{1}">{1}</a>'.format(link, elem))
                 rows.append(render_template('paging/paging_string_v1.html', cells=cells))
             tmp = render_template('paging/paging_table_v1.html', rows=rows)
         else:
             down_page_number = max(1, current - 10)
             list_of_intervals = [[], [], []]
-            len_of_interval = config.max_pages_in_tr // 4
+            len_of_interval = config.max_pages_in_tr() // 4
 
             if 0 < current < len_of_interval:
                 start_index = max(0, current - 3)

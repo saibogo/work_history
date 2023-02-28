@@ -37,7 +37,7 @@ from wh_app.supporting.pdf_operations.pdf import equips_in_point, works_from_equ
     works_from_performer, weekly_charts_pdf, move_equip, point_tech_information
 
 
-app = Flask(__name__, static_folder=config.static_dir, template_folder=config.template_folder)
+app = Flask(__name__, static_folder=config.static_dir(), template_folder=config.template_folder())
 app.secret_key = 'gleykh secret key'
 functions.info_string(__name__)
 
@@ -61,7 +61,7 @@ def access_is_allowed() -> bool:
     """Function return if user input correct login and password"""
     if (LOGIN_IS_CORRECT in session) and\
             (TIME_LOGIN in session) and\
-            (time.time() - session[TIME_LOGIN] < config.max_session_time):
+            (time.time() - session[TIME_LOGIN] < config.max_session_time()):
         session[LOGIN_IS_CORRECT] = session.get(LOGIN_IS_CORRECT)
         session[TIME_LOGIN] = time.time()
     else:
@@ -118,19 +118,19 @@ def main_page() -> Response:
 @app.route('/favicon.ico')
 def favicon() -> Any:
     """Return static favicon-logo to web-page"""
-    return send_from_directory(config.static_dir, 'favicon.ico')
+    return send_from_directory(config.static_dir(), 'favicon.ico')
 
 
 @app.route('/style<number>.css')
 def styles(number: int) -> Response:
     """Return selected CSS-page from static folder"""
-    return send_from_directory(config.static_dir, 'style{0}.css'.format(number))
+    return send_from_directory(config.static_dir(), 'style{0}.css'.format(number))
 
 
 @app.route('/image/background<number>.jpg')
 def get_background_image(number: int) -> Response:
     """Return selected background from static folder"""
-    return send_from_directory(config.static_dir, 'image/background{0}.jpg'.format(number))
+    return send_from_directory(config.static_dir(), 'image/background{0}.jpg'.format(number))
 
 
 @app.route("/equips")
@@ -398,7 +398,7 @@ def performer_performer_id(performer_id: int) -> Response:
     return goto_or_redirect(lambda: works_from_performers_table(performer_id,
                                                                 1,
                                                                 request.args.get('page',
-                                                                                 default=config.full_address,
+                                                                                 default=config.full_address(),
                                                                                  type=str),
                                                                 stylesheet_number()))
 
@@ -410,7 +410,7 @@ def performer_id_page(performer_id: int, page_num: int) -> Response:
     return goto_or_redirect(lambda: works_from_performers_table(performer_id,
                                                                 page_num,
                                                                 request.args.get('page',
-                                                                                 default=config.full_address,
+                                                                                 default=config.full_address(),
                                                                                  type=str),
                                                                 stylesheet_number()))
 
@@ -428,7 +428,7 @@ def add_performer_to_work_work_id(work_id: int) -> Response:
     """Redirect to form append performer in current work"""
     return goto_or_redirect(lambda: add_performer_to_work(work_id,
                                                           request.args.get('page',
-                                                                           default=config.full_address,
+                                                                           default=config.full_address(),
                                                                            type=str),
                                                           stylesheet_number()))
 
@@ -445,7 +445,7 @@ def add_performer_result() -> Response:
 def faq() -> Response:
     """Return FAQ-page"""
     return goto_or_redirect(lambda: faq_page(request.args.get('page',
-                                                              default=config.full_address,
+                                                              default=config.full_address(),
                                                               type=str),
                                              stylesheet_number()))
 
@@ -454,7 +454,7 @@ def faq() -> Response:
 def statistics() -> Response:
     """Return STATISTIC-page"""
     return goto_or_redirect(lambda: statistics_page(request.args.get('page',
-                                                                     default=config.full_address,
+                                                                     default=config.full_address(),
                                                                      type=str),
                                                     stylesheet_number()))
 
@@ -463,7 +463,7 @@ def statistics() -> Response:
 def system_status() -> Response:
     """Return page, contain status all system components"""
     return goto_or_redirect(lambda: system_status_page(request.args.get('page',
-                                                                        default=config.full_address,
+                                                                        default=config.full_address(),
                                                                         type=str),
                                                        stylesheet_number()))
 
@@ -472,7 +472,7 @@ def system_status() -> Response:
 def find() -> Response:
     """Return main FIND-page"""
     return goto_or_redirect(lambda: find_page(request.args.get('page',
-                                                               default=config.full_address,
+                                                               default=config.full_address(),
                                                                type=str),
                                               stylesheet_number()))
 
@@ -572,7 +572,7 @@ def server_ready_to_shutdown() -> str:
     """Return message from admin"""
     message = ""
     try:
-        message_file = open(config.path_to_messages, 'r')
+        message_file = open(config.path_to_messages(), 'r')
         for line in message_file:
             message += line
     except FileNotFoundError:
@@ -620,7 +620,7 @@ def changelog_page() -> Response:
 def get_svu(point_id: str) -> Response:
     """Return electric scheme if avaliable"""
     try:
-        return send_from_directory(config.static_dir, 'image/svu/svu_{0}.jpg'.format(point_id))
+        return send_from_directory(config.static_dir(), 'image/svu/svu_{0}.jpg'.format(point_id))
     except:
         return page_not_found(404)
 
