@@ -2021,6 +2021,7 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 1146	7	Система вытяжной вентиляции	not model	not number	1146	f
 1145	41	насос канализационный	GRUNDFOS	not number	1144	f
 1144	32	насос канализационный	GRUNDFOS	not number	542	t
+1147	34	Система канализации	not model	not number	1147	f
 \.
 
 
@@ -6359,6 +6360,7 @@ COPY public.performers (id, work_id, worker_id) FROM stdin;
 4321	3961	9
 4322	3962	1
 4323	3963	1
+4324	3964	1
 \.
 
 
@@ -10376,6 +10378,7 @@ COPY public.works (id, id_obor, date, problem, result) FROM stdin;
 3961	789	2023-02-27 16:30:00	ошибка E1	прочищены воздушные отверстия от жира и грязи
 3962	83	2023-02-28 08:45:44	Оторвана крышка от правого кронштейна	Использована перфорированная металлическая пластина и два комплекта болт+шайбы+гайка самоконтрощаяся м5.К кронштейну использованы самоконтрящиеся гайки м6
 3963	703	2023-02-28 09:46:00	разбито стекло	Следы удара от центра. Использовать нельзя. Необходима замена поверхности. Обнаружил шеф-повар Сергей Лавров
+3964	1147	2023-02-28 18:01:16	Течет вода под посудомоечной машиной	Заменены кольца отходящей канализации Ду 50. Установлен отвод 30 градусов
 \.
 
 
@@ -10519,7 +10522,7 @@ SELECT pg_catalog.setval('public.orders_id_seq', 2, true);
 -- Name: performers_id_seq; Type: SEQUENCE SET; Schema: public; Owner: saibogo
 --
 
-SELECT pg_catalog.setval('public.performers_id_seq', 4323, true);
+SELECT pg_catalog.setval('public.performers_id_seq', 4324, true);
 
 
 --

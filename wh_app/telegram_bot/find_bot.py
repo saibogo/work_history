@@ -1,8 +1,10 @@
 import aiogram.utils.exceptions
+import datetime
 
 from wh_app.telegram_bot.support_bot import *
 from wh_app.sql_operations.select_operations import get_all_points_list_from_like_str,\
-    get_all_equips_list_from_like_str, get_all_works_like_word, get_worker_id_from_name, get_all_works_from_worker_id
+    get_all_equips_list_from_like_str, get_all_works_like_word, get_worker_id_from_name, get_all_works_from_worker_id,\
+    get_all_works_like_word_and_date
 from wh_app.telegram_bot.point_bot import point_message
 from wh_app.telegram_bot.equip_bot import equip_message
 from wh_app.telegram_bot.work_bot import work_message
@@ -100,4 +102,42 @@ async def find_repler(message: types.Message, target: str):
         msg_del = await message.answer('Результатов слишком много!. Вывод был ограничен!',
                                        reply_markup=ReplyKeyboardRemove())
         standart_delete_message(msg_del)
+
+
+async def last_day_message(message: types.Message):
+    """Create message, contain all works in last day"""
+
+    try:
+        user_id = message.from_id
+        user_name = message.from_user
+    except:
+        user_name = 'User ID {}'.format(user_id)
+
+    try:
+        if user_name not in read_id_dict and user_id not in read_id_dict:
+            raise KeyError
+        with Database() as base:
+            _, cursor = base
+            current_datetime = datetime.datetime.now()
+            stop_datetime = datetime.datetime(current_datetime.year, current_datetime.month, current_datetime.day,
+                                             current_datetime.hour, current_datetime.minute, current_datetime.second)
+            tmp_datetime  = datetime.datetime(stop_datetime.year, stop_datetime.month, stop_datetime.day)
+            start_datetime = tmp_datetime - datetime.timedelta(days=1)
+            works = get_all_works_like_word_and_date(cursor, '', str(start_datetime), str(stop_datetime))
+            msgs = ['\n'.join(work_message(work, True, True)) for work in works]
+            msg_del = await message.answer('\n'.join(msgs), reply_markup=ReplyKeyboardRemove())
+            standart_delete_message(msg_del)
+
+    except KeyError:
+        msg_del = await message.answer(user_not_access_read(user_name))
+        standart_delete_message(msg_del)
+    except aiogram.utils.exceptions.MessageTextIsEmpty or IndexError:
+        msg_del = await message.answer('Ничего не найдено!', reply_markup=ReplyKeyboardRemove())
+        standart_delete_message(msg_del)
+    except aiogram.utils.exceptions.MessageIsTooLong:
+        msg_dels = list()
+        tmp = '\n'.join(msgs)
+        for i in range(0, len(tmp), MAX_CHAR_IN_MSG):
+            msg_dels.append(await message.answer(tmp[i: i + MAX_CHAR_IN_MSG]))
+            standart_delete_message(msg_dels[-1])
 

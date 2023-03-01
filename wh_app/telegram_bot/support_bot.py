@@ -62,11 +62,14 @@ async def not_create_record(message: types.Message):
     standart_delete_message(msg_del)
 
 
-def work_message(work: List[Any]) -> List[str]:
+def work_message(work: List[Any], with_equip: bool = False, with_point: bool = False) -> List[str]:
     """Create work-info message"""
-
     msg = list()
     msg.append(separator)
+    if with_point:
+        msg.append('Предприятие: {}'.format(work[1]))
+    if with_equip:
+        msg.append('Оборудование: {}, model: {}, № {}'.format(work[2], work[3], work[4]))
     msg.append('Work_ID = {}'.format(work[0]))
     msg.append('Дата/время: {}'.format(work[5]))
     msg.append('Заявка: {}'.format(work[6]))

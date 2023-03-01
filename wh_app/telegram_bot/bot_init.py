@@ -15,7 +15,7 @@ from wh_app.telegram_bot.work_bot import start_create_record
 from wh_app.telegram_bot.work_bot import problem_repler, work_repler
 from wh_app.telegram_bot.read_bot_access import chats
 from wh_app.telegram_bot.support_bot import standart_delete_message
-from wh_app.telegram_bot.find_bot import main_find_menu, find_menu, find_repler
+from wh_app.telegram_bot.find_bot import main_find_menu, find_menu, find_repler, last_day_message
 
 functions.info_string(__name__)
 
@@ -102,6 +102,11 @@ async def points_command(message: types.Message):
 @dp.message_handler(commands=['changelog'])
 async def changelog_command(message: types.Message):
     await send_changelog(message)
+
+
+@dp.message_handler(commands=['lastday'])
+async def lastday_command(message: types.Message):
+    await last_day_message(message)
 
 
 @dp.message_handler(regexp='point\s+[0-9]{1,}')
