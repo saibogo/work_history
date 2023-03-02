@@ -13,7 +13,7 @@
 12. apt install python3-pyqt5
 12.1. pip3 install aiogram
 12.2. create bot. get token and create file 'telegram_token.txt'
-12.3. edit config.py section path_to_telegram_token
+12.3. edit config.xml section path_to_telegram_token
 13. apt install postgresql
 14. su  (And insert your superuser password)
 15. su - postgres
@@ -27,8 +27,8 @@
 23. psql workhistory < /path/to/your/dump.db
 24. python3 /path/to/main.py --help
 Well Done!
-25. edit config.py in your favorite editor (patches and ip)
-26. python3 /path/to/main.py
-27. start web-server
+25. edit config.xml in your favorite editor (patches and ip)
+26. python3 /path/to/main.py --help
+27. python3 /path/to/main.py --allstart
 28. in your browser go to to http://your_ip:5000
 Well Done!

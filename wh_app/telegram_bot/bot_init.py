@@ -16,6 +16,7 @@ from wh_app.telegram_bot.work_bot import problem_repler, work_repler
 from wh_app.telegram_bot.read_bot_access import chats
 from wh_app.telegram_bot.support_bot import standart_delete_message
 from wh_app.telegram_bot.find_bot import main_find_menu, find_menu, find_repler, last_day_message
+from wh_app.telegram_bot.workers_bot import send_workers_message
 
 functions.info_string(__name__)
 
@@ -123,6 +124,12 @@ async def get_svu_command(message: types.Message):
 async def bugs_command(message: types.Message):
     """Return to telegram-bot all bugs"""
     await all_bugs(message)
+
+
+@dp.message_handler(commands=['workers'])
+async def workers_command(message: types.Message):
+    """Return to telegram-bot all bugs"""
+    await send_workers_message(message)
 
 
 @dp.message_handler(regexp='/bug\s+[0-9]{1,}')
