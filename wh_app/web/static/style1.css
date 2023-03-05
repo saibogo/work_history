@@ -109,14 +109,6 @@ textarea {
     border-top-left-radius: 10px;
     }
 
-table.navigation_menu {
-    border: 0px;
-    border-spacing: 10px;
-}
-
-td.navigation_bottom {
-    border-radius: 20px;
-}
 
 input[type="text"], textarea {
   background-color: Moccasin;
@@ -139,6 +131,20 @@ li.faq_question {
 
 li.faq_question > ul {
     color: DarkSlateGray;
+    font-style: italic;
+}
+
+#navigation_div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+div.navigation_elem {
+    margin: 5px;
+    border: 1px solid;
+    border-radius: 20px;
+    background: DarkKhaki;
     font-style: italic;
 }
 

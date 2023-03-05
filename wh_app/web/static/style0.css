@@ -108,3 +108,16 @@ li.faq_question > ul {
     font-style: italic;
 }
 
+#navigation_div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+div.navigation_elem {
+    margin: 5px;
+    border: 1px solid;
+    border-top-left-radius: 12px;
+    font-style: italic;
+}
+
