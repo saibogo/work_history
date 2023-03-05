@@ -70,6 +70,7 @@ def faq_state_machine(section: str) -> str:
     return list_to_ul(result_list)
 
 
+
 @replace_decor
 @replace_decor
 def result_page(main_page: str, preview_adr: str="", stylesheet_number: str="0", to_pdf: bool=False,

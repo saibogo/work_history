@@ -121,3 +121,15 @@ div.navigation_elem {
     font-style: italic;
 }
 
+#faq_div {
+    display: flex;
+    flex-direction: column;
+}
+
+.faq_tr {
+    display: flex;
+    flex-direction: row;
+    #align-items: center;
+    #justify-content: center;
+}
+

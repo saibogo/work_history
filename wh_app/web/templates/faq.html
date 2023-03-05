@@ -1,22 +1,40 @@
-<table>
-    <caption>Наиболее частые вопросы по системе:</caption>
-    <tr>
-        <td>
+
+<h2>Наиболее частые вопросы по системе:</h2>
+
+<div id="faq_div">
+    <div class="faq_tr">
+        <div class="faq_quest">Что нужно для использования системы?</div>
+        <div class="faq_answer">{{hardware}}</div>
+    </div>
+    <div class="faq_tr">
+        <div class="faq_quest">С использованием каких технологий написана система?</div>
+        <div class="faq_answer">{{tecnology}}</div>
+    </div>
+    <div class="faq_tr">
+        <div class="faq_quest">Сколько пользователей поддерживает система?</div>
+        <div class="faq_answer">{{multiuser}}</div>
+    </div>
+    <div class="faq_tr">
+        <div class="faq_quest">Планируется ли развитие системы?</div>
+        <div class="faq_answer">{{update}}</div>
+    </div>
+    <div class="faq_tr">
+        <div class="faq_quest">Сколько записей зарегистрированно на данный момент?</div>
+        <div class="faq_answer">
             <ul>
-                <li class="faq_question">Что нужно для использования системы? {{hardware}}</li>
-                <li class="faq_question">С использованием каких технологий написана система? {{tecnology}}</li>
-                <li class="faq_question">Сколько пользователей поддерживает система? {{multiuser}}</li>
-                <li class="faq_question">Планируется ли развитие системы?{{update}}</li>
-                <li class="faq_question">Сколько записей зарегистрированно на данный момент?
-                    <ul>
-                        {% for record in records %}
-                        <li>{{record}}</li>
-                        {% endfor %}
-                    </ul>
-                </li>
-                <li class="faq_question">Текущий размер базы данных : {{database_size}}</li>
-                <li class="faq_question">Среднее количество работ на смену : {{average_works_in_date}}</li>
+                {% for record in records %}
+                <li>{{record}}</li>
+                {% endfor %}
             </ul>
-        </td>
-    </tr>
-</table>
+        </div>
+    </div>
+    <div class="faq_tr">
+        <div class="faq_quest">Текущий размер базы данных</div>
+        <div class="faq_answer">{{database_size}}</div>
+    </div>
+    <div class="faq_tr">
+        <div class="faq_quest">Среднее количество работ на смену</div>
+        <div class="faq_answer">{{average_works_in_date}}</div>
+    </div>
+
+</div>
