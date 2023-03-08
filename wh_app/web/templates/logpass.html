@@ -1,21 +1,17 @@
-<table>
-    <caption>Получение доступа к системе</caption>
-    <tr>
-        <th>Логин</th>
-        <th>Пароль</th>
-        <th>Действие</th>
-    </tr>
-    <form action="/login-verification" method="post">
-        <tr>
-            <td>
-                <textarea name="{{login}}" placeholder="Обязательное поле"></textarea>
-            </td>
-            <td>
-                <input type="password" name = "{{password}}" placeholder="Обязательно">
-            </td>
-            <td>
-                <input type="submit" value="Отправить">
-            </td>
-        </tr>
-    </form>
-</table>
+<h2>Получение доступа к системе</h2>
+<form action="/login-verification" method="post">
+    <div class="tr_div_login">
+        <div class="faq_quest">Логин</div>
+        <div class="faq_answer"><textarea name="{{login}}" placeholder="Обязательное поле"></textarea></div>
+    </div>
+    <div class="tr_div_login">
+        <div class="faq_quest">Пароль</div>
+        <div class="faq_answer">
+            <input type="password"  name="{{password}}" placeholder="Обязательно" required>
+        </div>
+    </div>
+    <div class="tr_div_login">
+        <div class="faq_quest">Отправить</div>
+        <div class="faq_answer"><input type="submit" value="Отправить"></div>
+    </div>
+</form>

@@ -115,22 +115,22 @@ def add_new_work(equip_id: str) -> str:
 
 def pass_is_not_valid() -> str:
     """Function return string contain message NOT VALID"""
-    return '<h1>Неверный пароль!</h1>'
+    return '<h2>Неверный пароль!</h2>'
 
 
 def operation_completed() -> str:
     """Function return string contain message to insert in DB"""
-    return '<h1>Добавлена запись в базу данных</h1>'
+    return '<h2>Добавлена запись в базу данных</h2>'
 
 
 def data_is_not_valid() -> str:
     """Function return string contain message BAD DATA"""
-    return '<h1>Некорректные данные</h1>'
+    return '<h2>Некорректные данные</h2>'
 
 
 def selected_new_theme() -> str:
     """ Function return string contain message NEW THEME"""
-    return '<h1>Произведена смена темы оформления</h1>'
+    return '<h2>Произведена смена темы оформления</h2>'
 
 
 def navigations_menu(pre_html: str, save_to_pdf: bool=False, current_adr: str="") -> str:
@@ -199,13 +199,13 @@ def on_off_point_table(point: list) -> str:
 
 def html_page_not_found() -> str:
     """Return html contain PAGE NOT FOUND"""
-    return '<h1>Блииннн.. А такой страницы нет...</h1>'
+    return '<h2>Простите, но страницы с таким адресом не существует!</h2>'
 
 
 def html_internal_server_error() -> str:
     """Return html contain INTERNAL SERVER ERROR"""
-    message = '<h1>Произошла ошибка сервера. ' +\
-              ' Обратитесь к администратору сайта или разработчику</h1>' +\
+    message = '<h2>Произошла ошибка сервера. ' +\
+              ' Обратитесь к администратору сайта или разработчику</h2>' +\
               '<h2>Время возникновения ошибки: {}</h2>'.format(
                   datetime.datetime.now().strftime("%d-%m-%Y %H:%M"))
     return message

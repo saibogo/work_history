@@ -124,12 +124,50 @@ div.navigation_elem {
 #faq_div {
     display: flex;
     flex-direction: column;
+    border: 1px solid;
+    font-style: italic;
 }
 
 .faq_tr {
     display: flex;
     flex-direction: row;
-    #align-items: center;
-    #justify-content: center;
+    align-items: flex-start;
+    border: 1px solid;
 }
 
+.faq_quest {
+    flex: 1;
+    font-style: normal;
+    color: Maroon;
+}
+
+.faq_answer {
+    flex: 2;
+    font-style: italic;
+    color: DarkSlateGray;
+}
+
+h2 {
+    text-align: center;
+}
+
+.tr_div_login {
+    width: 30%;
+    margin-left: 35%;
+    margin-top: 5px;
+    margin-bottom: 3px;
+    display: flex;
+    align-items: center;
+    align-items: flex-start;
+}
+
+
+input[type=password]{
+   width: 95%;
+   border-top-left-radius: 12px;
+}
+
+input[type=submit]{
+   width: 100%;
+   border-top-left-radius: 12px;
+}
