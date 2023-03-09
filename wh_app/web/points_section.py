@@ -61,7 +61,7 @@ def all_points_table(stylesheet_number: str) -> str:
 
 def create_new_point_page(stylesheet_number: str) -> str:
     """Create page to append new works point in database"""
-    html = uhtml.style_custom() + '\n' + uhtml.add_new_point()
+    html = uhtml.style_custom(str(stylesheet_number)) + '\n' + uhtml.add_new_point()
     return web_template.result_page(html, '/points', str(stylesheet_number))
 
 

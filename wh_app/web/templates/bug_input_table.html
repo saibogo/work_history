@@ -1,21 +1,19 @@
-<table>
-    <caption>Зарегистрировать проблему работы с сервером</caption>
-    <tr>
-        <th>Описание проблемы, включая время</th>
-        <th>Пароль</th>
-        <th>Действие</th>
-    </tr>
-    <form action="/add-bug-result" method="post">
-        <tr>
-            <td>
-                <textarea name="{{description}}" placeholder="Обязательное поле"></textarea>
-            </td>
-            <td>
-                <input type="password" name ="{{password}}" placeholder="Обязательно">
-            </td>
-            <td>
-                <input type="submit" value="Отправить">
-            </td>
-        </tr>
-    </form>
-</table>
+<h2>регистрация проблем при работе с сервером</h2>
+<form action="/add-bug-result" method="post">
+    <div class="container">
+        <div class="tr_div_login">
+            <div class="faq_quest">Описание проблемы, включая время</div>
+            <div class="faq_answer"><textarea name="{{description}}" placeholder="Обязательное поле"></textarea></div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Пароль</div>
+            <div class="faq_answer">
+                <input type="password"  name="{{password}}" placeholder="Обязательно" required>
+            </div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Отправить</div>
+            <div class="faq_answer"><input type="submit" value="Отправить"></div>
+        </div>
+    </div>
+</form>

@@ -299,16 +299,16 @@ def logpass_table() -> str:
 def access_denided(name: str) -> str:
     """Function return page from not correct login or password"""
 
-    return "<h1>Ошибка доступа для пользователя {0}. Попробуйте еще раз!</h1>".format(name)
+    return "<h2>Ошибка доступа для пользователя {0}. Попробуйте еще раз!</h2>".format(name)
 
 
 def access_allowed(name: str) -> str:
     """Function return page from correct login and password"""
 
-    return "<h1>С возвращением, {0}!</h1>".format(name)
+    return "<h2>С возвращением, {0}!</h2>".format(name)
 
 
 def logout_user() -> str:
     """Function return BYE-page"""
 
-    return "<h1>Осуществлен выход из системы</h1>"
+    return "<h2>Осуществлен выход из системы</h2>"

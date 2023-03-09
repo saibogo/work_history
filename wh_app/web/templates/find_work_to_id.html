@@ -1,15 +1,17 @@
-<table>
-    <caption>Поиск выполненной работы по уникальному ID</caption>
-    <form action="/select-work-to-id" method="post">
-        <tr>
-            <td>
+<h2>Поиск произведенных работ по ID</h2>
+<form action="/select-work-to-id" method="post">
+    <div class="container">
+        <div class="tr_div_login">
+            <div class="faq_quest">Введите ID</div>
+            <div class="faq_answer">
                 <input type="number" name="id" min="0" max="{{max_work_id}}">
-            </td>
-        </tr>
-        <tr>
-            <td>
+            </div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Искать</div>
+            <div class="faq_answer">
                 <input type="submit" value="Найти">
-            </td>
-        </tr>
-    </form>
-</table>
+            </div>
+        </div>
+    </div>
+</form>

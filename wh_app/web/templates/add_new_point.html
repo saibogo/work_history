@@ -1,20 +1,12 @@
-<table>
-    <caption> Добавить новое предприятие</caption>
-    <tr><th>Название</th><th>Адрес</th><th>Пароль доступа</th><th></th></tr>
+<h2>зарегистрировать новое предприятие</h2>
+<div class="container">
     <form action="/add-point" method="post">
-        <tr>
-            <td>
-                <input name="{{point_name}}" placeholder="Обязательно">
-            </td>
-            <td>
-                <input name="{{point_address}}" placeholder="Обязательно">
-            </td>
-            <td>
-                <input type="password" name="{{password}}" placeholder="Обязательно">
-            </td>
-            <td>
+        <div class="tr_div_new_point">
+                <input name="{{point_name}}" placeholder="Служебное название" class="tr_area">
+                <input name="{{point_address}}" placeholder="Адрес" class="tr_area">
+                <input type="password" name="{{password}}" class="tr_password" placeholder="Обязательно">
                 <input type="submit" value="Отправить">
-            </td>
-        </tr>
+
+        </div>
     </form>
-</table>
+</div>

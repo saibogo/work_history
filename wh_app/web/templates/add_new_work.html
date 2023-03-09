@@ -1,41 +1,18 @@
-<table>
-    <caption>Зарегистрировать произведенные работы</caption>
-    <tr>
-        <th>ID оборудования</th>
-        <th>Причина ремонта</th>
-        <th>описание работ</th>
-        <th>Дата и время</th>
-        <th>Исполнители</th>
-        <th>Пароль доступа</th>
-        <th>Отправить</th>
-    </tr>
-    <form action="/add-work" method="post">
-        <tr>
-            <td>
-                <input name="{{equip_id_name}}" value="{{equip_id}}" readonly>
-            </td>
-            <td>
-                <textarea name="{{query}}" placeholder="Необязательно"></textarea>
-            </td>
-            <td>
-                <textarea name="{{work}}" placeholder="Обязательно"></textarea>
-            </td>
-            <td>
-                <input type="datetime-local" name="{{work_datetime}}" value="{{date_to_browser}}">
-            </td>
-            <td>
-                <select  name="{{performer_name}}">
+<h2>Регистрация новых работ для данного оборудования</h2>
+<form action="/add-work" method="post">
+    <div class="container">
+        <div class="tr_div_new_equip">
+            <input name="{{equip_id_name}}" value="{{equip_id}}" type="hidden" readonly>
+            <textarea name="{{query}}" placeholder="Причина ремонта" class="tr_area"></textarea>
+            <textarea name="{{work}}" placeholder="Состав работ" class="tr_area"></textarea>
+            <input type="datetime-local" name="{{work_datetime}}" value="{{date_to_browser}}">
+            <select  name="{{performer_name}}" class="tr_select">
                     {% for performer in performers %}
                         <option value={{performer[0]}}>{{performer[2]}}</option>
                     {% endfor %}
-                </select>
-            </td>
-            <td>
-                <input type="password" name="{{password}}"  placeholder="Обязательно">
-            </td>
-            <td>
-                <input type="submit" value="Отправить">
-            </td>
-        </tr>
-    </form>
-</table>
+            </select>
+            <input type="password" name="{{password}}" class="tr_password" placeholder="Пароль(Обязательно)">
+            <input type="submit" value="Отправить">
+        </div>
+    </div>
+</form>

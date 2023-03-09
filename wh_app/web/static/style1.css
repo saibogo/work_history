@@ -5,10 +5,6 @@ body {
     background-size: 100%;
     }
 
-h1 {
-    text-align: center;
-    }
-
 h3 {
     text-align: center;
     }
@@ -104,27 +100,6 @@ table#pages_table {
     transform:rotate(-2deg);
     }
 
-textarea {
-    width: 98%;
-    border-top-left-radius: 10px;
-    }
-
-
-input[type="text"], textarea {
-  background-color: Moccasin;
-}
-
-
-input[type="password"], textarea {
-  background-color: Moccasin;
-}
-
-
-input[type="datetime-local"] {
-  background-color: Moccasin;
-}
-
-
 
 #navigation_div {
     display: flex;
@@ -183,13 +158,94 @@ h2 {
 
 
 input[type=password]{
-   width: 95%;
+   width: 97%;
    border-top-left-radius: 12px;
+   margin-left: 2px;
+   margin-right: 2px;
 }
 
 input[type=submit]{
    width: 100%;
    border-top-left-radius: 12px;
+   border-color: DarkRed;
+   margin-left: 2px;
+   margin-right: 2px;
 }
 
+input[type=number]{
+   width: 97%;
+   border-top-left-radius: 12px;
+   border-color: DarkRed;
+   margin-left: 2px;
+   margin-right: 2px;
+}
 
+input[type=datetime-local]{
+   min-width: 40%;
+   width: 97%;
+   border-top-left-radius: 12px;
+   border-color: DarkRed;
+   margin-left: 2px;
+   margin-right: 2px;
+}
+
+div.tr_div_login:nth-child(3n) {
+    /*background-color: palegoldenrod;*/
+    background-color: Plum;
+    }
+
+div.tr_div_login:nth-child(3n + 1) {
+    background-color: DarkKhaki;
+}
+
+div.tr_div_login:nth-child(3n + 2) {
+    background-color: Moccasin;
+}
+
+.tr_div_new_point {
+    width: 30%;
+    margin-left: 30%;
+    margin-top: 5px;
+    margin-bottom: 3px;
+    display: flex;
+    align-items: center;
+    align-items: flex-start;
+}
+
+.tr_password {
+    min-width: 25%;
+    border-color: DarkRed;
+}
+
+.tr_area {
+    margin-left: 2px;
+    margin-righn: 2px;
+    border-top-left-radius: 12px;
+    border-color: DarkRed;
+}
+
+.tr_div_new_equip {
+    width: 30%;
+    margin-left: 17%;
+    margin-top: 5px;
+    margin-bottom: 3px;
+    display: flex;
+    align-items: center;
+    align-items: flex-start;
+}
+
+.tr_select {
+    margin-left: 2px;
+    margin-righn: 2px;
+    border-top-left-radius: 12px;
+    border-color: DarkRed;
+}
+
+textarea {
+    min-width: 40%;
+   width: 97%;
+   border-top-left-radius: 12px;
+   border-color: DarkRed;
+   margin-left: 2px;
+   margin-right: 2px;
+}
