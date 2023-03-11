@@ -234,7 +234,7 @@ def paging_table(link: str, all_elems: list, current: int) -> str:
                 cells = []
                 for cell in range(min(config.max_pages_in_tr(), len(all_elems) - row * config.max_pages_in_tr())):
                     elem = all_elems[row * config.max_pages_in_tr() + cell]
-                    cells.append(str(elem) if elem == current else '<a href="{0}/{1}">{1}</a>'.format(link, elem))
+                    cells.append('<p>{}</p>'.format(elem) if elem == current else '<a href="{0}/{1}">{1}</a>'.format(link, elem))
                 rows.append(render_template('paging/paging_string_v1.html', cells=cells))
             tmp = render_template('paging/paging_table_v1.html', rows=rows)
         else:
@@ -281,7 +281,7 @@ def paging_table(link: str, all_elems: list, current: int) -> str:
 def create_td_in_paging_table(all_elems: list, link: str,
                               list_of_interval: list, current: int) -> str:
     """Support function for paging_table()"""
-    tmp = list(map(lambda i: str(i + 1) if i == current - 1 else '<a href="{0}/{1}">{1}</a>'.
+    tmp = list(map(lambda i: '<p>{}</p>'.format(i + 1) if i == current - 1 else '<a href="{0}/{1}">{1}</a>'.
                    format(link, all_elems[i]), list_of_interval))
     return render_template('paging/td_in_paging_table.html', interval=tmp)
 

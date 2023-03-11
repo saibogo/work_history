@@ -1,0 +1,4 @@
+1. CSS-files must be located in the directory wh_app/web/static
+2. CSS-files must be name style<number>.css
+3. You can use @import directive in your CSS and located your imported CSS files in directories /static/your_dir/...
+4. You can use loading images, but your images must be located in directory wh_app/web/static/image

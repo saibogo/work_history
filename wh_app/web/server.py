@@ -127,6 +127,12 @@ def styles(number: int) -> Response:
     return send_from_directory(config.static_dir(), 'style{0}.css'.format(number))
 
 
+@app.route('/<folder>/style<number>.css')
+def styles_table(folder: str, number: int) -> Response:
+    """Return selected CSS-page from static folder"""
+    return send_from_directory(config.static_dir(), '{0}/style{1}.css'.format(folder, number))
+
+
 @app.route('/image/background<number>.jpg')
 def get_background_image(number: int) -> Response:
     """Return selected background from static folder"""

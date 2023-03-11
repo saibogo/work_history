@@ -1,0 +1,90 @@
+body {
+    background: Khaki;
+    color: DarkRed;
+    background-image: url("/image/background1.jpg");
+    background-size: 100%;
+    }
+
+h3 {
+    text-align: center;
+    }
+
+h2 {
+    text-align: center;
+}
+
+a:link {
+    color: DarkRed;
+    text-decoration: none;
+    }
+
+a:visited {
+    color: DarkRed;
+    text-decoration: none;
+    }
+
+a:hover {
+    color: DarkRed;
+    text-decoration: none;
+    background: Olive;
+    transition: color 1.5s ease-in,
+     background 1s ease-in;
+    }
+
+a:active {
+    color: Crimson;
+    text-decoration: none;
+    font-size: large;
+    }
+ul {
+    font-style: italic;
+    text-align: center;
+    }
+
+
+input[type=password]{
+   width: 97%;
+   border-top-left-radius: 12px;
+   margin-left: 2px;
+   margin-right: 2px;
+}
+
+input[type=submit]{
+   width: 100%;
+   border-top-left-radius: 12px;
+   border-color: DarkRed;
+   margin-left: 2px;
+   margin-right: 2px;
+}
+
+input[type=number]{
+   width: 97%;
+   border-top-left-radius: 12px;
+   border-color: DarkRed;
+   margin-left: 2px;
+   margin-right: 2px;
+}
+
+input[type=datetime-local]{
+   min-width: 40%;
+   width: 97%;
+   border-top-left-radius: 12px;
+   border-color: DarkRed;
+   margin-left: 2px;
+   margin-right: 2px;
+}
+
+textarea {
+    min-width: 40%;
+   width: 97%;
+   border-top-left-radius: 12px;
+   border-color: DarkRed;
+   margin-left: 2px;
+   margin-right: 2px;
+}
+
+
+.tr_password {
+    min-width: 25%;
+    border-color: DarkRed;
+}

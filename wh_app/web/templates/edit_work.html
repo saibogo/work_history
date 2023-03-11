@@ -1,58 +1,67 @@
-<table>
-    <caption>Редактирование отчета</caption>
-    <tr>
-        <th>Поле</th>
-        <th>Значение/Действие</th>
-    </tr>
-    <form action="/update-work-to-id/{{work_id}}" method="post">
-        <tr>
-            <td>ID</td>
-            <td>{{work_id}}</td>
-        </tr>
-        <tr>
-            <td>Обьект</td>
-            <td>{{works_info[1]}}</td>
-        </tr>
-        <tr>
-            <td>Оборудование</td>
-            <td>{{works_info[2]}}</td>
-        </tr>
-        <tr>
-            <td>Модель оборудования</td>
-            <td>{{works_info[3]}}</td>
-        </tr>
-        <tr>
-            <td>Серийный номер</td>
-            <td>{{works_info[4]}}</td>
-        </tr>
-        <tr>
-            <td>Окончание работ</td>
-            <td><input type="datetime-local" name="work_datetime" value="{{works_info[5]}}">
-            </td>
-        </tr>
-        <tr>
-            <td>Состав заявки</td>
-            <td>
+<h2>Редактирование отчета о работах</h2>
+<form action="/update-work-to-id/{{work_id}}" method="post">
+    <div class="container">
+        <div class="tr_div_login">
+            <div class="faq_quest">ID:</div>
+            <div class="faq_answer">
+                <div class="text_info">{{work_id}}</div>
+            </div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Предприятие:</div>
+            <div class="faq_answer">
+                <div class="text_info">{{works_info[1]}}</div>
+            </div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Оборудование:</div>
+            <div class="faq_answer">
+                <div class="text_info">{{works_info[2]}}</div>
+            </div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Модель:</div>
+            <div class="faq_answer">
+                <div class="text_info">{{works_info[3]}}</div>
+            </div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Серийный номер:</div>
+            <div class="faq_answer">
+                <div class="text_info">{{works_info[4]}}</div>
+            </div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Окончание работ:</div>
+            <div class="faq_answer">
+                <input type="datetime-local" name="work_datetime" value="{{works_info[5]}}">
+            </div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Содержимое заявки:</div>
+            <div class="faq_answer">
                 <textarea rows=3 name="{{order_info}}">{{works_info[6]}}</textarea>
-            </td>
-        </tr>
-        <tr>
-            <td>Описание произведенных работ</td>
-            <td>
+            </div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Описание произведенных работ:</div>
+            <div class="faq_answer">
                 <textarea rows=6 name="{{description}}">{{works_info[7]}}</textarea>
-            </td>
-        </tr>
-        <tr>
-            <td>Перечень исполнителей</td>
-            <td>{{works_info[8]}}</td>
-        </tr>
-        <tr>
-            <td>Пароль суперпользователя</td>
-            <td><input type="password" name="{{password}}"></input></td>
-        </tr>
-        <tr>
-            <td>Применить изменения</td>
-            <td><input type="submit" value="Отправить"></input></td>
-        </tr>
-    </form>
-</table>
+            </div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Перечень исполнителей:</div>
+            <div class="faq_answer">
+                <div class="text_info">{{works_info[8]}}</div>
+            </div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Пароль администратора:</div>
+            <div class="faq_answer"><input type="password" name="{{password}}"></div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest"></div>
+            <div class="faq_answer"><input type="submit" value="Применить изменения"></div>
+        </div>
+    </div>
+</form>

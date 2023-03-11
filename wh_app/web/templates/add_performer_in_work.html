@@ -1,48 +1,36 @@
-<table>
-    <caption>Добавить исполнителя</caption>
-    <tr>
-        <th>№</th>
-        <th>Параметр</th>
-        <th>Содержимое</th>
-    </tr>
-    {% for string in table %}
-        <tr>
-            <td>{{string[0]}}</td>
-            <td>{{string[1]}}</td>
-            <td>{{string[2]}}</td>
-        </tr>
-    {% endfor %}
-    <form action="/add-performer-result" method="post">
-    <tr>
-        <td>{{string_num}}</td>
-        <td>Добавить исполнителя</td>
-        <td>
-            <select name="{{performer}}">
+<h2>Расширение списка исполнителей</h2>
+<form action="/add-performer-result" method="post">
+    <input type="hidden" name="{{work_id_name}}" value="{{work_id}}">
+    <div class="container">
+        {% for string in table %}
+        <div class="tr_div_login">
+            <div class="faq_quest">{{string[1]}}:</div>
+            <div class="faq_answer">
+                <div class="text_info">{{string[2]}}</div>
+            </div>
+        </div>
+        {% endfor %}
+        <div class="tr_div_login">
+            <div class="faq_quest">Возможные исполнители:</div>
+            <div class="faq_answer">
+                <select name="{{performer}}" class="div_select">
                 {% for worker in performers %}
-                <option value="{{worker[0]}}">{{worker[2]}}</option>
+                    <option value="{{worker[0]}}">{{worker[2]}}</option>
                 {% endfor %}
             </select>
-        </td>
-    </tr>
-        <tr>
-            <td>
-                <input type="hidden" name="{{work_id_name}}" value="{{work_id}}">
-            </td>
-            <td>
-                Пароль
-            </td>
-            <td>
+            </div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Пароль доступа:</div>
+            <div class="faq_answer">
                 <input type="password" name="{{password}}"  placeholder="Обязательно">
-            </td>
-        </tr>
-        <tr>
-            <td></td>
-            <td>
-                Выполнить
-            </td>
-            <td>
+            </div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Применить изменения:</div>
+            <div class="faq_answer">
                 <input type="submit" value="Добавить">
-            </td>
-        </tr>
-    </form>
-</table>
+            </div>
+        </div>
+    </div>
+</form>

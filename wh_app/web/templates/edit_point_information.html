@@ -1,41 +1,38 @@
-<table>
-    <caption>Редактировать сведения о предприятии</caption>
-    <tr>
-        <th>№</th>
-        <th>Параметр</th>
-        <th>Значение</th>
-    </tr>
-    <form action="/upgrade-point-info" method = "post">
-        <tr>
-            <td>1</td>
-            <td>ID</td>
-            <td>{{point[0]}}</td>
-        </tr>
-        <input type="hidden" name="{{point_id}}" value="{{point[0]}}"></input>
-        <tr>
-            <td>2</td>
-            <td>Служебное название</td>
-            <td><textarea name="{{point_name}}">{{point[1]}}</textarea></td>
-        </tr>
-        <tr>
-            <td>3</td>
-            <td>Адрес</td>
-            <td><textarea rows=2 name="{{point_address}}">{{point[2]}}</textarea></td>
-        </tr>
-        <tr>
-            <td>4</td>
-            <td>Статус</td>
-            <td>{{point[3]}}</td>
-        </tr>
-        <tr>
-            <td>5</td>
-            <td>Пароль доступа</td>
-            <td><input type="password" name="{{password}}"></input></td>
-        </tr>
-        <tr>
-            <td>6</td>
-            <td>Применить изменения</td>
-            <td><input type="submit" value="Отправить"></input></td>
-        </tr>
+<h2>Редактирование сведений о предприятии</h2>
+<div class="container">
+    <form action="/upgrade-point-info" method="post">
+        <input type="hidden" name="{{point_id}}" value="{{point[0]}}">
+        <div class="tr_div_login">
+            <div class="faq_quest">ID:</div>
+            <div class="faq_answer">
+                <div class="text_info">{{point[0]}}</div>
+            </div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Служебное название:</div>
+            <div class="faq_answer">
+                <textarea name="{{point_name}}">{{point[1]}}</textarea>
+            </div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Адрес:</div>
+            <div class="faq_answer">
+                <textarea rows=2 name="{{point_address}}">{{point[2]}}</textarea>
+            </div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Статус:</div>
+            <div class="faq_answer">
+                <div class="text_info">{{point[3]}}</div>
+            </div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Пароль доступа:</div>
+            <div class="faq_answer"><input type="password" name="{{password}}"></div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest"></div>
+            <div class="faq_answer"><input type="submit" value="Применить изменения"></div>
+        </div>
     </form>
-</table>
+</div>

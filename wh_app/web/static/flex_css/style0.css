@@ -1,0 +1,121 @@
+#navigation_div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+div.navigation_elem {
+    margin: 5px;
+    border: 1px solid;
+    border-top-left-radius: 12px;
+    font-style: italic;
+}
+
+div.paging_elem a {
+    margin: 2px;
+    font-style: italic;
+}
+
+div.paging_elem p {
+    border: 1px solid;
+    border-radius: 20%;
+}
+
+#faq_div {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid;
+    font-style: italic;
+}
+
+.faq_tr {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    border: 1px solid;
+}
+
+.faq_quest {
+    flex: 1;
+    font-style: normal;
+    color: Maroon;
+}
+
+.faq_answer {
+    flex: 2;
+    font-style: italic;
+    color: DarkSlateGray;
+}
+
+
+
+.tr_div_login {
+    width: 30%;
+    margin-left: 35%;
+    margin-top: 5px;
+    margin-bottom: 3px;
+    display: flex;
+    align-items: center;
+    align-items: flex-start;
+}
+
+
+div.tr_div_login:nth-child(even) {
+    background-image: url("/image/background0.jpg");
+    }
+
+.tr_div_new_point {
+    width: 30%;
+    margin-left: 30%;
+    margin-top: 5px;
+    margin-bottom: 3px;
+    display: flex;
+    align-items: center;
+    align-items: flex-start;
+}
+
+
+
+.tr_password {
+    min-width: 25%;
+    border-color: MidnightBlue;
+}
+
+.tr_area {
+    margin-left: 2px;
+    margin-right: 2px;
+    border-top-left-radius: 12px;
+    border-color: MidnightBlue;
+}
+
+.tr_div_new_equip {
+    width: 30%;
+    margin-left: 17%;
+    margin-top: 5px;
+    margin-bottom: 3px;
+    display: flex;
+    align-items: center;
+    align-items: flex-start;
+}
+
+.tr_select {
+    margin-left: 2px;
+    margin-right: 2px;
+    border-top-left-radius: 12px;
+    border-color: MidnightBlue;
+}
+
+
+
+.text_info {
+    text-align: center;
+
+}
+
+.div_select {
+    margin-left: 2px;
+    margin-right: 2px;
+    border-top-left-radius: 12px;
+    border-color: MidnightBlue;
+    width: 97%;
+}

@@ -1,7 +1,6 @@
- <tr>
-     {% for cell in cells %}
-     <td class="paging_td">
-         {{cell}}
-     </td>
-     {% endfor %}
- </tr>
+{% for cell in cells %}
+    <div class="paging_elem">
+        {{cell}}
+    </div>
+ {% endfor %}
+
