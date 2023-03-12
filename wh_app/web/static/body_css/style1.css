@@ -1,4 +1,11 @@
+html {
+   height:100%;
+}
+
 body {
+    display:flex;
+   justify-content:center;
+   height: 100%;
     background: Khaki;
     color: DarkRed;
     background-image: url("/image/background1.jpg");
