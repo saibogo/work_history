@@ -17,7 +17,7 @@ def info_string(name_module):
 
 
 from wh_app.web.universal_html import FIND_REQUEST
-from wh_app.web.equips_section import EDIT_CHAR
+from wh_app.web.universal_html import EDIT_CHAR
 
 
 def str_to_str_n(old_string: str, max_len: int) -> str:

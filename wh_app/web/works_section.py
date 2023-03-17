@@ -10,14 +10,13 @@ from wh_app.sql_operations import select_operations
 from wh_app.sql_operations import update_operations
 from wh_app.supporting import functions
 from wh_app.config_and_backup import table_headers
-from wh_app.web.equips_section import EDIT_CHAR
 
 functions.info_string(__name__)
 
 
 def create_work_edit_link(work_id: str) -> str:
     """Create EDIT link to current work"""
-    return '<a href="/work-edit/{0}">{1}</a>'.format(work_id, EDIT_CHAR)
+    return '<a href="/work-edit/{0}">{1}</a>'.format(work_id, uhtml.EDIT_CHAR)
 
 
 def works_menu(stylesheet_number: str) -> str:

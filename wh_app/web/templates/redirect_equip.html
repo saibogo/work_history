@@ -1,71 +1,66 @@
-<table>
-    <caption>Перемещение оборудования</caption>
-    <tr>
-        <th>№</th>
-        <th>Параметр</th>
-        <th>Значение</th>
-    </tr>
-    <form action="/remove-equip" method = "post">
-        <tr>
-            <td>1</td>
-            <td>ID</td>
-            <td>{{equip[0]}}</td>
-        </tr>
-        <input type="hidden" name="{{equip_id}}" value="{{equip[0]}}"></input>
-        <tr>
-            <td>2</td>
-            <td>Текущее предприятие</td>
-            <td>{{equip[1]}}</td>
-        </tr>
-        <input type="hidden" name="{{point_id_name}}" value="{{point_id}}"></input>
-        <tr>
-            <td>3</td>
-            <td>Наименование</td>
-            <td>{{equip[2]}}</td>
-        </tr>
-        <input type="hidden" name="{{equip_name}}" value="{{equip[2]}}"></input>
-        <tr>
-            <td>4</td>
-            <td>Модель</td>
-            <td>{{equip[3]}}</td>
-        </tr>
-        <input type="hidden" name="{{model}}" value="{{equip[3]}}"></input>
-        <tr>
-            <td>5</td>
-            <td>Серийный номер</td>
-            <td>{{equip[4]}}</td>
-        </tr>
-        <input type="hidden" name="{{serial_num}}" value="{{equip[4]}}"></input>
-        <tr>
-            <td>6</td>
-            <td>Предыдущий ID</td>
-            <td>{{equip[5]}}</td>
-        </tr>
-        <input type="hidden" name="{{pre_id}}" value="{{equip[5]}}"></input>
-        <tr>
-            <td>7</td>
-            <td>Точка перемещения</td>
-            <td>
-                <select name="{{new_point_id}}">
+<h2>Перемещение оборудования</h2>
+<form action="/remove-equip" method = "post">
+    <div class="container">
+        <input type="hidden" name="{{equip_id}}" value="{{equip[0]}}">
+        <input type="hidden" name="{{point_id_name}}" value="{{point_id}}">
+        <input type="hidden" name="{{equip_name}}" value="{{equip[2]}}">
+        <input type="hidden" name="{{model}}" value="{{equip[3]}}">
+        <input type="hidden" name="{{serial_num}}" value="{{equip[4]}}">
+        <input type="hidden" name="{{pre_id}}" value="{{equip[5]}}">
+        <div class="tr_div_login">
+            <div class="faq_quest">ID:</div>
+            <div class="faq_answer">
+                <div class="text_info">{{equip[0]}}</div>
+            </div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Текущее предприятие:</div>
+            <div class="faq_answer">
+                <div class="text_info">{{equip[1]}}</div>
+            </div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Наименование:</div>
+            <div class="faq_answer">
+                <div class="text_info">{{equip[2]}}</div>
+            </div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Модель:</div>
+            <div class="faq_answer">
+                <div class="text_info">{{equip[3]}}</div>
+            </div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Серийный номер:</div>
+            <div class="faq_answer">
+                <div class="text_info">{{equip[4]}}</div>
+            </div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Предыдущий ID:</div>
+            <div class="faq_answer">
+                <div class="text_info">{{equip[5]}}</div>
+            </div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Переместить в:</div>
+            <div class="faq_answer">
+                <select name="{{new_point_id}}" class="div_select">
                     {% for point in points %}
                     <option value="{{point[0]}}">{{point[1]}}</option>
                     {% endfor %}
                 </select>
-            </td>
-        </tr>
-        <tr>
-            <td>7</td>
-            <td>Пароль доступа</td>
-            <td>
-                <input type="password" name="{{password}}"></input>
-            </td>
-        </tr>
-        <tr>
-            <td>8</td>
-            <td>Применить изменения</td>
-            <td>
-                <input type="submit" value="Отправить"></input>
-            </td>
-        </tr>
-    </form>
-</table>
+            </div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Пароль доступа:</div>
+            <div class="faq_answer"><input type="password" name="{{password}}"></div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest"></div>
+            <div class="faq_answer"><input type="submit" value="Переместить"></div>
+        </div>
+
+    </div>
+</form>

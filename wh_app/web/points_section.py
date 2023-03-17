@@ -8,31 +8,28 @@ from wh_app.sql_operations import select_operations
 from wh_app.sql_operations import update_operations
 from wh_app.supporting import functions
 from wh_app.config_and_backup import table_headers
-from wh_app.web.equips_section import EDIT_CHAR
 
 functions.info_string(__name__)
 
-ON_OFF_CHAR = '&#9211'
-PAPERS_CHAR = '&#128441;'
-SVU_CHAR = '&#9889;'
+
 
 
 def create_edit_links(point_id: str) -> str:
     """Create EDIT and ON-OFF links"""
     return '<a href="/edit-point/{0}">{1}</a> <a href="/on-off-point/{0}">{2}</a>'. \
-        format(point_id, EDIT_CHAR, ON_OFF_CHAR)
+        format(point_id, uhtml.EDIT_CHAR, uhtml.ON_OFF_CHAR)
 
 
 def create_tech_links(point_id: str) -> str:
     """Create technical info links"""
     return '<a href="/tech-info/{0}">{1}</a> <a href="/svu/{0}">{2}</a>'. \
-        format(point_id, PAPERS_CHAR, SVU_CHAR)
+        format(point_id, uhtml.PAPERS_CHAR, uhtml.SVU_CHAR)
 
 
 def points_operations(stylesheet_number: str) -> str:
     """Create main page in points-section"""
-    name = 'Действия с предприятиями'
-    menu = [(1, 'Все зарегестрированные предприятия'),
+    name = 'Действия с предприятиями:'
+    menu = [(1, 'Все предприятия'),
             (2, 'Только действующие'),
             (3, 'Добавить предприятие')]
     links_list = ['/all-points', '/works-points', '/create-new-point']

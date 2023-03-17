@@ -13,22 +13,19 @@ from wh_app.config_and_backup import table_headers
 
 functions.info_string(__name__)
 
-EDIT_CHAR = '&#9998'
-REMOVE_CHAR = 'A&#8646;B'
-TABLE_REMOVE_CHAR = '&#8694'
-SPACE_CHAR = '&nbsp;'
+
 
 
 def create_full_edit_links(equip_id: str, removed: bool=False, deleted: bool=False) -> str:
     """Create EDIT, MOVE and TABLE_REMOVE links"""
     result = list()
-    result.append('<a href="/edit-equip/{0}" title="Редактировать">{1}</a>'.format(equip_id, EDIT_CHAR))
+    result.append('<a href="/edit-equip/{0}" title="Редактировать">{1}</a>'.format(equip_id, uhtml.EDIT_CHAR))
     if not deleted:
-        result.append('<a href="/change-point/{0}" title="Переместить на другой обьект">{1}</a>'.format(equip_id, REMOVE_CHAR))
+        result.append('<a href="/change-point/{0}" title="Переместить на другой обьект">{1}</a>'.format(equip_id, uhtml.REMOVE_CHAR))
     if removed:
-        result.append('<a href="/remove-table/{0}" title="Таблица перемещений">{1}</a>'.format(equip_id, TABLE_REMOVE_CHAR))
+        result.append('<a href="/remove-table/{0}" title="Таблица перемещений">{1}</a>'.format(equip_id, uhtml.TABLE_REMOVE_CHAR))
 
-    return SPACE_CHAR.join(result)
+    return uhtml.SPACE_CHAR.join(result)
 
 
 def equips_menu(stylesheet_number) -> str:

@@ -1,3 +1,16 @@
+{% if num_columns in [2, 4, 5, 6, 8, 10] %}
+<h2>{{table_name}}</h2>
+<div class="grid_table_{{num_columns}}">
+    {% for header in headers %}
+    <div class="grid_table_elem">{{header}}</div>
+    {% endfor %}
+    {% for string in data %}
+        {% for elem in string %}
+            <div class="grid_table_elem">{{elem}}</div>
+        {% endfor %}
+    {% endfor %}
+</div>
+{% else %}
 <table>
     <h2>{{table_name}}</h2>
     <tr>
@@ -13,5 +26,6 @@
     </tr>
     {% endfor %}
 </table>
+{% endif %}
 
 

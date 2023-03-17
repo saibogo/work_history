@@ -51,8 +51,8 @@ div.paging_elem p {
 
 
 .tr_div_login {
-    width: 30%;
-    margin-left: 35%;
+    width: 40%;
+    margin-left: 30%;
     margin-top: 5px;
     margin-bottom: 3px;
     display: flex;
@@ -76,7 +76,7 @@ div.tr_div_login:nth-child(3n + 2) {
 
 .tr_div_new_point {
     width: 30%;
-    margin-left: 30%;
+    margin-left: 20%;
     margin-top: 5px;
     margin-bottom: 3px;
     display: flex;
@@ -95,6 +95,16 @@ div.tr_div_login:nth-child(3n + 2) {
 .tr_div_new_equip {
     width: 30%;
     margin-left: 5%;
+    margin-top: 5px;
+    margin-bottom: 3px;
+    display: flex;
+    align-items: center;
+    align-items: flex-start;
+}
+
+.tr_div_new_work {
+    width: 30%;
+    margin-left: 17%;
     margin-top: 5px;
     margin-bottom: 3px;
     display: flex;

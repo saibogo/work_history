@@ -11,7 +11,16 @@ from wh_app.sql_operations import select_operations
 from wh_app.supporting import functions
 from wh_app.config_and_backup import table_headers
 
+
 functions.info_string(__name__)
+
+ON_OFF_CHAR = '&#9211'
+PAPERS_CHAR = '&#128441;'
+SVU_CHAR = '&#9889;'
+EDIT_CHAR = '&#9998'
+REMOVE_CHAR = 'A&#8646;B'
+TABLE_REMOVE_CHAR = '&#8694'
+SPACE_CHAR = '&nbsp;'
 
 PASSWORD = 'password'
 LOGIN = 'login'
@@ -46,17 +55,28 @@ BUG_ID = "bug_id"
 
 def link_or_str(elem: str, link_type: bool = False, link: str = '') -> str:
     """Function return simple string or link-string"""
-    return '<a href="' + str(link) + '">' + str(elem) + '</a>' if link_type else str(elem)
+    flag = False
+    for char in [ON_OFF_CHAR, PAPERS_CHAR, SVU_CHAR, EDIT_CHAR, REMOVE_CHAR]:
+        if char in str(elem):
+            flag = True
+            break
+    tmp = '<a href="' + str(link) + '">' + str(elem) + '</a>' if link_type and not flag else str(elem)
+    return tmp
 
 
 def replace_decor(func: Callable) -> Callable:
     """Replaces all invalid characters"""
+    empty_link_pattern = r'<a *></a>'
+
     def wrap(*args: Any) -> str:
-        return func(*args).replace('&lt;', '<').\
+        tmp = func(*args)
+        tmp = tmp.replace('&lt;', '<').\
             replace('&gt;', '>').\
             replace('&#34;', '"').\
             replace('&amp;', '&').\
             replace('&#39;', '')
+
+        return tmp
     return wrap
 
 
@@ -79,11 +99,13 @@ def universal_table(name: str, headers: list, data: list, links: bool = False,
     if links_list is None:
         links_list = []
     new_data = list()
+    num_columns = len(headers)
     for i in range(len(data)):
         new_data.append(list())
         for elem in data[i]:
             new_data[-1].append(link_or_str(elem, links, links_list[i] if links else ''))
-    tmp = render_template('universal_table.html', table_name=str(name), headers=headers, data=new_data)
+    tmp = render_template('universal_table.html', table_name=str(name), headers=headers, data=new_data,
+                          num_columns=num_columns)
     return tmp
 
 

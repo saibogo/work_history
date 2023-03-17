@@ -9,7 +9,6 @@ from wh_app.postgresql.database import Database
 from wh_app.sql_operations import select_operations, insert_operations, update_operations
 from wh_app.supporting import functions
 from wh_app.config_and_backup import table_headers
-from wh_app.web.points_section import ON_OFF_CHAR
 
 functions.info_string(__name__)
 
@@ -17,7 +16,7 @@ functions.info_string(__name__)
 def add_on_off_links_to_bug_table(bugs_list: List[Tuple[Any]]) -> List[List[Any]]:
     """Add Button ON-OFF in any bugs-table"""
     pattern = '<a href="/invert-bug-status/{0}">{1}</a>'
-    result = list(map(lambda elem: list(elem) + [pattern.format(elem[0], ON_OFF_CHAR)], bugs_list))
+    result = list(map(lambda elem: list(elem) + [pattern.format(elem[0], uhtml.ON_OFF_CHAR)], bugs_list))
     return result
 
 
