@@ -14,8 +14,15 @@ async def all_bugs(message: types.Message):
         msg = list()
         for bug in bugs:
             msg.append(bug_message(bug))
-        msg_del = await message.answer('\n'.join(msg))
-        standart_delete_message(msg_del)
+        try:
+            msg_del = await message.answer('\n'.join(msg))
+            standart_delete_message(msg_del)
+        except aiogram.utils.exceptions.MessageIsTooLong:
+            tmp = '\n'.join(msg)
+            msg_dels = list()
+            for i in range(0, len(tmp), MAX_CHAR_IN_MSG):
+                msg_dels.append(await message.answer(tmp[i: i + MAX_CHAR_IN_MSG]))
+                standart_delete_message(msg_dels[-1])
         kb = [
             [InlineKeyboardButton(text='Новая проблема'),
              InlineKeyboardButton(text='Отмена')]
