@@ -1,4 +1,6 @@
 """This module implement any web-pages from work to workpoints"""
+from flask import render_template
+
 import wh_app.config_and_backup.table_headers
 import wh_app.web.template as web_template
 import wh_app.web.universal_html as uhtml
@@ -189,12 +191,9 @@ def point_tech_info(point_num: int, stylesheet_number: str) -> str:
 
     with Database() as base:
         _, cursor = base
-        table = list()
-        table.append('<table><caption>{0}</caption>'.format(wh_app.config_and_backup.
-                                                            table_headers.point_tech_table_name))
+        dogovors = list()
         table_header = wh_app.config_and_backup.table_headers.point_tech_table
-        table.append('<tr><td colspan=2>{0}: {1}</td></tr>'.format(table_header[0],
-                     (select_operations.get_full_point_information(cursor, str(point_num)))[0]))
+        point_name = select_operations.get_full_point_information(cursor, str(point_num))[0]
 
         list_info = [select_operations.get_electric_point_info(cursor, str(point_num)),
                      select_operations.get_cold_water_point_info(cursor, str(point_num)),
@@ -203,13 +202,11 @@ def point_tech_info(point_num: int, stylesheet_number: str) -> str:
                      select_operations.get_sewerage_point_info(cursor, str(point_num))]
 
         for i in range(1, len(table_header)):
-            table.append('<tr><td colspan=2>{0}</td></tr>'.format(table_header[i]))
             info = if_tech_list_empthy(list_info[i - 1])
-            table.append('<tr><td>Договор</td><td>{0}</td></tr>'.format(info[2]))
-            table.append('<tr><td>Описание</td><td>{0}</td></tr>'.format(info[3]))
+            dogovors.append([table_header[i], info[2], info[3]])
 
-        table.append('</table>')
-        result = web_template.result_page("".join(table),
+        tmp = render_template('point_tech_info.html', point_name=point_name, parameters=dogovors)
+        result = web_template.result_page(tmp,
                                           '/points',
                                           str(stylesheet_number),
                                           True,

@@ -1,37 +1,20 @@
-<table>
-    <tr>
-        <th>
-            Параметр
-        </th>
-        <th>
-            Значение
-        </th>
-    </tr>
+<h2>Изменение статуса проблемы</h2>
+<form action="/common-invert-bug-status" method="post">
+    <input type="hidden" name="{{bug_id_name}}" value="{{bug_id}}">
     {% for elem in description %}
-        <tr>
-            <td>
-                {{elem[0]}}
-            </td>
-            <td>
-                {{elem[1]}}
-            </td>
-        </tr>
+    <div class="tr_div_login">
+        <div class="faq_quest">{{elem[0]}}</div>
+        <div class="faq_answer">{{elem[1]}}</div>
+    </div>
     {% endfor %}
-    <form action="/common-invert-bug-status" method="post">
-        <tr>
-            <td>
-                <input type="hidden" name="{{bug_id_name}}" value="{{bug_id}}">
-            </td>
-            <td>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                Пароль
-            </td>
-            <td>
-                <input type="password" name="{{password}}"  placeholder="Обязательно">
-            </td>
-        </tr>
-    </form>
-</table>
+    <div class="tr_div_login">
+        <div class="faq_quest">Пароль</div>
+        <div class="faq_answer">
+            <input type="password"  name="{{password}}" placeholder="Обязательно" required>
+        </div>
+    </div>
+    <div class="tr_div_login">
+        <div class="faq_quest">Отправить</div>
+        <div class="faq_answer"><input type="submit" value="Отправить"></div>
+    </div>
+</form>

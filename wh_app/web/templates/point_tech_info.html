@@ -1,0 +1,15 @@
+<h2>Сводная техническая информация по обьекту {{point_name}}</h2>
+{% for parameter in parameters %}
+    <div class="tr_div_login">
+        <div class="faq_quest">{{parameter[0]}}</div>
+        <div class="faq_answer"></div>
+    </div>
+    <div class="tr_div_login">
+        <div class="faq_quest">Договор</div>
+        <div class="faq_answer">{{parameter[1]}}</div>
+    </div>
+    <div class="tr_div_login">
+        <div class="faq_quest">Описание</div>
+        <div class="faq_answer">{{parameter[2]}}</div>
+    </div>
+{% endfor %}

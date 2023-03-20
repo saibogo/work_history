@@ -1,23 +1,21 @@
-<table>
-    <caption>Встроенная поисковая система</caption>
-    <tr>
-        <th>Примечание к поиску</th>
-        <th>Строка поиска</th>
-        <th>Где искать</th>
-        <th>Дата от(Только для работ)</th>
-        <th>Дата до(Только для работ)</th>
-        <th>Отправить</th>
-    </tr>
-    <form action="/findresult" method="post">
-        <tr>
-            <td>
-                <input name="{{comment}}" value="Введите строку поиска.(Регистр символов не важен)" readonly>
-            </td>
-            <td>
-                <input name="{{find_request}}"  placeholder="Обязательно">
-            </td>
-            <td>
-                <select name="{{find_in_table}}">
+<h2>Встроенная система поиска</h2>
+<form action="/findresult" method="post">
+    <div class="tr_div_login">
+        <div class="faq_quest">Примечание:</div>
+        <div class="faq_answer">
+            <div class="text_info">Регистр символов не важен</div>
+        </div>
+    </div>
+    <div class="tr_div_login">
+        <div class="faq_quest">Строка поиска:</div>
+        <div class="faq_answer">
+            <input name="{{find_request}}"  placeholder="Обязательно" required="required">
+        </div>
+    </div>
+    <div class="tr_div_login">
+        <div class="faq_quest">Раздел поиска:</div>
+        <div class="faq_answer">
+            <select name="{{find_in_table}}" class="div_select">
                     <option selected value="{{works}}">В работах</option>
                     <option selected value="{{works_ignored_date}}">В работах не учитывая дату</option>
                     <option value="{{works_points}}">В предприятиях</option>
@@ -25,17 +23,24 @@
                     <option value="{{performer}}">По исполнителю без учета даты</option>
                     <option value="{{performer_with_date}}">По исполнителю с учетом даты</option>
                 </select>
-            </td>
-            <td>
-                <input type="datetime-local" name="{{work_datetime_start}}" value="{{date_to_browser}}">
-            </td>
-            <td>
-                <input type="datetime-local" name="{{work_datetime_stop}}" value="{{date_to_browser}}">
-            </td>
-            <td>
-                <input type="submit" value="Отправить">
-            </td>
-        </tr>
-    </form>
-
-</table>
+        </div>
+    </div>
+    <div class="tr_div_login">
+        <div class="faq_quest">Дата от(Только для работ):</div>
+        <div class="faq_answer">
+            <input type="datetime-local" name="{{work_datetime_start}}" value="{{date_to_browser}}">
+        </div>
+    </div>
+    <div class="tr_div_login">
+        <div class="faq_quest">Дата до(Только для работ):</div>
+        <div class="faq_answer">
+            <input type="datetime-local" name="{{work_datetime_stop}}" value="{{date_to_browser}}">
+        </div>
+    </div>
+    <div class="tr_div_login">
+        <div class="faq_quest">Искать</div>
+        <div class="faq_answer">
+            <input type="submit" value="Отправить">
+        </div>
+    </div>
+</form>

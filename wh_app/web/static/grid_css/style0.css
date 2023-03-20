@@ -18,3 +18,144 @@ div.bottom_navigation {
     grid-area: B;
     align-items: end;
 }
+
+
+/* Section for universal table */
+
+/* For all N-columns table */
+[class^=grid_table] {
+    display: grid;
+}
+
+.grid_table_2 {
+    grid-template-columns: 10% auto;
+}
+
+.grid_table_4 {
+    grid-template-columns: repeat(4, auto);
+}
+
+.grid_table_5 {
+    grid-template-columns: repeat(5, auto);
+}
+
+.grid_table_6 {
+    grid-template-columns: repeat(6, auto);
+}
+
+.grid_table_8 {
+    grid-template-columns: repeat(8, auto);
+}
+
+.grid_table_10 {
+    grid-template-columns: repeat(10, auto);
+}
+
+
+/* sel color from 2-columns table */
+div.grid_table_2 > div.grid_table_elem:nth-child(2n) {
+    background-image: url("/image/background0.jpg");
+}
+
+
+/* set color from 4-columns table */
+
+div.grid_table_4 > div.grid_table_elem:nth-child(4n + 1) {
+    background-image: url("/image/background0.jpg");
+}
+
+
+div.grid_table_4 > div.grid_table_elem:nth-child(4n + 3) {
+    background-image: url("/image/background0.jpg");
+}
+
+
+/* set color from 5-columns table */
+
+div.grid_table_5 > div.grid_table_elem:nth-child(5n + 1) {
+    background-image: url("/image/background0.jpg");
+}
+
+div.grid_table_5 > div.grid_table_elem:nth-child(5n + 3) {
+    background-image: url("/image/background0.jpg");
+}
+
+
+div.grid_table_5 > div.grid_table_elem:nth-child(5n + 5) {
+    background-image: url("/image/background0.jpg");
+}
+
+/* set color from 6-columns table */
+
+div.grid_table_6 > div.grid_table_elem:nth-child(6n + 1) {
+    background-image: url("/image/background0.jpg");
+}
+
+
+div.grid_table_6 > div.grid_table_elem:nth-child(6n + 3) {
+    background-image: url("/image/background0.jpg");
+}
+
+div.grid_table_6 > div.grid_table_elem:nth-child(6n + 5) {
+    background-image: url("/image/background0.jpg");
+}
+
+
+/* set color from 8-columns table */
+
+div.grid_table_8 > div.grid_table_elem:nth-child(8n + 1) {
+    background-image: url("/image/background0.jpg");
+}
+
+
+div.grid_table_8 > div.grid_table_elem:nth-child(8n + 3) {
+    background-image: url("/image/background0.jpg");
+}
+
+
+div.grid_table_8 > div.grid_table_elem:nth-child(8n + 5) {
+    background-image: url("/image/background0.jpg");
+}
+
+
+div.grid_table_8 > div.grid_table_elem:nth-child(8n + 7) {
+    background-image: url("/image/background0.jpg");
+}
+
+
+
+/* set color from 10-columns table */
+
+div.grid_table_10 > div.grid_table_elem:nth-child(10n + 1) {
+    background-image: url("/image/background0.jpg");
+}
+
+
+div.grid_table_10 > div.grid_table_elem:nth-child(10n + 3) {
+    background-image: url("/image/background0.jpg");
+}
+
+
+div.grid_table_10 > div.grid_table_elem:nth-child(10n + 5) {
+    background-image: url("/image/background0.jpg");
+}
+
+
+div.grid_table_10 > div.grid_table_elem:nth-child(10n + 7) {
+    background-image: url("/image/background0.jpg");
+}
+
+
+div.grid_table_10 > div.grid_table_elem:nth-child(10n + 9) {
+    background-image: url("/image/background0.jpg");
+}
+
+
+/* Section for element in table */
+.grid_table_elem {
+    display: flex;
+    font-style: italic;
+    border: 1px solid;
+    border-top-left-radius: 10px;
+    margin: 1px;
+    text-align: center;
