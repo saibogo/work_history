@@ -1,6 +1,8 @@
 from wh_app.telegram_bot.support_bot import *
 from wh_app.sql_operations.select_operations import get_all_works_points, get_statistic, get_point, get_equip_in_point,\
-    get_maximal_points_id
+    get_maximal_points_id,  get_electric_point_info, get_heating_point_info, get_sewerage_point_info,\
+    get_hot_water_point_info, get_cold_water_point_info, get_full_point_information
+from wh_app.config_and_backup.table_headers import point_tech_table
 
 functions.info_string(__name__)
 
@@ -117,6 +119,50 @@ async def get_svu(message: types.Message):
                 msg_del = await message.answer('Схема Вводного Устройства для Предприятия с ID = {} не найдена'.format(point_id),
                                                reply_markup=ReplyKeyboardRemove())
                 standart_delete_message(msg_del)
+        except IndexError:
+            msg = ['Предприятие с ID = {} не найдено\n Перечень предприятий /points'.format(point_id)]
+            msg_del = await message.answer('\n'.join(msg), reply_markup=ReplyKeyboardRemove())
+            standart_delete_message(msg_del)
+        except KeyError:
+            msg = [user_not_access_read(user_name)]
+            msg_del = await message.answer('\n'.join(msg), reply_markup=ReplyKeyboardRemove())
+            standart_delete_message(msg_del)
+
+
+async def get_tech_info(message: types.Message):
+    """Return technical information from workpoint"""
+    with Database() as base:
+        _, cursor = base
+        point_id = int(message.text.split()[1])
+        try:
+            user_id = message.from_id
+            user_name = message.from_user
+        except:
+            user_name = 'User ID {}'.format(user_id)
+        try:
+            if user_name not in read_id_dict and user_id not in read_id_dict:
+                raise KeyError
+            if point_id > int(get_maximal_points_id(cursor)) or point_id < 1:
+                raise IndexError
+            msg = list()
+            point_name = get_full_point_information(cursor, str(point_id))[0]
+            msg.append('Сводная техническая информация для {}'.format(point_name))
+            msg.append(separator)
+            list_info = [get_electric_point_info(cursor, str(point_id)),
+                         get_cold_water_point_info(cursor, str(point_id)),
+                         get_hot_water_point_info(cursor, str(point_id)),
+                         get_heating_point_info(cursor, str(point_id)),
+                         get_sewerage_point_info(cursor, str(point_id))]
+            for elem in list_info:
+                if not elem:
+                    elem.append(['нет данных'] * 4)
+            for i in range(len(list_info)):
+                msg.append(separator)
+                msg.append(point_tech_table[i + 1])
+                msg. append('Договор: {}'.format(list_info[i][0][2]))
+                msg.append('Описание: {}'.format(list_info[i][0][3]))
+            msg_del = await message.answer('\n'.join(msg), reply_markup=ReplyKeyboardRemove())
+            standart_delete_message(msg_del)
         except IndexError:
             msg = ['Предприятие с ID = {} не найдено\n Перечень предприятий /points'.format(point_id)]
             msg_del = await message.answer('\n'.join(msg), reply_markup=ReplyKeyboardRemove())

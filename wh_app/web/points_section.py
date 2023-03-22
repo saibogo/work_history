@@ -14,8 +14,6 @@ from wh_app.config_and_backup import table_headers
 functions.info_string(__name__)
 
 
-
-
 def create_edit_links(point_id: str) -> str:
     """Create EDIT and ON-OFF links"""
     return '<a href="/edit-point/{0}">{1}</a> <a href="/on-off-point/{0}">{2}</a>'. \
