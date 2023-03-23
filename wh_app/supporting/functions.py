@@ -2,9 +2,12 @@
 
 import hashlib
 from datetime import datetime
-from typing import Iterable, Any
+from typing import Iterable, Any, List, Tuple
 
 from wh_app.config_and_backup import config
+from wh_app.postgresql.database import Database
+from wh_app.sql_operations.select_operations import get_cold_water_point_info, get_sewerage_point_info,\
+    get_electric_point_info, get_heating_point_info, get_hot_water_point_info
 from wh_app.supporting import metadata
 
 
@@ -181,5 +184,28 @@ def get_first_non_list(collection: Iterable) -> Any:
         return get_first_non_list(elem)
     except TypeError:
         return collection
+
+
+def get_technical_info(point_id: int) -> List[Tuple]:
+    """Return all techncal information from workspoint"""
+    def if_tech_list_empthy(lst: list) -> list:
+        """Replace data if data not found"""
+
+        if not lst:
+            return ["Нет данных"] * 4
+        else:
+            return lst[0]
+
+    with Database() as base:
+        _, cursor = base
+        result = [get_electric_point_info(cursor, str(point_id)),
+                  get_cold_water_point_info(cursor, str(point_id)),
+                  get_hot_water_point_info(cursor, str(point_id)),
+                  get_heating_point_info(cursor, str(point_id)),
+                  get_sewerage_point_info(cursor, str(point_id))]
+        for i in range(len(result)):
+            result[i] = if_tech_list_empthy(result[i])
+        return result
+
 
 info_string(__name__)

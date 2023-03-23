@@ -75,9 +75,7 @@ def system_status_page(preview_page, stylesheet_number: str) -> str:
     """Function create System-Status Web-page"""
     current_status = system_status.SystemStatus.get_status()
     status_to_list = [[key, current_status[key]] for key in current_status]
-    result = uhtml.universal_table(table_headers.all_workers_table_name,
-                                   table_headers.system_status_table,
-                                   status_to_list)
+    result = render_template('system_status.html', parameters=status_to_list)
     return web_template.result_page(result, preview_page, str(stylesheet_number))
 
 

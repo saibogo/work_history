@@ -4,7 +4,7 @@ __author__ = "Andrey Gleykh"
 __license__ = "GPL v.2.0"
 __email__ = "gleykh@gmail.com"
 __status__ = "Prototype"
-__version__ = "0.17.1"
+__version__ = "0.17.4"
 
 CHANGELOG = [
     ("0.8.2", "Изменена навигация по страницам с большим количеством записей"),

@@ -179,29 +179,16 @@ def upgrade_point_method(data, method, stylesheet_number: str) -> str:
 def point_tech_info(point_num: int, stylesheet_number: str) -> str:
     """Create page contain all technical information from current point"""
 
-    def if_tech_list_empthy(lst: list) -> list:
-        """Replace data if data not found"""
-
-        if not lst:
-            return ["Нет данных"] * 4
-        else:
-            return lst[0]
-
     with Database() as base:
         _, cursor = base
         dogovors = list()
         table_header = wh_app.config_and_backup.table_headers.point_tech_table
         point_name = select_operations.get_full_point_information(cursor, str(point_num))[0]
-
-        list_info = [select_operations.get_electric_point_info(cursor, str(point_num)),
-                     select_operations.get_cold_water_point_info(cursor, str(point_num)),
-                     select_operations.get_hot_water_point_info(cursor, str(point_num)),
-                     select_operations.get_heating_point_info(cursor, str(point_num)),
-                     select_operations.get_sewerage_point_info(cursor, str(point_num))]
+        list_info = functions.get_technical_info(point_num)
 
         for i in range(1, len(table_header)):
-            info = if_tech_list_empthy(list_info[i - 1])
-            dogovors.append([table_header[i], info[2], info[3]])
+
+            dogovors.append([table_header[i], list_info[i - 1][2], list_info[i - 1][3]])
 
         tmp = render_template('point_tech_info.html', point_name=point_name, parameters=dogovors)
         result = web_template.result_page(tmp,

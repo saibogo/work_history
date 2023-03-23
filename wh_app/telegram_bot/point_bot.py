@@ -3,6 +3,7 @@ from wh_app.sql_operations.select_operations import get_all_works_points, get_st
     get_maximal_points_id,  get_electric_point_info, get_heating_point_info, get_sewerage_point_info,\
     get_hot_water_point_info, get_cold_water_point_info, get_full_point_information
 from wh_app.config_and_backup.table_headers import point_tech_table
+from wh_app.supporting.functions import get_technical_info
 
 functions.info_string(__name__)
 
@@ -148,19 +149,12 @@ async def get_tech_info(message: types.Message):
             point_name = get_full_point_information(cursor, str(point_id))[0]
             msg.append('Сводная техническая информация для {}'.format(point_name))
             msg.append(separator)
-            list_info = [get_electric_point_info(cursor, str(point_id)),
-                         get_cold_water_point_info(cursor, str(point_id)),
-                         get_hot_water_point_info(cursor, str(point_id)),
-                         get_heating_point_info(cursor, str(point_id)),
-                         get_sewerage_point_info(cursor, str(point_id))]
-            for elem in list_info:
-                if not elem:
-                    elem.append(['нет данных'] * 4)
+            list_info = get_technical_info(point_id)
             for i in range(len(list_info)):
                 msg.append(separator)
                 msg.append(point_tech_table[i + 1])
-                msg. append('Договор: {}'.format(list_info[i][0][2]))
-                msg.append('Описание: {}'.format(list_info[i][0][3]))
+                msg. append('Договор: {}'.format(list_info[i][2]))
+                msg.append('Описание: {}'.format(list_info[i][3]))
             msg_del = await message.answer('\n'.join(msg), reply_markup=ReplyKeyboardRemove())
             standart_delete_message(msg_del)
         except IndexError:

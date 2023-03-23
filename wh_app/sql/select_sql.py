@@ -2,9 +2,6 @@
 
 from wh_app.config_and_backup import config
 from wh_app.sql.sql_constant import sql_consts_dict
-from wh_app.supporting import functions
-
-functions.info_string(__name__)
 
 
 def sql_counter(sql_query: str) -> str:

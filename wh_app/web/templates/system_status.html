@@ -1,0 +1,9 @@
+<h2>Текущий статус системы</h2>
+{% for parameter in parameters %}
+    <div class="tr_div_login">
+        <div class="faq_quest">{{parameter[0]}}</div>
+        <div class="faq_answer">
+            <div class="text_info">{{parameter[1]}}</div>
+        </div>
+    </div>
+{% endfor %}

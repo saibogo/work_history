@@ -6,8 +6,6 @@ from typing import *
 from wh_app.supporting import functions
 from wh_app.sql import select_sql
 
-functions.info_string(__name__)
-
 
 def commit(connection: psycopg2.connect) -> None:
     """Applies changes to the database"""

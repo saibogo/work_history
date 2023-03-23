@@ -1,8 +1,5 @@
 """This module contain all names from database"""
 
-from wh_app.supporting import functions
-
-functions.info_string(__name__)
 
 any_consts = {"id": "id",
               "statistic": "statistic",
