@@ -6,6 +6,7 @@ from wh_app.postgresql.database import Database
 from wh_app.supporting import functions
 from wh_app.supporting import stop_start_web
 from wh_app.supporting.auto_save_thread import AutoSaveThread
+from wh_app.telegram_bot.bot_state_machine import BotStateMachine
 
 functions.info_string(__name__)
 
@@ -34,6 +35,11 @@ class SystemStatus:
         return AutoSaveThread.get_status()
 
     @classmethod
+    def bot_is_work(cls) -> bool:
+        """Return status of telegram bot"""
+        return BotStateMachine.get_instance().get_status()
+
+    @classmethod
     def get_status(cls) -> dict:
         """Return full system-status"""
         result = {"Сервер PostgreSql":
@@ -42,5 +48,7 @@ class SystemStatus:
                       "Работает" if cls.flask_is_work() else "Не работает",
                   "Автосохранение базы данных":
                       "Включено" if cls.autosave_database_is_work() else "Выключено",
+                  "Телеграмм-бот":
+                      "Запущен" if cls.bot_is_work() else "Не запущен",
                   "Версия ПО": functions.metadata.__version__}
         return result

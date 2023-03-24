@@ -1,3 +1,4 @@
+"""This module for operation add new equip in telegram bot"""
 import datetime
 from wh_app.postgresql.database import Database
 from wh_app.sql_operations.insert_operations import create_new_equip

@@ -5,6 +5,7 @@ from aiogram import Bot, Dispatcher, executor, types, filters
 from aiogram.utils.exceptions import MessageTextIsEmpty
 
 from wh_app.supporting import functions
+from wh_app.telegram_bot.bot_state_machine import BotStateMachine
 from wh_app.config_and_backup.config import path_to_telegram_token, path_to_messages
 from wh_app.telegram_bot.point_bot import all_points, send_statistic, point_info, not_create_record, get_svu,\
     get_tech_info
@@ -35,6 +36,7 @@ bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot)
 TIMEOUT_TO_SEND_INFO_MESSAGE = 60
 bot_is_restarted = True
+bot_state = BotStateMachine.get_instance()
 
 
 def repeat(coro, loop):
@@ -45,9 +47,11 @@ def repeat(coro, loop):
 
 def start_telegram_bot():
     """This function starting session"""
+    bot_state.set_on_status()
     loop = asyncio.get_event_loop()
     loop.call_later(TIMEOUT_TO_SEND_INFO_MESSAGE, repeat, start_message, loop)
     executor.start_polling(dp, loop=loop)
+
 
 
 async def start_message():

@@ -1,7 +1,7 @@
 """This module implement window contain bug-tracker from workspoints"""
 
 from PyQt5.QtWidgets import QPushButton, QTableWidget, QLayout,\
-    QTableWidgetItem
+    QTableWidgetItem, QHeaderView
 from wh_app.simple_gui.QtGUI.main_window import SimpleGui
 from wh_app.postgresql.database import Database
 from wh_app.sql_operations.select_operations import get_all_bugz_in_bugzilla
@@ -20,10 +20,12 @@ def bugzilla(window: SimpleGui, main_layout: QLayout) -> None:
         _, cursor = base
         bugs = get_all_bugz_in_bugzilla(cursor)
         table = QTableWidget()
+        table.setWordWrap(True)
         bugs_table_ext = bugs_table + ["Изменить статус"]
         table.setColumnCount(len(bugs_table_ext))
         table.setRowCount(len(bugs))
         minimal_width = 40
+        maximal_width = 1200
 
         for col in range(len(bugs_table_ext)):
             table.setHorizontalHeaderItem(col, QTableWidgetItem(bugs_table_ext[col]))
@@ -36,8 +38,7 @@ def bugzilla(window: SimpleGui, main_layout: QLayout) -> None:
         table.verticalHeader().setVisible(False)
         for col in range(len(bugs_table)):
             minimal_width = minimal_width + table.columnWidth(col)
-
-        window.setFixedWidth(minimal_width)
+        window.setFixedWidth(min(minimal_width, maximal_width))
         window.center()
 
         main_layout.addWidget(table)
