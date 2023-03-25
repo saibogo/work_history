@@ -595,6 +595,15 @@ def sql_select_all_bugs_in_work_in_bugzilla() -> str:
     return query
 
 
+def sql_select_all_bugs_in_work_in_bugzilla_limit(page_num: str) -> str:
+    """Return all records in bugzilla table if status = in work"""
+
+    query = ("""SELECT %(id)s, %(problem)s, %(bug_in_work)s FROM %(bugzilla)s""" +
+             """ WHERE %(status)s = true ORDER BY %(id)s LIMIT {0} OFFSET {1}""") % sql_consts_dict
+    return query.format(config.max_records_in_page(),
+                        (int(page_num) - 1) * config.max_records_in_page())
+
+
 def sql_select_all_customers() -> str:
     """Return all records in table customer"""
 

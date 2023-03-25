@@ -405,9 +405,21 @@ def get_all_bugz_in_bugzilla(cursor) -> list:
 
 
 @get_selected_decorator
+def get_all_bugz_in_bugzilla_limit(cursor, page_num: int) -> list:
+    """Function return all records in bugzilla use limit records on page"""
+    return select_sql.sql_select_all_bugs_in_bugzilla_limit(str(page_num))
+
+
+@get_selected_decorator
 def get_all_bugz_in_work_in_bugzilla(cursor) -> list:
     """Function return all records in bugzilla if bug's status = in work"""
     return select_sql.sql_select_all_bugs_in_work_in_bugzilla()
+
+
+@get_selected_decorator
+def get_all_bugz_in_work_in_bugzilla_limit(cursor, page_num: int) -> list:
+    """Function return all records in bugzilla if bug's status = in work"""
+    return select_sql.sql_select_all_bugs_in_work_in_bugzilla_limit(str(page_num))
 
 
 @list_to_first_tuple_decorator

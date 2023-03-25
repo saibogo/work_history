@@ -28,7 +28,8 @@ from wh_app.web.workers_section import workers_menu, all_workers_table,\
 from wh_app.web.works_section import works_menu, find_work_to_id_page,\
     select_work_to_id_method, work_to_equip_paging, add_work_method, create_edit_work_form, update_work_method
 from wh_app.web.bugs_section import bugs_menu, all_bugs_table, all_bugs_in_work_table,\
-    add_bugs_result_table, create_invert_bug_status_form, invert_bug_status_method
+    add_bugs_result_table, create_invert_bug_status_form, invert_bug_status_method, all_bugs_table_limit,\
+    all_bugs_in_work_limit
 from wh_app.web.orders_section import all_customers_table, orders_main_menu,\
     all_registered_orders_table
 from wh_app.web.universal_html import LOGIN, PASSWORD, access_denided, access_allowed, logout_user
@@ -537,10 +538,22 @@ def all_bugs() -> Response:
     return goto_or_redirect(lambda: all_bugs_table(stylesheet_number()))
 
 
+@app.route('/all-bugs/<page_num>')
+def all_bugs_paging(page_num: int) -> Response:
+    """Return all registered problem use limit records on page"""
+    return goto_or_redirect(lambda: all_bugs_table_limit(page_num ,stylesheet_number()))
+
+
 @app.route('/all-bugs-in-work')
 def all_bugs_in_work() -> Response:
     """return all unclosed bugs page"""
     return goto_or_redirect(lambda: all_bugs_in_work_table(stylesheet_number()))
+
+
+@app.route('/all-bugs-in-work/<page_num>')
+def all_bugs_in_work_paging(page_num: int) -> Response:
+    """return all unclosed bugs page with limit records on page"""
+    return goto_or_redirect(lambda: all_bugs_in_work_limit(page_num, stylesheet_number()))
 
 
 @app.route('/add-bug')

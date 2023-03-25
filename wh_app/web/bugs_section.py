@@ -8,7 +8,7 @@ import wh_app.web.universal_html as uhtml
 from wh_app.postgresql.database import Database
 from wh_app.sql_operations import select_operations, insert_operations, update_operations
 from wh_app.supporting import functions
-from wh_app.config_and_backup import table_headers
+from wh_app.config_and_backup import table_headers, config
 
 functions.info_string(__name__)
 
@@ -36,11 +36,31 @@ def all_bugs_table(stylesheet_number: str) -> str:
     with Database() as base:
         _, cursor = base
         bugs_list = select_operations.get_all_bugz_in_bugzilla(cursor)
+        if len(bugs_list) > config.max_records_in_page():
+            result = all_bugs_table_limit(1, stylesheet_number)
+        else:
+            bugs_list = add_on_off_links_to_bug_table(bugs_list)
+            table = uhtml.universal_table(table_headers.bugs_table_name,
+                                          table_headers.bugs_table,
+                                          bugs_list)
+            result = web_template.result_page(table, '/bugs', str(stylesheet_number))
+        return result
+
+
+def all_bugs_table_limit(page_num: int, stylesheet_number: str) -> str:
+    """Method create page, contain all registred bugs use limit records in page"""
+    with Database() as base:
+        _, cursor = base
+        bugs_list = select_operations.get_all_bugz_in_bugzilla_limit(cursor, page_num)
         bugs_list = add_on_off_links_to_bug_table(bugs_list)
         table = uhtml.universal_table(table_headers.bugs_table_name,
                                       table_headers.bugs_table,
                                       bugs_list)
-        return web_template.result_page(table, '/bugs', str(stylesheet_number))
+        pages = uhtml.paging_table("/all-bugs/",
+                                   functions.list_of_pages(select_operations.get_all_bugz_in_bugzilla(cursor)),
+                                   int(page_num))
+
+        return web_template.result_page(table + pages, '/bugs', str(stylesheet_number))
 
 
 def all_bugs_in_work_table(stylesheet_number: str) -> str:
@@ -48,11 +68,30 @@ def all_bugs_in_work_table(stylesheet_number: str) -> str:
     with Database() as base:
         _, cursor = base
         bugs_list = select_operations.get_all_bugz_in_work_in_bugzilla(cursor)
+        if len(bugs_list) > config.max_records_in_page():
+            result = all_bugs_in_work_limit(1, stylesheet_number)
+        else:
+            bugs_list = add_on_off_links_to_bug_table(bugs_list)
+            table = uhtml.universal_table(table_headers.bugs_table_name,
+                                          table_headers.bugs_table,
+                                          bugs_list)
+            result = web_template.result_page(table, '/bugs', str(stylesheet_number))
+        return result
+
+
+def all_bugs_in_work_limit(page_num: int, stylesheet_number: str) -> str:
+    """Method create page. contain all unclosed bugs use limit records on page"""
+    with Database() as base:
+        _, cursor = base
+        bugs_list = select_operations.get_all_bugz_in_work_in_bugzilla_limit(cursor, page_num)
         bugs_list = add_on_off_links_to_bug_table(bugs_list)
         table = uhtml.universal_table(table_headers.bugs_table_name,
                                       table_headers.bugs_table,
                                       bugs_list)
-        return web_template.result_page(table, '/bugs', str(stylesheet_number))
+        pages = uhtml.paging_table("/all-bugs-in-work/",
+                                   functions.list_of_pages(select_operations.get_all_bugz_in_work_in_bugzilla(cursor)),
+                                   int(page_num))
+        return web_template.result_page(table + pages, '/bugs', str(stylesheet_number))
 
 
 def add_bugs_result_table(data, method, stylesheet_number: str) -> str:
