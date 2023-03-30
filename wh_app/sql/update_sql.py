@@ -1,7 +1,7 @@
 """This module contain function. create RAW-query to UPDATE in database"""
 
 from wh_app.supporting import functions
-from wh_app.sql.sql_constant import sql_consts_dict
+from wh_app.sql.sql_constant import sql_consts_dict, tech_tables
 
 functions.info_string(__name__)
 
@@ -76,3 +76,9 @@ def sql_invert_bug_status(bug_id: str) -> str:
 
     query = """UPDATE %(bugzilla)s SET %(status)s = NOT %(status)s  WHERE %(id)s = {}""" % sql_consts_dict
     return query.format(bug_id)
+
+
+def sql_update_tech_section(point_id: str, section: str, dogovor: str, resume: str) -> str:
+    """Create query to update current technical section for workpoint"""
+    query = """UPDATE {0} SET %(treaty)s = '{1}', %(resume)s = '{2}' WHERE %(point_id)s = {3}""" % sql_consts_dict
+    return query.format(tech_tables[section], dogovor, resume, point_id)

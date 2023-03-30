@@ -9,7 +9,7 @@ from wh_app.sql_operations import insert_operations
 from wh_app.sql_operations import select_operations
 from wh_app.sql_operations import update_operations
 from wh_app.supporting import functions
-from wh_app.config_and_backup import table_headers
+from wh_app.config_and_backup import table_headers, config
 
 functions.info_string(__name__)
 
@@ -178,7 +178,9 @@ def upgrade_point_method(data, method, stylesheet_number: str) -> str:
 
 def point_tech_info(point_num: int, stylesheet_number: str) -> str:
     """Create page contain all technical information from current point"""
-
+    links = ['edit-electric', 'edit-cold-water', 'edit-hot-water', 'edit-heating', 'edit-sewerage']
+    for i in range(len(links)):
+        links[i] = '{}/{}/{}'.format(config.full_address(), links[i], point_num)
     with Database() as base:
         _, cursor = base
         dogovors = list()
@@ -187,10 +189,13 @@ def point_tech_info(point_num: int, stylesheet_number: str) -> str:
         list_info = functions.get_technical_info(point_num)
 
         for i in range(1, len(table_header)):
+            dogovors.append([table_header[i],
+                             list_info[i - 1][2],
+                             list_info[i - 1][3],
+                             links[i - 1]])
 
-            dogovors.append([table_header[i], list_info[i - 1][2], list_info[i - 1][3]])
-
-        tmp = render_template('point_tech_info.html', point_name=point_name, parameters=dogovors)
+        tmp = render_template('point_tech_info.html', point_name=point_name, parameters=dogovors,
+                              edit_char=uhtml.EDIT_CHAR)
         result = web_template.result_page(tmp,
                                           '/points',
                                           str(stylesheet_number),
@@ -198,3 +203,64 @@ def point_tech_info(point_num: int, stylesheet_number: str) -> str:
                                           'point-tech={0}'.format(point_num))
 
     return result
+
+
+def edit_tech_section(point_num: int, section: str, stylesheet_number: str) -> str:
+    """Create form to edit any section: electric, cold-water, hot-water, heating, sewerage"""
+
+    sections = {"electric": "Электроснабжение", 'cold-water': "Холодное водовснабжение",
+                'hot-water': "Горячее водоснабжение", 'heating': "Отопление", 'sewerage': 'Канализация'}
+    with Database() as base:
+        _, cursor = base
+        point_name = select_operations.get_point_name_from_id(cursor, str(point_num))
+        list_info = functions.get_technical_info(point_num)
+        parameters = list()
+        if section == 'electric':
+            parameters = list_info[0][2:]
+        elif section == 'cold-water':
+            parameters = list_info[1][2:]
+        elif section == 'hot-water':
+            parameters = list_info[2][2:]
+        elif section == 'heating':
+            parameters = list_info[3][2:]
+        else:
+            parameters = list_info[4][2:]
+        tmp = render_template('edit_tech_section.html', point_name=point_name, section_name=sections[section],
+                              parameter=parameters, point_num=point_num, section=section, password=uhtml.PASSWORD)
+        return web_template.result_page(tmp, '/tech-info/{}'.format(point_num), str(stylesheet_number))
+
+
+def edit_point_tech_method(section:str, data, method, stylesheet_number: str) -> str:
+    """Edit points tech section in database"""
+    pre_adr = '/all-points'
+    sections = ["electric", 'cold-water', 'hot-water', 'heating', 'sewerage']
+    if method == "POST":
+        point_id = data[uhtml.POINT_ID]
+        resume = data[uhtml.RESUME]
+        dogovor = data[uhtml.DOGOVOR]
+        password = data[uhtml.PASSWORD]
+        if functions.is_superuser_password(password):
+            if resume.replace(" ", '') == '' or dogovor.replace(" ", '') == '':
+                page = uhtml.data_is_not_valid()
+            else:
+                with Database() as base:
+                    connection, cursor = base
+                    tech_list = functions.get_technical_info(point_id)
+                    index = sections.index(section)
+                    section_list = tech_list[index]
+                    if section_list[0] != functions.NOT_VALUES and section_list[1] != functions.NOT_VALUES:
+                        update_operations.update_tech_section(cursor, section, str(point_id), dogovor, resume)
+                        connection.commit()
+                    else:
+                        insert_operations.insert_tech_section(cursor, section, str(point_id), dogovor, resume)
+                        connection.commit()
+                    page = uhtml.operation_completed()
+
+        else:
+            page = uhtml.pass_is_not_valid()
+
+    else:
+        page = "Method in add Point not corrected!"
+
+    return web_template.result_page(page, pre_adr, str(stylesheet_number))
+

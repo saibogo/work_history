@@ -81,3 +81,6 @@ any_consts.update(equip_const)
 any_consts.update(works_const)
 any_consts.update(workers_const)
 sql_consts_dict = any_consts
+
+tech_tables = {'electric': "electric", "cold-water": "cold_water", "hot-water": "hot_water",
+              "heating": "heating", "sewerage": "sewerage"}

@@ -1,7 +1,7 @@
 """This module create RAW query to insert in database operations"""
 
 from wh_app.supporting import functions
-from wh_app.sql.sql_constant import sql_consts_dict
+from wh_app.sql.sql_constant import sql_consts_dict, tech_tables
 
 functions.info_string(__name__)
 
@@ -62,3 +62,10 @@ def sql_add_new_bug(problem: str) -> str:
     query = ("""INSERT INTO %(bugzilla)s (%(problem)s,""" +\
             """ %(status)s) VALUES ('{0}', true)""") % sql_consts_dict
     return query.format(problem)
+
+
+def sql_insert_tech_section(point_id: str, section: str, dogovor: str, resume: str) -> str:
+    """Return SQL-string contain query to insert new record in technical database"""
+
+    query = """INSERT INTO {0} (%(point_id)s, %(treaty)s, %(resume)s) VALUES ({1}, '{2}', '{3}')""" % sql_consts_dict
+    return query.format(tech_tables[section], point_id, dogovor, resume)

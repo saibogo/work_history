@@ -51,6 +51,8 @@ WORK_ID = 'work_id'
 DESCRIPTION = "description"
 ORDER_INFO = "order_info"
 BUG_ID = "bug_id"
+RESUME = "resume"
+DOGOVOR = "dogovor"
 
 
 def link_or_str(elem: str, link_type: bool = False, link: str = '') -> str:

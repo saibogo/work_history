@@ -39,3 +39,9 @@ def add_new_bug_in_bugzilla(cursor, problem: str) -> None:
     cursor.execute(sql_add_new_bug(problem))
 
 
+def insert_tech_section(cursor, section: str, point_id: str, dogovor: str, resume: str) -> None:
+    """Update section in technical information for workpoint"""
+
+    cursor.execute(sql_insert_tech_section(point_id, section, dogovor, resume))
+
+

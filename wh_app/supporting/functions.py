@@ -23,6 +23,8 @@ from wh_app.web.universal_html import FIND_REQUEST
 from wh_app.web.universal_html import EDIT_CHAR
 
 
+NOT_VALUES = "Нет данных"
+
 def str_to_str_n(old_string: str, max_len: int) -> str:
     """Function return new string, separated \n"""
 
@@ -187,12 +189,12 @@ def get_first_non_list(collection: Iterable) -> Any:
 
 
 def get_technical_info(point_id: int) -> List[Tuple]:
-    """Return all techncal information from workspoint"""
+    """Return all techncal information from workspoint [electric, cold_water, hot_water, heating, sewerage]"""
     def if_tech_list_empthy(lst: list) -> list:
         """Replace data if data not found"""
 
         if not lst:
-            return ["Нет данных"] * 4
+            return [NOT_VALUES] * 4
         else:
             return lst[0]
 

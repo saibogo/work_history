@@ -1,0 +1,23 @@
+<h2>{{point_name}}</h2>
+<h2>Редактирование секции: {{section_name}}</h2>
+<form action="/edit-section-method/{{section}}" method="post">
+    <input type="hidden" name="point_id" value="{{point_num}}">
+    <div class="tr_div_login">
+        <div class="faq_quest">Договор</div>
+        <div class="faq_answer"><textarea name="dogovor" required>{{parameter[0]}}</textarea></div>
+    </div>
+    <div class="tr_div_login">
+        <div class="faq_quest">Описание</div>
+        <div class="faq_answer"><textarea name="resume" required>{{parameter[1]}}</textarea></div>
+    </div>
+    <div class="tr_div_login">
+        <div class="faq_quest">Пароль</div>
+        <div class="faq_answer">
+            <input type="password"  name="{{password}}" placeholder="Обязательно" required>
+        </div>
+    </div>
+    <div class="tr_div_login">
+        <div class="faq_quest">Отправить</div>
+        <div class="faq_answer"><input type="submit" value="Отправить"></div>
+    </div>
+</form>

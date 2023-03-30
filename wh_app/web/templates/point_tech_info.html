@@ -1,7 +1,7 @@
 <h2>Сводная техническая информация по обьекту {{point_name}}</h2>
 {% for parameter in parameters %}
     <div class="tr_div_login">
-        <div class="faq_quest">{{parameter[0]}}</div>
+        <div class="faq_quest">{{parameter[0]}}<a href="{{parameter[3]}}" title="Редактировать Раздел">{{edit_char}}</a></div>
         <div class="faq_answer"></div>
     </div>
     <div class="tr_div_login">

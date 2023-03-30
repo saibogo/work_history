@@ -21,7 +21,7 @@ from wh_app.web.find_section import find_page, find_method, find_work_paging,\
 from wh_app.web.points_section import points_operations, all_points_table,\
     create_new_point_page, add_point_method, all_works_points_table,\
     edit_point_method, upgrade_point_method, on_off_point_method, \
-    invert_point_status_method, point_tech_info
+    invert_point_status_method, point_tech_info, edit_tech_section, edit_point_tech_method
 from wh_app.web.workers_section import workers_menu, all_workers_table,\
     works_days_page, works_from_performers_table, add_performer_to_work,\
     add_performer_result_method, weekly_chart_page
@@ -642,6 +642,45 @@ def get_svu(point_id: str) -> Response:
         return send_from_directory(config.static_dir(), 'image/svu/svu_{0}.jpg'.format(point_id))
     except:
         return page_not_found(404)
+
+
+@app.route("/edit-electric/<point_num>")
+def edit_electric(point_num: int) -> Response:
+    """Create form to edit electric partition technical information to workspoint"""
+    return goto_or_redirect(lambda: edit_tech_section(point_num, 'electric', stylesheet_number()))
+
+
+@app.route("/edit-cold-water/<point_num>")
+def edit_cold_water(point_num: int) -> Response:
+    """Create form to edit cold-water partition technical information to workspoint"""
+    return goto_or_redirect(lambda: edit_tech_section(point_num, 'cold-water', stylesheet_number()))
+
+
+@app.route("/edit-hot-water/<point_num>")
+def edit_hot_water(point_num: int) -> Response:
+    """Create form to edit hot-water partition technical information to workspoint"""
+    return goto_or_redirect(lambda: edit_tech_section(point_num, 'hot-water', stylesheet_number()))
+
+
+@app.route("/edit-heating/<point_num>")
+def edit_heating(point_num: int) -> Response:
+    """Create form to edit heating partition technical information to workspoint"""
+    return goto_or_redirect(lambda: edit_tech_section(point_num, 'heating', stylesheet_number()))
+
+
+@app.route("/edit-sewerage/<point_num>")
+def edit_sewerage(point_num: int) -> Response:
+    """Create form to edit sewerage partition technical information to workspoint"""
+    return goto_or_redirect(lambda: edit_tech_section(point_num, 'sewerage', stylesheet_number()))
+
+
+@app.route("/edit-section-method/<section_name>", methods=['POST'])
+def edit_section_method(section_name: str) -> Response:
+    """Create form to edit sewerage partition technical information to workspoint"""
+    return goto_or_redirect(lambda: edit_point_tech_method(section_name,
+                                                           functions.form_to_data(request.form),
+                                                           request.method,
+                                                           stylesheet_number()))
 
 
 @app.errorhandler(404)

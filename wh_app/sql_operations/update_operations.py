@@ -51,3 +51,10 @@ def invert_bug_status_in_bugzilla(cursor, bug_id: str) -> None:
     """On-OFF bug-status in database"""
 
     cursor.execute(sql_invert_bug_status(bug_id))
+
+
+def update_tech_section(cursor, section: str, point_id: str, dogovor: str, resume: str) -> None:
+    """Update section in technical information for workpoint"""
+
+    cursor.execute(sql_update_tech_section(point_id, section, dogovor, resume))
+
