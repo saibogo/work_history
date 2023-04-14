@@ -40,6 +40,10 @@ div.bottom_navigation {
     grid-template-columns: repeat(6, auto);
 }
 
+.grid_table_7 {
+    grid-template-columns: repeat(7, auto);
+}
+
 .grid_table_8 {
     grid-template-columns: repeat(8, auto);
 }
@@ -123,7 +127,34 @@ div.grid_table_6 > div.grid_table_elem:nth-child(6n + 5) {
 div.grid_table_6 > div.grid_table_elem:nth-child(6n + 6) {
     background-color: DarkSeaGreen;
 }
+/* set color from 7-columns table */
+div.grid_table_7 > div.grid_table_elem:nth-child(7n + 1) {
+    background-color: DarkSeaGreen;
+}
 
+div.grid_table_7 > div.grid_table_elem:nth-child(7n + 2) {
+    background-color: Aquamarine;
+}
+
+div.grid_table_7 > div.grid_table_elem:nth-child(7n + 3) {
+    background-color: LightSkyBlue;
+}
+
+div.grid_table_7 > div.grid_table_elem:nth-child(7n + 4) {
+    background-color: LightSlateGrey;
+}
+
+div.grid_table_7 > div.grid_table_elem:nth-child(7n + 5) {
+    background-color: PowderBlue;
+}
+
+div.grid_table_7 > div.grid_table_elem:nth-child(7n + 6) {
+    background-color: DarkSeaGreen;
+}
+
+div.grid_table_7 > div.grid_table_elem:nth-child(7n + 7) {
+    background-color: PaleGreen;
+}
 /* set color from 8-columns table */
 
 div.grid_table_8 > div.grid_table_elem:nth-child(8n + 1) {

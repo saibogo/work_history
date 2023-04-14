@@ -43,6 +43,10 @@ div.bottom_navigation {
     grid-template-columns: repeat(6, auto);
 }
 
+.grid_table_7 {
+    grid-template-columns: repeat(7, auto);
+}
+
 .grid_table_8 {
     grid-template-columns: repeat(8, auto);
 }
@@ -100,7 +104,25 @@ div.grid_table_6 > div.grid_table_elem:nth-child(6n + 5) {
     background-image: url("/image/background0.jpg");
 }
 
+/* set color from 7-columns table */
+div.grid_table_7 > div.grid_table_elem:nth-child(7n + 1) {
+    background-image: url("/image/background0.jpg");
+}
 
+
+div.grid_table_7 > div.grid_table_elem:nth-child(7n + 3) {
+    background-image: url("/image/background0.jpg");
+}
+
+
+div.grid_table_7 > div.grid_table_elem:nth-child(7n + 5) {
+    background-image: url("/image/background0.jpg");
+}
+
+
+div.grid_table_7 > div.grid_table_elem:nth-child(7n + 7) {
+    background-image: url("/image/background0.jpg");
+}
 /* set color from 8-columns table */
 
 div.grid_table_8 > div.grid_table_elem:nth-child(8n + 1) {
