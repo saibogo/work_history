@@ -14,7 +14,7 @@ from wh_app.telegram_bot.any_bot import send_welcome, send_help, send_status, se
 from wh_app.telegram_bot.bugs_bot import all_bugs, start_create_new_bug, new_bug_repler, bug_from_bug_id,\
     invert_bug_status_from_bot
 from wh_app.telegram_bot.work_bot import start_create_record
-from wh_app.telegram_bot.work_bot import problem_repler, work_repler
+from wh_app.telegram_bot.work_bot import problem_repler, work_repler, get_work_record
 from wh_app.telegram_bot.read_bot_access import chats
 from wh_app.telegram_bot.support_bot import standart_delete_message
 from wh_app.telegram_bot.find_bot import main_find_menu, find_menu, find_repler, last_day_message
@@ -140,6 +140,13 @@ async def bugs_command(message: types.Message):
 async def workers_command(message: types.Message):
     """Return to telegram-bot all bugs"""
     await send_workers_message(message)
+
+
+@dp.message_handler(regexp='/work\s+[0-9]{1,}')
+async def work_command(message: types.Message):
+    """Return to telegram bot info from work whit work_id == ID
+    Example /work 1546"""
+    await get_work_record(message)
 
 
 @dp.message_handler(regexp='/bug\s+[0-9]{1,}')

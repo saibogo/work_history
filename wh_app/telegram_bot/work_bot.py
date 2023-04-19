@@ -1,11 +1,27 @@
 from wh_app.telegram_bot.support_bot import *
-from wh_app.sql_operations.select_operations import get_full_equip_information, get_works_from_equip_id
+from wh_app.sql_operations.select_operations import get_full_equip_information, get_works_from_equip_id,\
+    get_full_information_to_work
 from wh_app.telegram_bot.create_work_object import CreateWorkObject
 
 functions.info_string(__name__)
 
 
 create_works_list = []
+
+
+async def get_work_record(message: types.Message):
+    """Create message with information from current work
+    Example /work 1546"""
+    with Database() as base:
+        _, cursor = base
+        work_num = int(message.text.split()[1])
+        try:
+            work_info = get_full_information_to_work(cursor, str(work_num))
+            msg_del = await message.answer("\n".join(work_message(work_info, True, True)),
+                                           reply_markup=ReplyKeyboardRemove())
+            standart_delete_message(msg_del)
+        except:
+            pass
 
 
 async def start_create_record(message: types.Message):
