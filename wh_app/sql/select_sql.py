@@ -492,7 +492,7 @@ def sql_select_all_workers() -> str:
 def sql_select_all_workers_real() -> str:
     """Also sql_select_all_workers() where is_work == TRUE"""
 
-    return """SELECT * FROM %(all_workers)s WHERE %(all_workers)s.%(case)s = 'Работает'""" % sql_consts_dict
+    return """SELECT * FROM %(all_workers)s WHERE %(all_workers)s.%(case)s != 'Уволен'""" % sql_consts_dict
 
 
 def sql_select_worker_info(worker_id: str) -> str:

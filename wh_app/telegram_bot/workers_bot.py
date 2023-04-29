@@ -6,7 +6,7 @@ functions.info_string(__name__)
 
 
 async def send_workers_message(message: types.Message):
-    """Create message all workers, when status is Worked"""
+    """Create message all workers, when status not fired"""
     try:
         user_id = message.from_id
         user_name = message.from_user

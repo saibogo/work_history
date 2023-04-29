@@ -341,7 +341,7 @@ def get_all_workers(cursor) -> List[Tuple[int, str, str, str, str, str]]:
 
 @get_selected_decorator
 def get_all_workers_real(cursor) -> List[Tuple[int, str, str, str, str, str]]:
-    """Return all workers where is_work == TRUE"""
+    """Return all workers where worker.status  != fired"""
     return select_sql.sql_select_all_workers_real()
 
 

@@ -8,6 +8,8 @@ from wh_app.supporting import backup_operations
 
 functions.info_string(__name__)
 
+TYPES = ['worker_status']
+
 VIEWS_LIST = ['all_workers',
               'firsts_bindings',
               'seconds_bindings',
@@ -45,9 +47,13 @@ def drop_all_data() -> None:
         password = getpass.getpass("Требуется пароль администратора системы:")
         if functions.is_superuser_password(password):
             print('Выполняется очистка текущей базы данных!')
-            backup_operations.create_dump()
+            answer = input("Создать дамп текущей базы данных?(Y/y - Создать)")
+            if answer in ['Y', 'y']:
+                print("Создаем:")
+                backup_operations.create_dump()
             with database.Database() as base:
                 connection, cursor = base
+
                 for view in VIEWS_LIST:
                     sql = """DROP VIEW IF EXISTS {0}""".format(view)
                     print(sql)
@@ -56,6 +62,12 @@ def drop_all_data() -> None:
 
                 for table in TABLES_LIST:
                     sql = """DROP TABLE IF EXISTS {0}""".format(table)
+                    print(sql)
+                    cursor.execute(sql)
+                    connection.commit()
+
+                for t in TYPES:
+                    sql = """DROP TYPE IF EXISTS {0}""".format(t)
                     print(sql)
                     cursor.execute(sql)
                     connection.commit()

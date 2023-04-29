@@ -58,8 +58,11 @@ replace_consts = {"cast_open_close": "CASE WHEN is_work = true THEN 'Работ�
                   "select_main_binding": "SELECT sub_name FROM workers WHERE" +
                                          " workers.id = bindings.worker_id " +
                                          "AND bindings.is_main = true",
-                  "worker_status": "CASE WHEN workers.is_work=true THEN 'Работает'" +
-                                   " ELSE 'Уволен' END",
+                  "worker_status": "CASE " +
+                                   "WHEN workers.status = 'works'::worker_status THEN 'Работает'::text " +
+                                   "WHEN workers.status = 'fired'::worker_status THEN 'Уволен'::text " +
+                                   "WHEN workers.status = 'on_holyday'::worker_status THEN 'В отпуске'::text " +
+                                   """ELSE 'На больничном'::text END AS "case" """,
                   "bug_in_work": "CASE WHEN status = true THEN 'В работе' ELSE 'Исправлено' END"
                   }
 
