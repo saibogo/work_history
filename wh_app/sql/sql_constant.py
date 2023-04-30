@@ -55,6 +55,7 @@ equip_const = {"oborudovanie": "oborudovanie",
 
 replace_consts = {"cast_open_close": "CASE WHEN is_work = true THEN 'Работает' ELSE 'Закрыто' END",
                   "point_working": "is_work = true",
+                  "worker_is_work": "workers.status != 'fired'",
                   "select_main_binding": "SELECT sub_name FROM workers WHERE" +
                                          " workers.id = bindings.worker_id " +
                                          "AND bindings.is_main = true",
