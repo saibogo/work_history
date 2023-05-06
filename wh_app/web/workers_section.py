@@ -12,6 +12,11 @@ from wh_app.config_and_backup.config import max_records_in_page
 functions.info_string(__name__)
 
 
+def create_edit_link_to_worker(worker_id: str) -> str:
+    """Create EDIT-char (link)"""
+    return '<a href="/edit-worker/{0}">{1}</a>'.format(worker_id, uhtml.EDIT_CHAR)
+
+
 def workers_menu(stylesheet_number: str) -> str:
     """Return main page from WORKERS section"""
     name = 'Действия с сотрудниками'
@@ -26,13 +31,29 @@ def all_workers_table(stylesheet_number: str) -> str:
     with Database() as base:
         _, cursor = base
         all_workers = select_operations.get_all_workers(cursor)
+        workers = [[elem for elem in worker] + [create_edit_link_to_worker(worker[0])] for worker in all_workers]
         links = ['/performer/' + str(elem[0]) for elem in all_workers]
         table = uhtml.universal_table(table_headers.all_workers_table_name,
                                       table_headers.workers_table,
-                                      all_workers, True, links)
+                                      workers, True, links)
         return web_template.result_page(table,
                                         '/workers',
                                         str(stylesheet_number))
+
+
+def create_edit_worker_form(worker_id: str, stylesheet_number: str) -> str:
+    """Return new form to edit worker information"""
+    with Database() as base:
+        _, cursor = base
+        try:
+            worker_info = select_operations.get_info_from_worker(cursor, worker_id)
+            print(worker_info)
+            table = "<h1>В разработке</h1>"
+        except IndexError:
+            table = uhtml.data_is_not_valid()
+    return web_template.result_page(table,
+                                    '/workers',
+                                    str(stylesheet_number))
 
 
 def weekly_chart_page(stylesheet_number: str) -> str:

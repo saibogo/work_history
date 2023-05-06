@@ -24,7 +24,7 @@ from wh_app.web.points_section import points_operations, all_points_table,\
     invert_point_status_method, point_tech_info, edit_tech_section, edit_point_tech_method
 from wh_app.web.workers_section import workers_menu, all_workers_table,\
     works_days_page, works_from_performers_table, add_performer_to_work,\
-    add_performer_result_method, weekly_chart_page
+    add_performer_result_method, weekly_chart_page, create_edit_worker_form
 from wh_app.web.works_section import works_menu, find_work_to_id_page,\
     select_work_to_id_method, work_to_equip_paging, add_work_method, create_edit_work_form, update_work_method
 from wh_app.web.bugs_section import bugs_menu, all_bugs_table, all_bugs_in_work_table,\
@@ -339,7 +339,6 @@ def update_work_to_id(work_id: int) -> Response:
                                                        stylesheet_number()))
 
 
-
 @app.route("/work/<equip_id>")
 def work_to_equip(equip_id: int) -> Response:
     """Redirect to first page in ALL work from EQUIP where EQUIP_ID=equip_id"""
@@ -384,6 +383,12 @@ def workers() -> Response:
 def all_workers() -> Response:
     """Return page, contain All WORKERS"""
     return flask.make_response(all_workers_table(stylesheet_number()))
+
+
+@app.route("/edit-worker/<worker_id>")
+def edit_worker(worker_id: str) -> Response:
+    """Return web-form to edit worker information"""
+    return goto_or_redirect(lambda: create_edit_worker_form(worker_id, stylesheet_number()))
 
 
 @app.route("/weekly-chart")
