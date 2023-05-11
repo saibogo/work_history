@@ -21,7 +21,9 @@ async def get_work_record(message: types.Message):
                                            reply_markup=ReplyKeyboardRemove())
             standart_delete_message(msg_del)
         except:
-            pass
+            msg_del = await message.answer('ID = {} в перечне произведенных работ не обнаружено'.format(work_num),
+                                           reply_markup=ReplyKeyboardRemove())
+            standart_delete_message(msg_del)
 
 
 async def start_create_record(message: types.Message):

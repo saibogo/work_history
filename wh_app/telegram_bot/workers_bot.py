@@ -32,6 +32,7 @@ def worker_message(worker: List[Any]) -> str:
     msg = list()
     msg.append(separator)
     msg.append('Сотрудник: {} {}'.format(worker[1], worker[2]))
+    msg.append('Текущий статус: {}'.format(worker[4]))
     msg.append('Должность: {}'.format(worker[5]))
     msg.append('Телефон: {}'.format(worker[3]))
     return '\n'.join(msg)
