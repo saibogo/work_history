@@ -1,5 +1,7 @@
 """this module contain all pages implements from workers sections"""
 
+from flask import render_template
+
 import wh_app.web.template as web_template
 import wh_app.web.universal_html as uhtml
 from wh_app.postgresql.database import Database
@@ -43,12 +45,21 @@ def all_workers_table(stylesheet_number: str) -> str:
 
 def create_edit_worker_form(worker_id: str, stylesheet_number: str) -> str:
     """Return new form to edit worker information"""
+    all_workers_status = {"Работает": "works", "Уволен": "fired", "В отпуске": "on_holyday",
+                          "На больничном": "on_a_sick_leave"}
     with Database() as base:
         _, cursor = base
         try:
             worker_info = select_operations.get_info_from_worker(cursor, worker_id)
             print(worker_info)
-            table = "<h1>В разработке</h1>"
+            possible_statuses = []
+            for key in all_workers_status:
+                if key != worker_info[4]:
+                    possible_statuses.append([all_workers_status[key], key])
+            table = render_template('edit_worker.html', worker_info=worker_info, worker_subname=uhtml.WORKER_SUBNAME,
+                                    worker_name=uhtml.WORKER_NAME, phone_number=uhtml.PHONE_NUMBER,
+                                    password=uhtml.PASSWORD, status=uhtml.STATUS,
+                                    status_in_sql=all_workers_status[worker_info[4]], all_statuses=possible_statuses)
         except IndexError:
             table = uhtml.data_is_not_valid()
     return web_template.result_page(table,

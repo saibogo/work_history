@@ -1,0 +1,49 @@
+<h2>Редактирование данных сотрудника</h2>
+<form action="/update-worker-to-id/{{work_id}}" method="post">
+    <div class="container">
+        <div class="tr_div_login">
+            <div class="faq_quest">ID:</div>
+            <div class="faq_answer">
+                <div class="text_info">{{worker_info[0]}}</div>
+            </div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Фамилия</div>
+            <div class="faq_answer">
+                <textarea rows=1 name="{{worker_subname}}">{{worker_info[1]}}</textarea>
+            </div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Имя</div>
+            <div class="faq_answer">
+                <textarea rows=1 name="{{worker_name}}">{{worker_info[2]}}</textarea>
+            </div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Имя</div>
+            <div class="faq_answer">
+                <textarea rows=1 name="{{phone_number}}">{{worker_info[3]}}</textarea>
+            </div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Текущий статус</div>
+            <div class="faq_answer">
+                <select class="div_select" name="{{status}}">
+                    <option selected value="{{status_in_sql}}">{{worker_info[4]}}</option>
+                    {% for possible_status in all_statuses %}
+                    <option value="{{possible_status[0]}}">{{possible_status[1]}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Пароль администратора:</div>
+            <div class="faq_answer"><input type="password" name="{{password}}"></div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest"></div>
+            <div class="faq_answer"><input type="submit" value="Применить изменения"></div>
+        </div>
+
+    </div>
+</form>
