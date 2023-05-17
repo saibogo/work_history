@@ -37,6 +37,17 @@
             </div>
         </div>
         <div class="tr_div_login">
+            <div class="faq_quest">Текущая должность</div>
+            <div class="faq_answer">
+                <select class="div_select" name="{{post}}">
+                    <option selected value="{{current_post}}">{{worker_info[5]}}</option>
+                    {% for possible_post in all_posts %}
+                    <option value="{{possible_post[0]}}">{{possible_post[1]}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="tr_div_login">
             <div class="faq_quest">Пароль администратора:</div>
             <div class="faq_answer"><input type="password" name="{{password}}"></div>
         </div>

@@ -50,7 +50,16 @@ def create_edit_worker_form(worker_id: str, stylesheet_number: str) -> str:
     with Database() as base:
         _, cursor = base
         try:
+            all_workers_posts = select_operations.get_all_posts(cursor)
+            print(all_workers_posts)
+            current_post = 0
+            avaliable_posts = []
             worker_info = select_operations.get_info_from_worker(cursor, worker_id)
+            for elem in all_workers_posts:
+                if elem[1] == worker_info[5]:
+                    current_post = elem[0]
+                else:
+                    avaliable_posts.append(elem)
             print(worker_info)
             possible_statuses = []
             for key in all_workers_status:
@@ -59,7 +68,8 @@ def create_edit_worker_form(worker_id: str, stylesheet_number: str) -> str:
             table = render_template('edit_worker.html', worker_info=worker_info, worker_subname=uhtml.WORKER_SUBNAME,
                                     worker_name=uhtml.WORKER_NAME, phone_number=uhtml.PHONE_NUMBER,
                                     password=uhtml.PASSWORD, status=uhtml.STATUS,
-                                    status_in_sql=all_workers_status[worker_info[4]], all_statuses=possible_statuses)
+                                    status_in_sql=all_workers_status[worker_info[4]], all_statuses=possible_statuses,
+                                    post=uhtml.POST, current_post=current_post, all_posts=avaliable_posts)
         except IndexError:
             table = uhtml.data_is_not_valid()
     return web_template.result_page(table,

@@ -57,6 +57,7 @@ WORKER_NAME = "name"
 WORKER_SUBNAME = "subname"
 PHONE_NUMBER = "phone_number"
 STATUS = "status"
+POST = "post"
 
 
 def link_or_str(elem: str, link_type: bool = False, link: str = '') -> str:
