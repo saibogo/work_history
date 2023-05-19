@@ -2,7 +2,7 @@
 
 import sys
 
-from wh_app.sql_operations import view_operation
+from wh_app.sql_operations import view_operation, sql_functions_operations
 from wh_app.sql_operations.select_operations import get_database_version as dbversion
 from wh_app.postgresql.database import Database
 from wh_app.supporting.cli import COMMANDS, COMMANDS_EXT
@@ -18,6 +18,10 @@ with Database() as base:
     VIEW_LIST = view_operation.all_view_list()
     for view in VIEW_LIST:
         view(CURSOR)
+
+    SQL_FUNCTIONS_LIST = sql_functions_operations.all_sql_functions_list()
+    for sql_funct in SQL_FUNCTIONS_LIST:
+        sql_funct(CURSOR)
 
     CONNECTION.commit()
 

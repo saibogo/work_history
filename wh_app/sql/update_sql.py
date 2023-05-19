@@ -48,12 +48,12 @@ def sql_inverse_worker_status(worker_id: str) -> str:
     return query.format(worker_id)
 
 
-def sql_update_worker_info(worker_id: str, name: str, sub_name: str,phone_number: str, post_id: str) -> str:
+def sql_update_worker_info(worker_id: str, name: str, sub_name: str,phone_number: str, post_id: str, status: str) -> str:
     """Return the query string to update worker information"""
 
     query = ("""UPDATE %(workers)s SET %(name)s = '{0}', %(sub_name)s = '{1}', """ +
-             """ %(phone_number)s = '{2}', %(post_id)s = {3} WHERE %(id)s = {4}""") % sql_consts_dict
-    return query.format(name, sub_name, phone_number, post_id, worker_id)
+             """ %(phone_number)s = '{2}', %(post_id)s = {3}, %(status)s = '{4}' WHERE %(id)s = {5}""") % sql_consts_dict
+    return query.format(name, sub_name, phone_number, post_id, status, worker_id)
 
 
 def sql_update_work_info(work_id: str, order_info: str, description: str, work_datetime: str) -> str:

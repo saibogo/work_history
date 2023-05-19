@@ -41,6 +41,7 @@ create_work_table = ['Введите причину', 'Введите описа
 
 # All workers tables
 all_workers_table_name = 'Все зарегистрированные сотрудники'
+current_workers_table_name = 'Все сотрудники в штате'
 workers_table = ['ID', 'Фамилия', 'Имя', 'Телефон', 'Статус', 'Должность', 'Действия']
 
 works_days_table_name = 'Распределение сотрудников по предприятиям'

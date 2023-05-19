@@ -505,7 +505,8 @@ def sql_select_worker_info(worker_id: str) -> str:
 def sql_select_table_current_workers() -> str:
     """Return SQL-query contain table workers"""
 
-    return """SELECT * FROM %(workers)s WHERE %(worker_is_work)s""" % sql_consts_dict
+    return ("""SELECT * FROM %(all_workers)s WHERE %(id)s NOT IN """ +\
+           """(SELECT %(id)s FROM %(workers)s WHERE %(status)s = 'fired')""") % sql_consts_dict
 
 
 def sql_select_works_from_worker(id_worker: str) -> str:

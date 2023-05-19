@@ -29,10 +29,10 @@ def invert_worker_status(cursor, worker_id: str) -> None:
 
 
 def update_worker_info(cursor, worker_id: str, name: str, sub_name: str, phone_number: str,
-                       post_id: str) -> None:
+                       post_id: str, status: str) -> None:
     """Update information for selected worker in workers-table"""
 
-    cursor.execute(sql_update_worker_info(worker_id, name, sub_name, phone_number, post_id))
+    cursor.execute(sql_update_worker_info(worker_id, name, sub_name, phone_number, post_id, status))
 
 
 def update_work_info(cursor, work_id: str, order_info: str, description: str, work_datetime: str) -> None:

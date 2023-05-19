@@ -7,6 +7,7 @@ import wh_app.web.universal_html as uhtml
 from wh_app.postgresql.database import Database
 from wh_app.sql_operations import insert_operations
 from wh_app.sql_operations import select_operations
+from wh_app.sql_operations import update_operations
 from wh_app.supporting import functions
 from wh_app.config_and_backup import table_headers
 from wh_app.config_and_backup.config import max_records_in_page
@@ -22,8 +23,9 @@ def create_edit_link_to_worker(worker_id: str) -> str:
 def workers_menu(stylesheet_number: str) -> str:
     """Return main page from WORKERS section"""
     name = 'Действия с сотрудниками'
-    menu = [(1, 'Все зарегистрированные сотрудники'), (2, 'Привязки по предприятиям'), (3, 'Рабочие дни')]
-    links_list = ['/all-workers', '/works-days', 'weekly-chart']
+    menu = [(1, 'Все зарегистрированные сотрудники'), (3, 'Только работающие'), (2, 'Привязки по предприятиям'),
+            (3, 'Рабочие дни')]
+    links_list = ['/all-workers', '/not-fired-workers', '/works-days', 'weekly-chart']
     table = uhtml.universal_table(name, ['№', 'Доступное действие'], menu, True, links_list)
     return web_template.result_page(table, '/', str(stylesheet_number))
 
@@ -43,6 +45,21 @@ def all_workers_table(stylesheet_number: str) -> str:
                                         str(stylesheet_number))
 
 
+def current_workers_table(stylesheet_number: str) -> str:
+    """Return only NOT FIRED workers"""
+    with Database() as base:
+        _, cursor = base
+        current_workers_list = select_operations.get_table_current_workers(cursor)
+        workers = [[elem for elem in worker] + [create_edit_link_to_worker(worker[0])] for worker in current_workers_list]
+        links = ['/performer/' + str(elem[0]) for elem in current_workers_list]
+        table = uhtml.universal_table(table_headers.current_workers_table_name,
+                                      table_headers.workers_table,
+                                      workers, True, links)
+        return web_template.result_page(table,
+                                        '/not-fired-workers',
+                                        str(stylesheet_number))
+
+
 def create_edit_worker_form(worker_id: str, stylesheet_number: str) -> str:
     """Return new form to edit worker information"""
     all_workers_status = {"Работает": "works", "Уволен": "fired", "В отпуске": "on_holyday",
@@ -51,7 +68,6 @@ def create_edit_worker_form(worker_id: str, stylesheet_number: str) -> str:
         _, cursor = base
         try:
             all_workers_posts = select_operations.get_all_posts(cursor)
-            print(all_workers_posts)
             current_post = 0
             avaliable_posts = []
             worker_info = select_operations.get_info_from_worker(cursor, worker_id)
@@ -60,7 +76,6 @@ def create_edit_worker_form(worker_id: str, stylesheet_number: str) -> str:
                     current_post = elem[0]
                 else:
                     avaliable_posts.append(elem)
-            print(worker_info)
             possible_statuses = []
             for key in all_workers_status:
                 if key != worker_info[4]:
@@ -75,6 +90,34 @@ def create_edit_worker_form(worker_id: str, stylesheet_number: str) -> str:
     return web_template.result_page(table,
                                     '/workers',
                                     str(stylesheet_number))
+
+
+def update_worker_information(worker_id: str, data, method, stylesheet_number: str) -> str:
+    """Exam and update information from worker in database"""
+    if method == 'POST':
+        pre_adr = '/all-workers'
+        subname = data[uhtml.WORKER_SUBNAME]
+        name = data[uhtml.WORKER_NAME]
+        phone_number = data[uhtml.PHONE_NUMBER]
+        status = data[uhtml.STATUS]
+        post = data[uhtml.POST]
+        password = data[uhtml.PASSWORD]
+        if functions.is_superuser_password(password):
+            with Database() as base:
+                connection, cursor = base
+                update_operations.update_worker_info(cursor, worker_id, name, subname, phone_number, post, status)
+                connection.commit()
+                return web_template.result_page(uhtml.operation_completed(),
+                                                pre_adr,
+                                                str(stylesheet_number))
+        else:
+            return web_template.result_page(uhtml.pass_is_not_valid(),
+                                            pre_adr,
+                                            str(stylesheet_number))
+    else:
+        return web_template.result_page('Method in Add New Bug not corrected!',
+                                        '/bugs',
+                                        str(stylesheet_number))
 
 
 def weekly_chart_page(stylesheet_number: str) -> str:

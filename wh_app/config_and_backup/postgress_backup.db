@@ -30,6 +30,25 @@ CREATE TYPE public.worker_status AS ENUM (
 
 ALTER TYPE public.worker_status OWNER TO saibogo;
 
+--
+-- Name: worker_status_to_string(public.worker_status); Type: FUNCTION; Schema: public; Owner: saibogo
+--
+
+CREATE FUNCTION public.worker_status_to_string(st public.worker_status) RETURNS text
+    LANGUAGE plpgsql
+    AS $$ 
+    BEGIN 
+    IF st = 'works'::worker_status THEN RETURN  'Работает'::text; 
+    ELSIF st = 'fired'::worker_status THEN RETURN 'Уволен'::text; 
+    ELSIF st = 'on_holyday'::worker_status THEN RETURN 'В отпуске'::text; 
+    ELSE RETURN 'На больничном'::text; 
+    END IF; 
+    END; 
+    $$;
+
+
+ALTER FUNCTION public.worker_status_to_string(st public.worker_status) OWNER TO saibogo;
+
 SET default_tablespace = '';
 
 SET default_with_oids = false;
@@ -71,12 +90,7 @@ CREATE VIEW public.all_workers AS
     workers.sub_name,
     workers.name,
     workers.phone_number,
-        CASE
-            WHEN (workers.status = 'works'::public.worker_status) THEN 'Работает'::text
-            WHEN (workers.status = 'fired'::public.worker_status) THEN 'Уволен'::text
-            WHEN (workers.status = 'on_holyday'::public.worker_status) THEN 'В отпуске'::text
-            ELSE 'На больничном'::text
-        END AS "case",
+    public.worker_status_to_string(workers.status) AS "case",
     posts.post_name
    FROM (public.workers
      JOIN public.posts ON ((posts.id = workers.post_id)))
@@ -808,6 +822,7 @@ COPY public.bugzilla (id, problem, status) FROM stdin;
 35	Необходимо переработать систему статусов для сотрудников. Минимально необходимые значения: Работает, Уволен, В Отпуске, Больничный	f
 36	В меню бота /workers отсутствует текущий статус сотрудника	f
 37	При вызове командой work работы с отсутствующим id в боте нет сообщения о недопустимом id	f
+38	При заполнении отчета о выполненых работах вместо фамилий в списке исполнителей отображаются имена	f
 \.
 
 
@@ -2202,6 +2217,7 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 1248	2	экструдер теста для пасты PamaRoma	P 60	3970	1248	f
 1260	2	камера экспедиции №4	not model	not number	1260	f
 1261	42	система канализации раздача	not model	not number	1261	f
+1262	31	витрина сборная	not model	not number	1262	f
 \.
 
 
@@ -7070,6 +7086,19 @@ COPY public.performers (id, work_id, worker_id) FROM stdin;
 4853	4436	9
 4854	4437	9
 4855	4438	8
+4856	4439	1
+4857	4440	1
+4858	4441	1
+4859	4441	8
+4860	4440	8
+4861	4442	1
+4862	4443	8
+4863	4443	9
+4864	4444	1
+4865	4444	8
+4866	4445	1
+4867	4445	8
+4868	4445	9
 \.
 
 
@@ -11571,6 +11600,13 @@ COPY public.works (id, id_obor, date, problem, result) FROM stdin;
 4436	472	2023-05-16 12:00:00	недостаточное давление воды для работы конвекционной печи	сняты оба 202 фильтра. Давление нормализовалось. Необходима замена фильтров
 4437	1260	2023-05-16 14:00:00	заедает замок открытия двери	Укреплена ответная часть при помощи металлического уголка
 4438	1261	2023-05-17 10:50:00	монтаж дренажа ввитрин	Проложена канализация от витрин + транзиты от ледогенератора пластиковой канализационной трубой Ду 32 мм
+4439	1006	2023-05-17 20:41:01	Протечка воды с потолка возле раздевалки кулинарной фабрики	Течет со стыка труб Ду 100 мм. Предположительно линия служебного туалета Баста. Вероятно засор в трубопроводе. Поставлен в известность руководитель арендатора
+4440	1256	2023-05-18 00:12:38	Настройка насоса	Заменён обратный клапан 1 1/4". Выставлен уровень откачки. Промыта труба и яма
+4441	1262	2023-05-17 22:05:54	Болтается деревянная обналичка	Прикручено на конформат
+4442	1212	2023-05-18 08:44:00	не включается	заменен переключатель с подсветкой на шестиконтактный(гипермаркет дом). Реверс также восстановлен
+4443	616	2023-05-18 14:00:00	насос не откачивает воду из жироуловителя	Диагностика. Оба жироуловителя полностью забиты в первых отсеках жиром. вода во второй либо не поступает вообще, либо поступает очень медленно. Необходима срочная очистка
+4444	365	2023-05-18 20:00:00	не работает охлаждение электронной платы	Заклинен вентилятор обдува. Заменен на 120*120*38 2850 оборотов 220 Вольт (чип и Дип). Родное крепеление не подходит - установлен на винты М4*20 + гайка + контрагайка
+4445	117	2023-05-19 00:15:00	ремонт люстры(ближе к туалетам)	Демонтирована. Часть проводов к патронам Е14 перетянута на ШВВП 2*0,75. Питающий провод заменен на ШВВП. Собрана. Засиликонена входная трубка кабеля в люстру. Заменены все 10 ламп Е14 LED 7-9 Ватт теплый белый
 \.
 
 
@@ -11652,7 +11688,7 @@ SELECT pg_catalog.setval('public.bindings_id_seq', 87, true);
 -- Name: bugzilla_id_seq; Type: SEQUENCE SET; Schema: public; Owner: saibogo
 --
 
-SELECT pg_catalog.setval('public.bugzilla_id_seq', 37, true);
+SELECT pg_catalog.setval('public.bugzilla_id_seq', 38, true);
 
 
 --
@@ -11715,7 +11751,7 @@ SELECT pg_catalog.setval('public.orders_id_seq', 2, true);
 -- Name: performers_id_seq; Type: SEQUENCE SET; Schema: public; Owner: saibogo
 --
 
-SELECT pg_catalog.setval('public.performers_id_seq', 4855, true);
+SELECT pg_catalog.setval('public.performers_id_seq', 4868, true);
 
 
 --
