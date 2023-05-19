@@ -15,3 +15,25 @@ def worker_status_to_text() -> str:
     END IF; 
     END; 
     $$ LANGUAGE plpgsql;"""
+
+
+def bug_status_to_text() -> str:
+    """Create or replace SQL function mapping bug_status to text"""
+    return """CREATE OR REPLACE FUNCTION bug_status_to_string(st bool) RETURNS text AS $$ 
+    BEGIN 
+    IF st = true THEN RETURN 'В обработке'::text; 
+    ELSE RETURN 'Решено'::text; 
+    END IF; 
+    END; 
+    $$ LANGUAGE plpgsql;"""
+
+
+def point_status_to_text() -> str:
+    """Create or replace SQL function mapping point_status to text"""
+    return """CREATE OR REPLACE FUNCTION point_status_to_string(st bool) RETURNS text AS $$ 
+    BEGIN 
+    IF st = true THEN RETURN 'Работает'::text; 
+    ELSE RETURN 'Не работает'::text; 
+    END IF; 
+    END; 
+    $$ LANGUAGE plpgsql;"""

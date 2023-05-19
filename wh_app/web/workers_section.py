@@ -56,17 +56,18 @@ def current_workers_table(stylesheet_number: str) -> str:
                                       table_headers.workers_table,
                                       workers, True, links)
         return web_template.result_page(table,
-                                        '/not-fired-workers',
+                                        '/workers',
                                         str(stylesheet_number))
 
 
 def create_edit_worker_form(worker_id: str, stylesheet_number: str) -> str:
     """Return new form to edit worker information"""
-    all_workers_status = {"Работает": "works", "Уволен": "fired", "В отпуске": "on_holyday",
-                          "На больничном": "on_a_sick_leave"}
+
     with Database() as base:
         _, cursor = base
         try:
+            description = select_operations.get_all_desriptions_workers_status(cursor)
+            all_workers_status = {elem[1]: elem[0] for elem in description}
             all_workers_posts = select_operations.get_all_posts(cursor)
             current_post = 0
             avaliable_posts = []

@@ -515,3 +515,10 @@ def get_works_from_performer_and_date(cursor, worker_id: str, date_start: str, d
     if page_num == 0 then ot use limit for record in page"""
 
     return select_sql.sql_select_works_from_performer_and_date(worker_id, date_start, date_stop, page_num)
+
+
+@get_selected_decorator
+def get_all_desriptions_workers_status(cursor) -> List[Tuple]:
+    """Return list of pairs (worker_status. description)"""
+
+    return select_sql.sql_select_all_description_worker_status()

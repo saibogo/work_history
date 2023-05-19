@@ -31,6 +31,40 @@ CREATE TYPE public.worker_status AS ENUM (
 ALTER TYPE public.worker_status OWNER TO saibogo;
 
 --
+-- Name: bug_status_to_string(boolean); Type: FUNCTION; Schema: public; Owner: saibogo
+--
+
+CREATE FUNCTION public.bug_status_to_string(st boolean) RETURNS text
+    LANGUAGE plpgsql
+    AS $$ 
+    BEGIN 
+    IF st = true THEN RETURN 'В обработке'::text; 
+    ELSE RETURN 'Решено'::text; 
+    END IF; 
+    END; 
+    $$;
+
+
+ALTER FUNCTION public.bug_status_to_string(st boolean) OWNER TO saibogo;
+
+--
+-- Name: point_status_to_string(boolean); Type: FUNCTION; Schema: public; Owner: saibogo
+--
+
+CREATE FUNCTION public.point_status_to_string(st boolean) RETURNS text
+    LANGUAGE plpgsql
+    AS $$ 
+    BEGIN 
+    IF st = true THEN RETURN 'Работает'::text; 
+    ELSE RETURN 'Не работает'::text; 
+    END IF; 
+    END; 
+    $$;
+
+
+ALTER FUNCTION public.point_status_to_string(st boolean) OWNER TO saibogo;
+
+--
 -- Name: worker_status_to_string(public.worker_status); Type: FUNCTION; Schema: public; Owner: saibogo
 --
 
@@ -1844,7 +1878,6 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 923	4	диваны модульные	not model	not number	923	f
 924	28	система отопления	not model	not number	924	f
 925	3	жалюзи входная гостевая группа	not model	not number	925	f
-523	3	плита индукционная 4 комфорки Челябторгтехника	ПЭИ-4 "Новая Энергия"	not number	523	f
 926	9	витрина нейтральная для выпечки	not model	not number	926	f
 927	25	рекламное оборудование	not model	not number	927	f
 928	7	витрина сборная охлаждаемая	not model	not number	928	f
@@ -2218,6 +2251,8 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 1260	2	камера экспедиции №4	not model	not number	1260	f
 1261	42	система канализации раздача	not model	not number	1261	f
 1262	31	витрина сборная	not model	not number	1262	f
+1263	41	плита индукционная 4 комфорки Челябторгтехника	ПЭИ-4 	not number	523	f
+523	3	плита индукционная 4 комфорки Челябторгтехника	ПЭИ-4 "Новая Энергия"	not number	523	t
 \.
 
 
@@ -7099,6 +7134,8 @@ COPY public.performers (id, work_id, worker_id) FROM stdin;
 4866	4445	1
 4867	4445	8
 4868	4445	9
+4869	4446	1
+4870	4447	1
 \.
 
 
@@ -11607,6 +11644,8 @@ COPY public.works (id, id_obor, date, problem, result) FROM stdin;
 4443	616	2023-05-18 14:00:00	насос не откачивает воду из жироуловителя	Диагностика. Оба жироуловителя полностью забиты в первых отсеках жиром. вода во второй либо не поступает вообще, либо поступает очень медленно. Необходима срочная очистка
 4444	365	2023-05-18 20:00:00	не работает охлаждение электронной платы	Заклинен вентилятор обдува. Заменен на 120*120*38 2850 оборотов 220 Вольт (чип и Дип). Родное крепеление не подходит - установлен на винты М4*20 + гайка + контрагайка
 4445	117	2023-05-19 00:15:00	ремонт люстры(ближе к туалетам)	Демонтирована. Часть проводов к патронам Е14 перетянута на ШВВП 2*0,75. Питающий провод заменен на ШВВП. Собрана. Засиликонена входная трубка кабеля в люстру. Заменены все 10 ламп Е14 LED 7-9 Ватт теплый белый
+4446	523	2023-05-19 13:19:00	Перемещение оборудования	Перемещено из ПБ Худсалон в Перечень списанного оборудования.
+4447	28	2023-05-19 13:49:00	посторонний шум и вибрация при работе двигателя №1	Временно переключен на однодвигательный режим. Необходимо вскрытие и диагностика. Двигатель не заклинен но откачка не происходит. Скорее всего сорвана турбина и двигатель нуждается в замене
 \.
 
 
@@ -11751,7 +11790,7 @@ SELECT pg_catalog.setval('public.orders_id_seq', 2, true);
 -- Name: performers_id_seq; Type: SEQUENCE SET; Schema: public; Owner: saibogo
 --
 
-SELECT pg_catalog.setval('public.performers_id_seq', 4868, true);
+SELECT pg_catalog.setval('public.performers_id_seq', 4870, true);
 
 
 --

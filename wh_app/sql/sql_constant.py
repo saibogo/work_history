@@ -53,14 +53,14 @@ equip_const = {"oborudovanie": "oborudovanie",
                "id_obor": "id_obor",
                }
 
-replace_consts = {"cast_open_close": "CASE WHEN is_work = true THEN 'Работает' ELSE 'Закрыто' END",
+replace_consts = {"cast_open_close": "point_status_to_string(is_work)",
                   "point_working": "is_work = true",
                   "worker_is_work": "workers.status != 'fired'",
                   "select_main_binding": "SELECT sub_name FROM workers WHERE" +
                                          " workers.id = bindings.worker_id " +
                                          "AND bindings.is_main = true",
                   "worker_status": 'worker_status_to_string(workers.status) AS "case"',
-                  "bug_in_work": "CASE WHEN status = true THEN 'В работе' ELSE 'Исправлено' END"
+                  "bug_in_work": "bug_status_to_string(status)"
                   }
 
 point_consts = {"point_id": "point_id",

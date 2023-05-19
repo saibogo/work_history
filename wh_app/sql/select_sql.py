@@ -718,3 +718,11 @@ def sql_select_worker_id_like_str(pattern: str) -> str:
     query = """SELECT %(id)s FROM %(workers)s WHERE LOWER(%(name)s) = LOWER('{0}') 
     OR LOWER(%(sub_name)s) = LOWER('{0}')""" % sql_consts_dict
     return query.format(pattern)
+
+
+def sql_select_all_description_worker_status() -> str:
+    """Return query contain select to all pairs [status - description]"""
+
+    query = """SELECT name_status, worker_status_to_string(name_status) AS desript
+    FROM (SELECT unnest(enum_range(NULL::worker_status)) AS name_status) AS t;"""
+    return query

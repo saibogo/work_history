@@ -18,12 +18,24 @@ def create_function(cursor, sql: str) -> None:
     cursor.execute(sql)
 
 
-def create_or_replace_status_to_text(cursor) ->None:
+def create_or_replace_status_to_text(cursor) -> None:
     """Add or replace in database function worker_status to text"""
     create_function(cursor, functions_sql.worker_status_to_text())
+
+
+def create_or_replace_bug_status_to_text(cursor) -> None:
+    """Add or replace in database function bug_status to text"""
+    create_function(cursor, functions_sql.bug_status_to_text())
+
+
+def create_or_replace_point_status_to_text(cursor) -> None:
+    """Add or replace in database function bug_status to text"""
+    create_function(cursor, functions_sql.point_status_to_text())
 
 
 def all_sql_functions_list() -> list:
     """Return list contain all function to create virtual tables"""
 
-    return [create_or_replace_status_to_text]
+    return [create_or_replace_status_to_text,
+            create_or_replace_bug_status_to_text,
+            create_or_replace_point_status_to_text]
