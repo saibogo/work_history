@@ -101,9 +101,8 @@ def sql_select_work_to_equipment_id(id_equip: str) -> str:
         WHERE id IN (SELECT id FROM works WHERE id_obor = 157)
         ORDER BY date
         """
-
     query = ("""SELECT * FROM %(works_likes)s WHERE %(id)s IN """ +
-             """(SELECT %(id)s FROM %(works)s WHERE %(id_obor)s = {0})""" +
+             """(SELECT * FROM all_works_from_equip({0}))""" +
              """ ORDER BY %(date)s""") % sql_consts_dict
 
     return query.format(id_equip)
@@ -119,7 +118,7 @@ def sql_select_last_work_to_equipment_id(id_equip: str) -> str:
         """
 
     query = ("""SELECT * FROM(SELECT * FROM %(works_likes)s WHERE %(id)s IN """ +
-             """(SELECT %(id)s FROM %(works)s WHERE %(id_obor)s = {0})""" +
+             """(SELECT * FROM all_works_from_equip({0}))""" +
              """ ORDER BY %(date)s DESC LIMIT {1}) tmp ORDER BY %(date)s""") % sql_consts_dict
 
     return query.format(id_equip, config.max_records_in_page() * 2)
@@ -134,9 +133,8 @@ def sql_select_work_from_equip_id_limit(id_equip: str, page_num: int) -> str:
         ORDER BY date
         LIMIT 5 OFFSET 25
         """
-
     query = ("""SELECT * FROM %(works_likes)s WHERE %(id)s IN """ +
-             """(SELECT %(id)s FROM %(works)s WHERE %(id_obor)s = {0})""" +
+             """(SELECT * FROM all_works_from_equip({0}))""" +
              """ ORDER BY %(date)s LIMIT {1} OFFSET {2}""") % sql_consts_dict
 
     return query.format(id_equip,
@@ -658,7 +656,7 @@ def sql_select_all_weekly_chart() -> str:
 
     query = ("""SELECT %(workers)s.%(sub_name)s, day1, day2, day3, day4, day5, day6, day7 """ +
              """FROM %(works_days)s JOIN %(workers)s """ +
-             """ON %(works_days)s.%(worker_id)s = %(workers)s.%(id)s AND %(workers)s.%(is_work)s = True """ +
+             """ON %(works_days)s.%(worker_id)s = %(workers)s.%(id)s AND %(workers)s.%(status)s != 'fired' """ +
              """ORDER BY %(workers)s.%(sub_name)s;""") % sql_consts_dict
 
     return query

@@ -37,3 +37,10 @@ def point_status_to_text() -> str:
     END IF; 
     END; 
     $$ LANGUAGE plpgsql;"""
+
+
+def all_works_from_equip_id_funct() -> str:
+    """Create or replace SQL function return SELECT all works from equip_id to text"""
+    return """CREATE OR REPLACE FUNCTION all_works_from_equip(eid integer) RETURNS Table(id integer) AS $$ 
+    SELECT id FROM works where id_obor = eid; 
+    $$ LANGUAGE sql;"""

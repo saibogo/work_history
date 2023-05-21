@@ -33,9 +33,15 @@ def create_or_replace_point_status_to_text(cursor) -> None:
     create_function(cursor, functions_sql.point_status_to_text())
 
 
+def create_or_replace_all_works_from_equip(cursor) -> None:
+    """Add or replace in database function works from equip_id to text"""
+    create_function(cursor, functions_sql.all_works_from_equip_id_funct())
+
+
 def all_sql_functions_list() -> list:
     """Return list contain all function to create virtual tables"""
 
     return [create_or_replace_status_to_text,
             create_or_replace_bug_status_to_text,
-            create_or_replace_point_status_to_text]
+            create_or_replace_point_status_to_text,
+            create_or_replace_all_works_from_equip]

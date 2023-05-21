@@ -31,6 +31,19 @@ CREATE TYPE public.worker_status AS ENUM (
 ALTER TYPE public.worker_status OWNER TO saibogo;
 
 --
+-- Name: all_works_from_equip(integer); Type: FUNCTION; Schema: public; Owner: saibogo
+--
+
+CREATE FUNCTION public.all_works_from_equip(eid integer) RETURNS TABLE(id integer)
+    LANGUAGE sql
+    AS $$ 
+    SELECT id FROM works where id_obor = eid; 
+    $$;
+
+
+ALTER FUNCTION public.all_works_from_equip(eid integer) OWNER TO saibogo;
+
+--
 -- Name: bug_status_to_string(boolean); Type: FUNCTION; Schema: public; Owner: saibogo
 --
 
@@ -249,32 +262,6 @@ ALTER TABLE public.customer_id_seq OWNER TO saibogo;
 --
 
 ALTER SEQUENCE public.customer_id_seq OWNED BY public.customer.id;
-
-
---
--- Name: days_names; Type: TABLE; Schema: public; Owner: saibogo
---
-
-CREATE TABLE public.days_names (
-    id integer NOT NULL,
-    name text NOT NULL
-);
-
-
-ALTER TABLE public.days_names OWNER TO saibogo;
-
---
--- Name: days_names_id_seq; Type: SEQUENCE; Schema: public; Owner: saibogo
---
-
-ALTER TABLE public.days_names ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
-    SEQUENCE NAME public.days_names_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1
-);
 
 
 --
@@ -811,6 +798,17 @@ COPY public.bindings (id, worker_id, point_id, is_main) FROM stdin;
 85	1	30	f
 86	8	34	f
 87	1	35	f
+88	9	10	t
+89	9	5	t
+90	9	12	t
+91	8	42	t
+92	1	42	f
+93	8	36	t
+94	9	36	f
+95	9	40	f
+96	8	40	t
+97	1	40	f
+98	9	2	f
 \.
 
 
@@ -844,7 +842,6 @@ COPY public.bugzilla (id, problem, status) FROM stdin;
 16	при использовании пункта меню Поиск работы по ID в таблице не отображается колонка с действиями	f
 22	необходимо реализовать возможность менять статус проблемы из веб-интерфейса и телеграм-бота	f
 23	при работе через телеграмм бот не всегда сбрасывается клавиатура при переходе к другой команде	f
-26	нет привязок Дмитрия Шерстобитова в таблицах привязок по предприятиям. Также не отображаются его рабочие дни	t
 27	Полученные браузером страницы содержат часть пустых ссылок	f
 28	изменение статуса проблемы происходит в старой версии веб-интерфейса	f
 29	сводная техническая информация по предприятию отображается в старом варианте браузерного исполнения и полностью отсутствует в версии для телеграмм-бота	f
@@ -853,10 +850,13 @@ COPY public.bugzilla (id, problem, status) FROM stdin;
 32	некоректно отображается история перемещения оборудования	f
 33	Необходимо реализовать функцию поиска работы по конкретному id	f
 34	Необходимо изменить тип данных для хранения описания договоров. При большом количестве информации возникает ошибка значение не умещается в тип character varying(255)	f
+26	нет привязок Дмитрия Шерстобитова в таблицах привязок по предприятиям. Также не отображаются его рабочие дни	f
 35	Необходимо переработать систему статусов для сотрудников. Минимально необходимые значения: Работает, Уволен, В Отпуске, Больничный	f
 36	В меню бота /workers отсутствует текущий статус сотрудника	f
 37	При вызове командой work работы с отсутствующим id в боте нет сообщения о недопустимом id	f
 38	При заполнении отчета о выполненых работах вместо фамилий в списке исполнителей отображаются имена	f
+40	Необходимо реализовать возможность изменения привязок непосредственно из WEB-интерфейса	t
+39	таблица days_names не имеет связей с другими таблицами. Необходимо проверить ее использование в программе	f
 \.
 
 
@@ -892,21 +892,6 @@ COPY public.cold_water (id, point_id, treaty, resume) FROM stdin;
 
 COPY public.customer (id, hash_pass, full_name) FROM stdin;
 1	52380570359700838927303160461451880435941242634047643826816963312413378430196	Глейх Андрей
-\.
-
-
---
--- Data for Name: days_names; Type: TABLE DATA; Schema: public; Owner: saibogo
---
-
-COPY public.days_names (id, name) FROM stdin;
-1	понедельник
-2	вторник
-3	среда
-4	четверг
-5	пятница
-6	суббота
-7	воскресенье
 \.
 
 
@@ -2253,6 +2238,7 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 1262	31	витрина сборная	not model	not number	1262	f
 1263	41	плита индукционная 4 комфорки Челябторгтехника	ПЭИ-4 	not number	523	f
 523	3	плита индукционная 4 комфорки Челябторгтехника	ПЭИ-4 "Новая Энергия"	not number	523	t
+1264	10	телевизор LG(зона окна первый этаж)	not model	not number	1264	f
 \.
 
 
@@ -7136,6 +7122,17 @@ COPY public.performers (id, work_id, worker_id) FROM stdin;
 4868	4445	9
 4869	4446	1
 4870	4447	1
+4871	4448	1
+4872	4449	1
+4873	4450	1
+4874	4451	1
+4875	4452	1
+4876	4453	1
+4877	4454	1
+4878	4454	6
+4879	4455	8
+4880	4456	8
+4881	4457	1
 \.
 
 
@@ -11646,6 +11643,16 @@ COPY public.works (id, id_obor, date, problem, result) FROM stdin;
 4445	117	2023-05-19 00:15:00	ремонт люстры(ближе к туалетам)	Демонтирована. Часть проводов к патронам Е14 перетянута на ШВВП 2*0,75. Питающий провод заменен на ШВВП. Собрана. Засиликонена входная трубка кабеля в люстру. Заменены все 10 ламп Е14 LED 7-9 Ватт теплый белый
 4446	523	2023-05-19 13:19:00	Перемещение оборудования	Перемещено из ПБ Худсалон в Перечень списанного оборудования.
 4447	28	2023-05-19 13:49:00	посторонний шум и вибрация при работе двигателя №1	Временно переключен на однодвигательный режим. Необходимо вскрытие и диагностика. Двигатель не заклинен но откачка не происходит. Скорее всего сорвана турбина и двигатель нуждается в замене
+4448	304	2023-05-20 09:18:00	текущий ремонт	Демонтирован и заменен нижний ТЭН парового бойлера. (Перфи Урал). Провода нового ТЭНа короткие и пришлось их нарастить. Вычищена помпа парогенератора. Бойлер насколько возможно очищен от накипи(примерно 4 килограмма). Режимы восстановлены
+4449	28	2023-05-20 10:20:00	текущий ремонт	Вычищен двигатель №1(ближний). состав засора - вискозные салфетки и тряпки. Вибрация при работе снизилась, но периодически наблюдается.
+4450	28	2023-05-20 11:17:00	сорвало хомут на обратном клапане двигателя №1	Укрепил, насколько возможно. Необходимо менять патрубок от насоса к обратному клапану - полностью стерся ограничительный бортик.
+4451	89	2023-05-20 12:10:24	Жалобы персонала на то, что машина не набирает воду	Диагностика. Машина исправна. Забиты магистральные фильтры предприятия. Набор воды медленный из за низкого давления на выходе фильтров
+4452	1015	2023-05-20 12:45:08	Подключение нового кондиционера	На данный момент трехфазное питание подано с автомата вытяжной вентиляции. Расположить новый трёхфазный автомат в щите нет возможности - только выносить в отдельный бокс на стену
+4453	1264	2023-05-20 13:44:38	Не выходит из режима загрузки ПО	После снятия питания и повторного включения ситуация не изменилась. Предположительно повреждение материнской платы после отключения э/э ночью. Необходима передача в сервисный центр для диагностики и ремонта
+4454	115	2023-05-20 22:06:00	температура в серверной 50 градусов цельсия	Диагностика. Заклинен компрессор. Показания обмоток 4,1 2,1 и 2 Ом. Пускатель, вентилятор и конденсатор проверены - исправны. Необходима замена внешнего блока и заправка 410 Фреоном
+4455	673	2023-05-21 02:15:00	замена плитки по требованию администрации ТЦ	заменено 8 плиток при входе (мойка фарфора). старый клей полностью удален. Температурный слой пропенен
+4456	105	2023-05-21 08:50:00	замена фильтров	Ключи от Big Blue корпусов утеряны. заменено 20" 20 микрон, 10 микрон и Викинг B150+ (Аквафор Урал)
+4457	104	2023-05-21 09:07:00	заклинена	снят бункер. Кофемолка вычищена от отработанного кофе. Запущено. Необходима точная настройка помола
 \.
 
 
@@ -11720,14 +11727,14 @@ COPY public.workspoints (point_id, point_name, point_address, is_work) FROM stdi
 -- Name: bindings_id_seq; Type: SEQUENCE SET; Schema: public; Owner: saibogo
 --
 
-SELECT pg_catalog.setval('public.bindings_id_seq', 87, true);
+SELECT pg_catalog.setval('public.bindings_id_seq', 98, true);
 
 
 --
 -- Name: bugzilla_id_seq; Type: SEQUENCE SET; Schema: public; Owner: saibogo
 --
 
-SELECT pg_catalog.setval('public.bugzilla_id_seq', 38, true);
+SELECT pg_catalog.setval('public.bugzilla_id_seq', 40, true);
 
 
 --
@@ -11742,13 +11749,6 @@ SELECT pg_catalog.setval('public.cold_water_id_seq', 18, true);
 --
 
 SELECT pg_catalog.setval('public.customer_id_seq', 1, true);
-
-
---
--- Name: days_names_id_seq; Type: SEQUENCE SET; Schema: public; Owner: saibogo
---
-
-SELECT pg_catalog.setval('public.days_names_id_seq', 7, true);
 
 
 --
@@ -11790,7 +11790,7 @@ SELECT pg_catalog.setval('public.orders_id_seq', 2, true);
 -- Name: performers_id_seq; Type: SEQUENCE SET; Schema: public; Owner: saibogo
 --
 
-SELECT pg_catalog.setval('public.performers_id_seq', 4870, true);
+SELECT pg_catalog.setval('public.performers_id_seq', 4881, true);
 
 
 --
@@ -11850,14 +11850,6 @@ ALTER TABLE ONLY public.cold_water
 
 ALTER TABLE ONLY public.customer
     ADD CONSTRAINT customer_pkey PRIMARY KEY (id);
-
-
---
--- Name: days_names days_names_pkey; Type: CONSTRAINT; Schema: public; Owner: saibogo
---
-
-ALTER TABLE ONLY public.days_names
-    ADD CONSTRAINT days_names_pkey PRIMARY KEY (id);
 
 
 --
