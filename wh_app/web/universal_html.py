@@ -18,6 +18,7 @@ ON_OFF_CHAR = '&#9211'
 PAPERS_CHAR = '&#128441;'
 SVU_CHAR = '&#9889;'
 EDIT_CHAR = '&#9998'
+BINDING_CHAR = '🔨'
 REMOVE_CHAR = 'A&#8646;B'
 TABLE_REMOVE_CHAR = '&#8694'
 SPACE_CHAR = '&nbsp;'
@@ -53,11 +54,14 @@ ORDER_INFO = "order_info"
 BUG_ID = "bug_id"
 RESUME = "resume"
 DOGOVOR = "dogovor"
+WORKER_ID = "worker_id"
 WORKER_NAME = "name"
 WORKER_SUBNAME = "subname"
+TYPE_BINDINGS = "is_main"
 PHONE_NUMBER = "phone_number"
 STATUS = "status"
 POST = "post"
+BINDING_ID = "id"
 
 
 def link_or_str(elem: str, link_type: bool = False, link: str = '') -> str:

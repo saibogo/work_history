@@ -399,6 +399,12 @@ def get_alter_works_days_table(cursor) -> list:
 
 
 @get_selected_decorator
+def get_all_bindings_to_point(cursor, point_id: str) -> List[Tuple[int, str, bool]]:
+    """Return list, contain all bindings in current point"""
+    return select_sql.sql_select_all_bindings_to_point(point_id)
+
+
+@get_selected_decorator
 def get_all_bugz_in_bugzilla(cursor) -> list:
     """Function return all records in bugzilla"""
     return select_sql.sql_select_all_bugs_in_bugzilla()

@@ -69,3 +69,10 @@ def sql_insert_tech_section(point_id: str, section: str, dogovor: str, resume: s
 
     query = """INSERT INTO {0} (%(point_id)s, %(treaty)s, %(resume)s) VALUES ({1}, '{2}', '{3}')""" % sql_consts_dict
     return query.format(tech_tables[section], point_id, dogovor, resume)
+
+
+def sql_insert_new_binding(point_id: str, worker_id: str, is_main: str) -> str:
+    """Return SQL-string to insert new bindings in database"""
+    query = """INSERT INTO %(bindings)s (%(worker_id)s, %(point_id)s, %(is_main)s)
+     VALUES ({0}, {1}, {2})""" % sql_consts_dict
+    return query.format(worker_id, point_id, is_main)

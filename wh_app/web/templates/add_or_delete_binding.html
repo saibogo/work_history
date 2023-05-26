@@ -1,0 +1,72 @@
+<h2>Редактирование привязок сотрудников</h2>
+<h2>Добавить привязку</h2>
+<div class="container">
+    <form action="/add-new-binding" method="post">
+        <input type="hidden" name="{{point_id}}" value="{{point_num}}">
+        <div class="tr_div_login">
+            <div class="faq_quest">Служебное название:</div>
+            <div class="faq_answer">
+                <div class="text_info">{{point[0]}}</div>
+            </div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Сотрудник</div>
+            <div class="faq_answer">
+                <select class="div_select" name="{{worker_id}}">
+                    {% for worker in workers %}
+                    <option value="{{worker[0]}}">{{worker[1]}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Тип привязки</div>
+            <div class="faq_answer">
+                <select class="div_select" name="{{type_binding}}">
+                    <option value="true">Основная</option>
+                    <option value="false">Вторичная</option>
+                </select>
+            </div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Пароль администратора:</div>
+            <div class="faq_answer"><input type="password" name="{{password}}"></div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest"></div>
+            <div class="faq_answer"><input type="submit" value="Применить изменения"></div>
+        </div>
+    </form>
+</div>
+<br>
+<br>
+<h2>Удалить привязку</h2>
+<div class="container">
+    <form action="/remove-binding" method="post">
+        <input type="hidden" name="{{point_id}}" value="{{point_num}}">
+        <div class="tr_div_login">
+            <div class="faq_quest">Служебное название:</div>
+            <div class="faq_answer">
+                <div class="text_info">{{point[0]}}</div>
+            </div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Действующие</div>
+            <div class="faq_answer">
+                <select class="div_select" name="{{binding_id}}">
+                    {% for bind in current_bindings %}
+                    <option value="{{bind[0]}}">{{bind[1]}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Пароль администратора:</div>
+            <div class="faq_answer"><input type="password" name="{{password}}"></div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest"></div>
+            <div class="faq_answer"><input type="submit" value="Применить изменения"></div>
+        </div>
+    </form>
+</div>

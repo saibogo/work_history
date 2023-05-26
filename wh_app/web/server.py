@@ -21,11 +21,11 @@ from wh_app.web.find_section import find_page, find_method, find_work_paging,\
 from wh_app.web.points_section import points_operations, all_points_table,\
     create_new_point_page, add_point_method, all_works_points_table,\
     edit_point_method, upgrade_point_method, on_off_point_method, \
-    invert_point_status_method, point_tech_info, edit_tech_section, edit_point_tech_method
+    invert_point_status_method, point_tech_info, edit_tech_section, edit_point_tech_method, create_bindings_form
 from wh_app.web.workers_section import workers_menu, all_workers_table,\
     works_days_page, works_from_performers_table, add_performer_to_work,\
     add_performer_result_method, weekly_chart_page, create_edit_worker_form, update_worker_information,\
-    current_workers_table
+    current_workers_table, create_new_binding_method, delete_binding_method
 from wh_app.web.works_section import works_menu, find_work_to_id_page,\
     select_work_to_id_method, work_to_equip_paging, add_work_method, create_edit_work_form, update_work_method
 from wh_app.web.bugs_section import bugs_menu, all_bugs_table, all_bugs_in_work_table,\
@@ -212,6 +212,28 @@ def invert_point_status() -> Response:
     return goto_or_redirect(lambda: invert_point_status_method(functions.form_to_data(request.form),
                                                                request.method,
                                                                stylesheet_number()))
+
+
+@app.route("/edit-bindings/<point_id>")
+def edit_bindings_in_point(point_id: str) -> Response:
+    """Go to page with edit bindings forms"""
+    return goto_or_redirect(lambda: create_bindings_form(point_id, stylesheet_number()))
+
+
+@app.route("/add-new-binding", methods=['POST'])
+def add_new_binding() -> Response:
+    """Redirect to method analyze data for new binding"""
+    return goto_or_redirect(lambda: create_new_binding_method(functions.form_to_data(request.form),
+                                                              request.method,
+                                                              stylesheet_number()))
+
+
+@app.route("/remove-binding", methods=['POST'])
+def remove_binding() -> Response:
+    """Redirect to method. delete current binding"""
+    return goto_or_redirect(lambda: delete_binding_method(functions.form_to_data(request.form),
+                                                          request.method,
+                                                          stylesheet_number()))
 
 
 @app.route("/equip/<point_id>")

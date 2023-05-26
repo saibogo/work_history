@@ -569,6 +569,13 @@ def sql_select_alter_works_days() -> str:
     return """SELECT * FROM %(seconds_bindings)s ORDER BY %(point)s""" % sql_consts_dict
 
 
+def sql_select_all_bindings_to_point(point_id: str):
+    """Return SQL to all workers bindings in current point"""
+    query = """SELECT %(bindings)s.%(id)s, %(sub_name)s, %(is_main)s FROM %(bindings)s 
+    JOIN %(workers)s ON %(bindings)s.%(worker_id)s = %(workers)s.%(id)s WHERE %(point_id)s = {0}""" % sql_consts_dict
+    return query.format(point_id)
+
+
 def sql_select_all_bugs_in_bugzilla() -> str:
     """Return all records in bugzilla table"""
 

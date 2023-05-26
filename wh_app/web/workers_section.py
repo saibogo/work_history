@@ -8,6 +8,7 @@ from wh_app.postgresql.database import Database
 from wh_app.sql_operations import insert_operations
 from wh_app.sql_operations import select_operations
 from wh_app.sql_operations import update_operations
+from wh_app.sql_operations import delete_operations
 from wh_app.supporting import functions
 from wh_app.config_and_backup import table_headers
 from wh_app.config_and_backup.config import max_records_in_page
@@ -120,6 +121,55 @@ def update_worker_information(worker_id: str, data, method, stylesheet_number: s
                                         '/bugs',
                                         str(stylesheet_number))
 
+
+def create_new_binding_method(data, method, stylesheet_number: str) -> str:
+    """Examine data and add new binding if data correct"""
+    if method == 'POST':
+        pre_adr = '/works-points'
+        point_id = data[uhtml.POINT_ID]
+        worker_id = data[uhtml.WORKER_ID]
+        is_main = data[uhtml.TYPE_BINDINGS]
+        password = data[uhtml.PASSWORD]
+        if functions.is_superuser_password(password):
+            with Database() as base:
+                connection, cursor = base
+                insert_operations.insert_new_binding(cursor, point_id, worker_id, is_main)
+                connection.commit()
+                return web_template.result_page(uhtml.operation_completed(),
+                                                pre_adr,
+                                                str(stylesheet_number))
+        else:
+            return web_template.result_page(uhtml.pass_is_not_valid(),
+                                            pre_adr,
+                                            str(stylesheet_number))
+    else:
+        return web_template.result_page('Method in Add New Bug not corrected!',
+                                        '/works-points',
+                                        str(stylesheet_number))
+
+
+def delete_binding_method(data, method, stylesheet_number: str) -> str:
+    """Examine data and if OK delete selected binding in database"""
+    if method == 'POST':
+        pre_adr = '/works-points'
+        password = data[uhtml.PASSWORD]
+        binding_id = data[uhtml.BINDING_ID]
+        if functions.is_superuser_password(password):
+            with Database() as base:
+                connection, cursor = base
+                delete_operations.delete_binding(cursor, binding_id)
+                connection.commit()
+                return web_template.result_page(uhtml.operation_completed(),
+                                                pre_adr,
+                                                str(stylesheet_number))
+        else:
+            return web_template.result_page(uhtml.pass_is_not_valid(),
+                                            pre_adr,
+                                            str(stylesheet_number))
+    else:
+        return web_template.result_page('Method in Add New Bug not corrected!',
+                                        '/works-points',
+                                        str(stylesheet_number))
 
 def weekly_chart_page(stylesheet_number: str) -> str:
     """Return page, contain all works days from all workers"""

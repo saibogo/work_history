@@ -45,3 +45,9 @@ def insert_tech_section(cursor, section: str, point_id: str, dogovor: str, resum
     cursor.execute(sql_insert_tech_section(point_id, section, dogovor, resume))
 
 
+def insert_new_binding(cursor, point_id: str, worker_id: str, is_main: str) -> None:
+    """Update information from bindings section"""
+
+    cursor.execute(sql_insert_new_binding(point_id, worker_id, is_main))
+
+
