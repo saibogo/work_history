@@ -1,0 +1,38 @@
+<h2>Выбор оборудования для переноса работы</h2>
+<form action="/replace-work-to-equip-method" method="post">
+    <div class="container">
+        <input type="hidden" name="{{work_id_name}}" value="{{work_id}}">
+        <div class="tr_div_login">
+            <div class="faq_quest">{{work_id_name}}:</div>
+            <div class="faq_answer">{{work_id}}</div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">{{point_id_name}}:</div>
+            <div class="faq_answer">{{point_id}}</div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Содержание:</div>
+            <div class="faq_answer">{{work_description}}</div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Перенести в: </div>
+            <div class="faq_answer">
+                <select class="div_select" name="{{equip_id_name}}">
+                    {% for equip in all_equips %}
+                    <option value="{{equip[0]}}">{{equip[2]}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="tr_div_login">
+        <div class="faq_quest">Пароль суперпользователя:</div>
+        <div class="faq_answer">
+            <input type="password"  name="{{password}}" placeholder="Обязательно" required/>
+        </div>
+    </div>
+    <div class="tr_div_login">
+        <div class="faq_quest">Перенести работу</div>
+        <div class="faq_answer"><input type="submit" value="Применить"></div>
+    </div>
+    </div>
+</form>

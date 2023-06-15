@@ -27,7 +27,8 @@ from wh_app.web.workers_section import workers_menu, all_workers_table,\
     add_performer_result_method, weekly_chart_page, create_edit_worker_form, update_worker_information,\
     current_workers_table, create_new_binding_method, delete_binding_method
 from wh_app.web.works_section import works_menu, find_work_to_id_page,\
-    select_work_to_id_method, work_to_equip_paging, add_work_method, create_edit_work_form, update_work_method
+    select_work_to_id_method, work_to_equip_paging, add_work_method, create_edit_work_form, update_work_method,\
+    select_new_point_for_work_form, select_new_equip_for_work_form, move_work_to_new_equip
 from wh_app.web.bugs_section import bugs_menu, all_bugs_table, all_bugs_in_work_table,\
     add_bugs_result_table, create_invert_bug_status_form, invert_bug_status_method, all_bugs_table_limit,\
     all_bugs_in_work_limit
@@ -366,6 +367,27 @@ def update_work_to_id(work_id: int) -> Response:
 def work_to_equip(equip_id: int) -> Response:
     """Redirect to first page in ALL work from EQUIP where EQUIP_ID=equip_id"""
     return goto_or_redirect(lambda: redirect('/work/{0}/page/1'.format(equip_id)))
+
+
+@app.route("/replace-work-to-point/<work_id>")
+def replace_work_to_point(work_id: int) -> Response:
+    """Redirect to new form to select new point for work"""
+    return goto_or_redirect(lambda: select_new_point_for_work_form(work_id, stylesheet_number()))
+
+
+@app.route("/replace-work-to-point-method", methods=['POST'])
+def replace_work_to_point_method() -> Response:
+    """Redirect to form select equip to move work"""
+    return goto_or_redirect(lambda: select_new_equip_for_work_form(functions.form_to_data(request.form),
+                                                                   request.method,
+                                                                   stylesheet_number()))
+
+@app.route("/replace-work-to-equip-method", methods=['POST'])
+def replace_work_to_new_equip() -> Response:
+    """Redirect to method analyze and move work to correct equip"""
+    return goto_or_redirect(lambda: move_work_to_new_equip(functions.form_to_data(request.form),
+                                                           request.method,
+                                                           stylesheet_number()))
 
 
 @app.route("/remove-equip", methods=['POST'])

@@ -58,3 +58,9 @@ def update_tech_section(cursor, section: str, point_id: str, dogovor: str, resum
 
     cursor.execute(sql_update_tech_section(point_id, section, dogovor, resume))
 
+
+def update_equip_in_work_record(cursor, work_id: str, equip_id: str) -> None:
+    """Update equip_id in work-record with id == work_id"""
+
+    cursor.execute(sql_update_equip_in_works(work_id, equip_id))
+

@@ -82,3 +82,9 @@ def sql_update_tech_section(point_id: str, section: str, dogovor: str, resume: s
     """Create query to update current technical section for workpoint"""
     query = """UPDATE {0} SET %(treaty)s = '{1}', %(resume)s = '{2}' WHERE %(point_id)s = {3}""" % sql_consts_dict
     return query.format(tech_tables[section], dogovor, resume, point_id)
+
+
+def sql_update_equip_in_works(work_id: str, equip_id) -> str:
+    """Create query to update equip_id in work-record"""
+    query = "UPDATE %(works)s SET %(id_obor)s = '{0}' WHERE %(id)s = {1}""" % sql_consts_dict
+    return query.format(equip_id, work_id)

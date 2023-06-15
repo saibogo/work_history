@@ -16,7 +16,10 @@ functions.info_string(__name__)
 
 def create_work_edit_link(work_id: str) -> str:
     """Create EDIT link to current work"""
-    return '<a href="/work-edit/{0}">{1}</a>'.format(work_id, uhtml.EDIT_CHAR)
+    edit_link = '<a href="/work-edit/{0}" title="Редактировать">{1}</a>'.format(work_id, uhtml.EDIT_CHAR)
+    move_link = '<a href="/replace-work-to-point/{0}" title="Перенести на другое оборудование">{1}</a>'.\
+        format(work_id, uhtml.REMOVE_CHAR)
+    return '{0} {1}'.format(edit_link, move_link)
 
 
 def works_menu(stylesheet_number: str) -> str:
@@ -36,6 +39,65 @@ def find_work_to_id_page(stylesheet_number: str) -> str:
         return web_template.result_page(render_template('find_work_to_id.html', max_work_id=max_work_id),
                                         '/works',
                                         str(stylesheet_number))
+
+
+def select_new_point_for_work_form(work_id: int, stylesheet_number: str) -> str:
+    """Create form to select new point to move work"""
+    with Database() as base:
+        _, cursor = base
+        work = select_operations.get_full_information_to_work(cursor, work_id)
+        all_points = select_operations.get_all_points(cursor)
+        return web_template.result_page(render_template("select_point_to_replace.html", work_id_name=uhtml.WORK_ID,
+                                                    work_id=work_id,
+                                                        work_description="{0} --> {1}".format(work[6], work[7]),
+                                                        point_id_name=uhtml.POINT_ID, all_points=all_points),
+                                                    '/works', str(stylesheet_number))
+
+
+def select_new_equip_for_work_form(data, method, stylesheet_number: str) -> str:
+    """Create form to select equip to move work"""
+    pre_adr = '/works'
+    if method == 'POST':
+        point_id = data[uhtml.POINT_ID]
+        work_id = data[uhtml.WORK_ID]
+        with Database() as base:
+            _, cursor = base
+            work = select_operations.get_full_information_to_work(cursor, work_id)
+            equip_in_point = select_operations.get_equip_in_point(cursor, point_id)
+            return web_template.result_page(render_template("select_equip_to_replace.html", work_id_name=uhtml.WORK_ID,
+                                                            work_id=work_id,
+                                                            work_description="{0} --> {1}".format(work[6], work[7]),
+                                                            point_id_name=uhtml.POINT_ID,
+                                                            point_id=point_id, equip_id_name=uhtml.EQUIP_ID,
+                                                            all_equips=equip_in_point, password=uhtml.PASSWORD),
+                                            '/works', str(stylesheet_number))
+    else:
+        return web_template.result_page("Method in Move Work not corrected!",
+                                        pre_adr,
+                                        str(stylesheet_number))
+
+
+
+def move_work_to_new_equip(data, method, stylesheet_number: str) -> str:
+    """analyze and move work to correct equip if data is correct"""
+    pre_adr = '/works'
+    if method == 'POST':
+        work_id = data[uhtml.WORK_ID]
+        equip_id = data[uhtml.EQUIP_ID]
+        password = data[uhtml.PASSWORD]
+        if functions.is_superuser_password(password):
+            with Database() as base:
+                connection, cursor = base
+                update_operations.update_equip_in_work_record(cursor, work_id, equip_id)
+                connection.commit()
+                page = uhtml.operation_completed()
+        else:
+            page = uhtml.pass_is_not_valid()
+    else:
+        page = web_template.result_page("Method in Move Work not corrected!",
+                                        pre_adr,
+                                        str(stylesheet_number))
+    return web_template.result_page(page, pre_adr, stylesheet_number)
 
 
 def select_work_to_id_method(data, method, stylesheet_number: str) -> str:

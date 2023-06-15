@@ -1,0 +1,28 @@
+<h2>Выбор точки для переноса работы</h2>
+<form action="/replace-work-to-point-method" method="post">
+    <div class="container">
+        <input type="hidden" name="{{work_id_name}}" value="{{work_id}}">
+        <div class="tr_div_login">
+            <div class="faq_quest">{{work_id_name}}:</div>
+            <div class="faq_answer">{{work_id}}</div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Содержание:</div>
+            <div class="faq_answer">{{work_description}}</div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Перенести в: </div>
+            <div class="faq_answer">
+                <select class="div_select" name="{{point_id_name}}">
+                    {% for point in all_points %}
+                    <option value="{{point[0]}}">{{point[1]}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest"></div>
+            <div class="faq_answer"><input type="submit" value="Выбрать оборудование"></div>
+        </div>
+    </div>
+</form>
