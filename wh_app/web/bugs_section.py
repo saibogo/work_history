@@ -20,6 +20,10 @@ def add_on_off_links_to_bug_table(bugs_list: List[Tuple[Any]]) -> List[List[Any]
     return result
 
 
+def replace_none_in_list(ls: list) -> list:
+    """Replace all None in bugs-list"""
+    return [[elem if elem else "" for elem in row] for row in ls]
+
 def bugs_menu(stylesheet_number: str) -> str:
     """Method create main bugs-page"""
     menu = [(1, 'Отобразить все'),
@@ -39,6 +43,7 @@ def all_bugs_table(stylesheet_number: str) -> str:
         if len(bugs_list) > config.max_records_in_page():
             result = all_bugs_table_limit(1, stylesheet_number)
         else:
+            bugs_list = replace_none_in_list(bugs_list)
             bugs_list = add_on_off_links_to_bug_table(bugs_list)
             table = uhtml.universal_table(table_headers.bugs_table_name,
                                           table_headers.bugs_table,
@@ -52,6 +57,7 @@ def all_bugs_table_limit(page_num: int, stylesheet_number: str) -> str:
     with Database() as base:
         _, cursor = base
         bugs_list = select_operations.get_all_bugz_in_bugzilla_limit(cursor, page_num)
+        bugs_list = replace_none_in_list(bugs_list)
         bugs_list = add_on_off_links_to_bug_table(bugs_list)
         table = uhtml.universal_table(table_headers.bugs_table_name,
                                       table_headers.bugs_table,
@@ -73,7 +79,7 @@ def all_bugs_in_work_table(stylesheet_number: str) -> str:
         else:
             bugs_list = add_on_off_links_to_bug_table(bugs_list)
             table = uhtml.universal_table(table_headers.bugs_table_name,
-                                          table_headers.bugs_table,
+                                          table_headers.bugs_in_work_table,
                                           bugs_list)
             result = web_template.result_page(table, '/bugs', str(stylesheet_number))
         return result
@@ -86,7 +92,7 @@ def all_bugs_in_work_limit(page_num: int, stylesheet_number: str) -> str:
         bugs_list = select_operations.get_all_bugz_in_work_in_bugzilla_limit(cursor, page_num)
         bugs_list = add_on_off_links_to_bug_table(bugs_list)
         table = uhtml.universal_table(table_headers.bugs_table_name,
-                                      table_headers.bugs_table,
+                                      table_headers.bugs_in_work_table,
                                       bugs_list)
         pages = uhtml.paging_table("/all-bugs-in-work/",
                                    functions.list_of_pages(select_operations.get_all_bugz_in_work_in_bugzilla(cursor)),

@@ -579,7 +579,8 @@ def sql_select_all_bindings_to_point(point_id: str):
 def sql_select_all_bugs_in_bugzilla() -> str:
     """Return all records in bugzilla table"""
 
-    query = ("""SELECT %(id)s, %(problem)s, %(bug_in_work)s""" +
+    query = ("""SELECT %(id)s, %(problem)s, %(bug_in_work)s,""" +
+             """ TO_CHAR( %(date_start)s, 'yyyy-mm-dd HH:MI:SS'), TO_CHAR( %(date_close)s, 'yyyy-mm-dd HH:MI:SS')""" +
              """ FROM %(bugzilla)s ORDER BY %(id)s""") % sql_consts_dict
     return query
 
@@ -587,7 +588,9 @@ def sql_select_all_bugs_in_bugzilla() -> str:
 def sql_select_all_bugs_in_bugzilla_limit(page_num: str) -> str:
     """Return all records in bugzilla table use paging"""
 
-    query = ("""SELECT %(id)s, %(problem)s, %(bug_in_work)s FROM %(bugzilla)s """ +
+    query = ("""SELECT %(id)s, %(problem)s, %(bug_in_work)s,""" +
+             """ TO_CHAR( %(date_start)s, 'yyyy-mm-dd HH:MI:SS'),""" +
+             """ TO_CHAR( %(date_close)s, 'yyyy-mm-dd HH:MI:SS') FROM %(bugzilla)s """ +
              """ ORDER BY %(id)s LIMIT {0} OFFSET {1}""") % sql_consts_dict
     return query.format(config.max_records_in_page(),
                         (int(page_num) - 1) * config.max_records_in_page())
@@ -596,7 +599,8 @@ def sql_select_all_bugs_in_bugzilla_limit(page_num: str) -> str:
 def sql_select_all_bugs_in_work_in_bugzilla() -> str:
     """Return all records in bugzilla table if status = in work"""
 
-    query = ("""SELECT %(id)s, %(problem)s, %(bug_in_work)s FROM %(bugzilla)s""" +
+    query = ("""SELECT %(id)s, %(problem)s, %(bug_in_work)s,""" +
+             """ TO_CHAR( %(date_start)s, 'yyyy-mm-dd HH:MI:SS') FROM %(bugzilla)s""" +
              """ WHERE %(status)s = true ORDER BY %(id)s""") % sql_consts_dict
     return query
 
@@ -604,7 +608,8 @@ def sql_select_all_bugs_in_work_in_bugzilla() -> str:
 def sql_select_all_bugs_in_work_in_bugzilla_limit(page_num: str) -> str:
     """Return all records in bugzilla table if status = in work"""
 
-    query = ("""SELECT %(id)s, %(problem)s, %(bug_in_work)s FROM %(bugzilla)s""" +
+    query = ("""SELECT %(id)s, %(problem)s, %(bug_in_work)s,""" +
+             """ TO_CHAR( %(date_start)s, 'yyyy-mm-dd HH:MI:SS') FROM %(bugzilla)s""" +
              """ WHERE %(status)s = true ORDER BY %(id)s LIMIT {0} OFFSET {1}""") % sql_consts_dict
     return query.format(config.max_records_in_page(),
                         (int(page_num) - 1) * config.max_records_in_page())

@@ -38,6 +38,9 @@ def bug_message(bug: List[Any]) -> str:
     msg.append('\nID = {}\n'.format(bug[0]))
     msg.append('Описание: {}\n'.format(bug[1]))
     msg.append('Статус: {}\n'.format(bug[2]))
+    msg.append('Дата регистрации: {}\n'.format(bug[3]))
+    if bug[4]:
+        msg.append('Дата закрытия: {}\n'.format(bug[4]))
     return ''.join(msg)
 
 

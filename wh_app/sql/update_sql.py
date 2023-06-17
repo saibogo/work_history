@@ -74,7 +74,9 @@ def sql_set_deleted_status(equip_id: str) -> str:
 def sql_invert_bug_status(bug_id: str) -> str:
     """Create query to inverted bug-status in database"""
 
-    query = """UPDATE %(bugzilla)s SET %(status)s = NOT %(status)s  WHERE %(id)s = {}""" % sql_consts_dict
+    query = ("""UPDATE %(bugzilla)s SET %(status)s = NOT %(status)s,""" +\
+            """ %(date_close)s = CASE %(status)s WHEN true THEN NOW() ELSE NULL END """ +\
+            """  WHERE %(id)s = {}""") % sql_consts_dict
     return query.format(bug_id)
 
 
