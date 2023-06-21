@@ -1,15 +1,32 @@
 """This module create RAW-query to SELECT in database"""
 
+from typing import *
+from datetime import datetime
+
 from wh_app.config_and_backup import config
 from wh_app.sql.sql_constant import sql_consts_dict
 
 
+def log_decorator(func: Callable) -> Callable:
+    """This decorator insert new record in log-file for function"""
+    def wrap(*args) -> str:
+        tmp = func(*args)
+        with open(config.path_to_sql_log(), 'a') as log_file:
+            log_file.write("====\n")
+            log_file.write(str(datetime.now()) + '\n')
+            log_file.write(tmp + '\n')
+        return tmp
+    return wrap
+
+
+@log_decorator
 def sql_counter(sql_query: str) -> str:
     """Return SELECT likes SELECT COUNT..."""
 
     return """SELECT COUNT (*) FROM ({0}) AS foo""".format(sql_query)
 
 
+@log_decorator
 def sql_select_point(id_point: str) -> str:
     """Returns the string of the query for selecting a point by a unique number
     Example:
@@ -26,6 +43,7 @@ def sql_select_point(id_point: str) -> str:
     return query.format(formatter)
 
 
+@log_decorator
 def sql_select_all_works_points() -> str:
     """Return the string of the query for selected a point where status is 'work'
     Example:
@@ -38,6 +56,7 @@ def sql_select_all_works_points() -> str:
             """ WHERE %(point_working)s ORDER BY %(point_name)s""") % sql_consts_dict
 
 
+@log_decorator
 def sql_select_equipment_in_point(point: str) -> str:
     """Returns the query string for selecting all equipment items at a given point
     Example:
@@ -64,6 +83,7 @@ def sql_select_equipment_in_point(point: str) -> str:
 sql_select_all_equipment = sql_select_equipment_in_point('')
 
 
+@log_decorator
 def sql_select_equipment_in_point_limit(point: str, page_num: int) -> str:
     """Returns the query string for selecting all equipment items at a given point use LIMIT
     Example:
@@ -88,11 +108,13 @@ def sql_select_equipment_in_point_limit(point: str, page_num: int) -> str:
                         (int(page_num) - 1) * config.max_records_in_page())
 
 
+@log_decorator
 def sql_select_all_equipment_limit(page_num: int) -> str:
     """Create SELECT to ALL equipment use Limit records in page"""
     return sql_select_equipment_in_point_limit('', page_num)
 
 
+@log_decorator
 def sql_select_work_to_equipment_id(id_equip: str) -> str:
     """Returns the query string to select all repairs corresponding
     to the equipment with the given number
@@ -108,6 +130,7 @@ def sql_select_work_to_equipment_id(id_equip: str) -> str:
     return query.format(id_equip)
 
 
+@log_decorator
 def sql_select_last_work_to_equipment_id(id_equip: str) -> str:
     """Returns the query string to select max_records_in_page * 2 last repairs corresponding
     to the equipment with the given number
@@ -124,6 +147,7 @@ def sql_select_last_work_to_equipment_id(id_equip: str) -> str:
     return query.format(id_equip, config.max_records_in_page() * 2)
 
 
+@log_decorator
 def sql_select_work_from_equip_id_limit(id_equip: str, page_num: int) -> str:
     """Return the query string to select limited all repairs corresponding
      to the equips with the given number
@@ -142,12 +166,14 @@ def sql_select_work_from_equip_id_limit(id_equip: str, page_num: int) -> str:
                         (int(page_num) - 1) * config.max_records_in_page())
 
 
+@log_decorator
 def sql_select_all_works() -> str:
     """Returns the query string to select all repairs corresponding to the equipments"""
 
     return """SELECT * FROM %(works_likes)s ORDER BY %(date)s""" % sql_consts_dict
 
 
+@log_decorator
 def sql_select_all_works_limit(page_num: int) -> str:
     """Returns the query string to select all repairs corresponding to the equipments use LIMIT"""
 
@@ -157,6 +183,7 @@ def sql_select_all_works_limit(page_num: int) -> str:
                         (int(page_num) - 1) * config.max_records_in_page())
 
 
+@log_decorator
 def sql_select_information_to_point(id_point: str) -> str:
     """Returns the string of the request for complete information
     about the point with the given number
@@ -169,6 +196,7 @@ def sql_select_information_to_point(id_point: str) -> str:
     return query.format(id_point)
 
 
+@log_decorator
 def sql_select_work_from_id(id_work: str) -> str:
     """Returns the query string corresponding to the work performed with the specified number
     Example:
@@ -180,6 +208,7 @@ def sql_select_work_from_id(id_work: str) -> str:
     return query.format(id_work)
 
 
+@log_decorator
 def sql_select_equip_from_like_str(pattern: str) -> str:
     """Return the query string select equips from like-string
     Example:
@@ -210,6 +239,7 @@ def sql_select_equip_from_like_str(pattern: str) -> str:
     return result
 
 
+@log_decorator
 def sql_select_equip_from_like_str_limit(pattern: str, page_num: str) -> str:
     """Return the query string select equips from like-string use LIMIT and OFFSET
     Example:
@@ -246,6 +276,7 @@ def sql_select_equip_from_like_str_limit(pattern: str, page_num: str) -> str:
     return result
 
 
+@log_decorator
 def sql_select_point_from_like_str(pattern: str) -> str:
     """Return the query string select points from like-string
     Example:
@@ -270,6 +301,7 @@ def sql_select_point_from_like_str(pattern: str) -> str:
     return result
 
 
+@log_decorator
 def sql_select_point_from_like_str_limit(pattern: str, page_num: str) -> str:
     """Return the query string select points from like-string
     Example:
@@ -300,6 +332,7 @@ def sql_select_point_from_like_str_limit(pattern: str, page_num: str) -> str:
     return result
 
 
+@log_decorator
 def sql_select_all_works_from_like_str(pattern: str) -> str:
     """Function return string contain sql-query from table works like all records to s-string
     Example:
@@ -322,6 +355,7 @@ def sql_select_all_works_from_like_str(pattern: str) -> str:
     return result
 
 
+@log_decorator
 def sql_select_all_works_from_like_str_limit(pattern: str, page_num: str) -> str:
     """Function return string contain sql-query from table works like all records
      to pattern-string
@@ -349,6 +383,7 @@ def sql_select_all_works_from_like_str_limit(pattern: str, page_num: str) -> str
     return result
 
 
+@log_decorator
 def sql_select_all_works_from_like_str_and_date(pattern: str, date_start: str,
                                                 date_stop: str) -> str:
     """Function return SQL-string contain query from table works
@@ -375,6 +410,7 @@ def sql_select_all_works_from_like_str_and_date(pattern: str, date_start: str,
     return result
 
 
+@log_decorator
 def sql_select_all_works_from_like_str_and_date_limit(pattern: str, date_start: str,
                                                       date_stop: str, page_num: str) -> str:
     """Function return SQL-string contain query from table works
@@ -410,24 +446,28 @@ def sql_select_all_works_from_like_str_and_date_limit(pattern: str, date_start: 
     return result
 
 
+@log_decorator
 def sql_select_max_id_equip() -> str:
     """Return the query string select maximal number in column ID in table oborudovanie"""
 
     return """SELECT MAX(%(id)s) FROM %(oborudovanie)s""" % sql_consts_dict
 
 
+@log_decorator
 def sql_select_max_id_point() -> str:
     """Return the query string select maximal number in column point_id in table workspoints"""
 
     return """SELECT MAX(%(point_id)s) FROM %(workspoints)s""" % sql_consts_dict
 
 
+@log_decorator
 def sql_select_max_work_id() -> str:
     """Return the query string select maximal number in column id in table works"""
 
     return """SELECT MAX(%(id)s) FROM %(works)s""" % sql_consts_dict
 
 
+@log_decorator
 def sql_select_point_id_from_equip_id(equip_id: str) -> str:
     """Return the query string select a point contain this equip"""
 
@@ -435,6 +475,7 @@ def sql_select_point_id_from_equip_id(equip_id: str) -> str:
              """ WHERE %(id)s = {0}""") % sql_consts_dict).format(equip_id)
 
 
+@log_decorator
 def sql_select_full_equips_info(equip_id: str) -> str:
     """Return SQL-query contain query to complete information from equip
     Example:
@@ -457,42 +498,49 @@ def sql_select_full_equips_info(equip_id: str) -> str:
     return query.format(equip_id)
 
 
+@log_decorator
 def sql_select_statistic() -> str:
     """Return SQL-string contain query to statistic from database records"""
 
     return """SELECT * FROM %(statistic)s""" % sql_consts_dict
 
 
+@log_decorator
 def sql_select_size_database() -> str:
     """Return SQL-string contain query to size database workhistory"""
 
     return """SELECT pg_size_pretty(pg_database_size(current_database()))"""
 
 
+@log_decorator
 def sql_select_count_uniques_dates() -> str:
     """Return SQL-string contain query to count unique dates in works table"""
 
     return """SELECT  COUNT(DISTINCT DATE(%(date)s)) FROM %(works)s""" % sql_consts_dict
 
 
+@log_decorator
 def sql_select_count_uniques_works() -> str:
     """Return SQL-string contain query to count unique id in works table"""
 
     return """SELECT  COUNT(%(id)s) FROM %(works)s""" % sql_consts_dict
 
 
+@log_decorator
 def sql_select_all_workers() -> str:
     """Return SQL-query return table with all workers"""
 
     return """SELECT * FROM %(all_workers)s""" % sql_consts_dict
 
 
+@log_decorator
 def sql_select_all_workers_real() -> str:
     """Also sql_select_all_workers() where is_work == TRUE"""
 
     return """SELECT * FROM %(all_workers)s WHERE %(all_workers)s.%(case)s != 'Уволен'""" % sql_consts_dict
 
 
+@log_decorator
 def sql_select_worker_info(worker_id: str) -> str:
     """Return full info from worker where ID = worker_id"""
 
@@ -500,6 +548,7 @@ def sql_select_worker_info(worker_id: str) -> str:
     return query.format(worker_id)
 
 
+@log_decorator
 def sql_select_table_current_workers() -> str:
     """Return SQL-query contain table workers"""
 
@@ -507,6 +556,7 @@ def sql_select_table_current_workers() -> str:
            """(SELECT %(id)s FROM %(workers)s WHERE %(status)s = 'fired')""") % sql_consts_dict
 
 
+@log_decorator
 def sql_select_works_from_worker(id_worker: str) -> str:
     """Return SQL-query contain all works from current performer
     Example:
@@ -527,6 +577,7 @@ def sql_select_works_from_worker(id_worker: str) -> str:
     return query.format(id_worker)
 
 
+@log_decorator
 def sql_select_works_from_worker_limit(id_worker: str, page_num: int) -> str:
     """See also sql_select_works_from_worker. Only use limit records in page"""
 
@@ -541,6 +592,7 @@ def sql_select_works_from_worker_limit(id_worker: str, page_num: int) -> str:
                         (int(page_num) - 1) * config.max_records_in_page())
 
 
+@log_decorator
 def sql_select_works_from_performer_and_date(id_worker: str, date_start: str, date_stop: str, page_num: int) -> str:
     """See also sql_select_works_from_worker_limit. Only use date interval. If page_num == 0 then not use limits"""
     query = ("""SELECT DISTINCT %(works_from_worker)s.%(id)s, %(point_name)s, %(name)s, """ +
@@ -557,18 +609,21 @@ def sql_select_works_from_performer_and_date(id_worker: str, date_start: str, da
         if page_num != 0 else query.format(id_worker, date_start, date_stop)
 
 
+@log_decorator
 def sql_select_works_days() -> str:
     """Return SQL-query contain points, workers and days of week"""
 
     return """SELECT * FROM %(firsts_bindings)s""" % sql_consts_dict
 
 
+@log_decorator
 def sql_select_alter_works_days() -> str:
     """Return SQL-query contain alternative bindings point <--> workers"""
 
     return """SELECT * FROM %(seconds_bindings)s ORDER BY %(point)s""" % sql_consts_dict
 
 
+@log_decorator
 def sql_select_all_bindings_to_point(point_id: str):
     """Return SQL to all workers bindings in current point"""
     query = """SELECT %(bindings)s.%(id)s, %(sub_name)s, %(is_main)s FROM %(bindings)s 
@@ -576,6 +631,7 @@ def sql_select_all_bindings_to_point(point_id: str):
     return query.format(point_id)
 
 
+@log_decorator
 def sql_select_all_bugs_in_bugzilla() -> str:
     """Return all records in bugzilla table"""
 
@@ -585,6 +641,7 @@ def sql_select_all_bugs_in_bugzilla() -> str:
     return query
 
 
+@log_decorator
 def sql_select_all_bugs_in_bugzilla_limit(page_num: str) -> str:
     """Return all records in bugzilla table use paging"""
 
@@ -596,6 +653,7 @@ def sql_select_all_bugs_in_bugzilla_limit(page_num: str) -> str:
                         (int(page_num) - 1) * config.max_records_in_page())
 
 
+@log_decorator
 def sql_select_all_bugs_in_work_in_bugzilla() -> str:
     """Return all records in bugzilla table if status = in work"""
 
@@ -605,6 +663,7 @@ def sql_select_all_bugs_in_work_in_bugzilla() -> str:
     return query
 
 
+@log_decorator
 def sql_select_all_bugs_in_work_in_bugzilla_limit(page_num: str) -> str:
     """Return all records in bugzilla table if status = in work"""
 
@@ -615,12 +674,14 @@ def sql_select_all_bugs_in_work_in_bugzilla_limit(page_num: str) -> str:
                         (int(page_num) - 1) * config.max_records_in_page())
 
 
+@log_decorator
 def sql_select_all_customers() -> str:
     """Return all records in table customer"""
 
     return """SELECT id, full_name FROM %(customer_table)s ORDER BY %(id)s""" % sql_consts_dict
 
 
+@log_decorator
 def sql_select_all_orders() -> str:
     """Return all records in table orders"""
 
@@ -631,6 +692,7 @@ def sql_select_all_orders() -> str:
     return query
 
 
+@log_decorator
 def sql_select_get_bug_by_id(bug_id: str) -> str:
     """Return query string likes SELECT * FROM bugzilla WHERE id = 123"""
 
@@ -638,6 +700,7 @@ def sql_select_get_bug_by_id(bug_id: str) -> str:
     return query.format(bug_id)
 
 
+@log_decorator
 def sql_select_all_point_except_id(point_id: str) -> str:
     """Return all point except point_id == id"""
 
@@ -647,6 +710,7 @@ def sql_select_all_point_except_id(point_id: str) -> str:
     return query.format(point_id)
 
 
+@log_decorator
 def sql_select_name_from_point_id(point_id: str) -> str:
     """Return point_name from point_id == id"""
 
@@ -656,6 +720,7 @@ def sql_select_name_from_point_id(point_id: str) -> str:
     return query.format(str(point_id))
 
 
+@log_decorator
 def sql_select_all_posts() -> str:
     """Return SELECT-query to ALL POST in database"""
 
@@ -663,6 +728,7 @@ def sql_select_all_posts() -> str:
     return query
 
 
+@log_decorator
 def sql_select_all_weekly_chart() -> str:
     """Return SELECT-query to ALL WORKS DAYS From ALL Workers"""
 
@@ -674,6 +740,7 @@ def sql_select_all_weekly_chart() -> str:
     return query
 
 
+@log_decorator
 def sql_select_electric_info(point_id: str) -> str:
     """Return SELECT-string for get electric information to point"""
 
@@ -681,6 +748,7 @@ def sql_select_electric_info(point_id: str) -> str:
     return query.format(point_id)
 
 
+@log_decorator
 def sql_select_cold_water_info(point_id: str) -> str:
     """Return SELECT-string for get cold_water information to point"""
 
@@ -688,6 +756,7 @@ def sql_select_cold_water_info(point_id: str) -> str:
     return query.format(point_id)
 
 
+@log_decorator
 def sql_select_hot_water_info(point_id: str) -> str:
     """Return SELECT-string for get hot_water information to point"""
 
@@ -695,6 +764,7 @@ def sql_select_hot_water_info(point_id: str) -> str:
     return query.format(point_id)
 
 
+@log_decorator
 def sql_select_heating_info(point_id: str) -> str:
     """Return SELECT-string for get heating information to point"""
 
@@ -702,6 +772,7 @@ def sql_select_heating_info(point_id: str) -> str:
     return query.format(point_id)
 
 
+@log_decorator
 def sql_select_sewerage_info(point_id: str) -> str:
     """Return SELECT-string for get sewerage information to point"""
 
@@ -709,12 +780,14 @@ def sql_select_sewerage_info(point_id: str) -> str:
     return query.format(point_id)
 
 
+@log_decorator
 def sql_select_database_version() -> str:
     """Return select-string for get current version database"""
 
     return """SELECT VERSION()"""
 
 
+@log_decorator
 def sql_select_equip_deleted_status(equip_id: str) -> str:
     """Return query like select deleted from oborudovanie where id = 761"""
 
@@ -722,6 +795,7 @@ def sql_select_equip_deleted_status(equip_id: str) -> str:
     return query.format(equip_id)
 
 
+@log_decorator
 def sql_select_worker_id_like_str(pattern: str) -> str:
     """Return query like worker name or sub_name liked pattern"""
 
@@ -730,6 +804,7 @@ def sql_select_worker_id_like_str(pattern: str) -> str:
     return query.format(pattern)
 
 
+@log_decorator
 def sql_select_all_description_worker_status() -> str:
     """Return query contain select to all pairs [status - description]"""
 

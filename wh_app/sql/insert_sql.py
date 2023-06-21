@@ -2,10 +2,12 @@
 
 from wh_app.supporting import functions
 from wh_app.sql.sql_constant import sql_consts_dict, tech_tables
+from wh_app.sql.select_sql import log_decorator
 
 functions.info_string(__name__)
 
 
+@log_decorator
 def sql_insert_new_point(point_id: str, name: str, address: str) -> str:
     """Returns the query string to add a new point"""
     query = ("""INSERT INTO %(workspoints)s (%(point_id)s, %(point_name)s, %(point_address)s) """ +
@@ -16,6 +18,7 @@ def sql_insert_new_point(point_id: str, name: str, address: str) -> str:
                         address)
 
 
+@log_decorator
 def sql_insert_new_equip(equip_id: str, point: str, name: str,
                          model: str, serial: str, pre_id: str) -> str:
     """Returns the query string to add a new piece of equipment"""
@@ -32,6 +35,7 @@ def sql_insert_new_equip(equip_id: str, point: str, name: str,
     return result
 
 
+@log_decorator
 def sql_insert_new_work(work_id: str, id_obor: str, date: str,
                         problem: str, result: str, worker_id: str) -> str:
     """Function return query string to add new work"""
@@ -49,6 +53,7 @@ def sql_insert_new_work(work_id: str, id_obor: str, date: str,
                         worker_id)
 
 
+@log_decorator
 def sql_add_new_performers(work_id: str, worker_id: str) -> str:
     """Return SQL-string contain query to insert new performer in performers table"""
     query = ("""INSERT INTO %(performers)s (%(work_id)s,""" +\
@@ -57,6 +62,7 @@ def sql_add_new_performers(work_id: str, worker_id: str) -> str:
                         worker_id)
 
 
+@log_decorator
 def sql_add_new_bug(problem: str) -> str:
     """Return SQL-string contain query to insert new record in bugzilla"""
     query = ("""INSERT INTO %(bugzilla)s (%(problem)s,""" +\
@@ -64,6 +70,7 @@ def sql_add_new_bug(problem: str) -> str:
     return query.format(problem)
 
 
+@log_decorator
 def sql_insert_tech_section(point_id: str, section: str, dogovor: str, resume: str) -> str:
     """Return SQL-string contain query to insert new record in technical database"""
 
@@ -71,6 +78,7 @@ def sql_insert_tech_section(point_id: str, section: str, dogovor: str, resume: s
     return query.format(tech_tables[section], point_id, dogovor, resume)
 
 
+@log_decorator
 def sql_insert_new_binding(point_id: str, worker_id: str, is_main: str) -> str:
     """Return SQL-string to insert new bindings in database"""
     query = """INSERT INTO %(bindings)s (%(worker_id)s, %(point_id)s, %(is_main)s)

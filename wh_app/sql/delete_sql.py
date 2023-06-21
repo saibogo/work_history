@@ -2,10 +2,12 @@
 
 from wh_app.supporting import functions
 from wh_app.sql.sql_constant import sql_consts_dict
+from wh_app.sql.select_sql import log_decorator
 
 functions.info_string(__name__)
 
 
+@log_decorator
 def sql_delete_binding(binding_id: str) -> str:
     """Return SQL-string to delete binding with selected id"""
     query = """DELETE FROM %(bindings)s WHERE %(id)s = {}""" % sql_consts_dict

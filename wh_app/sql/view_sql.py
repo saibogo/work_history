@@ -1,9 +1,11 @@
 from wh_app.supporting import functions
 from wh_app.sql.sql_constant import sql_consts_dict
+from wh_app.sql.select_sql import log_decorator
 
 functions.info_string(__name__)
 
 
+@log_decorator
 def second_bindings_view() -> str:
     """Return SQL-string contain query to create or replace seconds bindings view"""
 
@@ -16,6 +18,7 @@ def second_bindings_view() -> str:
     GROUP BY %(workspoints)s.%(point_name)s""" % sql_consts_dict
 
 
+@log_decorator
 def firsts_bindings_view() -> str:
     """Return SQL-string contain query to create or replace firsts bindings view"""
 
@@ -43,6 +46,7 @@ def firsts_bindings_view() -> str:
     ORDER BY %(workspoints)s.%(point_name)s""" % sql_consts_dict
 
 
+@log_decorator
 def statistic_view() -> str:
     """Return SQL-string contain query to create or replace statictics view"""
 
@@ -56,6 +60,7 @@ def statistic_view() -> str:
     GROUP BY %(name_point)s ORDER BY %(name_point)s""" % sql_consts_dict
 
 
+@log_decorator
 def works_from_worker() -> str:
     """Return SQL-string contain query to create or replace view works from worker"""
 
@@ -75,6 +80,7 @@ def works_from_worker() -> str:
     GROUP BY %(works)s.%(id)s) AS %(tmp)s ON %(tmp)s.%(work_id)s = %(works)s.%(id)s""" % sql_consts_dict
 
 
+@log_decorator
 def all_workers() -> str:
     """Return SQL-string contain query to create or replace view all workers"""
 
@@ -85,6 +91,7 @@ def all_workers() -> str:
     ON %(posts)s.%(id)s = %(workers)s.%(post_id)s ORDER BY %(sub_name)s, %(name)s""" % sql_consts_dict
 
 
+@log_decorator
 def works_likes() -> str:
     """Return SQL-string contain query to create or replace view works likes"""
 
