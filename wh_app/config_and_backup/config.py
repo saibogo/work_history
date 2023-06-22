@@ -12,6 +12,7 @@ path_to_dump = lambda: str(globals()['path_to_dump_var'])
 path_to_passwords = lambda: str(globals()['path_to_passwords_var'])
 path_to_messages = lambda: str(globals()['path_to_messages_var'])
 path_to_sql_log = lambda : str(globals()['path_to_sql_log_var'])
+path_to_fonts = lambda: str(globals()['path_to_fonts_var'])
 
 database_name = lambda: str(globals()['database_name_var'])
 user_name = lambda: str(globals()['user_name_var'])
@@ -61,6 +62,7 @@ def load_config():
         globals()['path_to_passwords_var'] = path_to_project() + 'wh_app/config_and_backup/.users_pass'
         globals()['path_to_messages_var'] = path_to_project() + 'wh_app/config_and_backup/.message_to_shutdown_server'
         globals()['path_to_sql_log_var'] = tree.find('pathes/path_to_sql_log').text
+        globals()['path_to_fonts_var'] = path_to_project() + 'wh_app/supporting/pdf_operations/'
 
         # Database section
         globals()['database_name_var'] = tree.find('database/database_name').text

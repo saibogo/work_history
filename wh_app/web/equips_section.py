@@ -14,8 +14,6 @@ from wh_app.config_and_backup import table_headers
 functions.info_string(__name__)
 
 
-
-
 def create_full_edit_links(equip_id: str, removed: bool=False, deleted: bool=False) -> str:
     """Create EDIT, MOVE and TABLE_REMOVE links"""
     result = list()

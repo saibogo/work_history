@@ -7,12 +7,19 @@ from wh_app.postgresql.database import Database
 from wh_app.supporting import functions
 from wh_app.sql_operations import select_operations
 from wh_app.config_and_backup import table_headers
+from wh_app.config_and_backup.config import path_to_fonts
 
 functions.info_string(__name__)
 
 
 class HTML2PDF(FPDF, HTMLMixin):
     pass
+
+
+normal_font_path = "{}{}".format(path_to_fonts() ,'DejaVuSansCondensed.ttf')
+bold_font_path = "{}{}".format(path_to_fonts(), 'DejaVuSansCondensed-Bold.ttf')
+font_size = 10
+font_alias = 'DejaVu'
 
 
 def equips_in_point(point_id: int) -> FPDF:
@@ -22,17 +29,17 @@ def equips_in_point(point_id: int) -> FPDF:
         _, cursor = base
         all_equips = select_operations.get_equip_in_point(cursor, str(point_id))
         pdf = create_document('Portrait')
-        pdf.write_html(make_html_table(all_equips, table_headers.equips_table_to_pdf, 'Portrait'),
-                       table_line_separators=True)
+        table = make_html_table(all_equips, table_headers.equips_table_to_pdf, 'Portrait')
+        pdf.write_html(table ,table_line_separators=True)
         return pdf
 
 
-def works_from_equip(equip_id: int) -> FPDF:
+def works_from_equip(equip_id: int, page_num: int) -> FPDF:
     """Create pdf contain all works from current equip"""
 
     with Database() as base:
         _, cursor = base
-        all_works = select_operations.get_works_from_equip_id(cursor, str(equip_id))
+        all_works = select_operations.get_works_from_equip_id_limit(cursor, str(equip_id), page_num)
         pdf = create_document('Landscape')
         pdf.write_html(make_html_table(all_works, table_headers.works_table[:len(table_headers.works_table) - 1],
                                        'Landscape'),
@@ -150,12 +157,16 @@ def weekly_charts_pdf(values: Any) -> FPDF:
 def create_document(orientation: str) -> HTML2PDF:
     """Create main document/ Orientation may be Landscape or Portrait"""
 
-    pdf = HTML2PDF()
-    pdf.add_font('DejaVu',
-                 '',
-                 '/home/saibogo/PycharmProjects/work_history/wh_app/supporting/pdf_operations/DejaVuSansCondensed.ttf',
-                 uni=True)
-    pdf.set_font('DejaVu', '', 10)
+    pdf = HTML2PDF(font_cache_dir=None)
+    try:
+        pdf.add_font('DejaVu', style='', fname=normal_font_path, uni=True)
+        pdf.add_font('DejaVu', style='B', fname=bold_font_path, uni=True)
+    except:
+        print("Невозможно добавить шрифт")
+    try:
+        pdf.set_font(font_alias, '', font_size)
+    except:
+        print("Невозможно зарегистрировать шрифт")
     pdf.add_page(orientation)
     return pdf
 
@@ -170,7 +181,7 @@ def make_html_table(data: List[Tuple[Any]], header: List[str], orientation: str=
         for row in data:
             result.append('<table border="1"><thead><tr><th></th></tr></thead><tbody>')
             for count, elem in enumerate(row):
-                result.append('<tr>')
+                result.append('<tr width="100%">')
 
                 max_line_len = (80 if orientation == "Portrait" else 140) - len(header[count])
                 lines: List[str] = list()
@@ -178,12 +189,12 @@ def make_html_table(data: List[Tuple[Any]], header: List[str], orientation: str=
                     lines.append(str(elem)[i : i + max_line_len])
 
                 if len(lines) > 1:
-                    result.append('<td width="100%">{0}:</td>'.format(header[count]))
+                    result.append('<td>{0}:</td>'.format(header[count]))
                     for line in lines:
-                        result.append('</tr><tr>')
-                        result.append('<td width="100%">{0}</td>'.format(line))
+                        result.append('</tr><tr width="100%">')
+                        result.append('<td>{0}</td>'.format(line))
                 else:
-                    result.append('<td width="100%">{1}: {0}</td>'.format(elem, header[count]))
+                    result.append('<td>{1}: {0}</td>'.format(elem, header[count]))
                 result.append('</tr>')
             result.append('</tbody></table>')
     return "".join(result)

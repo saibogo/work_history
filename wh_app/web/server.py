@@ -5,6 +5,7 @@ from flask import send_from_directory, send_file
 from typing import Callable, Any
 import time
 from fpdf import FPDF
+import traceback
 
 import wh_app.web.template as web_template
 import wh_app.web.universal_html as uhtml
@@ -300,7 +301,7 @@ def add_equip() -> Response:
 @app.route("/table-to-pdf/<data>")
 def html_table_to_pdf(data:str) -> Response:
     """Redirect to method generate pdf-version current main-table
-    correct adr /table-to-pdf/<section>=<value>"""
+    correct adr /table-to-pdf/<section>=<value> or /table-to-pdf/<section>=<value>=<page_num>"""
 
     command_table = {"point": equips_in_point,
                      "equip": works_from_equip,
@@ -308,17 +309,24 @@ def html_table_to_pdf(data:str) -> Response:
                      "weekly": weekly_charts_pdf,
                      "move-equip-pdf": move_equip,
                      "point-tech": point_tech_information}
-    section, value = data.split('=')
-
+    lst_data = data.split('=')
+    if len(lst_data) == 2:
+        section, value = lst_data
+    else:
+        section, value, page_num = lst_data
     try:
-        pdf = command_table[section](value)
-    except:
+        if len(lst_data) == 2:
+            pdf = command_table[section](value)
+        else:
+            pdf = command_table[section](value, page_num)
+    except Exception as err:
+        print(err)
         pdf: FPDF = FPDF()
 
-    pdf.output(config.path_to_pdf)
-    return send_file(config.path_to_pdf) \
+    pdf.output(config.path_to_pdf())
+    return send_file(config.path_to_pdf()) \
         if section == "weekly" \
-        else goto_or_redirect(lambda : send_file(config.path_to_pdf))
+        else goto_or_redirect(lambda : send_file(config.path_to_pdf()))
 
 
 @app.route("/works")

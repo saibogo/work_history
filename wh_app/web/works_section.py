@@ -77,7 +77,6 @@ def select_new_equip_for_work_form(data, method, stylesheet_number: str) -> str:
                                         str(stylesheet_number))
 
 
-
 def move_work_to_new_equip(data, method, stylesheet_number: str) -> str:
     """analyze and move work to correct equip if data is correct"""
     pre_adr = '/works'
@@ -153,7 +152,7 @@ def work_to_equip_paging(equip_id, page_id, stylesheet_number: str) -> str:
                                         pre_adr,
                                         str(stylesheet_number),
                                         True,
-                                        "equip={0}".format(equip_id))
+                                        "equip={0}={1}".format(equip_id, page_id))
 
 
 def create_edit_work_form(work_id: int, stylesheet_number: str) -> str:
