@@ -1,0 +1,18 @@
+{% if not_corrected %}
+    <h1>Ошибка соответствия таблицы и заголовка!</h1>
+{% else %}
+    {% for row in data %}
+        <table border="1">
+            <thead>
+                <tr><th></th></tr>
+            </thead>
+            <tbody>
+                {% for elem in row %}
+                    <tr width="100%">
+                        <td>{{ elem[0] }}: {{ elem[1] }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endfor %}
+{% endif %}

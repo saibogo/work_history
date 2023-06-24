@@ -2,6 +2,7 @@
 
 from fpdf import FPDF, HTMLMixin
 from typing import List, Any, Tuple
+from flask import render_template
 
 from wh_app.postgresql.database import Database
 from wh_app.supporting import functions
@@ -29,7 +30,7 @@ def equips_in_point(point_id: int) -> FPDF:
         _, cursor = base
         all_equips = select_operations.get_equip_in_point(cursor, str(point_id))
         pdf = create_document('Portrait')
-        table = make_html_table(all_equips, table_headers.equips_table_to_pdf, 'Portrait')
+        table = make_html_table(all_equips, table_headers.equips_table_to_pdf)
         pdf.write_html(table ,table_line_separators=True)
         return pdf
 
@@ -41,8 +42,7 @@ def works_from_equip(equip_id: int, page_num: int) -> FPDF:
         _, cursor = base
         all_works = select_operations.get_works_from_equip_id_limit(cursor, str(equip_id), page_num)
         pdf = create_document('Landscape')
-        pdf.write_html(make_html_table(all_works, table_headers.works_table[:len(table_headers.works_table) - 1],
-                                       'Landscape'),
+        pdf.write_html(make_html_table(all_works, table_headers.works_table[:len(table_headers.works_table) - 1]),
                        table_line_separators=True)
         return pdf
 
@@ -62,7 +62,7 @@ def move_equip(equip_id: int) -> FPDF:
                          select_operations.get_full_equip_information(cursor, old_equip_id)
             all_records.insert(0, equip_info)
         pdf = create_document('Portrait')
-        pdf.write_html(make_html_table(all_records, table_headers.remove_table, 'Portrait'),
+        pdf.write_html(make_html_table(all_records, table_headers.remove_table),
                        table_line_separators=True)
         return pdf
 
@@ -75,8 +75,7 @@ def works_from_performer(performer_id: int) -> FPDF:
         all_works = select_operations.get_all_works_from_worker_id(cursor, str(performer_id))
         pdf = create_document('Landscape')
         pdf.write_html(make_html_table(all_works,
-                                       table_headers.works_table[: len(table_headers.works_table) - 1],
-                                       'Landscape'),
+                                       table_headers.works_table[: len(table_headers.works_table) - 1]),
                        table_line_separators=True)
         return pdf
 
@@ -104,8 +103,7 @@ def point_tech_information(point_num: int) -> FPDF:
         table = table_headers.point_tech_table[1: ]
         for i in range(len(info_list)):
             tmp_table = make_html_table([if_tech_list_empthy(info_list[i])[ 2 : ]],
-                                        ['{0} Договор'.format(table[i]), '{0} Описание'.format(table[i])],
-                                        'Landscape')
+                                        ['{0} Договор'.format(table[i]), '{0} Описание'.format(table[i])])
             pdf.write_html(tmp_table)
 
     return pdf
@@ -171,31 +169,14 @@ def create_document(orientation: str) -> HTML2PDF:
     return pdf
 
 
-def make_html_table(data: List[Tuple[Any]], header: List[str], orientation: str="Portrait") -> str:
+def make_html_table(data: List[Tuple[Any]], header: List[str]) -> str:
     """Create <table>...</table><table1>...</table1> from data-list"""
 
-    result = list()
     if len(header) != len(data[0]):
-        result.append("<h1>Ошибка соответствия таблицы и заголовка!</h1>")
+        result = render_template("pdf_template.html", not_corrected=True)
     else:
-        for row in data:
-            result.append('<table border="1"><thead><tr><th></th></tr></thead><tbody>')
-            for count, elem in enumerate(row):
-                result.append('<tr width="100%">')
+        data_to_pdf = [[(header[i], row[i]) for i in range(len(row))] for row in data]
+        result = render_template("pdf_template.html", not_corrected=False, data=data_to_pdf)
 
-                max_line_len = (80 if orientation == "Portrait" else 140) - len(header[count])
-                lines: List[str] = list()
-                for i in range(0, len(str(elem)), max_line_len):
-                    lines.append(str(elem)[i : i + max_line_len])
-
-                if len(lines) > 1:
-                    result.append('<td>{0}:</td>'.format(header[count]))
-                    for line in lines:
-                        result.append('</tr><tr width="100%">')
-                        result.append('<td>{0}</td>'.format(line))
-                else:
-                    result.append('<td>{1}: {0}</td>'.format(elem, header[count]))
-                result.append('</tr>')
-            result.append('</tbody></table>')
-    return "".join(result)
+    return result
 
