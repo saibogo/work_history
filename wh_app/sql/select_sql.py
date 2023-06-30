@@ -450,7 +450,7 @@ def sql_select_all_works_from_like_str_and_date_limit(pattern: str, date_start: 
 def sql_select_max_id_equip() -> str:
     """Return the query string select maximal number in column ID in table oborudovanie"""
 
-    return """SELECT MAX(%(id)s) FROM %(oborudovanie)s""" % sql_consts_dict
+    return """SELECT COUNT(*) FROM %(oborudovanie)s WHERE %(deleted)s = False""" % sql_consts_dict
 
 
 @log_decorator
@@ -461,10 +461,17 @@ def sql_select_max_id_point() -> str:
 
 
 @log_decorator
+def sql_select_count_works_point() -> str:
+    """Return the query string select maximal number in column point_id in table workspoints"""
+
+    return """SELECT COUNT(*) FROM %(workspoints)s WHERE %(is_work)s = True""" % sql_consts_dict
+
+
+@log_decorator
 def sql_select_max_work_id() -> str:
     """Return the query string select maximal number in column id in table works"""
 
-    return """SELECT MAX(%(id)s) FROM %(works)s""" % sql_consts_dict
+    return """SELECT COUNT(*) FROM %(works)s""" % sql_consts_dict
 
 
 @log_decorator

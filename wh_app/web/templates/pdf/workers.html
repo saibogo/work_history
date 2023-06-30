@@ -1,0 +1,39 @@
+<h3 align="center">По дням недели</h3>
+<table border="1">
+    <thead>
+        <tr>
+            {% for day in days_names %}}
+            <th>{{day}}</th>
+            {% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for days in humans_days %}
+        <tr>
+            {% for day in days %}
+            <td>{{day}}</td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<h3 align="center">Контакты</h3>
+<table border="1">
+    <thead>
+        <tr>
+            <th>ФИО</th>
+            <th>Телефон</th>
+            <th>Должность</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for human in humans %}
+            <tr>
+                <td>{{human[1]}} {{human[2]}}</td>
+                <td>{{human[3]}}</td>
+                <td>{{human[5]}}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>

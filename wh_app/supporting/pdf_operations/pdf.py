@@ -122,32 +122,8 @@ def weekly_charts_pdf(values: Any) -> FPDF:
             for i in range(1, len(human)):
                 days_human_view[-1].append("Работает" if human[i] else "Выходной")
         pdf = create_document('Landscape')
-        print(pdf.font_family)
-        html = list()
-        html.append('<h3 align="center">По дням недели</h3>')
-        html.append('<table border="1"><tbody><tr>')
-        for name in table_headers.workers_days_table:
-            html.append('<td width="{1}%">{0}</td>'.format(name, int(100 / len(table_headers.workers_days_table))))
-        html.append('</tr>')
-        for human in days_human_view:
-            html.append('<tr>')
-            for elem in human:
-                html.append('<td>{0}</td>'.format(elem))
-            html.append('</tr>')
-        html.append('</tbody></table>')
-        html.append('<h3 align="center">Контакты</h3>')
-        html.append('<table border="1"><tbody><tr>')
-        humans = select_operations.get_all_workers_real(cursor)
-        workers_short_table = [('ФИО', '30%'), ('Телефон', '15%'), ('Должность', '55%')]
-        for cell in workers_short_table:
-            html.append('<td width="{1}">{0}</td>'.format(cell[0], cell[1]))
-        html.append('</tr>')
-        for human in humans:
-            html.append('<tr><td>{0} {1}</td>'.format(human[1], human[2]))
-            html.append('<td>{0}</td>'.format(human[3]))
-            html.append('<td>{0}</td></tr>'.format(human[5]))
-        html.append('</tbody></table>')
-        html.append('<h3 align="center">Данный график не учитывает праздничные, больничные и отпускные</h3>')
+        html = render_template('pdf/workers.html', days_names=table_headers.workers_days_table,
+                               humans_days=days_human_view, humans=select_operations.get_all_workers_real(cursor))
         pdf.write_html("".join(html), table_line_separators=True)
         return pdf
 

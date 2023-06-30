@@ -252,6 +252,14 @@ def get_maximal_points_id(cursor) -> str:
 
 @list_to_first_str_decorator
 @get_selected_decorator
+def get_count_works_points(cursor) -> str:
+    """Return string number of maximal id in table workspoints"""
+
+    return select_sql.sql_select_count_works_point()
+
+
+@list_to_first_str_decorator
+@get_selected_decorator
 def get_maximal_work_id(cursor) -> str:
     """Return string number of maximal id in table works"""
 
