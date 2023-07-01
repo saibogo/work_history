@@ -15,7 +15,7 @@ def create_new_equip(cursor, point_id: str, name: str,
                      model: str = "not model", serial_num: str = "not number", pre_id: str = "") -> None:
     """Creates a new piece of equipment in the database"""
 
-    new_id = int(select_operations.get_maximal_equip_id(cursor)) + 1
+    new_id = int(select_operations.get_next_equip_id(cursor))
     cursor.execute(sql_insert_new_equip(new_id ,point_id, name, model, serial_num,
                                         pre_id if pre_id != "" else str(new_id)))
 
@@ -23,7 +23,7 @@ def create_new_equip(cursor, point_id: str, name: str,
 def create_new_work(cursor, id_obor: str, date: str, problem: str, result: str, worker_id: str) -> None:
     """Create a new work record in database"""
 
-    new_id = str(int(select_operations.get_maximal_work_id(cursor)) + 1)
+    new_id = str(select_operations.get_next_work_id(cursor))
     cursor.execute(sql_insert_new_work(new_id, id_obor, date, problem, result, worker_id))
 
 

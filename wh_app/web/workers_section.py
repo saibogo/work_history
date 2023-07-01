@@ -252,6 +252,19 @@ def add_performer_to_work(work_id, pre_adr: str, stylesheet_number: str) -> str:
         return web_template.result_page(table1, pre_adr, str(stylesheet_number))
 
 
+def remove_performer_from_work(work_id, pre_adr: str, stylesheet_number: str) -> str:
+    """Create form select performer to delete in current work-report"""
+    with Database() as base:
+        _, cursor = base
+        work = select_operations.get_full_information_to_work(cursor, work_id)
+        performers = select_operations.get_workers_in_work(cursor, work_id)
+        table =  render_template('remove_performer_from_work.html', work_id_name=uhtml.WORK_ID, work_id=work[0],
+                                 point_name=work[1], equip_name=work[2], work_time=work[5], order=work[6],
+                                 resume=work[7], performer=uhtml.PERFORMER, performers=performers,
+                                 password=uhtml.PASSWORD)
+        return web_template.result_page(table, pre_adr, str(stylesheet_number))
+
+
 def add_performer_result_method(data, method, stylesheet_number: str) -> str:
     """Method append performer in current work"""
     pre_adr = '/'
@@ -270,5 +283,28 @@ def add_performer_result_method(data, method, stylesheet_number: str) -> str:
         else:
             page = uhtml.pass_is_not_valid()
     else:
-        page = 'Method in Add performer not corrected!'
+        page = '<h2>Method in Add performer not corrected!</h2>'
+    return web_template.result_page(page, pre_adr, str(stylesheet_number))
+
+
+def remove_performer_result_method(data, method, stylesheet_number: str) -> str:
+    """analyze and remove performer if data correct"""
+    pre_adr = '/'
+    if method == 'POST':
+        work_id = data[uhtml.WORK_ID]
+        performer = data[uhtml.PERFORMER]
+        password = data[uhtml.PASSWORD]
+        with Database() as base:
+            connection, cursor = base
+            performers = select_operations.get_workers_in_work(cursor, work_id)
+            if len(performers) < 2:
+                page = '<h2>Невозможно удалить единственного исполнителя!</h2>'
+            elif functions.is_superuser_password(password):
+                delete_operations.delete_performer_from_work(cursor, work_id, performer)
+                connection.commit()
+                page = uhtml.operation_completed()
+            else:
+                page = uhtml.pass_is_not_valid()
+    else:
+        page = '<h2>Method in Remove performer not corrected!</h2>'
     return web_template.result_page(page, pre_adr, str(stylesheet_number))

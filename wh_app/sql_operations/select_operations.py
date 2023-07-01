@@ -234,6 +234,13 @@ def get_maximal_equip_id(cursor) -> str:
     return select_sql.sql_select_max_id_equip()
 
 
+@list_to_first_str_decorator
+@get_selected_decorator
+def get_next_equip_id(cursor) -> str:
+    """Return string number of maximal id in table oborudovanie"""
+    return select_sql.sql_select_next_id_equip()
+
+
 @list_to_first_bool_decorator
 @get_selected_decorator
 def get_equip_deleted_status(cursor, equip_id: str) -> bool:
@@ -264,6 +271,14 @@ def get_maximal_work_id(cursor) -> str:
     """Return string number of maximal id in table works"""
 
     return select_sql.sql_select_max_work_id()
+
+
+@list_to_first_str_decorator
+@get_selected_decorator
+def get_next_work_id(cursor) -> str:
+    """Return string number of maximal id in table works"""
+
+    return select_sql.sql_select_next_work_id()
 
 
 @list_to_first_str_decorator
@@ -521,6 +536,12 @@ def get_database_version(cursor) -> list:
 def get_worker_id_from_name(cursor, name: str) -> str:
     """Return worker_id from name or sub_name pattern"""
     return select_sql.sql_select_worker_id_like_str(name)
+
+
+@get_selected_decorator
+def get_workers_in_work(cursor, work_id: str) -> list:
+    """Return info from current database"""
+    return select_sql.sql_select_all_workers_in_work(work_id)
 
 
 @get_selected_decorator

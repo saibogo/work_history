@@ -454,6 +454,12 @@ def sql_select_max_id_equip() -> str:
 
 
 @log_decorator
+def sql_select_next_id_equip() -> str:
+    """Return the query string select maximal number in column ID in table oborudovanie"""
+
+    return """SELECT MAX(%(id)s) + 1 FROM %(oborudovanie)s""" % sql_consts_dict
+
+@log_decorator
 def sql_select_max_id_point() -> str:
     """Return the query string select maximal number in column point_id in table workspoints"""
 
@@ -472,6 +478,13 @@ def sql_select_max_work_id() -> str:
     """Return the query string select maximal number in column id in table works"""
 
     return """SELECT COUNT(*) FROM %(works)s""" % sql_consts_dict
+
+
+@log_decorator
+def sql_select_next_work_id() -> str:
+    """Return the query string select maximal number in column id in table works"""
+
+    return """SELECT MAX(%(id)s) + 1 FROM %(works)s;""" % sql_consts_dict
 
 
 @log_decorator
@@ -538,6 +551,14 @@ def sql_select_all_workers() -> str:
     """Return SQL-query return table with all workers"""
 
     return """SELECT * FROM %(all_workers)s""" % sql_consts_dict
+
+
+@log_decorator
+def sql_select_all_workers_in_work(work_id: str) -> str:
+    """Return SQL-query return table with all workers"""
+    query = """SELECT %(worker_id)s, %(sub_name)s FROM %(performers)s 
+    JOIN %(workers)s ON %(worker_id)s = %(workers)s.%(id)s WHERE %(work_id)s = {0}""" % sql_consts_dict
+    return query.format(work_id)
 
 
 @log_decorator

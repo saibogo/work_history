@@ -26,7 +26,8 @@ from wh_app.web.points_section import points_operations, all_points_table,\
 from wh_app.web.workers_section import workers_menu, all_workers_table,\
     works_days_page, works_from_performers_table, add_performer_to_work,\
     add_performer_result_method, weekly_chart_page, create_edit_worker_form, update_worker_information,\
-    current_workers_table, create_new_binding_method, delete_binding_method
+    current_workers_table, create_new_binding_method, delete_binding_method, remove_performer_from_work,\
+    remove_performer_result_method
 from wh_app.web.works_section import works_menu, find_work_to_id_page,\
     select_work_to_id_method, work_to_equip_paging, add_work_method, create_edit_work_form, update_work_method,\
     select_new_point_for_work_form, select_new_equip_for_work_form, move_work_to_new_equip
@@ -511,10 +512,27 @@ def add_performer_to_work_work_id(work_id: int) -> Response:
                                                           stylesheet_number()))
 
 
+@app.route("/remove-performer-to-work/<work_id>", methods=['GET'])
+def remove_performer_to_work_work_id(work_id: int) -> Response:
+    """Redirect to form append performer in current work"""
+    return goto_or_redirect(lambda: remove_performer_from_work(work_id,
+                                                               request.args.get('page',
+                                                                                default=config.full_address(),
+                                                                                type=str),
+                                                               stylesheet_number()))
+
+
 @app.route('/add-performer-result', methods=['POST'])
 def add_performer_result() -> Response:
     """Redirect to method add performer in current work"""
     return goto_or_redirect(lambda: add_performer_result_method(functions.form_to_data(request.form),
+                                                                request.method,
+                                                                stylesheet_number()))
+
+@app.route('/remove-performer-result', methods=['POST'])
+def remove_performer_result() -> Response:
+    """Redirect to method add performer in current work"""
+    return goto_or_redirect(lambda: remove_performer_result_method(functions.form_to_data(request.form),
                                                                 request.method,
                                                                 stylesheet_number()))
 

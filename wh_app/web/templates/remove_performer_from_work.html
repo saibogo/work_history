@@ -1,0 +1,59 @@
+<h2>Сокращение списка исполнителей</h2>
+<form action="/remove-performer-result" method="post">
+  <input type="hidden" name="{{work_id_name}}" value="{{work_id}}">
+  <div class="container">
+    <div class="tr_div_login">
+            <div class="faq_quest">Предприятие:</div>
+            <div class="faq_answer">
+                <div class="text_info">{{point_name}}</div>
+            </div>
+    </div>
+      <div class="tr_div_login">
+            <div class="faq_quest">Оборудование:</div>
+            <div class="faq_answer">
+                <div class="text_info">{{equip_name}}</div>
+            </div>
+    </div>
+      <div class="tr_div_login">
+            <div class="faq_quest">Дата и время:</div>
+            <div class="faq_answer">
+                <div class="text_info">{{work_time}}</div>
+            </div>
+    </div>
+      <div class="tr_div_login">
+            <div class="faq_quest">Заявка:</div>
+            <div class="faq_answer">
+                <div class="text_info">{{order}}</div>
+            </div>
+    </div>
+      <div class="tr_div_login">
+            <div class="faq_quest">Произведено:</div>
+            <div class="faq_answer">
+                <div class="text_info">{{resume}}</div>
+            </div>
+    </div>
+      <div class="tr_div_login">
+            <div class="faq_quest">Удалить исполнителя:</div>
+            <div class="faq_answer">
+                <select name="{{performer}}" class="div_select">
+                {% for worker in performers %}
+                    <option value="{{worker[0]}}">{{worker[1]}}</option>
+                {% endfor %}
+            </select>
+            </div>
+        </div>
+      <div class="tr_div_login">
+            <div class="faq_quest">Пароль доступа:</div>
+            <div class="faq_answer">
+                <input type="password" name="{{password}}"  placeholder="Обязательно">
+            </div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Применить изменения:</div>
+            <div class="faq_answer">
+                <input type="submit" value="Удалить">
+            </div>
+        </div>
+  </div>
+
+</form>

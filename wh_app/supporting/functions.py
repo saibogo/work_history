@@ -154,7 +154,9 @@ def works_table_add_new_performer(works: list) -> list:
         for elem in work:
             new_works[-1].append(str(elem))
         if work:
-            new_works[-1][-1] += ('<a href="/add-performer-to-work/{0}">+</a>'.format(new_works[-1][0]))
+            new_works[-1][-1] += ('<a href="/add-performer-to-work/{0}" title="Добавить исполнителя">+</a>'
+                                  ' <a href="/remove-performer-to-work/{0}" title="Удалить исполнителя">-</a> '.
+                                  format(new_works[-1][0]))
 
     return new_works
 
