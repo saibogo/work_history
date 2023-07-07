@@ -1,0 +1,81 @@
+"""This module contain all actions from equipment for Flask server.py"""
+
+from wh_app.web.servers_parts.support_part import *
+from wh_app.web.equips_section import equip_to_point_limit,\
+    select_equip_to_id_page, add_equip_method, equips_menu, edit_equip_method,\
+    upgrade_equip_method, select_point_to_equip_method, move_equip_method,\
+    remove_table_page
+
+
+@app.route("/equips")
+def equips_section() -> Response:
+    """Return main page EQUIPS-section"""
+    return goto_or_redirect(lambda: equips_menu(stylesheet_number()))
+
+
+@app.route("/equip/<point_id>")
+def equip_to_point(point_id: int) -> Response:
+    """Return first page in ALL EQUIP in current Point"""
+    return goto_or_redirect(lambda: redirect('/equip/{0}/page/1'.format(point_id)))
+
+
+@app.route("/all-equips")
+def all_equips_table() -> Response:
+    """Return page, contain ALL EQUIP"""
+    return goto_or_redirect(lambda: equip_to_point(0))
+
+
+@app.route("/equip/<point_id>/page/<page_num>")
+def equip_point_id_page(point_id: int, page_num: int):
+    """Return page №page_num in ALL EQUIP in current point"""
+    return goto_or_redirect(lambda: equip_to_point_limit(point_id, page_num, stylesheet_number()))
+
+
+@app.route("/edit-equip/<equip_id>")
+def edit_equip_page(equip_id: str) -> Response:
+    """Return page to EDIT current EQUIP"""
+    return goto_or_redirect(lambda: edit_equip_method(str(equip_id), stylesheet_number()))
+
+
+@app.route("/upgrade-equip-info", methods=['POST'])
+def upgrade_equip_info() -> Response:
+    """Redirect to method UPGRADE EQUIP INFO in database"""
+    return goto_or_redirect(lambda: upgrade_equip_method(functions.form_to_data(request.form),
+                                                         request.method,
+                                                         stylesheet_number()))
+
+
+@app.route("/select-equip-to-id", methods=['POST'])
+def select_equip_to_id() -> Response:
+    """Redirect to method, returned full information to EQUIP"""
+    return goto_or_redirect(lambda: select_equip_to_id_page(functions.form_to_data(request.form),
+                                                            request.method,
+                                                            stylesheet_number()))
+
+
+@app.route("/change-point/<equip_id>")
+def change_point_to_equip(equip_id: int) -> Response:
+    """Return page, contain FORM to CHANGE new point-location from selected EQUIP"""
+    return goto_or_redirect(lambda: select_point_to_equip_method(str(equip_id), stylesheet_number()))
+
+
+@app.route("/add-equip", methods=['POST'])
+def add_equip() -> Response:
+    """Redirect to method append new equip in current point"""
+    return goto_or_redirect(lambda: add_equip_method(functions.form_to_data(request.form),
+                                                     request.method,
+                                                     stylesheet_number()))
+
+
+@app.route("/remove-equip", methods=['POST'])
+def remove_equip_method() -> Response:
+    """Redirect to method removed EQUIP to new point"""
+    return goto_or_redirect(lambda: move_equip_method(functions.form_to_data(request.form),
+                                                      request.method,
+                                                      stylesheet_number()))
+
+
+@app.route("/remove-table/<equip_id>")
+def remove_table(equip_id: int) -> Response:
+    """Return page with all move current EQUIP"""
+    return goto_or_redirect(lambda: remove_table_page(str(equip_id), stylesheet_number()))
