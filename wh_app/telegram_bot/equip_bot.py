@@ -2,7 +2,7 @@ import asyncio
 
 from wh_app.telegram_bot.support_bot import *
 from wh_app.sql_operations.select_operations import get_full_equip_information, get_last_works_from_equip_id,\
-    get_works_from_equip_id, get_point, get_maximal_equip_id, get_equip_deleted_status
+    get_works_from_equip_id, get_point, get_count_equips, get_equip_deleted_status, get_last_equip_id
 from wh_app.telegram_bot.create_equip_object import CreateEquipObject
 
 functions.info_string(__name__)
@@ -134,7 +134,7 @@ async def save_new_equip(message: types.Message):
                 msg_del = await message.answer('Произведена запись оборудования!', reply_markup=ReplyKeyboardRemove())
                 with Database() as base:
                     _, cursor = base
-                    equip_id = get_maximal_equip_id(cursor)
+                    equip_id = get_last_equip_id(cursor)
                     equip = [equip_id] + get_full_equip_information(cursor, equip_id)
                     msg_del1 = await message.answer('\n'.join(equip_message(equip, True)))
                     standart_delete_message(msg_del1)

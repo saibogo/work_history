@@ -29,35 +29,54 @@ def select_work_to_id() -> Response:
 @app.route("/work/<equip_id>/page/<page_id>")
 def work_equip_id_page_page_id(equip_id: int, page_id: int) -> Response:
     """Return page=page_id in ALL work from current EQUIP"""
-    return goto_or_redirect(lambda: work_to_equip_paging(equip_id, page_id, stylesheet_number()))
+    if is_integer(equip_id) and is_integer(page_id):
+        page = goto_or_redirect(lambda: work_to_equip_paging(equip_id, page_id, stylesheet_number()))
+    else:
+        page = flask.abort(code=404)
+    return page
 
 
 @app.route("/work-edit/<work_id>")
 def work_edit(work_id: int) -> Response:
     """Return form to EDIT some work"""
-    return goto_or_redirect(lambda : create_edit_work_form(work_id, stylesheet_number()))
+    if is_integer(work_id):
+        page = goto_or_redirect(lambda : create_edit_work_form(work_id, stylesheet_number()))
+    else:
+        page = flask.abort(code=404)
+    return page
 
 
 @app.route("/update-work-to-id/<work_id>", methods=['POST'])
 def update_work_to_id(work_id: int) -> Response:
     """Go to method update work info"""
-
-    return goto_or_redirect(lambda: update_work_method(work_id,
-                                                       functions.form_to_data(request.form),
-                                                       request.method,
-                                                       stylesheet_number()))
+    if is_integer(work_id):
+        page = goto_or_redirect(lambda: update_work_method(work_id,
+                                                           functions.form_to_data(request.form),
+                                                           request.method,
+                                                           stylesheet_number()))
+    else:
+        page = flask.abort(code=404)
+    return page
 
 
 @app.route("/work/<equip_id>")
 def work_to_equip(equip_id: int) -> Response:
     """Redirect to first page in ALL work from EQUIP where EQUIP_ID=equip_id"""
-    return goto_or_redirect(lambda: redirect('/work/{0}/page/1'.format(equip_id)))
+    if is_integer(equip_id):
+        page = goto_or_redirect(lambda: redirect('/work/{0}/page/1'.format(equip_id)))
+    else:
+        page = flask.abort(code=404)
+    return page
 
 
 @app.route("/replace-work-to-point/<work_id>")
 def replace_work_to_point(work_id: int) -> Response:
     """Redirect to new form to select new point for work"""
-    return goto_or_redirect(lambda: select_new_point_for_work_form(work_id, stylesheet_number()))
+    if is_integer(work_id):
+        page = goto_or_redirect(lambda: select_new_point_for_work_form(work_id, stylesheet_number()))
+    else:
+        page = flask.abort(code=404)
+    return page
 
 
 @app.route("/replace-work-to-point-method", methods=['POST'])

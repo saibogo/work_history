@@ -45,19 +45,31 @@ def favicon() -> Any:
 @app.route('/style<number>.css')
 def styles(number: int) -> Response:
     """Return selected CSS-page from static folder"""
-    return send_from_directory(config.static_dir(), 'style{0}.css'.format(number))
+    if is_integer(number):
+        page = send_from_directory(config.static_dir(), 'style{0}.css'.format(number))
+    else:
+        page = ""
+    return page
 
 
 @app.route('/<folder>/style<number>.css')
 def styles_table(folder: str, number: int) -> Response:
     """Return selected CSS-page from static folder"""
-    return send_from_directory(config.static_dir(), '{0}/style{1}.css'.format(folder, number))
+    if is_integer(number):
+        page = send_from_directory(config.static_dir(), '{0}/style{1}.css'.format(folder, number))
+    else:
+        page = ""
+    return page
 
 
 @app.route('/image/background<number>.jpg')
 def get_background_image(number: int) -> Response:
     """Return selected background from static folder"""
-    return send_from_directory(config.static_dir(), 'image/background{0}.jpg'.format(number))
+    if is_integer(number):
+        page = send_from_directory(config.static_dir(), 'image/background{0}.jpg'.format(number))
+    else:
+        page = ""
+    return page
 
 
 @app.route('/next-themes')

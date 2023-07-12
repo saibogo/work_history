@@ -34,7 +34,7 @@ def faq_page(pre_adr: str, stylesheet_number: str) -> str:
     """Function create FAQ web-page"""
     with Database() as base:
         _, cursor = base
-        count_equip = select_operations.get_maximal_equip_id(cursor)
+        count_equip = select_operations.get_count_equips(cursor)
         max_point_id = select_operations.get_maximal_points_id(cursor)
         count_works_points = select_operations.get_count_works_points(cursor)
         count_works = select_operations.get_maximal_work_id(cursor)

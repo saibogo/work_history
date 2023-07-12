@@ -1,4 +1,5 @@
 """This module contain all actions from equipment for Flask server.py"""
+import flask
 
 from wh_app.web.servers_parts.support_part import *
 from wh_app.web.equips_section import equip_to_point_limit,\
@@ -16,7 +17,11 @@ def equips_section() -> Response:
 @app.route("/equip/<point_id>")
 def equip_to_point(point_id: int) -> Response:
     """Return first page in ALL EQUIP in current Point"""
-    return goto_or_redirect(lambda: redirect('/equip/{0}/page/1'.format(point_id)))
+    if is_integer(point_id):
+        page = goto_or_redirect(lambda: redirect('/equip/{0}/page/1'.format(point_id)))
+    else:
+        page = flask.abort(code=404)
+    return page
 
 
 @app.route("/all-equips")
@@ -28,13 +33,21 @@ def all_equips_table() -> Response:
 @app.route("/equip/<point_id>/page/<page_num>")
 def equip_point_id_page(point_id: int, page_num: int):
     """Return page №page_num in ALL EQUIP in current point"""
-    return goto_or_redirect(lambda: equip_to_point_limit(point_id, page_num, stylesheet_number()))
+    if is_integer(point_id) and is_integer(page_num):
+        page = goto_or_redirect(lambda: equip_to_point_limit(point_id, page_num, stylesheet_number()))
+    else:
+        page = flask.abort(code=404)
+    return page
 
 
 @app.route("/edit-equip/<equip_id>")
 def edit_equip_page(equip_id: str) -> Response:
     """Return page to EDIT current EQUIP"""
-    return goto_or_redirect(lambda: edit_equip_method(str(equip_id), stylesheet_number()))
+    if is_integer(equip_id):
+        page = goto_or_redirect(lambda: edit_equip_method(str(equip_id), stylesheet_number()))
+    else:
+        page = flask.abort(code=404)
+    return page
 
 
 @app.route("/upgrade-equip-info", methods=['POST'])
@@ -56,7 +69,11 @@ def select_equip_to_id() -> Response:
 @app.route("/change-point/<equip_id>")
 def change_point_to_equip(equip_id: int) -> Response:
     """Return page, contain FORM to CHANGE new point-location from selected EQUIP"""
-    return goto_or_redirect(lambda: select_point_to_equip_method(str(equip_id), stylesheet_number()))
+    if is_integer(equip_id):
+        page = goto_or_redirect(lambda: select_point_to_equip_method(str(equip_id), stylesheet_number()))
+    else:
+        page = flask.abort(code=404)
+    return page
 
 
 @app.route("/add-equip", methods=['POST'])
@@ -78,4 +95,8 @@ def remove_equip_method() -> Response:
 @app.route("/remove-table/<equip_id>")
 def remove_table(equip_id: int) -> Response:
     """Return page with all move current EQUIP"""
-    return goto_or_redirect(lambda: remove_table_page(str(equip_id), stylesheet_number()))
+    if is_integer(equip_id):
+        page = goto_or_redirect(lambda: remove_table_page(str(equip_id), stylesheet_number()))
+    else:
+        page = flask.abort(code=404)
+    return page

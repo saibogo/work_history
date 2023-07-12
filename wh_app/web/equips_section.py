@@ -184,7 +184,7 @@ def find_equip_to_id_page(stylesheet_number: str) -> str:
     """Create page to FIND equip FROM EQUIP_ID"""
     with Database() as base:
         _, cursor = base
-        max_equip_id = select_operations.get_maximal_equip_id(cursor)
+        max_equip_id = select_operations.get_count_equips(cursor)
         return web_template.result_page(render_template('find_equip_to_id.html', max_equip_id=max_equip_id),
                                         '/equips',
                                         str(stylesheet_number))

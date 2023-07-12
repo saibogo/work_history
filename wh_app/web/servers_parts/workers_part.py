@@ -29,14 +29,22 @@ def not_fired_workers() -> Response:
 @app.route("/edit-worker/<worker_id>")
 def edit_worker(worker_id: str) -> Response:
     """Return web-form to edit worker information"""
-    return goto_or_redirect(lambda: create_edit_worker_form(worker_id, stylesheet_number()))
+    if is_integer(worker_id):
+        page = goto_or_redirect(lambda: create_edit_worker_form(worker_id, stylesheet_number()))
+    else:
+        page = flask.abort(code=404)
+    return page
 
 
 @app.route("/update-worker-to-id/<worker_id>", methods=['POST'])
 def update_worker_to_id(worker_id: str) -> Response:
     """Update information in datadase from worker"""
-    return goto_or_redirect(lambda: update_worker_information(worker_id, functions.form_to_data(request.form),
-                                                              request.method, stylesheet_number()))
+    if is_integer(worker_id):
+        page = goto_or_redirect(lambda: update_worker_information(worker_id, functions.form_to_data(request.form),
+                                                                  request.method, stylesheet_number()))
+    else:
+        page = flask.abort(code=404)
+    return page
 
 
 @app.route("/weekly-chart")
@@ -55,44 +63,59 @@ def works_days() -> Response:
 @app.route("/performer/<performer_id>", methods=['GET'])
 def performer_performer_id(performer_id: int) -> Response:
     """Return ALL works where worker == performer_id"""
-    return goto_or_redirect(lambda: works_from_performers_table(performer_id,
-                                                                1,
-                                                                request.args.get('page',
-                                                                                 default=config.full_address(),
-                                                                                 type=str),
-                                                                stylesheet_number()))
+    if is_integer(performer_id):
+        page = goto_or_redirect(lambda: works_from_performers_table(performer_id,
+                                                                    1,
+                                                                    request.args.get('page',
+                                                                                     default=config.full_address(),
+                                                                                     type=str),
+                                                                    stylesheet_number()))
+    else:
+        page = flask.abort(code=404)
+    return page
 
 
 @app.route("/performer/<performer_id>/page/<page_num>", methods=['GET'])
 def performer_id_page(performer_id: int, page_num: int) -> Response:
     """See also performer_performer_id but use paging"""
-
-    return goto_or_redirect(lambda: works_from_performers_table(performer_id,
-                                                                page_num,
-                                                                request.args.get('page',
-                                                                                 default=config.full_address(),
-                                                                                 type=str),
-                                                                stylesheet_number()))
+    if is_integer(performer_id) and is_integer(page_num):
+        page = goto_or_redirect(lambda: works_from_performers_table(performer_id,
+                                                                    page_num,
+                                                                    request.args.get('page',
+                                                                                     default=config.full_address(),
+                                                                                     type=str),
+                                                                    stylesheet_number()))
+    else:
+        page = flask.abort(code=404)
+    return page
 
 
 @app.route("/add-performer-to-work/<work_id>", methods=['GET'])
 def add_performer_to_work_work_id(work_id: int) -> Response:
     """Redirect to form append performer in current work"""
-    return goto_or_redirect(lambda: add_performer_to_work(work_id,
-                                                          request.args.get('page',
-                                                                           default=config.full_address(),
-                                                                           type=str),
-                                                          stylesheet_number()))
+    if is_integer(work_id):
+        page = goto_or_redirect(lambda: add_performer_to_work(work_id,
+                                                              request.args.get('page',
+                                                                               default=config.full_address(),
+                                                                               type=str),
+                                                              stylesheet_number()))
+    else:
+        page = flask.abort(code=404)
+    return page
 
 
 @app.route("/remove-performer-to-work/<work_id>", methods=['GET'])
 def remove_performer_to_work_work_id(work_id: int) -> Response:
     """Redirect to form append performer in current work"""
-    return goto_or_redirect(lambda: remove_performer_from_work(work_id,
-                                                               request.args.get('page',
-                                                                                default=config.full_address(),
-                                                                                type=str),
-                                                               stylesheet_number()))
+    if is_integer(work_id):
+        page = goto_or_redirect(lambda: remove_performer_from_work(work_id,
+                                                                   request.args.get('page',
+                                                                                    default=config.full_address(),
+                                                                                    type=str),
+                                                                   stylesheet_number()))
+    else:
+        page = flask.abort(code=404)
+    return page
 
 
 @app.route('/add-performer-result', methods=['POST'])

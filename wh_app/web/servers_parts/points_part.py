@@ -1,4 +1,5 @@
 """This module contain all actions from workspoints for Flask server.py"""
+import flask
 
 from wh_app.web.servers_parts.support_part import *
 from wh_app.web.servers_parts.errors_part import page_not_found
@@ -18,8 +19,11 @@ def points() -> Response:
 @app.route("/tech-info/<point_num>")
 def tech_info(point_num: str) -> Response:
     """Return page. contain all technical information from current point"""
-
-    return Response(point_tech_info(int(point_num), stylesheet_number()))
+    if is_integer(point_num):
+        page = Response(point_tech_info(int(point_num), stylesheet_number()))
+    else:
+        page = flask.abort(code=404)
+    return page
 
 
 @app.route("/all-points")
@@ -51,13 +55,21 @@ def works_points() -> Response:
 @app.route("/edit-point/<point_id>")
 def edit_point(point_id: int) -> Response:
     """Return page to edit current workspoint"""
-    return goto_or_redirect(lambda: edit_point_method(str(point_id), stylesheet_number()))
+    if is_integer(point_id):
+        page = goto_or_redirect(lambda: edit_point_method(str(point_id), stylesheet_number()))
+    else:
+        page = flask.abort(code=404)
+    return page
 
 
 @app.route("/on-off-point/<point_id>")
 def on_off_point(point_id: int) -> Response:
     """Return page invert status WORK"""
-    return goto_or_redirect(lambda: on_off_point_method(str(point_id), stylesheet_number()))
+    if is_integer(point_id):
+        page = goto_or_redirect(lambda: on_off_point_method(str(point_id), stylesheet_number()))
+    else:
+        page = flask.abort(code=404)
+    return page
 
 
 @app.route("/upgrade-point-info", methods=['POST'])
@@ -79,7 +91,12 @@ def invert_point_status() -> Response:
 @app.route("/edit-bindings/<point_id>")
 def edit_bindings_in_point(point_id: str) -> Response:
     """Go to page with edit bindings forms"""
-    return goto_or_redirect(lambda: create_bindings_form(point_id, stylesheet_number()))
+    if is_integer(point_id):
+        page = goto_or_redirect(lambda: create_bindings_form(point_id, stylesheet_number()))
+    else:
+        page = flask.abort(code=404)
+    return page
+
 
 @app.route("/add-new-binding", methods=['POST'])
 def add_new_binding() -> Response:
@@ -97,35 +114,54 @@ def remove_binding() -> Response:
                                                           stylesheet_number()))
 
 
-
 @app.route("/edit-electric/<point_num>")
 def edit_electric(point_num: int) -> Response:
     """Create form to edit electric partition technical information to workspoint"""
-    return goto_or_redirect(lambda: edit_tech_section(point_num, 'electric', stylesheet_number()))
+    if is_integer(point_num):
+        page = goto_or_redirect(lambda: edit_tech_section(point_num, 'electric', stylesheet_number()))
+    else:
+        page = flask.abort(code=404)
+    return page
 
 
 @app.route("/edit-cold-water/<point_num>")
 def edit_cold_water(point_num: int) -> Response:
     """Create form to edit cold-water partition technical information to workspoint"""
-    return goto_or_redirect(lambda: edit_tech_section(point_num, 'cold-water', stylesheet_number()))
+    if is_integer(point_num):
+        page = goto_or_redirect(lambda: edit_tech_section(point_num, 'cold-water', stylesheet_number()))
+    else:
+        page = flask.abort(code=404)
+    return page
 
 
 @app.route("/edit-hot-water/<point_num>")
 def edit_hot_water(point_num: int) -> Response:
     """Create form to edit hot-water partition technical information to workspoint"""
-    return goto_or_redirect(lambda: edit_tech_section(point_num, 'hot-water', stylesheet_number()))
+    if is_integer(point_num):
+        page = goto_or_redirect(lambda: edit_tech_section(point_num, 'hot-water', stylesheet_number()))
+    else:
+        page = flask.abort(code=404)
+    return page
 
 
 @app.route("/edit-heating/<point_num>")
 def edit_heating(point_num: int) -> Response:
     """Create form to edit heating partition technical information to workspoint"""
-    return goto_or_redirect(lambda: edit_tech_section(point_num, 'heating', stylesheet_number()))
+    if is_integer(point_num):
+        page = goto_or_redirect(lambda: edit_tech_section(point_num, 'heating', stylesheet_number()))
+    else:
+        page = flask.abort(code=404)
+    return page
 
 
 @app.route("/edit-sewerage/<point_num>")
 def edit_sewerage(point_num: int) -> Response:
     """Create form to edit sewerage partition technical information to workspoint"""
-    return goto_or_redirect(lambda: edit_tech_section(point_num, 'sewerage', stylesheet_number()))
+    if is_integer(point_num):
+        page = goto_or_redirect(lambda: edit_tech_section(point_num, 'sewerage', stylesheet_number()))
+    else:
+        page = flask.abort(code=404)
+    return page
 
 
 @app.route("/edit-section-method/<section_name>", methods=['POST'])

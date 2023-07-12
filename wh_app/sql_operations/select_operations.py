@@ -229,9 +229,16 @@ def get_works_list_from_equips_list(cursor, list_equips: list) -> list:
 
 @list_to_first_str_decorator
 @get_selected_decorator
-def get_maximal_equip_id(cursor) -> str:
+def get_count_equips(cursor) -> str:
+    """Return count not-deleted string in oborudovanie"""
+    return select_sql.sql_select_count_equip()
+
+
+@list_to_first_str_decorator
+@get_selected_decorator
+def get_last_equip_id(cursor) -> str:
     """Return string number of maximal id in table oborudovanie"""
-    return select_sql.sql_select_max_id_equip()
+    return select_sql.sql_select_last_equip_id()
 
 
 @list_to_first_str_decorator

@@ -1,4 +1,4 @@
-"""This module contain all actions with bugs for Flas server.py"""
+"""This module contain all actions with bugs for Flask server.py"""
 
 from wh_app.web.servers_parts.support_part import *
 from wh_app.web.bugs_section import bugs_menu, all_bugs_table, all_bugs_in_work_table,\
@@ -21,7 +21,11 @@ def all_bugs() -> Response:
 @app.route('/all-bugs/<page_num>')
 def all_bugs_paging(page_num: int) -> Response:
     """Return all registered problem use limit records on page"""
-    return goto_or_redirect(lambda: all_bugs_table_limit(page_num ,stylesheet_number()))
+    if is_integer(page_num):
+        page = goto_or_redirect(lambda: all_bugs_table_limit(page_num ,stylesheet_number()))
+    else:
+        page = flask.abort(code=404)
+    return page
 
 
 @app.route('/all-bugs-in-work')
@@ -33,7 +37,11 @@ def all_bugs_in_work() -> Response:
 @app.route('/all-bugs-in-work/<page_num>')
 def all_bugs_in_work_paging(page_num: int) -> Response:
     """return all unclosed bugs page with limit records on page"""
-    return goto_or_redirect(lambda: all_bugs_in_work_limit(page_num, stylesheet_number()))
+    if is_integer(page_num):
+        page = goto_or_redirect(lambda: all_bugs_in_work_limit(page_num, stylesheet_number()))
+    else:
+        page = flask.abort(code=404)
+    return page
 
 
 @app.route('/add-bug')
@@ -55,7 +63,11 @@ def add_bug_result() -> Response:
 @app.route('/invert-bug-status/<bug_num>')
 def invert_bug_status(bug_num: str) -> Response:
     """Redirect to form inverting bug status"""
-    return goto_or_redirect(lambda: create_invert_bug_status_form(bug_num, stylesheet_number()))
+    if is_integer(bug_num):
+        page = goto_or_redirect(lambda: create_invert_bug_status_form(bug_num, stylesheet_number()))
+    else:
+        page = flask.abort(code=404)
+    return page
 
 
 @app.route('/common-invert-bug-status', methods=['POST'])

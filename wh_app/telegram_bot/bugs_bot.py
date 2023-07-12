@@ -77,7 +77,9 @@ async def bug_from_bug_id(message: types.Message):
     with Database() as base:
         _, cursor = base
         bug_id = message.text.split()[1]
+        print(bug_id)
         try:
+            print(get_bug_by_id(cursor, bug_id))
             msg = bug_message(get_bug_by_id(cursor, bug_id))
             msg_del = await message.answer(msg, reply_markup=ReplyKeyboardRemove())
             standart_delete_message(msg_del)

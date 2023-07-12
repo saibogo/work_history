@@ -13,6 +13,16 @@ from wh_app.supporting import functions
 from wh_app.web.template import result_page
 
 
+def is_integer(arg: Any) -> bool:
+    """Return arg is int or not"""
+
+    try:
+        int(arg)
+        return True
+    except ValueError:
+        return False
+
+
 app = Flask(__name__, static_folder=config.static_dir(), template_folder=config.template_folder())
 app.secret_key = 'gleykh secret key'
 functions.info_string(__name__)

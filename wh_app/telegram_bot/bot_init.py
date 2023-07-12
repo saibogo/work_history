@@ -53,7 +53,6 @@ def start_telegram_bot():
     executor.start_polling(dp, loop=loop)
 
 
-
 async def start_message():
     """Send all users in chats-list starting message"""
     global bot_is_restarted

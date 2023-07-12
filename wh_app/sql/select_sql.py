@@ -447,10 +447,17 @@ def sql_select_all_works_from_like_str_and_date_limit(pattern: str, date_start: 
 
 
 @log_decorator
-def sql_select_max_id_equip() -> str:
+def sql_select_count_equip() -> str:
     """Return the query string select maximal number in column ID in table oborudovanie"""
 
     return """SELECT COUNT(*) FROM %(oborudovanie)s WHERE %(deleted)s = False""" % sql_consts_dict
+
+
+@log_decorator
+def sql_select_last_equip_id() -> str:
+    """return query, contain select to last equip-id"""
+
+    return """SELECT MAX(%(id)s) from %(oborudovanie)s""" %sql_consts_dict
 
 
 @log_decorator
@@ -724,7 +731,8 @@ def sql_select_all_orders() -> str:
 def sql_select_get_bug_by_id(bug_id: str) -> str:
     """Return query string likes SELECT * FROM bugzilla WHERE id = 123"""
 
-    query = ("""SELECT %(id)s, %(problem)s, %(bug_in_work)s FROM %(bugzilla)s WHERE %(id)s = {0}""") % sql_consts_dict
+    query = ("""SELECT %(id)s, %(problem)s, %(bug_in_work)s, %(date_start)s, %(date_close)s
+     FROM %(bugzilla)s WHERE %(id)s = {0}""") % sql_consts_dict
     return query.format(bug_id)
 
 
