@@ -5,7 +5,7 @@ from wh_app.web.servers_parts.support_part import *
 from wh_app.web.equips_section import equip_to_point_limit,\
     select_equip_to_id_page, add_equip_method, equips_menu, edit_equip_method,\
     upgrade_equip_method, select_point_to_equip_method, move_equip_method,\
-    remove_table_page
+    remove_table_page, top_equips_from_maximal_works
 
 
 @app.route("/equips")
@@ -100,3 +100,9 @@ def remove_table(equip_id: int) -> Response:
     else:
         page = flask.abort(code=404)
     return page
+
+
+@app.route("/top-10-from-works")
+def top_10_equips_from_work() -> Response:
+    """Return page with top-10 equip with maximal count of works"""
+    return goto_or_redirect(lambda: top_equips_from_maximal_works(stylesheet_number()))

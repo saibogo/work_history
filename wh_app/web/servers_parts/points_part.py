@@ -7,7 +7,8 @@ from wh_app.web.workers_section import create_new_binding_method, delete_binding
 from wh_app.web.points_section import points_operations, all_points_table,\
     create_new_point_page, add_point_method, all_works_points_table,\
     edit_point_method, upgrade_point_method, on_off_point_method, \
-    invert_point_status_method, point_tech_info, edit_tech_section, edit_point_tech_method, create_bindings_form
+    invert_point_status_method, point_tech_info, edit_tech_section, edit_point_tech_method, create_bindings_form,\
+    top_10_points_page
 
 
 @app.route("/points")
@@ -180,6 +181,13 @@ def get_svu(point_id: str) -> Response:
         return send_from_directory(config.static_dir(), 'image/svu/svu_{0}.jpg'.format(point_id))
     except:
         return page_not_found(404)
+
+
+@app.route("/top-10-points")
+def top_10_points() -> Response:
+    """Return HTML with table points with mawimal works"""
+
+    return goto_or_redirect(lambda: top_10_points_page(stylesheet_number()))
 
 
 

@@ -564,3 +564,17 @@ def get_all_desriptions_workers_status(cursor) -> List[Tuple]:
     """Return list of pairs (worker_status. description)"""
 
     return select_sql.sql_select_all_description_worker_status()
+
+
+@get_selected_decorator
+def get_top_10_works(cursor) -> List[Tuple]:
+    """Return top 10 equip with maximal works"""
+
+    return select_sql.sql_select_top_works()
+
+
+@get_selected_decorator
+def get_top_10_points(cursor) -> List[Tuple]:
+    """Return top 10 equip with maximal works"""
+
+    return select_sql.sql_select_top_points()

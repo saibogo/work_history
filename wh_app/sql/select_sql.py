@@ -847,3 +847,29 @@ def sql_select_all_description_worker_status() -> str:
     query = """SELECT name_status, worker_status_to_string(name_status) AS desript
     FROM (SELECT unnest(enum_range(NULL::worker_status)) AS name_status) AS t;"""
     return query
+
+
+@log_decorator
+def sql_select_top_works() -> str:
+    """Return query contain SELECT-strintg to 10 first string in equip -> sum works"""
+
+    query = ("""SELECT %(oborudovanie)s.%(id)s, %(workspoints)s.%(point_name)s, %(name)s, """ +\
+            """ COUNT(%(works)s.%(id)s) as all_works FROM %(oborudovanie)s JOIN %(works)s """ +\
+            """ON %(works)s.%(id_obor)s = %(oborudovanie)s.%(id)s JOIN %(workspoints)s """ +\
+            """ON %(workspoints)s.%(point_id)s = %(oborudovanie)s.%(point_id)s GROUP BY""" +\
+            """ %(workspoints)s.%(point_name)s, %(oborudovanie)s.%(id)s ORDER BY all_works DESC LIMIT 10""") \
+            % sql_consts_dict
+
+    return query
+
+
+@log_decorator
+def sql_select_top_points() -> str:
+    """Return query contain SELECT-strintg to 10 first string in point -> sum works"""
+
+    query = ("""SELECT %(workspoints)s.%(point_id)s, %(point_name)s, COUNT(%(works)s.%(id)s) AS all_works, """ +\
+            """MIN(%(works)s.%(date)s), MAX(%(works)s.%(date)s) FROM %(workspoints)s JOIN %(oborudovanie)s """ +\
+            """ON %(oborudovanie)s.%(point_id)s = %(workspoints)s.%(point_id)s JOIN %(works)s ON """ +\
+            """%(works)s.%(id_obor)s = %(oborudovanie)s.%(id)s WHERE %(workspoints)s.%(is_work)s = true """ +\
+            """GROUP BY %(workspoints)s.%(point_id)s ORDER BY all_works DESC LIMIT 10""") % sql_consts_dict
+    return query

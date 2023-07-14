@@ -29,8 +29,8 @@ def create_full_edit_links(equip_id: str, removed: bool=False, deleted: bool=Fal
 def equips_menu(stylesheet_number) -> str:
     """Method create main EQUIP-page"""
     name = 'Действия с оборудованием'
-    menu = [(1, 'Все зарегистрированное оборудование'), (2, 'Поиск по ID')]
-    links_list = ['/all-equips', '/find-equip-to-id']
+    menu = [(1, 'Все зарегистрированное оборудование'), (2, 'Поиск по ID'), (3, 'TOP-10 по ремонтам')]
+    links_list = ['/all-equips', '/find-equip-to-id', '/top-10-from-works']
     table = uhtml.universal_table(name, ['№', 'Доступное действие'], menu, True, links_list)
     return web_template.result_page(table, '/', str(stylesheet_number))
 
@@ -266,3 +266,16 @@ def add_equip_method(data, method, stylesheet_number: str) -> str:
         page = 'Method in Add Equip not corrected!'
         pre_addr = '/all-points'
     return web_template.result_page(page, pre_addr, str(stylesheet_number))
+
+
+def top_equips_from_maximal_works(stylesheet_number: str) -> str:
+    """Return page with table. contain equip and maximal works"""
+    pre_adr = '/equips'
+    with Database() as base:
+        _, cursor = base
+        top_equips = select_operations.get_top_10_works(cursor)
+        lst = [['<a href="/work/{0}">{1}</a>'.format(row[0], elem) for elem in row] for row in top_equips]
+        page = render_template('universal_table.html', table_name=table_headers.top_10_equips_name,
+                               num_columns=len(table_headers.top_10_equips), headers=table_headers.top_10_equips,
+                               data=lst)
+        return web_template.result_page(page, pre_adr, stylesheet_number)

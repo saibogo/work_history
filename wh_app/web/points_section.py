@@ -33,8 +33,9 @@ def points_operations(stylesheet_number: str) -> str:
     name = 'Действия с предприятиями:'
     menu = [(1, 'Все предприятия'),
             (2, 'Только действующие'),
-            (3, 'Добавить предприятие')]
-    links_list = ['/all-points', '/works-points', '/create-new-point']
+            (3, 'Добавить предприятие'),
+            (4, 'TOP-10 по количеству ремонтов')]
+    links_list = ['/all-points', '/works-points', '/create-new-point', '/top-10-points']
     table = uhtml.universal_table(name, ['№', 'Доступное действие'], menu, True, links_list)
     return web_template.result_page(table, '/', str(stylesheet_number))
 
@@ -281,3 +282,15 @@ def edit_point_tech_method(section:str, data, method, stylesheet_number: str) ->
 
     return web_template.result_page(page, pre_adr, str(stylesheet_number))
 
+
+def top_10_points_page(stylesheet_number: str) -> str:
+    """Create table TOP-10 points with maximal works"""
+
+    with Database() as base:
+        _, cursor = base
+        points = select_operations.get_top_10_points(cursor)
+        lst = [['<a href="/equip/{0}">{1}</a>'.format(row[0], elem)  for elem in row] for row in points]
+        page = render_template('universal_table.html', table_name=table_headers.top_10_points_name,
+                               num_columns=len(table_headers.top_10_points), headers=table_headers.top_10_points,
+                               data=lst)
+        return web_template.result_page(page, '/points', stylesheet_number)
