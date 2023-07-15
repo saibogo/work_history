@@ -1,5 +1,7 @@
 from wh_app.telegram_bot.support_bot import *
 from wh_app.supporting.system_status import SystemStatus
+from wh_app.sql_operations.select_operations import get_top_10_works, get_top_10_points
+from wh_app.config_and_backup.table_headers import top_10_points_name, top_10_points, top_10_equips_name, top_10_equips
 
 functions.info_string(__name__)
 
@@ -14,7 +16,8 @@ async def send_welcome(message: types.Message):
 async def send_help(message: types.Message):
     """Return to telegram-bot HELP-message"""
     msg1 = ['/start -- запуск бота', '/help -- вызов данной справки', '/status -- получение статуса системы',
-           '/statistic -- статистика работ', '/changelog -- просмотреть список изменений',
+           '/statistic -- статистика работ','/top10 - список обьектов и оборудования с самым большим количеством работ',
+            '/changelog -- просмотреть список изменений',
             '/points -- все зарегистрированные предприятия']
     msg2 = ['<b><i>Внимание! Следующие команды требуют Разрешения на чтение.</i></b>',
             '<b><i><u>&lt;Параметр&gt;</u> обозначает число и вводится через пробел</i></b>']
@@ -61,3 +64,27 @@ async def send_changelog(message: types.Message):
     msg = ('\n' + separator + '\n').join(['\n'.join(elem) for elem in changelog])
     msg_del = await message.answer(msg, reply_markup=ReplyKeyboardRemove())
     standart_delete_message(msg_del)
+
+
+async def send_top10(message: types.Message):
+    """Return to telegram-bot top-10 equips and points with maximal works"""
+    with Database() as base:
+        _, cursor = base
+        top_points = get_top_10_points(cursor)
+        top_equips = get_top_10_works(cursor)
+        msg_points = [top_10_points_name]
+        for elem in top_points:
+            msg_points.append(separator)
+            for i in range(len(top_10_points)):
+                msg_points.append("{}: {}".format(top_10_points[i], elem[i]))
+
+        msg_equips = [top_10_equips_name]
+        for elem in top_equips:
+            msg_equips.append(separator)
+            for i in range(len(top_10_equips)):
+                msg_equips.append("{}: {}".format(top_10_equips[i], elem[i]))
+
+        msg_del = await message.answer('\n'.join(msg_points), reply_markup=ReplyKeyboardRemove())
+        standart_delete_message(msg_del)
+        msg_del1 = await message.answer('\n'.join(msg_equips), reply_markup=ReplyKeyboardRemove())
+        standart_delete_message(msg_del1)

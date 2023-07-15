@@ -10,7 +10,8 @@ from wh_app.config_and_backup.config import path_to_telegram_token, path_to_mess
 from wh_app.telegram_bot.point_bot import all_points, send_statistic, point_info, not_create_record, get_svu,\
     get_tech_info
 from wh_app.telegram_bot.equip_bot import equip_info, start_add_new_equip, save_new_equip, equip_repler
-from wh_app.telegram_bot.any_bot import send_welcome, send_help, send_status, send_command_not_found, send_changelog
+from wh_app.telegram_bot.any_bot import send_welcome, send_help, send_status, send_command_not_found, send_changelog,\
+    send_top10
 from wh_app.telegram_bot.bugs_bot import all_bugs, start_create_new_bug, new_bug_repler, bug_from_bug_id,\
     invert_bug_status_from_bot
 from wh_app.telegram_bot.work_bot import start_create_record
@@ -281,10 +282,17 @@ async def find_performer_repler_command(message: types.Message):
     await find_repler(message, 'performer')
 
 
+@dp.message_handler(commands=['top10'])
+async def top10_command(message: types.Message):
+    await send_top10(message)
+
+
 @dp.message_handler()
 async def not_correct_command(message: types.Message):
     """Return to telegram-bot system-status"""
     await send_command_not_found(message)
+
+
 
 
 
