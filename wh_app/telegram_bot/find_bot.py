@@ -68,7 +68,7 @@ async def find_repler(message: types.Message, target: str):
                 msgs = ['\n'.join(equip_message(equip, True)) for equip in find_result]
             elif target == 'work':
                 find_result = get_all_works_like_word(cursor, pattern)
-                msgs = ['\n'.join(work_message(work)) for work in find_result]
+                msgs = ['\n'.join(work_message(work, with_equip=True, with_point=True)) for work in find_result]
             elif target == 'performer':
                 worker_id = get_worker_id_from_name(cursor, pattern)
                 find_result = get_all_works_from_worker_id(cursor, worker_id)
