@@ -879,8 +879,15 @@ def sql_select_top_points() -> str:
 def sql_select_top_workers() -> str:
     """Return SQL-string, to  select TOP-10 workers"""
 
-    query = ("""SELECT workers.id, workers.name, workers.sub_name, COUNT(work_id) as all_works """ +
-             """FROM workers JOIN performers ON workers.id = performers.worker_id GROUP BY workers.id """ +
-             """ORDER BY all_works DESC LIMIT 10""") % sql_consts_dict
+    query = ("""SELECT %(workers)s.%(id)s, %(workers)s.%(name)s, %(workers)s.%(sub_name)s, COUNT(%(work_id)s) AS all_works, """ +
+             """ (SELECT COUNT(%(works)s.%(id)s) FROM %(works)s JOIN %(performers)s ON %(performers)s.%(worker_id)s = %(workers)s.%(id)s""" +
+             """ AND %(works)s.%(id)s = %(performers)s.%(work_id)s WHERE %(works)s.%(date)s::DATE >= NOW()::DATE - 365) """ +
+             """ AS last_year, (SELECT COUNT(%(works)s.%(id)s) FROM %(works)s JOIN %(performers)s ON """ +
+             """ %(performers)s.%(worker_id)s = %(workers)s.%(id)s AND %(works)s.%(id)s = %(performers)s.%(work_id)s WHERE """ +
+             """ %(works)s.%(date)s::DATE >= NOW()::DATE - 30) AS last_month, (SELECT COUNT(%(works)s.%(id)s) """ +
+             """FROM %(works)s JOIN %(performers)s ON %(performers)s.%(worker_id)s = %(workers)s.%(id)s AND %(works)s.%(id)s = """ +
+             """ %(performers)s.%(work_id)s WHERE %(works)s.%(date)s::DATE >= NOW()::DATE - 7) AS last_week FROM """ +
+             """ %(workers)s JOIN %(performers)s ON %(workers)s.%(id)s = %(performers)s.%(worker_id)s """ +
+             """GROUP BY %(workers)s.%(id)s ORDER BY all_works DESC""") %sql_consts_dict
 
     return query
