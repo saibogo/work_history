@@ -25,8 +25,8 @@ def workers_menu(stylesheet_number: str) -> str:
     """Return main page from WORKERS section"""
     name = 'Действия с сотрудниками'
     menu = [(1, 'Все зарегистрированные сотрудники'), (3, 'Только работающие'), (2, 'Привязки по предприятиям'),
-            (3, 'Рабочие дни')]
-    links_list = ['/all-workers', '/not-fired-workers', '/works-days', 'weekly-chart']
+            (3, 'Рабочие дни'), (4, 'TOP-10 по зарегистрированным работам')]
+    links_list = ['/all-workers', '/not-fired-workers', '/works-days', '/weekly-chart', '/top-10-workers']
     table = uhtml.universal_table(name, ['№', 'Доступное действие'], menu, True, links_list)
     return web_template.result_page(table, '/', str(stylesheet_number))
 
@@ -171,6 +171,7 @@ def delete_binding_method(data, method, stylesheet_number: str) -> str:
                                         '/works-points',
                                         str(stylesheet_number))
 
+
 def weekly_chart_page(stylesheet_number: str) -> str:
     """Return page, contain all works days from all workers"""
     with Database() as base:
@@ -308,3 +309,17 @@ def remove_performer_result_method(data, method, stylesheet_number: str) -> str:
     else:
         page = '<h2>Method in Remove performer not corrected!</h2>'
     return web_template.result_page(page, pre_adr, str(stylesheet_number))
+
+
+def top_workers_page(stylesheet_number: str) -> str:
+    """Create top 10 workers page"""
+
+    pre_adr = '/workers'
+    with Database() as base:
+        _, cursor = base
+        workers = select_operations.get_top_10_workers(cursor)
+        links = ['/performer/' + str(elem[0]) for elem in workers]
+        page = uhtml.universal_table(table_headers.top_10_workers_table_name,
+                                     table_headers.top_10_workers_table,
+                                     workers, True, links)
+        return web_template.result_page(page, pre_adr, stylesheet_number)

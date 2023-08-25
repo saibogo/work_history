@@ -873,3 +873,14 @@ def sql_select_top_points() -> str:
             """%(works)s.%(id_obor)s = %(oborudovanie)s.%(id)s WHERE %(workspoints)s.%(is_work)s = true """ +\
             """GROUP BY %(workspoints)s.%(point_id)s ORDER BY all_works DESC LIMIT 10""") % sql_consts_dict
     return query
+
+
+@log_decorator
+def sql_select_top_workers() -> str:
+    """Return SQL-string, to  select TOP-10 workers"""
+
+    query = ("""SELECT workers.id, workers.name, workers.sub_name, COUNT(work_id) as all_works """ +
+             """FROM workers JOIN performers ON workers.id = performers.worker_id GROUP BY workers.id """ +
+             """ORDER BY all_works DESC LIMIT 10""") % sql_consts_dict
+
+    return query

@@ -578,3 +578,10 @@ def get_top_10_points(cursor) -> List[Tuple]:
     """Return top 10 equip with maximal works"""
 
     return select_sql.sql_select_top_points()
+
+
+@get_selected_decorator
+def get_top_10_workers(cursor) -> List[Tuple]:
+    """Return top 10 workers with maximal works"""
+
+    return select_sql.sql_select_top_workers()
