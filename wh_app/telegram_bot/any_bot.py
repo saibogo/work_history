@@ -1,7 +1,8 @@
 from wh_app.telegram_bot.support_bot import *
 from wh_app.supporting.system_status import SystemStatus
-from wh_app.sql_operations.select_operations import get_top_10_works, get_top_10_points
-from wh_app.config_and_backup.table_headers import top_10_points_name, top_10_points, top_10_equips_name, top_10_equips
+from wh_app.sql_operations.select_operations import get_top_10_works, get_top_10_points, get_top_10_workers
+from wh_app.config_and_backup.table_headers import top_10_points_name, top_10_points, top_10_equips_name, top_10_equips,\
+    top_10_workers_table_name, top_10_workers_table
 
 functions.info_string(__name__)
 
@@ -66,25 +67,31 @@ async def send_changelog(message: types.Message):
     standart_delete_message(msg_del)
 
 
+def create_message_for_top(header_name: str, header: List[str], data: List[Any]) -> str:
+    """Create any part in top10 reply-message"""
+    msg = [header_name]
+    for elem in data:
+        msg.append(separator)
+        for i in range(len(header)):
+            msg.append("{}: {}".format(header[i], elem[i]))
+    return '\n'.join(msg)
+
+
 async def send_top10(message: types.Message):
     """Return to telegram-bot top-10 equips and points with maximal works"""
     with Database() as base:
         _, cursor = base
         top_points = get_top_10_points(cursor)
         top_equips = get_top_10_works(cursor)
-        msg_points = [top_10_points_name]
-        for elem in top_points:
-            msg_points.append(separator)
-            for i in range(len(top_10_points)):
-                msg_points.append("{}: {}".format(top_10_points[i], elem[i]))
+        top_workers = get_top_10_workers(cursor)
 
-        msg_equips = [top_10_equips_name]
-        for elem in top_equips:
-            msg_equips.append(separator)
-            for i in range(len(top_10_equips)):
-                msg_equips.append("{}: {}".format(top_10_equips[i], elem[i]))
+        msg_points = create_message_for_top(top_10_points_name, top_10_points, top_points)
+        msg_equips = create_message_for_top(top_10_equips_name, top_10_equips, top_equips)
+        msg_workers = create_message_for_top(top_10_workers_table_name, top_10_workers_table, top_workers)
 
-        msg_del = await message.answer('\n'.join(msg_points), reply_markup=ReplyKeyboardRemove())
+        msg_del = await message.answer(msg_points, reply_markup=ReplyKeyboardRemove())
         standart_delete_message(msg_del)
-        msg_del1 = await message.answer('\n'.join(msg_equips), reply_markup=ReplyKeyboardRemove())
+        msg_del1 = await message.answer(msg_equips, reply_markup=ReplyKeyboardRemove())
         standart_delete_message(msg_del1)
+        msg_del2 = await message.answer(msg_workers, reply_markup=ReplyKeyboardRemove())
+        standart_delete_message(msg_del2)
