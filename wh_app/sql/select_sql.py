@@ -844,7 +844,7 @@ def sql_select_worker_id_like_str(pattern: str) -> str:
 def sql_select_all_description_worker_status() -> str:
     """Return query contain select to all pairs [status - description]"""
 
-    query = """SELECT name_status, worker_status_to_string(name_status) AS desript
+    query = """SELECT name_status, worker_status_to_string(name_status) AS descript
     FROM (SELECT unnest(enum_range(NULL::worker_status)) AS name_status) AS t;"""
     return query
 
@@ -853,12 +853,13 @@ def sql_select_all_description_worker_status() -> str:
 def sql_select_top_works() -> str:
     """Return query contain SELECT-strintg to 10 first string in equip -> sum works"""
 
-    query = ("""SELECT %(oborudovanie)s.%(id)s, %(workspoints)s.%(point_name)s, %(name)s, """ +\
-            """ COUNT(%(works)s.%(id)s) as all_works FROM %(oborudovanie)s JOIN %(works)s """ +\
-            """ON %(works)s.%(id_obor)s = %(oborudovanie)s.%(id)s JOIN %(workspoints)s """ +\
-            """ON %(workspoints)s.%(point_id)s = %(oborudovanie)s.%(point_id)s GROUP BY""" +\
-            """ %(workspoints)s.%(point_name)s, %(oborudovanie)s.%(id)s ORDER BY all_works DESC LIMIT 10""") \
-            % sql_consts_dict
+    query = ("""SELECT %(oborudovanie)s.%(id)s, %(workspoints)s.%(point_name)s, %(name)s,  COUNT(%(works)s.%(id)s) AS
+     all_works, (SELECT COUNT(%(works)s.%(id)s) FROM %(works)s WHERE %(works)s.%(date)s::DATE >= last_year_date() 
+     AND %(works)s.%(id_obor)s = %(oborudovanie)s.%(id)s) AS lastyear, (SELECT COUNT(%(works)s.%(id)s) FROM %(works)s
+      WHERE %(works)s.%(date)s::DATE >= last_month_date() AND %(works)s.%(id_obor)s = %(oborudovanie)s.%(id)s) 
+      AS lastmonth FROM %(oborudovanie)s JOIN %(works)s ON %(works)s.%(id_obor)s = %(oborudovanie)s.%(id)s JOIN
+       %(workspoints)s ON %(workspoints)s.%(point_id)s = %(oborudovanie)s.%(point_id)s GROUP BY 
+       %(workspoints)s.%(point_name)s, %(oborudovanie)s.%(id)s ORDER BY all_works DESC LIMIT 10""") % sql_consts_dict
 
     return query
 
@@ -867,11 +868,18 @@ def sql_select_top_works() -> str:
 def sql_select_top_points() -> str:
     """Return query contain SELECT-strintg to 10 first string in point -> sum works"""
 
-    query = ("""SELECT %(workspoints)s.%(point_id)s, %(point_name)s, COUNT(%(works)s.%(id)s) AS all_works, """ +\
-            """MIN(%(works)s.%(date)s), MAX(%(works)s.%(date)s) FROM %(workspoints)s JOIN %(oborudovanie)s """ +\
-            """ON %(oborudovanie)s.%(point_id)s = %(workspoints)s.%(point_id)s JOIN %(works)s ON """ +\
-            """%(works)s.%(id_obor)s = %(oborudovanie)s.%(id)s WHERE %(workspoints)s.%(is_work)s = true """ +\
-            """GROUP BY %(workspoints)s.%(point_id)s ORDER BY all_works DESC LIMIT 10""") % sql_consts_dict
+    query = ("""SELECT %(workspoints)s.%(point_id)s, %(point_name)s, COUNT(%(works)s.%(id)s) AS all_works,
+     MIN(works.date), MAX(works.date), (SELECT COUNT(%(works)s.%(id)s) FROM %(works)s JOIN %(oborudovanie)s 
+     ON %(oborudovanie)s.%(point_id)s = %(workspoints)s.%(point_id)s WHERE %(works)s.%(date)s >= last_year_date() 
+     AND %(works)s.%(id_obor)s = %(oborudovanie)s.%(id)s) AS lastyear, (SELECT COUNT(%(works)s.%(id)s) FROM %(works)s 
+     JOIN %(oborudovanie)s ON %(oborudovanie)s.%(point_id)s = %(workspoints)s.%(point_id)s WHERE %(works)s.%(date)s >= 
+     last_month_date() AND %(works)s.%(id_obor)s = %(oborudovanie)s.%(id)s) AS lastmonth, (SELECT COUNT(%(works)s.%(id)s) 
+     FROM %(works)s JOIN %(oborudovanie)s ON %(oborudovanie)s.%(point_id)s = %(workspoints)s.%(point_id)s WHERE 
+     %(works)s.%(date)s >= last_day_date() AND %(works)s.%(id_obor)s = %(oborudovanie)s.%(id)s) AS lastday
+    FROM %(workspoints)s JOIN %(oborudovanie)s ON %(oborudovanie)s.%(point_id)s = %(workspoints)s.%(point_id)s 
+    JOIN %(works)s ON %(works)s.%(id_obor)s = %(oborudovanie)s.%(id)s 
+    WHERE %(workspoints)s.%(is_work)s = true GROUP BY %(workspoints)s.%(point_id)s ORDER BY
+     all_works DESC LIMIT 10""") % sql_consts_dict
     return query
 
 
@@ -881,12 +889,12 @@ def sql_select_top_workers() -> str:
 
     query = ("""SELECT %(workers)s.%(id)s, %(workers)s.%(name)s, %(workers)s.%(sub_name)s, COUNT(%(work_id)s) AS all_works, """ +
              """ (SELECT COUNT(%(works)s.%(id)s) FROM %(works)s JOIN %(performers)s ON %(performers)s.%(worker_id)s = %(workers)s.%(id)s""" +
-             """ AND %(works)s.%(id)s = %(performers)s.%(work_id)s WHERE %(works)s.%(date)s::DATE >= NOW()::DATE - 365) """ +
+             """ AND %(works)s.%(id)s = %(performers)s.%(work_id)s WHERE %(works)s.%(date)s::DATE >= last_year_date()) """ +
              """ AS last_year, (SELECT COUNT(%(works)s.%(id)s) FROM %(works)s JOIN %(performers)s ON """ +
              """ %(performers)s.%(worker_id)s = %(workers)s.%(id)s AND %(works)s.%(id)s = %(performers)s.%(work_id)s WHERE """ +
-             """ %(works)s.%(date)s::DATE >= NOW()::DATE - 30) AS last_month, (SELECT COUNT(%(works)s.%(id)s) """ +
+             """ %(works)s.%(date)s::DATE >= last_month_date()) AS last_month, (SELECT COUNT(%(works)s.%(id)s) """ +
              """FROM %(works)s JOIN %(performers)s ON %(performers)s.%(worker_id)s = %(workers)s.%(id)s AND %(works)s.%(id)s = """ +
-             """ %(performers)s.%(work_id)s WHERE %(works)s.%(date)s::DATE >= NOW()::DATE - 7) AS last_week FROM """ +
+             """ %(performers)s.%(work_id)s WHERE %(works)s.%(date)s::DATE >= last_week_date()) AS last_week FROM """ +
              """ %(workers)s JOIN %(performers)s ON %(workers)s.%(id)s = %(performers)s.%(worker_id)s """ +
              """GROUP BY %(workers)s.%(id)s ORDER BY all_works DESC""") %sql_consts_dict
 

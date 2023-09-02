@@ -49,3 +49,35 @@ def all_works_from_equip_id_funct() -> str:
     return """CREATE OR REPLACE FUNCTION all_works_from_equip(eid integer) RETURNS Table(id integer) AS $$ 
     SELECT id FROM works where id_obor = eid; 
     $$ LANGUAGE sql;"""
+
+
+@log_decorator
+def last_day_funct() -> str:
+    """Create or replace SQL function SELECT current day - 1"""
+    return """CREATE OR REPLACE FUNCTION last_day_date() RETURNS DATE as $$ 
+    BEGIN 
+    RETURN NOW()::DATE - 1; END $$ LANGUAGE plpgsql;"""
+
+
+@log_decorator
+def last_week_funct() -> str:
+    """Create or replace SQL function SELECT current day - 7"""
+    return """CREATE OR REPLACE FUNCTION last_week_date() RETURNS DATE as $$ 
+    BEGIN 
+    RETURN NOW()::DATE - 7; END $$ LANGUAGE plpgsql;"""
+
+
+@log_decorator
+def last_month_funct() -> str:
+    """Create or replace SQL function SELECT current day - 7"""
+    return """CREATE OR REPLACE FUNCTION last_month_date() RETURNS DATE as $$ 
+    BEGIN 
+    RETURN NOW()::DATE - 30; END $$ LANGUAGE plpgsql;"""
+
+
+@log_decorator
+def last_year_funct() -> str:
+    """Create or replace SQL function SELECT current day - 7"""
+    return """CREATE OR REPLACE FUNCTION last_year_date() RETURNS DATE as $$ 
+    BEGIN 
+    RETURN NOW()::DATE - 365; END $$ LANGUAGE plpgsql;"""
