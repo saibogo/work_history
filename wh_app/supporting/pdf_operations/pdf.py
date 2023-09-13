@@ -29,7 +29,7 @@ def equips_in_point(point_id: int) -> FPDF:
     with Database() as base:
         _, cursor = base
         all_equips = select_operations.get_equip_in_point(cursor, str(point_id))
-        pdf = create_document('Portrait')
+        pdf = create_document('Landscape')
         table = make_html_table(all_equips, table_headers.equips_table_to_pdf)
         pdf.write_html(table ,table_line_separators=True)
         return pdf
@@ -47,14 +47,60 @@ def works_from_equip(equip_id: int, page_num: int) -> FPDF:
         return pdf
 
 
+def find_work_without_date(find_string: str, page_num: int) -> FPDF:
+    """Create PDf contain all works likes string without date"""
+
+    with Database() as base:
+        _, cursor = base
+        all_works = select_operations.get_all_works_like_word_limit(cursor, find_string, int(page_num))
+        pdf = create_document('Landscape')
+        pdf.write_html(make_html_table(all_works, table_headers.works_table[:len(table_headers.works_table) - 1]),
+                       table_line_separators=True)
+        return pdf
+
+
+def find_work_with_date(find_string: str, date_start: str, date_stop: str, page_num: int) -> FPDF:
+    """Create PDf contain all works likes string without date"""
+
+    with Database() as base:
+        _, cursor = base
+        all_works = select_operations.get_all_works_like_word_and_date_limit(cursor, find_string, date_start,
+                                                                             date_stop, int(page_num))
+        pdf = create_document('Landscape')
+        pdf.write_html(make_html_table(all_works, table_headers.works_table[:len(table_headers.works_table) - 1]),
+                       table_line_separators=True)
+        return pdf
+
+
+def find_equip(find_string: str, page_num: int) -> FPDF:
+    """Create PDF contain all equips likes find-string"""
+    with Database() as base:
+        _, cursor = base
+        all_equips = select_operations.get_all_equips_list_from_like_str_limit(cursor, find_string, int(page_num))
+        pdf = create_document('Landscape')
+        pdf.write_html(make_html_table(all_equips, table_headers.equips_table_to_pdf), table_line_separators=True)
+        return pdf
+
+
+def find_point(find_string: str, page_num: int) -> FPDF:
+    """Create PDF contain all equips likes find-string"""
+    with Database() as base:
+        _, cursor = base
+        all_points = select_operations.get_all_points_list_from_like_str_limit(cursor, find_string, int(page_num))
+        pdf = create_document('Landscape')
+        local_headers = ['ID'] + table_headers.points_table[:len(table_headers.points_table) - 2]
+        pdf.write_html(make_html_table(all_points, local_headers),
+                       table_line_separators=True)
+        return pdf
+
+
 def move_equip(equip_id: int) -> FPDF:
     """Create pdf contain all records from current equip"""
 
     with Database() as base:
         _, cursor = base
         all_records = []
-        equip_info = [str(equip_id)] + \
-                     select_operations.get_full_equip_information(cursor, str(equip_id))
+        equip_info = [str(equip_id)] + select_operations.get_full_equip_information(cursor, str(equip_id))
         all_records.insert(0, equip_info)
         while str(equip_info[0]) != str(equip_info[5]):
             old_equip_id = str(equip_info[5])
@@ -67,17 +113,32 @@ def move_equip(equip_id: int) -> FPDF:
         return pdf
 
 
-def works_from_performer(performer_id: int) -> FPDF:
+def works_from_performer(performer_id: int, page_num: int) -> FPDF:
     """Create PDF contain all works from current performer"""
 
     with Database() as base:
         _, cursor = base
-        all_works = select_operations.get_all_works_from_worker_id(cursor, str(performer_id))
+        all_works = select_operations.get_all_works_from_worker_id_limit(cursor, str(performer_id), page_num)
         pdf = create_document('Landscape')
         pdf.write_html(make_html_table(all_works,
                                        table_headers.works_table[: len(table_headers.works_table) - 1]),
                        table_line_separators=True)
         return pdf
+
+
+def works_from_performer_with_date(performer_id: int, date_start: str, date_stop: str, page_num: int) -> FPDF:
+    """Create PDF contain all works from current performer"""
+
+    with Database() as base:
+        _, cursor = base
+        all_works = select_operations.get_works_from_performer_and_date(cursor, performer_id,
+                                                                        date_start, date_stop, int(page_num))
+        pdf = create_document('Landscape')
+        pdf.write_html(make_html_table(all_works,
+                                       table_headers.works_table[: len(table_headers.works_table) - 1]),
+                       table_line_separators=True)
+        return pdf
+
 
 
 def point_tech_information(point_num: int) -> FPDF:
@@ -151,8 +212,9 @@ def make_html_table(data: List[Tuple[Any]], header: List[str]) -> str:
     if len(header) != len(data[0]):
         result = render_template("pdf_template.html", not_corrected=True)
     else:
-        data_to_pdf = [[(header[i], row[i]) for i in range(len(row))] for row in data]
-        result = render_template("pdf_template.html", not_corrected=False, data=data_to_pdf)
+        #data_to_pdf = [[(header[i], row[i]) for i in range(len(row))] for row in data]
+        #result = render_template("pdf/pdf_template.html", not_corrected=False, data=data_to_pdf)
+        result = render_template("pdf/pdf_template.html", not_corrected=False, header=header, data=data)
 
     return result
 

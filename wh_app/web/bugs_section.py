@@ -24,6 +24,7 @@ def replace_none_in_list(ls: list) -> list:
     """Replace all None in bugs-list"""
     return [[elem if elem else "" for elem in row] for row in ls]
 
+
 def bugs_menu(stylesheet_number: str) -> str:
     """Method create main bugs-page"""
     menu = [(1, 'Отобразить все'),

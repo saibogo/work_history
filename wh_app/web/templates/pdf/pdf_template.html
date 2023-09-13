@@ -1,18 +1,22 @@
 {% if not_corrected %}
     <h1>Ошибка соответствия таблицы и заголовка!</h1>
 {% else %}
-    {% for row in data %}
-        <table border="1">
-            <thead>
-                <tr><th></th></tr>
-            </thead>
-            <tbody>
-                {% for elem in row %}
-                    <tr width="100%">
-                        <td>{{ elem[0] }}: {{ elem[1] }}</td>
-                    </tr>
+    <table border="1">
+        <thead>
+            <tr>
+                {% for column_name in header %}
+                    <th>{{column_name}}</th>
                 {% endfor %}
-            </tbody>
-        </table>
-    {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in data %}
+                <tr>
+                    {% for elem in row %}
+                        <td>{{elem}}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 {% endif %}

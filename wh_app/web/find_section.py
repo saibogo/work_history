@@ -76,7 +76,8 @@ def find_work_paging(find_string: str, page_num: str, stylesheet_number: str) ->
         pages_table = uhtml.paging_table('/find/work/{0}/page'.format(find_string),
                                          pages_list,
                                          int(page_num))
-        return web_template.result_page(result + pages_table, '/find', str(stylesheet_number))
+        return web_template.result_page(result + pages_table, '/find', str(stylesheet_number), True,
+                                        'find-work-not-date={}={}'.format(find_string, page_num))
 
 
 def find_work_like_date_paging(find_string: str, data_start: str,
@@ -107,7 +108,9 @@ def find_work_like_date_paging(find_string: str, data_start: str,
                                                                               date_stop_correct),
                                          pages_list,
                                          int(page_num))
-        return web_template.result_page(result + pages_table, '/find', str(stylesheet_number))
+        return web_template.result_page(result + pages_table, '/find', str(stylesheet_number), True,
+                                        'find-work-with-date={}={}={}={}'.format(find_string, date_start_correct,
+                                                                                 date_stop_correct, page_num))
 
 
 def find_work_like_performer_and_date_paging(performer_id: str, data_start: str,
@@ -137,7 +140,9 @@ def find_work_like_performer_and_date_paging(performer_id: str, data_start: str,
                                                                                    date_stop_correct),
                                          pages_list,
                                          int(page_num))
-        return web_template.result_page(result + pages_table, '/find', str(stylesheet_number))
+        return web_template.result_page(result + pages_table, '/find', str(stylesheet_number),
+                                        True, 'performer-with-date={}={}={}={}'.format(performer_id, date_start_correct,
+                                                                                       date_stop_correct, page_num))
 
 
 def find_point_page(find_string: str, page_num: str, stylesheet_number: str) -> str:
@@ -160,7 +165,8 @@ def find_point_page(find_string: str, page_num: str, stylesheet_number: str) -> 
         pages_table = uhtml.paging_table('/find/point/{0}/page'.format(find_string),
                                          pages_list,
                                          int(page_num))
-        return web_template.result_page(result + pages_table, '/find', str(stylesheet_number))
+        return web_template.result_page(result + pages_table, '/find',
+                                        str(stylesheet_number), True, 'point={}={}'.format(find_string, page_num))
 
 
 def find_equip_page(find_string: str, page_num: str, stylesheet_number: str) -> str:
@@ -182,4 +188,5 @@ def find_equip_page(find_string: str, page_num: str, stylesheet_number: str) -> 
         pages_table = uhtml.paging_table('/find/equip/{0}/page'.format(find_string),
                                          pages_list,
                                          int(page_num))
-        return web_template.result_page(result + pages_table, '/find', str(stylesheet_number))
+        return web_template.result_page(result + pages_table, '/find', str(stylesheet_number), True,
+                                        'find-equip={}={}'.format(find_string, page_num))

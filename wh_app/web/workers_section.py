@@ -240,7 +240,7 @@ def works_from_performers_table(performer_id: int,
         return web_template.result_page(table + page, pre_adr,
                                         str(stylesheet_number),
                                         True,
-                                        'performer={0}'.format(performer_id))
+                                        'performer={0}={1}'.format(performer_id, page_num))
 
 
 def add_performer_to_work(work_id, pre_adr: str, stylesheet_number: str) -> str:
