@@ -18,7 +18,7 @@
         <port>5000</port>
     </web>
     <web-interface>
-        <max_records_in_page>10</max_records_in_page>
+        <max_records_in_page>15</max_records_in_page>
         <max_pages_in_tr>40</max_pages_in_tr>
         <!-->Use in JavaScript handler. Time in ms.<-->
         <timeout_message>300000</timeout_message>
