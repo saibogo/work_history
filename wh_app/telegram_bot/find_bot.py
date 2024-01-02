@@ -82,7 +82,7 @@ async def find_repler(message: types.Message, target: str):
         msg_del = await message.answer(user_not_access_read(user_name))
         standart_delete_message(msg_del)
 
-    except aiogram.utils.exceptions.MessageIsTooLong:
+    except (aiogram.utils.exceptions.MessageIsTooLong, aiogram.utils.exceptions.BadRequest) as e:
         msg_dels = list()
         tmp = '\n'.join(msgs)
         for i in range(0, len(tmp), MAX_CHAR_IN_MSG):
