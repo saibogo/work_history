@@ -36,6 +36,7 @@ def all_workers_table(stylesheet_number: str) -> str:
     with Database() as base:
         _, cursor = base
         all_workers = select_operations.get_all_workers(cursor)
+        all_workers = [list(map(lambda e: str(e) if e is not None else "", row)) for row in all_workers]
         workers = [[elem for elem in worker] + [create_edit_link_to_worker(worker[0])] for worker in all_workers]
         links = ['/performer/' + str(elem[0]) for elem in all_workers]
         table = uhtml.universal_table(table_headers.all_workers_table_name,
@@ -51,6 +52,7 @@ def current_workers_table(stylesheet_number: str) -> str:
     with Database() as base:
         _, cursor = base
         current_workers_list = select_operations.get_table_current_workers(cursor)
+        current_workers_list = [list(map(lambda e: str(e) if e is not None else "", row)) for row in current_workers_list]
         workers = [[elem for elem in worker] + [create_edit_link_to_worker(worker[0])] for worker in current_workers_list]
         links = ['/performer/' + str(elem[0]) for elem in current_workers_list]
         table = uhtml.universal_table(table_headers.current_workers_table_name,
@@ -322,4 +324,4 @@ def top_workers_page(stylesheet_number: str) -> str:
         page = uhtml.universal_table(table_headers.top_10_workers_table_name,
                                      table_headers.top_10_workers_table,
                                      workers, True, links)
-        return web_template.result_page(page, pre_adr, stylesheet_number)
+        return web_template.result_page(page, pre_adr, stylesheet_number, True, 'top10workers')

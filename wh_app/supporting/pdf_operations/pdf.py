@@ -140,7 +140,6 @@ def works_from_performer_with_date(performer_id: int, date_start: str, date_stop
         return pdf
 
 
-
 def point_tech_information(point_num: int) -> FPDF:
     """Create PDF contain all technical information from current point"""
 
@@ -186,6 +185,36 @@ def weekly_charts_pdf(values: Any) -> FPDF:
         html = render_template('pdf/workers.html', days_names=table_headers.workers_days_table,
                                humans_days=days_human_view, humans=select_operations.get_all_workers_real(cursor))
         pdf.write_html("".join(html), table_line_separators=True)
+        return pdf
+
+
+def top10workers() -> FPDF:
+    """Create PDF contain top 10 workers table"""
+    with Database() as base:
+        _, cursor = base
+        pdf = create_document('Landscape')
+        html = make_html_table(select_operations.get_top_10_workers(cursor), table_headers.top_10_workers_table)
+        pdf.write_html(html, table_line_separators=True)
+        return pdf
+
+
+def top10points() -> FPDF:
+    """Create PDF contain top 10 workers table"""
+    with Database() as base:
+        _, cursor = base
+        pdf = create_document('Landscape')
+        html = make_html_table(select_operations.get_top_10_points(cursor), table_headers.top_10_points)
+        pdf.write_html(html, table_line_separators=True)
+        return pdf
+
+
+def top10equips() -> FPDF:
+    """Create PDF contain top 10 workers table"""
+    with Database() as base:
+        _, cursor = base
+        pdf = create_document('Landscape')
+        html = make_html_table(select_operations.get_top_10_works(cursor), table_headers.top_10_equips)
+        pdf.write_html(html, table_line_separators=True)
         return pdf
 
 

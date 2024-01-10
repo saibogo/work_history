@@ -278,4 +278,4 @@ def top_equips_from_maximal_works(stylesheet_number: str) -> str:
         page = render_template('universal_table.html', table_name=table_headers.top_10_equips_name,
                                num_columns=len(table_headers.top_10_equips), headers=table_headers.top_10_equips,
                                data=lst)
-        return web_template.result_page(page, pre_adr, stylesheet_number)
+        return web_template.result_page(page, pre_adr, stylesheet_number, True, 'top10equips')

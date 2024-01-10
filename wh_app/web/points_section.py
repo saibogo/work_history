@@ -293,4 +293,4 @@ def top_10_points_page(stylesheet_number: str) -> str:
         page = render_template('universal_table.html', table_name=table_headers.top_10_points_name,
                                num_columns=len(table_headers.top_10_points), headers=table_headers.top_10_points,
                                data=lst)
-        return web_template.result_page(page, '/points', stylesheet_number)
+        return web_template.result_page(page, '/points', stylesheet_number, True, 'top10points')

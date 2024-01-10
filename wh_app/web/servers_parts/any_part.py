@@ -6,7 +6,7 @@ from wh_app.web.any_section import main_web_menu, faq_page, statistics_page,\
     system_status_page, viev_changelog
 from wh_app.supporting.pdf_operations.pdf import equips_in_point, works_from_equip,\
     works_from_performer, weekly_charts_pdf, move_equip, point_tech_information, find_work_without_date, find_equip,\
-    find_point, find_work_with_date, works_from_performer_with_date
+    find_point, find_work_with_date, works_from_performer_with_date, top10workers, top10points, top10equips
 
 
 @app.route("/")
@@ -63,9 +63,14 @@ def html_table_to_pdf(data:str) -> Response:
                      "find-work-not-date": find_work_without_date,
                      "find-equip": find_equip,
                      "point": find_point,
-                     "find-work-with-date": find_work_with_date}
+                     "find-work-with-date": find_work_with_date,
+                     "top10workers": top10workers,
+                     "top10points": top10points,
+                     "top10equips": top10equips}
     lst_data = data.split('=')
-    if len(lst_data) == 2:
+    if len(lst_data) == 1:
+        section = lst_data[0]
+    elif len(lst_data) == 2:
         section, value = lst_data
     elif len(lst_data) == 3:
         section, value, page_num = lst_data
@@ -74,7 +79,9 @@ def html_table_to_pdf(data:str) -> Response:
     else:
         print("Команда {} для формирования PDF не опознана".format(data))
     try:
-        if len(lst_data) == 2:
+        if len(lst_data) == 1:
+            pdf = command_table[section]()
+        elif len(lst_data) == 2:
             pdf = command_table[section](value)
         elif len(lst_data) == 5:
             pdf = command_table[section](value, date1, date2, page_num)

@@ -87,7 +87,9 @@ def all_workers() -> str:
     return """CREATE OR REPLACE VIEW %(all_workers)s AS 
     SELECT %(workers)s.%(id)s, %(workers)s.%(sub_name)s, %(workers)s.%(name)s, 
     %(workers)s.%(phone_number)s, %(worker_status)s ,
-     %(posts)s.%(post_name)s FROM %(workers)s JOIN %(posts)s 
+    %(posts)s.%(post_name)s, %(workers)s.%(emloyee_date)s,
+    %(workers)s.%(dismissal_date)s
+     FROM %(workers)s JOIN %(posts)s 
     ON %(posts)s.%(id)s = %(workers)s.%(post_id)s ORDER BY %(sub_name)s, %(name)s""" % sql_consts_dict
 
 
