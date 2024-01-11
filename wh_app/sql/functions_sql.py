@@ -22,9 +22,11 @@ def worker_status_to_text() -> str:
 @log_decorator
 def bug_status_to_text() -> str:
     """Create or replace SQL function mapping bug_status to text"""
-    return """CREATE OR REPLACE FUNCTION bug_status_to_string(st bool) RETURNS text AS $$ 
+    return """
+    CREATE OR REPLACE FUNCTION bug_status_to_string(st order_status) RETURNS text AS $$ 
     BEGIN 
-    IF st = true THEN RETURN 'В обработке'::text; 
+    IF st = 'in_work' THEN RETURN 'В обработке'::text;
+    ELSIF st = 'canceled' THEN RETURN 'Отменена'::text; 
     ELSE RETURN 'Решено'::text; 
     END IF; 
     END; 

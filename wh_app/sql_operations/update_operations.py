@@ -1,3 +1,5 @@
+import datetime
+
 from wh_app.sql.update_sql import *
 
 functions.info_string(__name__)
@@ -29,10 +31,23 @@ def invert_worker_status(cursor, worker_id: str) -> None:
 
 
 def update_worker_info(cursor, worker_id: str, name: str, sub_name: str, phone_number: str,
-                       post_id: str, status: str) -> None:
+                       post_id: str, status: str, employee_date: datetime.date) -> None:
     """Update information for selected worker in workers-table"""
 
-    cursor.execute(sql_update_worker_info(worker_id, name, sub_name, phone_number, post_id, status))
+    cursor.execute(sql_update_worker_info(worker_id, name, sub_name, phone_number, post_id, status, employee_date))
+
+
+def set_worker_dismissal_date(cursor, worker_id: id) -> None:
+    """Set dismissal_date"""
+
+    cursor.execute(sql_update_dismissla_date(worker_id))
+
+
+def set_worker_dismissal_date_in_null(cursor, worker_id: id) -> None:
+    """Set dismissal_date in Null"""
+
+    cursor.execute(sql_remove_dismissal_date(worker_id))
+
 
 
 def update_work_info(cursor, work_id: str, order_info: str, description: str, work_datetime: str) -> None:

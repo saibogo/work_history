@@ -62,6 +62,7 @@ PHONE_NUMBER = "phone_number"
 STATUS = "status"
 POST = "post"
 BINDING_ID = "id"
+EMPLOYEE_DATE = "employee_date"
 
 
 def link_or_str(elem: str, link_type: bool = False, link: str = '') -> str:

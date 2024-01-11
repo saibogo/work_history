@@ -161,6 +161,7 @@ def create_edit_work_form(work_id: int, stylesheet_number: str) -> str:
         _, cursor = base
         pre_adr = '/works'
         works_info = select_operations.get_full_information_to_work(cursor, str(work_id))
+        print(works_info)
         main_table = render_template('edit_work.html', work_id=work_id, works_info=works_info,
                                      order_info=uhtml.ORDER_INFO, description=uhtml.DESCRIPTION,
                                      password=uhtml.PASSWORD)

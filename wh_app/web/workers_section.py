@@ -1,4 +1,5 @@
 """this module contain all pages implements from workers sections"""
+import datetime
 
 from flask import render_template
 
@@ -56,7 +57,7 @@ def current_workers_table(stylesheet_number: str) -> str:
         workers = [[elem for elem in worker] + [create_edit_link_to_worker(worker[0])] for worker in current_workers_list]
         links = ['/performer/' + str(elem[0]) for elem in current_workers_list]
         table = uhtml.universal_table(table_headers.current_workers_table_name,
-                                      table_headers.workers_table,
+                                      table_headers.only_works_workers,
                                       workers, True, links)
         return web_template.result_page(table,
                                         '/workers',
@@ -75,6 +76,13 @@ def create_edit_worker_form(worker_id: str, stylesheet_number: str) -> str:
             current_post = 0
             avaliable_posts = []
             worker_info = select_operations.get_info_from_worker(cursor, worker_id)
+            correct_info = []
+            for elem in worker_info:
+                if isinstance(elem, datetime.date):
+                    correct_info.append(datetime.datetime.strptime(elem.strftime('%Y%m%d'), '%Y%m%d'))
+                else:
+                    correct_info.append(elem)
+            worker_info = correct_info
             for elem in all_workers_posts:
                 if elem[1] == worker_info[5]:
                     current_post = elem[0]
@@ -88,7 +96,8 @@ def create_edit_worker_form(worker_id: str, stylesheet_number: str) -> str:
                                     worker_name=uhtml.WORKER_NAME, phone_number=uhtml.PHONE_NUMBER,
                                     password=uhtml.PASSWORD, status=uhtml.STATUS,
                                     status_in_sql=all_workers_status[worker_info[4]], all_statuses=possible_statuses,
-                                    post=uhtml.POST, current_post=current_post, all_posts=avaliable_posts)
+                                    post=uhtml.POST, current_post=current_post, all_posts=avaliable_posts,
+                                    employee_date=uhtml.EMPLOYEE_DATE)
         except IndexError:
             table = uhtml.data_is_not_valid()
     return web_template.result_page(table,
@@ -105,12 +114,21 @@ def update_worker_information(worker_id: str, data, method, stylesheet_number: s
         phone_number = data[uhtml.PHONE_NUMBER]
         status = data[uhtml.STATUS]
         post = data[uhtml.POST]
+        employee_date = datetime.datetime.strptime(data[uhtml.EMPLOYEE_DATE].replace("T", ' ').split()[0], '%Y-%m-%d')\
+            .date()
         password = data[uhtml.PASSWORD]
         if functions.is_superuser_password(password):
             with Database() as base:
                 connection, cursor = base
-                update_operations.update_worker_info(cursor, worker_id, name, subname, phone_number, post, status)
+                update_operations.update_worker_info(cursor, worker_id, name, subname, phone_number, post,
+                                                     status, employee_date)
                 connection.commit()
+                if status == 'fired':
+                    update_operations.set_worker_dismissal_date(cursor, worker_id)
+                    connection.commit()
+                else:
+                    update_operations.set_worker_dismissal_date_in_null(cursor, worker_id)
+                    connection.commit()
                 return web_template.result_page(uhtml.operation_completed(),
                                                 pre_adr,
                                                 str(stylesheet_number))

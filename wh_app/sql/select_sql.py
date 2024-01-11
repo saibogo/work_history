@@ -587,8 +587,9 @@ def sql_select_worker_info(worker_id: str) -> str:
 def sql_select_table_current_workers() -> str:
     """Return SQL-query contain table workers"""
 
-    return ("""SELECT * FROM %(all_workers)s WHERE %(id)s NOT IN """ +\
-           """(SELECT %(id)s FROM %(workers)s WHERE %(status)s = 'fired')""") % sql_consts_dict
+    return ("""SELECT %(id)s, %(sub_name)s, %(name)s, %(phone_number)s, "%(case)s", %(post_name)s, %(emloyee_date)s """ +\
+            """FROM %(all_workers)s WHERE %(id)s NOT IN """ +\
+            """(SELECT %(id)s FROM %(workers)s WHERE %(status)s = 'fired')""") % sql_consts_dict
 
 
 @log_decorator

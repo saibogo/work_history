@@ -19,7 +19,8 @@ any_consts = {"id": "id",
               "cold_water": "cold_water",
               "hot_water": "hot_water",
               "heating": "heating",
-              "sewerage": "sewerage"
+              "sewerage": "sewerage",
+              "case": "case"
               }
 
 workers_const = {"all_workers": "all_workers",

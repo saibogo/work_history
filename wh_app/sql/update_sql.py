@@ -1,4 +1,5 @@
 """This module contain function. create RAW-query to UPDATE in database"""
+import datetime
 
 from wh_app.supporting import functions
 from wh_app.sql.sql_constant import sql_consts_dict, tech_tables
@@ -54,12 +55,30 @@ def sql_inverse_worker_status(worker_id: str) -> str:
 
 
 @log_decorator
-def sql_update_worker_info(worker_id: str, name: str, sub_name: str,phone_number: str, post_id: str, status: str) -> str:
+def sql_update_worker_info(worker_id: str, name: str, sub_name: str,phone_number: str, post_id: str,
+                           status: str, employee_date: datetime.date) -> str:
     """Return the query string to update worker information"""
 
     query = ("""UPDATE %(workers)s SET %(name)s = '{0}', %(sub_name)s = '{1}', """ +
-             """ %(phone_number)s = '{2}', %(post_id)s = {3}, %(status)s = '{4}' WHERE %(id)s = {5}""") % sql_consts_dict
-    return query.format(name, sub_name, phone_number, post_id, status, worker_id)
+             """ %(phone_number)s = '{2}', %(post_id)s = {3}, %(status)s = '{4}', %(emloyee_date)s = '{5}'""" +
+             """ WHERE %(id)s = {6}""") % sql_consts_dict
+    return query.format(name, sub_name, phone_number, post_id, status, employee_date, worker_id)
+
+
+@log_decorator
+def sql_update_dismissla_date(worker_id: str) -> str:
+    """Return the query string to set dismissal_date"""
+
+    query = """UPDATE %(workers)s SET %(dismissal_date)s = NOW()::DATE WHERE %(id)s = {0}""" % sql_consts_dict
+    return query.format(worker_id)
+
+
+@log_decorator
+def sql_remove_dismissal_date(worker_id: str) -> str:
+    """Return the query string to set dissmissal_date in NULL"""
+
+    query = """UPDATE %(workers)s SET %(dismissal_date)s = NULL WHERE %(id)s = {0}""" % sql_consts_dict
+    return query.format(worker_id)
 
 
 @log_decorator
