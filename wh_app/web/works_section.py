@@ -25,9 +25,9 @@ def create_work_edit_link(work_id: str) -> str:
 def works_menu(stylesheet_number: str) -> str:
     """Return main menu in WORKS section"""
     name = 'Действия с ремонтами и диагностиками'
-    menu = [(1, 'Все зарегистрированные работы'), (2, 'Поиск работы по ID')]
+    menu = ['Все зарегистрированные работы', 'Поиск работы по ID']
     links_list = ['/all-works', '/find-work-to-id']
-    table = uhtml.universal_table(name, ['№', 'Доступное действие'], menu, True, links_list)
+    table = uhtml.universal_table(name, ['№', 'Доступное действие'], functions.list_to_numer_list(menu), True, links_list)
     return web_template.result_page(table, '/', str(stylesheet_number))
 
 
@@ -114,7 +114,7 @@ def select_work_to_id_method(data, method, stylesheet_number: str) -> str:
             table1 = uhtml.universal_table(table_headers.works_table_name,
                                            table_headers.works_table,
                                            work)
-            return web_template.result_page(table1, pre_adr, str(stylesheet_number))
+            return web_template.result_page(table1, pre_adr, str(stylesheet_number), True, 'work={}'.format(work_id))
     else:
         return web_template.result_page("Method in Select Work not corrected!",
                                         pre_adr,

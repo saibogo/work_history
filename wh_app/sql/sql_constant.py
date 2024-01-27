@@ -80,11 +80,18 @@ point_consts = {"point_id": "point_id",
                 "deleted": "deleted"
                 }
 
+order_conts = {"customer": "customer",
+               "full_name": "full_name",
+               "orders": "orders",
+               "closed_date": "closed_date",
+               "customer_id": "customer_id"}
+
 any_consts.update(point_consts)
 any_consts.update(replace_consts)
 any_consts.update(equip_const)
 any_consts.update(works_const)
 any_consts.update(workers_const)
+any_consts.update(order_conts)
 sql_consts_dict = any_consts
 
 tech_tables = {'electric': "electric", "cold-water": "cold_water", "hot-water": "hot_water",

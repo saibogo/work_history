@@ -721,9 +721,9 @@ def sql_select_all_customers() -> str:
 def sql_select_all_orders() -> str:
     """Return all records in table orders"""
 
-    query = ("""SELECT orders.%(id)s, customer.full_name, orders.date, problem, """ +
-             """(%(bug_in_work)s) FROM orders JOIN customer ON customer_id = customer.%(id)s""" +
-             """ ORDER BY %(id)s""") % sql_consts_dict
+    query = ("""SELECT orders.%(id)s, %(point_name)s, %(customer)s.%(full_name)s, %(orders)s.%(date)s, %(orders)s.%(closed_date)s, %(problem)s, """ +
+             """(%(bug_in_work)s), %(orders)s.comment FROM %(orders)s JOIN %(customer)s ON %(customer_id)s = %(customer)s.%(id)s""" +
+             """ JOIN %(workspoints)s ON %(workspoints)s.%(point_id)s = %(orders)s.%(point_id)s ORDER BY %(id)s""") % sql_consts_dict
 
     return query
 

@@ -27,12 +27,10 @@ def replace_none_in_list(ls: list) -> list:
 
 def bugs_menu(stylesheet_number: str) -> str:
     """Method create main bugs-page"""
-    menu = [(1, 'Отобразить все'),
-            (2, 'Отобразить незакрытые'),
-            (3, 'Зарегистрировать проблему')]
+    menu = ['Отобразить все', 'Отобразить незакрытые', 'Зарегистрировать проблему']
     headers = ['№', 'Выполнить']
     links_list = ['/all-bugs', '/all-bugs-in-work', '/add-bug']
-    table = uhtml.universal_table('Возможные действия', headers, menu, True, links_list)
+    table = uhtml.universal_table('Возможные действия', headers, functions.list_to_numer_list(menu), True, links_list)
     return web_template.result_page(table, '/bugs', str(stylesheet_number))
 
 

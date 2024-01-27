@@ -31,12 +31,9 @@ def create_tech_links(point_id: str) -> str:
 def points_operations(stylesheet_number: str) -> str:
     """Create main page in points-section"""
     name = 'Действия с предприятиями:'
-    menu = [(1, 'Все предприятия'),
-            (2, 'Только действующие'),
-            (3, 'Добавить предприятие'),
-            (4, 'TOP-10 по количеству ремонтов')]
+    menu = ['Все предприятия', 'Только действующие', 'Добавить предприятие', 'TOP-10 по количеству ремонтов']
     links_list = ['/all-points', '/works-points', '/create-new-point', '/top-10-points']
-    table = uhtml.universal_table(name, ['№', 'Доступное действие'], menu, True, links_list)
+    table = uhtml.universal_table(name, ['№', 'Доступное действие'], functions.list_to_numer_list(menu), True, links_list)
     return web_template.result_page(table, '/', str(stylesheet_number))
 
 

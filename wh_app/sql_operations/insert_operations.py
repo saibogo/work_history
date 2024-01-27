@@ -51,3 +51,9 @@ def insert_new_binding(cursor, point_id: str, worker_id: str, is_main: str) -> N
     cursor.execute(sql_insert_new_binding(point_id, worker_id, is_main))
 
 
+def insert_new_worker(cursor, name: str, sub_name: str, phone_number: str, post: int) -> None:
+    """Add new worker in database"""
+
+    cursor.execute(sql_add_new_worker(name, sub_name, phone_number, post))
+
+

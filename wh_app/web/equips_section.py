@@ -29,9 +29,9 @@ def create_full_edit_links(equip_id: str, removed: bool=False, deleted: bool=Fal
 def equips_menu(stylesheet_number) -> str:
     """Method create main EQUIP-page"""
     name = 'Действия с оборудованием'
-    menu = [(1, 'Все зарегистрированное оборудование'), (2, 'Поиск по ID'), (3, 'TOP-10 по ремонтам')]
+    menu = ['Все зарегистрированное оборудование', 'Поиск по ID', 'TOP-10 по ремонтам']
     links_list = ['/all-equips', '/find-equip-to-id', '/top-10-from-works']
-    table = uhtml.universal_table(name, ['№', 'Доступное действие'], menu, True, links_list)
+    table = uhtml.universal_table(name, ['№', 'Доступное действие'], functions.list_to_numer_list(menu), True, links_list)
     return web_template.result_page(table, '/', str(stylesheet_number))
 
 

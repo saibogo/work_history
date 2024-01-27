@@ -5,7 +5,7 @@ from wh_app.web.workers_section import workers_menu, all_workers_table,\
     works_days_page, works_from_performers_table, add_performer_to_work,\
     add_performer_result_method, weekly_chart_page, create_edit_worker_form, update_worker_information,\
     current_workers_table,  remove_performer_from_work,\
-    remove_performer_result_method, top_workers_page
+    remove_performer_result_method, top_workers_page, create_new_worker_page, add_new_worker_method
 
 
 @app.route("/workers")
@@ -138,4 +138,18 @@ def remove_performer_result() -> Response:
 def top_workers() -> Response:
     """Return to top 10 workers page"""
     return goto_or_redirect(lambda: top_workers_page(stylesheet_number()))
+
+
+@app.route('/add-worker')
+def add_worker() -> Response:
+    """Return to top 10 workers page"""
+    return goto_or_redirect(lambda: create_new_worker_page(stylesheet_number()))
+
+
+@app.route('/add-worker-to-db', methods=['POST'])
+def add_worker_to_db() -> Response:
+    """Redirect to method add performer in current work"""
+    return goto_or_redirect(lambda: add_new_worker_method(functions.form_to_data(request.form),
+                                                          request.method,
+                                                          stylesheet_number()))
 

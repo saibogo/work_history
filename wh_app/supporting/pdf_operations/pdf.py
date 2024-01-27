@@ -169,6 +169,17 @@ def point_tech_information(point_num: int) -> FPDF:
     return pdf
 
 
+def work_from_id(work_id: int) -> FPDF:
+    """Create PDF contain all technical information from current point"""
+    pdf = create_document('Landscape')
+    with Database() as base:
+        _, cursor = base
+        html = make_html_table([select_operations.get_full_information_to_work(cursor, work_id)],
+                               table_headers.works_table[:len(table_headers.works_table) - 1])
+        pdf.write_html(html)
+    return pdf
+
+
 def weekly_charts_pdf(values: Any) -> FPDF:
     """Create PDF contain all works days to all workers"""
 
@@ -241,8 +252,6 @@ def make_html_table(data: List[Tuple[Any]], header: List[str]) -> str:
     if len(header) != len(data[0]):
         result = render_template("pdf_template.html", not_corrected=True)
     else:
-        #data_to_pdf = [[(header[i], row[i]) for i in range(len(row))] for row in data]
-        #result = render_template("pdf/pdf_template.html", not_corrected=False, data=data_to_pdf)
         result = render_template("pdf/pdf_template.html", not_corrected=False, header=header, data=data)
 
     return result

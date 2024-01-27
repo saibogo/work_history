@@ -1,0 +1,42 @@
+<h2>Добавить нового сотрудника</h2>
+<form action="/add-worker-to-db" method="post">
+    <div class="container">
+        <div class="tr_div_login">
+            <div class="faq_quest">Фамилия</div>
+            <div class="faq_answer">
+                <textarea rows=1 name="{{worker_subname}}"></textarea>
+            </div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Имя</div>
+            <div class="faq_answer">
+                <textarea rows=1 name="{{worker_name}}"></textarea>
+            </div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Телефон</div>
+            <div class="faq_answer">
+                <textarea rows=1 name="{{phone_number}}"></textarea>
+            </div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Должность</div>
+            <div class="faq_answer">
+                <select class="div_select" name="{{post}}">
+                    {% for post in all_posts %}
+                    <option value="{{post[0]}}">{{post[1]}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Пароль администратора:</div>
+            <div class="faq_answer"><input type="password" name="{{password}}"></div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest"></div>
+            <div class="faq_answer"><input type="submit" value="Применить изменения"></div>
+        </div>
+
+    </div>
+</form>

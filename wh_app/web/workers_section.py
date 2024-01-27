@@ -25,10 +25,10 @@ def create_edit_link_to_worker(worker_id: str) -> str:
 def workers_menu(stylesheet_number: str) -> str:
     """Return main page from WORKERS section"""
     name = 'Действия с сотрудниками'
-    menu = [(1, 'Все зарегистрированные сотрудники'), (3, 'Только работающие'), (2, 'Привязки по предприятиям'),
-            (3, 'Рабочие дни'), (4, 'TOP-10 по зарегистрированным работам')]
-    links_list = ['/all-workers', '/not-fired-workers', '/works-days', '/weekly-chart', '/top-10-workers']
-    table = uhtml.universal_table(name, ['№', 'Доступное действие'], menu, True, links_list)
+    menu = ['Все зарегистрированные сотрудники', 'Только работающие',  'Привязки по предприятиям',
+            'Рабочие дни', 'TOP-10 по зарегистрированным работам', "Добавить сотрудника"]
+    links_list = ['/all-workers', '/not-fired-workers', '/works-days', '/weekly-chart', '/top-10-workers', '/add-worker']
+    table = uhtml.universal_table(name, ['№', 'Доступное действие'], functions.list_to_numer_list(menu), True, links_list)
     return web_template.result_page(table, '/', str(stylesheet_number))
 
 
@@ -343,3 +343,41 @@ def top_workers_page(stylesheet_number: str) -> str:
                                      table_headers.top_10_workers_table,
                                      workers, True, links)
         return web_template.result_page(page, pre_adr, stylesheet_number, True, 'top10workers')
+
+
+def create_new_worker_page(stylesheet_number: str) -> str:
+    """Create page to Add New Worker"""
+
+    pre_addr = '/workers'
+    with Database() as base:
+        _, cursor = base
+        posts = select_operations.get_all_posts(cursor)
+        table = render_template('add_new_worker.html', all_posts=posts, worker_subname=uhtml.WORKER_SUBNAME,
+                                worker_name=uhtml.WORKER_NAME, phone_number=uhtml.PHONE_NUMBER, post=uhtml.POST,
+                                password=uhtml.PASSWORD)
+        return web_template.result_page(table, pre_addr, stylesheet_number)
+
+
+def add_new_worker_method(data, method, stylesheet_number: str) -> str:
+    """Add new worker in DataBase"""
+    pre_adr = '/'
+    if method == 'POST':
+        subname = data[uhtml.WORKER_SUBNAME]
+        name = data[uhtml.WORKER_NAME]
+        phone_number = data[uhtml.PHONE_NUMBER]
+        post = data[uhtml.POST]
+        password = data[uhtml.PASSWORD]
+        if functions.is_superuser_password(password):
+            if subname == '' or name == '':
+                page = uhtml.data_is_not_valid()
+            else:
+                with Database() as base:
+                    connection, cursor = base
+                    insert_operations.insert_new_worker(cursor, name, subname, phone_number, post)
+                    connection.commit()
+                    page = uhtml.operation_completed()
+        else:
+            page = uhtml.pass_is_not_valid()
+    else:
+        page = '<h2>Method in Remove performer not corrected!</h2>'
+    return web_template.result_page(page, pre_adr, str(stylesheet_number))

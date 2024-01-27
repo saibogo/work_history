@@ -212,4 +212,12 @@ def get_technical_info(point_id: int) -> List[Tuple]:
         return result
 
 
+def list_to_numer_list(lst: list) -> List[Tuple]:
+    """Create numer list. Example: [a, b, c] -> [(1, a), (2, b), (3, c)]"""
+    result = list()
+    for i in range(len(lst)):
+        result.append((i + 1, lst[i]))
+    return result
+
+
 info_string(__name__)
