@@ -84,7 +84,9 @@ order_conts = {"customer": "customer",
                "full_name": "full_name",
                "orders": "orders",
                "closed_date": "closed_date",
-               "customer_id": "customer_id"}
+               "customer_id": "customer_id",
+               "order_status": "order_status",
+               "comment": "comment"}
 
 any_consts.update(point_consts)
 any_consts.update(replace_consts)

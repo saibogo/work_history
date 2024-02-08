@@ -1,10 +1,12 @@
 """This module contain functions to create all orders-pages"""
 import datetime
+from flask import render_template
+from typing import List, Tuple, Dict
 
 import wh_app.web.template as web_template
 import wh_app.web.universal_html as uhtml
 from wh_app.postgresql.database import Database
-from wh_app.sql_operations import select_operations
+from wh_app.sql_operations import select_operations, insert_operations, update_operations
 from wh_app.supporting import functions
 from wh_app.config_and_backup import table_headers
 
@@ -13,9 +15,8 @@ functions.info_string(__name__)
 
 def orders_main_menu(stylesheet_number: str) -> str:
     """Function create main page in ORDERS section"""
-    menu = ['Все заказчики', 'Все зарегистрированные заявки']
-    links = ['/all-customers-table',
-             '/all-registred-orders']
+    menu = ['Все заказчики', 'Все зарегистрированные заявки','Только незакрытые заявки', 'Зарегистрировать заявку']
+    links = ['/all-customers-table', '/all-registred-orders', '/all-no-closed-orders','/add-order']
     table = uhtml.universal_table('Действия с заявками',
                                   ['№', 'Действие'],
                                   functions.list_to_numer_list(menu), True, links)
@@ -39,17 +40,119 @@ def all_registered_orders_table(stylesheet_number: str) -> str:
     with Database() as base:
         _, cursor = base
         all_orders = select_operations.get_all_orders(cursor)
-        correct_orders = []
-        for order in all_orders:
-            correct_orders.append([])
-            for i in range(len(order)):
-                if isinstance(order[i], datetime.datetime):
-                    correct_orders[-1].append(order[i].strftime('%Y-%m-%d %H:%M:%S'))
-                elif order[i] is None:
-                    correct_orders[-1].append("")
-                else:
-                    correct_orders[-1].append(order[i])
+        correct_orders = _correct_orders_table(all_orders)
         table = uhtml.universal_table(table_headers.orders_table_name,
                                       table_headers.orders_table,
                                       correct_orders)
         return web_template.result_page(table, '/orders-and-customers', str(stylesheet_number))
+
+
+def create_new_order_form(stylesheet_number: str) -> str:
+    """Return new page to create new order"""
+    with Database() as base:
+        _, cursor = base
+        pre_addr = '/orders-and-customers'
+        all_customer = select_operations.get_all_customers(cursor)
+        all_points = select_operations.get_all_works_points(cursor)
+        form = render_template('create_new_order.html', customer_name=uhtml.CUSTOMER_NAME, all_customers=all_customer,
+                               point_name=uhtml.POINT_NAME, all_points=all_points, order_info=uhtml.ORDER_INFO,
+                               password=uhtml.PASSWORD)
+
+        return web_template.result_page(form, pre_addr, str(stylesheet_number))
+
+
+def create_order_method(data: Dict, method, stylesheet_number: str) -> str:
+    """Create new order in database"""
+    pre_adr = '/orders-and-customers'
+    if method == "POST":
+        customer_id = data[uhtml.CUSTOMER_NAME]
+        point_id = data[uhtml.POINT_NAME]
+        order_info = data[uhtml.ORDER_INFO]
+        password = data[uhtml.PASSWORD]
+        with Database() as base:
+            connection, cursor = base
+            customer_info = select_operations.get_full_customer_info(cursor, customer_id)
+            if functions.is_valid_customers_password(password, customer_info[1]):
+                insert_operations.insert_new_order(cursor, customer_id, point_id, order_info)
+                connection.commit()
+                page = uhtml.operation_completed()
+            else:
+                page = uhtml.pass_is_not_valid()
+    else:
+        page = "Method in add Order not corrected!"
+    return web_template.result_page(page, pre_adr, str(stylesheet_number))
+
+
+def all_no_closed_orders_table(stylesheet_number: str) -> str:
+    """Create no-closed orders table"""
+    with Database() as base:
+        _, cursor = base
+        pre_addr = '/orders-and-customers'
+        all_orders = select_operations.get_all_no_closed_orders(cursor)
+        correct_orders = _correct_orders_table(all_orders)
+        table = uhtml.universal_table(table_headers.orders_table_name,
+                                      table_headers.orders_table,
+                                      correct_orders)
+        return web_template.result_page(table, pre_addr, str(stylesheet_number))
+
+
+def _correct_orders_table(orders: List[Tuple]) -> List[List]:
+    """Reformat orders table from database"""
+    correct_orders = list()
+    for order in orders:
+        correct_orders.append([])
+        for i in range(len(order)):
+            if isinstance(order[i], datetime.datetime):
+                correct_orders[-1].append(order[i].strftime('%Y-%m-%d %H:%M:%S'))
+            elif order[i] is None:
+                correct_orders[-1].append("")
+            else:
+                correct_orders[-1].append(order[i])
+        link = '<a href="/edit-order/{0}">{1}</a>'.format(correct_orders[-1][0], uhtml.EDIT_CHAR)
+        correct_orders[-1].append(link)
+    return correct_orders
+
+
+def create_edit_order_form(order_id: str, stylesheet_number: str) -> str:
+    """Create edit order form with id = order_id"""
+    with Database() as base:
+        _, cursor = base
+        pre_addr = '/orders-and-customers'
+        all_customer = select_operations.get_all_customers(cursor)
+        order_info = select_operations.get_order_from_id(cursor, order_id)
+        point_id = order_info[7]
+        point_info = select_operations.get_full_point_information(cursor, point_id)
+        awaliable_statuses = select_operations.get_all_order_status(cursor)
+        form = render_template('edit_order_form.html', point_name=point_info[0], order_info=order_info[4],
+                               customer_name=uhtml.CUSTOMER_NAME, all_customers=all_customer, password=uhtml.PASSWORD,
+                               order_status_name=uhtml.ORDER_STATUS_NAME, all_status=awaliable_statuses,
+                               comment=uhtml.COMMENT, id=uhtml.ORDER_ID, order_id=order_id)
+
+        return web_template.result_page(form, pre_addr, str(stylesheet_number))
+
+
+def edit_order_status_method(data: Dict, method, stylesheet_number: str) -> str:
+    """Analyze data and/or add record in database"""
+
+    print(data)
+    pre_adr = '/orders-and-customers'
+    if method == "POST":
+        order_id = data[uhtml.ORDER_ID]
+        customer_id = data[uhtml.CUSTOMER_NAME]
+        order_status = data[uhtml.ORDER_STATUS_NAME]
+        comment  = data[uhtml.COMMENT]
+        password = data[uhtml.PASSWORD]
+        if functions.is_valid_customers_password(password, customer_id) or functions.is_superuser_password(password):
+            with Database() as base:
+                connection, cursor = base
+                if order_status == 'in_work':
+                    update_operations.update_order_info_in_work(cursor, order_id, comment)
+                else:
+                    update_operations.update_order_info_not_work(cursor, order_id,order_status, comment)
+                connection.commit()
+                page = uhtml.operation_completed()
+        else:
+            page = uhtml.pass_is_not_valid()
+    else:
+        page = "Method in add Order not corrected!"
+    return web_template.result_page(page, pre_adr, str(stylesheet_number))

@@ -1,0 +1,50 @@
+<h2>Изменение статуса заявки</h2>
+<form action="/new-order-status" method="post">
+    <div class="container">
+        <input type="hidden" name="{{id}}" value="{{order_id}}">
+        <div class="tr_div_login">
+            <div class="faq_quest">Предприятие</div>
+            <div class="faq_answer">{{point_name}}</div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Содержимое заявки:</div>
+            <div class="faq_answer">{{order_info}}</div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Заказчик</div>
+            <div class="faq_answer">
+                <select class="div_select" name="{{customer_name}}">
+                    {% for customer in all_customers %}
+                    <option value="{{customer[0]}}">{{customer[1]}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Выбрать статус</div>
+            <div class="faq_answer">
+                <select class="div_select" name="{{order_status_name}}">
+                    {% for status in all_status %}
+                    <option value="{{status[0]}}">{{status[1]}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Комментарий(если требуется)</div>
+            <div class="faq_answer"><textarea name="{{comment}}" placeholder="Необязательное поле"></textarea></div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Предупреждение:</div>
+            <div class="faq_answer">Внимание! Изменение заявки доступно либо сотруднику, создавшему ее, либо администратору системы</div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Пароль заказчика:</div>
+            <div class="faq_answer"><input type="password" name="{{password}}"></div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest"></div>
+            <div class="faq_answer"><input type="submit" value="Изменить статус"></div>
+        </div>
+    </div>
+</form>

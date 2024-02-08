@@ -92,3 +92,11 @@ def sql_add_new_worker(name: str, sub_name: str, phone_number: str, post_id: int
     query = """INSERT INTO %(workers)s (%(name)s, %(sub_name)s, %(phone_number)s, %(post_id)s) VALUES
      ('{0}', '{1}', '{2}', {3})""" % sql_consts_dict
     return query.format(name, sub_name, phone_number, post_id)
+
+
+@log_decorator
+def sql_add_new_order(customer_id: str, point_id: str, order_info: str) -> str:
+    """Return SQL-string contain query to insert new order in orders table"""
+    query = """INSERT INTO %(orders)s (%(customer_id)s, %(date)s, %(status)s, %(problem)s, %(point_id)s) 
+    VALUES ({0}, NOW(), 'in_work', '{1}', {2})""" % sql_consts_dict
+    return query.format(customer_id, order_info, point_id)

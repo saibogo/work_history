@@ -99,6 +99,11 @@ def is_valid_password(password: str) -> bool:
     return create_hash(password) in read_all_users().values()
 
 
+def is_valid_customers_password(password: str, hash_in_db: str) -> bool:
+    """Function compare password and passwords hashes from customer"""
+    return str(create_hash(password)) == str(hash_in_db)
+
+
 def is_superuser_password(password: str) -> bool:
     """Function compare password and superuser password hash"""
 

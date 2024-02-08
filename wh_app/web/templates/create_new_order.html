@@ -1,0 +1,39 @@
+<h2>Регистрация новой заявки</h2>
+<form action="/create_new_order" method="post">
+    <div class="container">
+         <div class="tr_div_login">
+            <div class="faq_quest">Заказчик</div>
+            <div class="faq_answer">
+                <select class="div_select" name="{{customer_name}}">
+                    {% for customer in all_customers %}
+                    <option value="{{customer[0]}}">{{customer[1]}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Предприятие</div>
+            <div class="faq_answer">
+                <select class="div_select" name="{{point_name}}">
+                    {% for point in all_points %}
+                    <option value="{{point[0]}}">{{point[1]}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Содержимое заявки:</div>
+            <div class="faq_answer">
+                <textarea rows=3 name="{{order_info}}"></textarea>
+            </div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Пароль заказчика:</div>
+            <div class="faq_answer"><input type="password" name="{{password}}"></div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest"></div>
+            <div class="faq_answer"><input type="submit" value="Создать заявку"></div>
+        </div>
+    </div>
+</form>

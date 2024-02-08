@@ -2,7 +2,8 @@
 
 from wh_app.web.servers_parts.support_part import *
 from wh_app.web.orders_section import all_customers_table, orders_main_menu,\
-    all_registered_orders_table
+    all_registered_orders_table, create_new_order_form, create_order_method, all_no_closed_orders_table,\
+    create_edit_order_form, edit_order_status_method
 
 
 @app.route('/orders-and-customers')
@@ -21,3 +22,38 @@ def all_customers_table_server() -> Response:
 def all_registred_orders() -> Response:
     """Return ALL ORDERS page"""
     return goto_or_redirect(lambda: all_registered_orders_table(stylesheet_number()))
+
+
+@app.route('/add-order')
+def add_order() -> Response:
+    """Return Form to create new Order"""
+    return goto_or_redirect(lambda: create_new_order_form(stylesheet_number()))
+
+
+@app.route("/create_new_order", methods=['POST'])
+def create_new_order() -> Response:
+    """Redirect data to create new order"""
+
+    return goto_or_redirect(lambda: create_order_method(functions.form_to_data(request.form), request.method,
+                                                        stylesheet_number()))
+
+
+@app.route('/all-no-closed-orders')
+def all_no_closed_orders() -> Response:
+    """Return ALL ORDERS page"""
+    return goto_or_redirect(lambda: all_no_closed_orders_table(stylesheet_number()))
+
+
+@app.route('/edit-order/<order_id>')
+def edit_order(order_id: str) -> Response:
+    """Go to create order form"""
+
+    return goto_or_redirect(lambda: create_edit_order_form(order_id, stylesheet_number()))
+
+
+@app.route('/new-order-status', methods=['POST'])
+def new_order_status() -> Response:
+    """start method analyze new order status and/or add record in database"""
+
+    return goto_or_redirect(lambda: edit_order_status_method(functions.form_to_data(request.form), request.method,
+                                                             stylesheet_number()))

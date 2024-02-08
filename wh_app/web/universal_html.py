@@ -63,6 +63,9 @@ STATUS = "status"
 POST = "post"
 BINDING_ID = "id"
 EMPLOYEE_DATE = "employee_date"
+CUSTOMER_NAME = "customer"
+ORDER_STATUS_NAME = "order_status"
+ORDER_ID = "order_id"
 
 
 def link_or_str(elem: str, link_type: bool = False, link: str = '') -> str:

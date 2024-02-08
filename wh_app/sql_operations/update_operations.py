@@ -49,7 +49,6 @@ def set_worker_dismissal_date_in_null(cursor, worker_id: id) -> None:
     cursor.execute(sql_remove_dismissal_date(worker_id))
 
 
-
 def update_work_info(cursor, work_id: str, order_info: str, description: str, work_datetime: str) -> None:
     """Update information for selected work"""
 
@@ -78,4 +77,16 @@ def update_equip_in_work_record(cursor, work_id: str, equip_id: str) -> None:
     """Update equip_id in work-record with id == work_id"""
 
     cursor.execute(sql_update_equip_in_works(work_id, equip_id))
+
+
+def update_order_info_in_work(cursor, order_id: str, comment: str) -> None:
+    """set order status 'in_work' and update information"""
+
+    cursor.execute(sql_update_order_info_in_work(order_id, comment))
+
+
+def update_order_info_not_work(cursor, order_id: str, status: str,comment: str) -> None:
+    """set order status 'in_work' and update information"""
+
+    cursor.execute(sql_update_order_info_not_work(order_id, status,comment))
 

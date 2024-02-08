@@ -197,6 +197,16 @@ def sql_select_information_to_point(id_point: str) -> str:
 
 
 @log_decorator
+def sql_select_all_orders_type() -> str:
+    """Return all orders type and descriptions"""
+
+    query = """SELECT status, CASE WHEN status = 'in_work' THEN 'В работе' WHEN status = 'closed' THEN 'Закрыта' 
+    ELSE 'Отменена' END AS description FROM unnest(enum_range(null::%(order_status)s)) AS status""" % sql_consts_dict
+
+    return query
+
+
+@log_decorator
 def sql_select_work_from_id(id_work: str) -> str:
     """Returns the query string corresponding to the work performed with the specified number
     Example:
@@ -718,6 +728,13 @@ def sql_select_all_customers() -> str:
 
 
 @log_decorator
+def sql_select_customer_info(customer_id: str) -> str:
+    """Return full information from customer_id"""
+
+    return ("""SELECT * FROM %(customer_table)s WHERE %(id)s = {0}""" % sql_consts_dict).format(customer_id)
+
+
+@log_decorator
 def sql_select_all_orders() -> str:
     """Return all records in table orders"""
 
@@ -726,6 +743,26 @@ def sql_select_all_orders() -> str:
              """ JOIN %(workspoints)s ON %(workspoints)s.%(point_id)s = %(orders)s.%(point_id)s ORDER BY %(id)s""") % sql_consts_dict
 
     return query
+
+
+@log_decorator
+def sql_select_no_closed_orders() -> str:
+    """Return all records in table orders"""
+
+    query = ("""SELECT orders.%(id)s, %(point_name)s, %(customer)s.%(full_name)s, %(orders)s.%(date)s, %(orders)s.%(closed_date)s, %(problem)s, """ +
+             """(%(bug_in_work)s), %(orders)s.comment FROM %(orders)s JOIN %(customer)s ON %(customer_id)s = %(customer)s.%(id)s""" +
+             """ JOIN %(workspoints)s ON %(workspoints)s.%(point_id)s = %(orders)s.%(point_id)s WHERE %(status)s =
+              'in_work' ORDER BY %(id)s""") % sql_consts_dict
+
+    return query
+
+
+@log_decorator
+def sql_select_order_from_id(order_id: str) -> str:
+    """Return SQL query from select full information from ID = order_id"""
+
+    query = """SELECT * FROM %(orders)s WHERE id = {}""" % sql_consts_dict
+    return query.format(order_id)
 
 
 @log_decorator

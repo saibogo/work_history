@@ -120,3 +120,21 @@ def sql_update_equip_in_works(work_id: str, equip_id) -> str:
     """Create query to update equip_id in work-record"""
     query = "UPDATE %(works)s SET %(id_obor)s = '{0}' WHERE %(id)s = {1}""" % sql_consts_dict
     return query.format(equip_id, work_id)
+
+
+@log_decorator
+def sql_update_order_info_in_work(order_id: str, comment: str) -> str:
+    """Create query to set order status in in_work and update comment"""
+
+    query = """UPDATE %(orders)s SET %(status)s = 'in_work', %(closed_date)s = NULL, %(comment)s = '{1}'
+     WHERE %(id)s = {0}""" % sql_consts_dict
+    return query.format(order_id, comment)
+
+
+@log_decorator
+def sql_update_order_info_not_work(order_id: str, status: str,comment: str) -> str:
+    """Create query to set order status in in_work and update comment"""
+
+    query = """UPDATE %(orders)s SET %(status)s = '{1}', %(closed_date)s = NOW(), %(comment)s = '{2}' WHERE %(id)s = {0}
+     """ % sql_consts_dict
+    return query.format(order_id, status, comment)

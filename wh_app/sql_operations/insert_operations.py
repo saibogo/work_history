@@ -57,3 +57,9 @@ def insert_new_worker(cursor, name: str, sub_name: str, phone_number: str, post:
     cursor.execute(sql_add_new_worker(name, sub_name, phone_number, post))
 
 
+def insert_new_order(cursor, customer_id: str, point_id: str, order_info: str) -> None:
+    """add new order in database"""
+
+    cursor.execute(sql_add_new_order(customer_id, point_id, order_info))
+
+

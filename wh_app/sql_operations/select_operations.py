@@ -471,10 +471,36 @@ def get_all_customers(cursor) -> list:
     return select_sql.sql_select_all_customers()
 
 
+@list_to_first_tuple_decorator
+@get_selected_decorator
+def get_full_customer_info(cursor, customer_id: str) -> list:
+    """Function return list contains all record in customer table"""
+    return select_sql.sql_select_customer_info(customer_id)
+
+
 @get_selected_decorator
 def get_all_orders(cursor) -> list:
     """Function return list contains all records in table orders"""
     return select_sql.sql_select_all_orders()
+
+
+@get_selected_decorator
+def get_all_no_closed_orders(cursor) -> list:
+    """Function return list contains all records in table orders"""
+    return select_sql.sql_select_no_closed_orders()
+
+
+@get_selected_decorator
+def get_all_order_status(cursor) -> List[Tuple]:
+    """return all status and description from orders_types"""
+    return select_sql.sql_select_all_orders_type()
+
+
+@list_to_first_tuple_decorator
+@get_selected_decorator
+def get_order_from_id(cursor, order_id: str) -> Tuple:
+    """Function return tuple contain full information from order with ID = order_id"""
+    return select_sql.sql_select_order_from_id(order_id)
 
 
 @get_selected_decorator
