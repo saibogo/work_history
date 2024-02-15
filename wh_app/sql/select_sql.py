@@ -19,6 +19,13 @@ def log_decorator(func: Callable) -> Callable:
     return wrap
 
 
+def _limit_and_offset(page_num: int) -> str:
+    """Return substring like LIMIT 5 OFFSET 7"""
+
+    return " LIMIT {0} OFFSET {1}".format(config.max_records_in_page(),
+                        (int(page_num) - 1) * config.max_records_in_page())
+
+
 @log_decorator
 def sql_counter(sql_query: str) -> str:
     """Return SELECT likes SELECT COUNT..."""
@@ -103,9 +110,7 @@ def sql_select_equipment_in_point_limit(point: str, page_num: int) -> str:
              """ AND %(oborudovanie)s.%(deleted)s = false""" +
              """ ORDER BY %(oborudovanie)s.%(name)s""") % sql_consts_dict
 
-    query = query.format(formatter) + """ LIMIT {0} OFFSET {1}"""
-    return query.format(config.max_records_in_page(),
-                        (int(page_num) - 1) * config.max_records_in_page())
+    return  query.format(formatter) + _limit_and_offset(page_num)
 
 
 @log_decorator
@@ -159,11 +164,9 @@ def sql_select_work_from_equip_id_limit(id_equip: str, page_num: int) -> str:
         """
     query = ("""SELECT * FROM %(works_likes)s WHERE %(id)s IN """ +
              """(SELECT * FROM all_works_from_equip({0}))""" +
-             """ ORDER BY %(date)s LIMIT {1} OFFSET {2}""") % sql_consts_dict
+             """ ORDER BY %(date)s """) % sql_consts_dict + _limit_and_offset(page_num)
 
-    return query.format(id_equip,
-                        config.max_records_in_page(),
-                        (int(page_num) - 1) * config.max_records_in_page())
+    return query.format(id_equip)
 
 
 @log_decorator
@@ -177,10 +180,8 @@ def sql_select_all_works() -> str:
 def sql_select_all_works_limit(page_num: int) -> str:
     """Returns the query string to select all repairs corresponding to the equipments use LIMIT"""
 
-    query = ("""SELECT * FROM %(works_likes)s ORDER BY %(date)s""" +
-             """ LIMIT {0} OFFSET {1}""") % sql_consts_dict
-    return query.format(config.max_records_in_page(),
-                        (int(page_num) - 1) * config.max_records_in_page())
+    query = """SELECT * FROM %(works_likes)s ORDER BY %(date)s""" % sql_consts_dict + _limit_and_offset(page_num)
+    return query
 
 
 @log_decorator
@@ -202,6 +203,18 @@ def sql_select_all_orders_type() -> str:
 
     query = """SELECT status, CASE WHEN status = 'in_work' THEN 'В работе' WHEN status = 'closed' THEN 'Закрыта' 
     ELSE 'Отменена' END AS description FROM unnest(enum_range(null::%(order_status)s)) AS status""" % sql_consts_dict
+
+    return query
+
+
+@log_decorator
+def sql_select_all_orders_limit(page_num: int) -> str:
+    """Returns the query string to select all repairs corresponding to the orders use LIMIT"""
+
+    query = """SELECT orders.%(id)s, %(point_name)s, %(customer)s.%(full_name)s, %(orders)s.%(date)s, %(orders)s.%(closed_date)s,
+     %(problem)s, (%(bug_in_work)s), %(orders)s.comment FROM %(orders)s JOIN %(customer)s ON
+      %(customer_id)s = %(customer)s.%(id)s JOIN %(workspoints)s ON %(workspoints)s.%(point_id)s = %(orders)s.%(point_id)s
+       ORDER BY %(id)s """ % sql_consts_dict + _limit_and_offset(page_num)
 
     return query
 
@@ -269,20 +282,14 @@ def sql_select_equip_from_like_str_limit(pattern: str, page_num: str) -> str:
                  """JOIN %(workspoints)s ON %(oborudovanie)s.%(point_id)s =""" +
                  """ %(workspoints)s.%(point_id)s WHERE LOWER(%(name)s)""" +
                  """ LIKE LOWER('{0}') OR LOWER(%(model)s) LIKE LOWER('{0}') """ +
-                 """OR LOWER(%(serial_num)s) LIKE LOWER('{0}')  ORDER BY %(name)s """ +
-                 """LIMIT {1} OFFSET {2}""") % sql_consts_dict
-        result = query.format(words,
-                              config.max_records_in_page(),
-                              (int(page_num) - 1) * config.max_records_in_page())
-
+                 """OR LOWER(%(serial_num)s) LIKE LOWER('{0}')  ORDER BY %(name)s """) % sql_consts_dict + _limit_and_offset(page_num)
+        result = query.format(words)
     else:
         query = ("""SELECT %(id)s, %(workspoints)s.%(point_name)s, %(name)s,""" +
                  """ %(model)s, %(serial_num)s, %(pre_id)s FROM %(oborudovanie)s""" +
                  """ JOIN %(workspoints)s ON %(oborudovanie)s.%(point_id)s = """ +
-                 """ %(workspoints)s.%(point_id)s ORDER BY %(name)s""" +
-                 """ LIMIT {0} OFFSET {1}""") % sql_consts_dict
-        result = query.format(config.max_records_in_page(),
-                              (int(page_num) - 1) * config.max_records_in_page())
+                 """ %(workspoints)s.%(point_id)s ORDER BY %(name)s""") % sql_consts_dict + _limit_and_offset(page_num)
+        result = query
     return result
 
 
@@ -328,17 +335,14 @@ def sql_select_point_from_like_str_limit(pattern: str, page_num: str) -> str:
                  """ %(cast_open_close)s FROM %(workspoints)s WHERE""" +
                  """ (LOWER(%(point_name)s) LIKE LOWER('{0}')) OR """ +
                  """ (LOWER(%(point_address)s) LIKE LOWER('{0}')) ORDER BY """ +
-                 """ %(point_name)s LIMIT {1} OFFSET {2}""") % sql_consts_dict
+                 """ %(point_name)s """) % sql_consts_dict + _limit_and_offset(page_num)
 
-        result = query.format(like_string,
-                              config.max_records_in_page(),
-                              (int(page_num) - 1) * config.max_records_in_page())
+        result = query.format(like_string)
     else:
         query = ("""SELECT %(point_id)s, %(point_name)s, %(point_address)s,""" +
                  """ %(cast_open_close)s FROM %(workspoints)s ORDER BY""" +
-                 """ %(point_name)s LIMIT {0} OFFSET {1}""") % sql_consts_dict
-        result = query.format(config.max_records_in_page(),
-                              (int(page_num) - 1) * config.max_records_in_page())
+                 """ %(point_name)s """) % sql_consts_dict + _limit_and_offset(page_num)
+        result = query
     return result
 
 
@@ -380,16 +384,13 @@ def sql_select_all_works_from_like_str_limit(pattern: str, page_num: str) -> str
         like_string = '%' + pattern.replace(' ', '%') + '%'
         query = ("""SELECT * FROM %(works_likes)s WHERE (LOWER (%(problem)s)""" +
                  """ LIKE LOWER('{0}')) OR (LOWER(%(result)s) LIKE LOWER('{0}'))""" +
-                 """ ORDER BY %(date)s, %(name)s LIMIT {1} OFFSET {2}""") % sql_consts_dict
+                 """ ORDER BY %(date)s, %(name)s """) % sql_consts_dict + _limit_and_offset(page_num)
 
-        result = query.format(like_string,
-                              config.max_records_in_page(),
-                              (int(page_num) - 1) * config.max_records_in_page())
+        result = query.format(like_string)
     else:
         query = ("""SELECT * FROM %(works_likes)s ORDER BY""" +
-                 """ %(date)s, %(name)s LIMIT {0} OFFSET {1}""") % sql_consts_dict
-        result = query.format(config.max_records_in_page,
-                              (int(page_num) - 1) * config.max_records_in_page())
+                 """ %(date)s, %(name)s """) % sql_consts_dict + _limit_and_offset(page_num)
+        result = query
     return result
 
 
@@ -438,21 +439,14 @@ def sql_select_all_works_from_like_str_and_date_limit(pattern: str, date_start: 
         query = ("""SELECT * FROM works_likes WHERE ((LOWER (problem)""" +
                  """ LIKE LOWER('{0}')) OR (LOWER(result) LIKE LOWER('{0}')))""" +
                  """ AND (date BETWEEN '{1}' AND '{2}') ORDER BY """ +
-                 """ date, name LIMIT {3} OFFSET {4}""") % sql_consts_dict
+                 """ date, name """) % sql_consts_dict + _limit_and_offset(page_num)
 
-        result = query.format(like_string,
-                              date_start,
-                              date_stop,
-                              config.max_records_in_page(),
-                              (int(page_num) - 1) * config.max_records_in_page())
+        result = query.format(like_string, date_start, date_stop)
 
     else:
         query = ("""SELECT * FROM works_likes WHERE date BETWEEN '{0}' AND '{1}' """ +
-                 """ORDER BY  date, name LIMIT {2} OFFSET {3}""") % sql_consts_dict
-        result = query.format(date_start,
-                              date_stop,
-                              config.max_records_in_page,
-                              (int(page_num) - 1) * config.max_records_in_page())
+                 """ORDER BY  date, name """) % sql_consts_dict + _limit_and_offset(page_num)
+        result = query.format(date_start, date_stop)
     return result
 
 
@@ -631,11 +625,9 @@ def sql_select_works_from_worker_limit(id_worker: str, page_num: int) -> str:
              """ %(model)s, %(serial_num)s, %(date)s, %(problem)s, %(result)s,""" +
              """ %(all_workers)s FROM %(works_from_worker)s JOIN %(performers)s """ +
              """ON %(performers)s.%(worker_id)s = {0} AND %(works_from_worker)s.%(id)s""" +
-             """ = %(performers)s.%(work_id)s ORDER BY %(date)s LIMIT {1} OFFSET {2}""") % sql_consts_dict
+             """ = %(performers)s.%(work_id)s ORDER BY %(date)s """) % sql_consts_dict + _limit_and_offset(page_num)
 
-    return query.format(id_worker,
-                        config.max_records_in_page(),
-                        (int(page_num) - 1) * config.max_records_in_page())
+    return query.format(id_worker)
 
 
 @log_decorator
@@ -647,12 +639,8 @@ def sql_select_works_from_performer_and_date(id_worker: str, date_start: str, da
              """ON %(performers)s.%(worker_id)s = {0} AND %(works_from_worker)s.%(id)s = %(performers)s.%(work_id)s """ +
              """WHERE %(date)s >= '{1}' and %(date)s <= '{2}' """ +
              """ORDER BY %(date)s """) % sql_consts_dict
-    query = query + 'LIMIT {3} OFFSET {4}' if page_num != 0 else query
-    return query.format(id_worker, date_start, date_stop,
-                        config.max_records_in_page(),
-                        (int(page_num) - 1) * config.max_records_in_page()
-                        ) \
-        if page_num != 0 else query.format(id_worker, date_start, date_stop)
+    query = query + _limit_and_offset(page_num) if page_num != 0 else query
+    return query.format(id_worker, date_start, date_stop)
 
 
 @log_decorator
@@ -694,9 +682,8 @@ def sql_select_all_bugs_in_bugzilla_limit(page_num: str) -> str:
     query = ("""SELECT %(id)s, %(problem)s, %(bug_in_work)s,""" +
              """ TO_CHAR( %(date_start)s, 'yyyy-mm-dd HH:MI:SS'),""" +
              """ TO_CHAR( %(date_close)s, 'yyyy-mm-dd HH:MI:SS') FROM %(bugzilla)s """ +
-             """ ORDER BY %(id)s LIMIT {0} OFFSET {1}""") % sql_consts_dict
-    return query.format(config.max_records_in_page(),
-                        (int(page_num) - 1) * config.max_records_in_page())
+             """ ORDER BY %(id)s """) % sql_consts_dict + _limit_and_offset(page_num)
+    return query
 
 
 @log_decorator
@@ -715,9 +702,8 @@ def sql_select_all_bugs_in_work_in_bugzilla_limit(page_num: str) -> str:
 
     query = ("""SELECT %(id)s, %(problem)s, %(bug_in_work)s,""" +
              """ TO_CHAR( %(date_start)s, 'yyyy-mm-dd HH:MI:SS') FROM %(bugzilla)s""" +
-             """ WHERE %(status)s = true ORDER BY %(id)s LIMIT {0} OFFSET {1}""") % sql_consts_dict
-    return query.format(config.max_records_in_page(),
-                        (int(page_num) - 1) * config.max_records_in_page())
+             """ WHERE %(status)s = true ORDER BY %(id)s """) % sql_consts_dict + _limit_and_offset(page_num)
+    return query
 
 
 @log_decorator
@@ -753,6 +739,18 @@ def sql_select_no_closed_orders() -> str:
              """(%(bug_in_work)s), %(orders)s.comment FROM %(orders)s JOIN %(customer)s ON %(customer_id)s = %(customer)s.%(id)s""" +
              """ JOIN %(workspoints)s ON %(workspoints)s.%(point_id)s = %(orders)s.%(point_id)s WHERE %(status)s =
               'in_work' ORDER BY %(id)s""") % sql_consts_dict
+
+    return query
+
+
+@log_decorator
+def sql_select_no_closed_orders_limit(page_num: int) -> str:
+    """Return all records in table orders with LIMIT"""
+
+    query = ("""SELECT orders.%(id)s, %(point_name)s, %(customer)s.%(full_name)s, %(orders)s.%(date)s, %(orders)s.%(closed_date)s, %(problem)s, """ +
+             """(%(bug_in_work)s), %(orders)s.comment FROM %(orders)s JOIN %(customer)s ON %(customer_id)s = %(customer)s.%(id)s""" +
+             """ JOIN %(workspoints)s ON %(workspoints)s.%(point_id)s = %(orders)s.%(point_id)s WHERE %(status)s =
+              'in_work' ORDER BY %(id)s """) % sql_consts_dict + _limit_and_offset(page_num)
 
     return query
 

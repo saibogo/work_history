@@ -5,6 +5,7 @@ from typing import List, Tuple, Dict
 
 import wh_app.web.template as web_template
 import wh_app.web.universal_html as uhtml
+from wh_app.config_and_backup.config import max_records_in_page
 from wh_app.postgresql.database import Database
 from wh_app.sql_operations import select_operations, insert_operations, update_operations
 from wh_app.supporting import functions
@@ -36,15 +37,34 @@ def all_customers_table(stylesheet_number: str) -> str:
 
 
 def all_registered_orders_table(stylesheet_number: str) -> str:
-    """Function create page. contain list of all registered orders"""
+    """Function create page, contain list of all registered orders"""
     with Database() as base:
         _, cursor = base
         all_orders = select_operations.get_all_orders(cursor)
+        if len(all_orders) > max_records_in_page():
+            return all_registered_orders_table_page(page_num=1, stylesheet_number=stylesheet_number)
         correct_orders = _correct_orders_table(all_orders)
         table = uhtml.universal_table(table_headers.orders_table_name,
                                       table_headers.orders_table,
                                       correct_orders)
         return web_template.result_page(table, '/orders-and-customers', str(stylesheet_number))
+
+
+def all_registered_orders_table_page(page_num: int, stylesheet_number: str) -> str:
+    """Function create page, contain list of all registered orders with paging"""
+    with Database() as base:
+        _, cursor = base
+        pre_adr = '/orders-and-customers'
+        page_orders = select_operations.get_all_orders_limit(cursor, page_num)
+        correct_orders = _correct_orders_table(page_orders)
+        table = uhtml.universal_table(table_headers.orders_table_name,
+                                      table_headers.orders_table,
+                                      correct_orders)
+        table_paging = uhtml.paging_table("/all-registred-orders/page",
+                                          functions.
+                                          list_of_pages(select_operations.get_all_orders(cursor)),
+                                          int(page_num))
+        return web_template.result_page(table + table_paging, pre_adr, stylesheet_number)
 
 
 def create_new_order_form(stylesheet_number: str) -> str:
@@ -89,11 +109,31 @@ def all_no_closed_orders_table(stylesheet_number: str) -> str:
         _, cursor = base
         pre_addr = '/orders-and-customers'
         all_orders = select_operations.get_all_no_closed_orders(cursor)
+        if len(all_orders) > max_records_in_page():
+            return all_no_closed_orders_table_page(1, stylesheet_number)
         correct_orders = _correct_orders_table(all_orders)
         table = uhtml.universal_table(table_headers.orders_table_name,
                                       table_headers.orders_table,
                                       correct_orders)
         return web_template.result_page(table, pre_addr, str(stylesheet_number))
+
+
+def all_no_closed_orders_table_page(page_num: int, stylesheet_number: str) -> str:
+    """Create no-closed orders table with paging"""
+    with Database() as base:
+        _, cursor = base
+        pre_addr = '/orders-and-customers'
+        orders = select_operations.get_all_no_closed_orders_limit(cursor, page_num)
+        correct_orders = _correct_orders_table(orders)
+        table = uhtml.universal_table(table_headers.orders_table_name,
+                                      table_headers.orders_table,
+                                      correct_orders)
+        table_paging = uhtml.paging_table("/all-no-closed-orders/page",
+                                          functions.
+                                          list_of_pages(select_operations.get_all_no_closed_orders(cursor)),
+                                          int(page_num))
+
+        return web_template.result_page(table + table_paging, pre_addr, str(stylesheet_number))
 
 
 def _correct_orders_table(orders: List[Tuple]) -> List[List]:

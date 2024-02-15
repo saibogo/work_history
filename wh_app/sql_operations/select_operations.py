@@ -485,9 +485,23 @@ def get_all_orders(cursor) -> list:
 
 
 @get_selected_decorator
+def get_all_orders_limit(cursor, page_num: int) -> List[Tuple]:
+    """Returns a list object containing all jobs for a given piece of equipment use LIMIT and OFFSET
+    See also get_works_from_equip_id"""
+
+    return select_sql.sql_select_all_orders_limit(page_num)
+
+
+@get_selected_decorator
 def get_all_no_closed_orders(cursor) -> list:
     """Function return list contains all records in table orders"""
     return select_sql.sql_select_no_closed_orders()
+
+
+@get_selected_decorator
+def get_all_no_closed_orders_limit(cursor, page_num: int) -> list:
+    """Function return list contains all records in table orders"""
+    return select_sql.sql_select_no_closed_orders_limit(page_num)
 
 
 @get_selected_decorator
