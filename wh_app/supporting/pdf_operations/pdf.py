@@ -9,6 +9,7 @@ from wh_app.supporting import functions
 from wh_app.sql_operations import select_operations
 from wh_app.config_and_backup import table_headers
 from wh_app.config_and_backup.config import path_to_fonts
+from wh_app.web.orders_section import _correct_orders_table
 
 functions.info_string(__name__)
 
@@ -225,6 +226,53 @@ def top10equips() -> FPDF:
         _, cursor = base
         pdf = create_document('Landscape')
         html = make_html_table(select_operations.get_top_10_works(cursor), table_headers.top_10_equips)
+        pdf.write_html(html, table_line_separators=True)
+        return pdf
+
+
+def order_to_pdf(order_id: int) -> FPDF:
+    """Create PDF table contain full info from order = order_id"""
+    with Database() as base:
+        _, cursor = base
+        pdf = create_document('Landscape')
+        order_info = select_operations.get_order_from_id(cursor, order_id)
+        correct_order = _correct_orders_table([order_info])
+        order = [correct_order[0][: len(correct_order[0]) - 1]]
+        html = make_html_table(order, table_headers.orders_table[ :len(table_headers.orders_table) - 1])
+        pdf.write_html(html, table_line_separators=True)
+        return pdf
+
+
+def no_closed_orders(page_num: int) -> FPDF:
+    """Create PDF table contain all noclosed orders table with paging. Page = 0 -> all noclosed orders"""
+    with Database() as base:
+        _, cursor = base
+        pdf = create_document('Landscape')
+        if int(page_num) != 0:
+            orders = select_operations.get_all_no_closed_orders_limit(cursor, page_num)
+        else:
+            orders = select_operations.get_all_no_closed_orders(cursor)
+        correct_orders = _correct_orders_table(orders)
+        for i in range(len(orders)):
+            correct_orders[i] = correct_orders[i][ : len(correct_orders[i]) - 1]
+        html = make_html_table(correct_orders, table_headers.orders_table[:len(table_headers.orders_table) - 1])
+        pdf.write_html(html, table_line_separators=True)
+        return pdf
+
+
+def all_orders(page_num: int) -> FPDF:
+    """Create PDF table contain all noclosed orders table with paging. Page = 0 -> all noclosed orders"""
+    with Database() as base:
+        _, cursor = base
+        pdf = create_document('Landscape')
+        if int(page_num) != 0:
+            orders = select_operations.get_all_orders_limit(cursor, page_num)
+        else:
+            orders = select_operations.get_all_orders(cursor)
+        correct_orders = _correct_orders_table(orders)
+        for i in range(len(orders)):
+            correct_orders[i] = correct_orders[i][ : len(correct_orders[i]) - 1]
+        html = make_html_table(correct_orders, table_headers.orders_table[:len(table_headers.orders_table) - 1])
         pdf.write_html(html, table_line_separators=True)
         return pdf
 

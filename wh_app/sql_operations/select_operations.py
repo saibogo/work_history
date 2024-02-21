@@ -478,6 +478,13 @@ def get_full_customer_info(cursor, customer_id: str) -> list:
     return select_sql.sql_select_customer_info(customer_id)
 
 
+@list_to_first_str_decorator
+@get_selected_decorator
+def get_hash_to_customer(cursor, user_name: str) -> str:
+    """Function return hash with user = full_name"""
+    return select_sql.sql_select_hash_from_user(user_name)
+
+
 @get_selected_decorator
 def get_all_orders(cursor) -> list:
     """Function return list contains all records in table orders"""
@@ -504,6 +511,13 @@ def get_all_no_closed_orders_limit(cursor, page_num: int) -> list:
     return select_sql.sql_select_no_closed_orders_limit(page_num)
 
 
+@list_to_first_int_decorator
+@get_selected_decorator
+def get_maximal_orders_id(cursor) -> int:
+    """Function return maximal id from orders table"""
+    return select_sql.sql_select_max_order_id()
+
+
 @get_selected_decorator
 def get_all_order_status(cursor) -> List[Tuple]:
     """return all status and description from orders_types"""
@@ -515,6 +529,13 @@ def get_all_order_status(cursor) -> List[Tuple]:
 def get_order_from_id(cursor, order_id: str) -> Tuple:
     """Function return tuple contain full information from order with ID = order_id"""
     return select_sql.sql_select_order_from_id(order_id)
+
+
+@list_to_first_bool_decorator
+@get_selected_decorator
+def user_in_customers(cursor, user_name: str) -> bool:
+    """Function find user in customer table"""
+    return select_sql.sql_select_user_in_customers(user_name)
 
 
 @get_selected_decorator

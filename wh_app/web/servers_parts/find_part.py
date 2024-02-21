@@ -10,7 +10,7 @@ from wh_app.web.find_section import find_page, find_method, find_work_paging,\
 @app.route('/find-equip-to-id')
 def find_equip_to_id() -> Response:
     """Return page, contain FIND FORM in EQUIPS List in database"""
-    return goto_or_redirect(lambda: find_equip_to_id_page(stylesheet_number()))
+    return goto_or_redirect(lambda: find_equip_to_id_page(stylesheet_number()), functions.ROLE_CUSTOMER)
 
 
 @app.route('/find', methods=['GET'])
@@ -19,7 +19,7 @@ def find() -> Response:
     return goto_or_redirect(lambda: find_page(request.args.get('page',
                                                                default=config.full_address(),
                                                                type=str),
-                                              stylesheet_number()))
+                                              stylesheet_number()), functions.ROLE_CUSTOMER)
 
 
 @app.route('/findresult', methods=['POST'])
@@ -27,7 +27,7 @@ def findresult() -> Response:
     """Redirect to method selected find-type"""
     return goto_or_redirect(lambda: find_method(functions.form_to_data(request.form),
                                                 request.method,
-                                                stylesheet_number()))
+                                                stylesheet_number()), functions.ROLE_CUSTOMER)
 
 
 @app.route('/find/performer/<performer_id>/<data_start>/<data_stop>/page/<page_num>', methods=['GET'])
@@ -36,7 +36,7 @@ def find_work_performer_to_data(performer_id: str, data_start: str, data_stop: s
     if is_integer(page_num):
         page = goto_or_redirect(lambda: find_work_like_performer_and_date_paging(performer_id, data_start,
                                                                                 data_stop, page_num,
-                                                                                stylesheet_number()))
+                                                                                stylesheet_number()), functions.ROLE_CUSTOMER)
     else:
         page = flask.abort(code=404)
     return page
@@ -48,7 +48,7 @@ def find_work_find_string_page_page_num(find_string: str, page_num: int) -> Resp
     if is_integer(page_num):
         page = goto_or_redirect(lambda: find_work_paging(find_string,
                                                         str(page_num),
-                                                        stylesheet_number()))
+                                                        stylesheet_number()), functions.ROLE_CUSTOMER)
     else:
         page = flask.abort(code=404)
     return page
@@ -62,7 +62,7 @@ def find_work_data_to_data(find_string: str, data_start: str, data_stop: str, pa
                                                                 data_start,
                                                                 data_stop,
                                                                 str(page_num),
-                                                                stylesheet_number()))
+                                                                stylesheet_number()), functions.ROLE_CUSTOMER)
     else:
         page = flask.abort(code=404)
     return page
@@ -74,7 +74,7 @@ def find_point(find_string: str, page_num: int) -> Response:
     if is_integer(page_num):
         page = goto_or_redirect(lambda: find_point_page(find_string,
                                                         str(page_num),
-                                                        stylesheet_number()))
+                                                        stylesheet_number()), functions.ROLE_CUSTOMER)
     else:
         page = flask.abort(code=404)
     return page
@@ -86,7 +86,7 @@ def find_equip(find_string: str, page_num: int) -> Response:
     if is_integer(page_num):
         page = goto_or_redirect(lambda: find_equip_page(find_string,
                                                         str(page_num),
-                                                        stylesheet_number()))
+                                                        stylesheet_number()), functions.ROLE_CUSTOMER)
     else:
         page = flask.abort(code=404)
     return page

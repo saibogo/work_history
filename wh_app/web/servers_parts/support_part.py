@@ -31,6 +31,7 @@ THEME_NUMBER = 'theme_number'
 THEMES_MAXIMAL = 2
 LOGIN_IS_CORRECT = 'access_is_allowed'
 TIME_LOGIN = 'time_login'
+SESSION_ROLE = 'role'
 
 
 def stylesheet_number() -> str:
@@ -56,9 +57,17 @@ def access_is_allowed() -> bool:
     return session.get(LOGIN_IS_CORRECT)
 
 
-def goto_or_redirect(function: Callable) -> Any:
+def is_role_correct(min_role: str, current_role: str) -> bool:
+    """True if current_role >= min_role"""
+    return functions.ROLES_IERARH.index(current_role) <= functions.ROLES_IERARH.index(min_role)
+
+
+def goto_or_redirect(function: Callable, min_role=functions.ROLE_SUPERUSER) -> Any:
     if access_is_allowed():
-        return function()
+        if is_role_correct(min_role, session[SESSION_ROLE]):
+            return function()
+        else:
+            return redirect('/access-denied')
     else:
         return redirect('/login')
 

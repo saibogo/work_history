@@ -30,7 +30,7 @@ def not_fired_workers() -> Response:
 def edit_worker(worker_id: str) -> Response:
     """Return web-form to edit worker information"""
     if is_integer(worker_id):
-        page = goto_or_redirect(lambda: create_edit_worker_form(worker_id, stylesheet_number()))
+        page = goto_or_redirect(lambda: create_edit_worker_form(worker_id, stylesheet_number()), functions.ROLE_SUPERUSER)
     else:
         page = flask.abort(code=404)
     return page
@@ -41,7 +41,7 @@ def update_worker_to_id(worker_id: str) -> Response:
     """Update information in datadase from worker"""
     if is_integer(worker_id):
         page = goto_or_redirect(lambda: update_worker_information(worker_id, functions.form_to_data(request.form),
-                                                                  request.method, stylesheet_number()))
+                                                                  request.method, stylesheet_number()), functions.ROLE_SUPERUSER)
     else:
         page = flask.abort(code=404)
     return page
@@ -69,7 +69,7 @@ def performer_performer_id(performer_id: int) -> Response:
                                                                     request.args.get('page',
                                                                                      default=config.full_address(),
                                                                                      type=str),
-                                                                    stylesheet_number()))
+                                                                    stylesheet_number()), functions.NO_ROLE)
     else:
         page = flask.abort(code=404)
     return page
@@ -84,7 +84,7 @@ def performer_id_page(performer_id: int, page_num: int) -> Response:
                                                                     request.args.get('page',
                                                                                      default=config.full_address(),
                                                                                      type=str),
-                                                                    stylesheet_number()))
+                                                                    stylesheet_number()), functions.NO_ROLE)
     else:
         page = flask.abort(code=404)
     return page
@@ -98,7 +98,7 @@ def add_performer_to_work_work_id(work_id: int) -> Response:
                                                               request.args.get('page',
                                                                                default=config.full_address(),
                                                                                type=str),
-                                                              stylesheet_number()))
+                                                              stylesheet_number()), functions.ROLE_SUPERUSER)
     else:
         page = flask.abort(code=404)
     return page
@@ -112,7 +112,7 @@ def remove_performer_to_work_work_id(work_id: int) -> Response:
                                                                    request.args.get('page',
                                                                                     default=config.full_address(),
                                                                                     type=str),
-                                                                   stylesheet_number()))
+                                                                   stylesheet_number()), functions.ROLE_SUPERUSER)
     else:
         page = flask.abort(code=404)
     return page
@@ -123,7 +123,7 @@ def add_performer_result() -> Response:
     """Redirect to method add performer in current work"""
     return goto_or_redirect(lambda: add_performer_result_method(functions.form_to_data(request.form),
                                                                 request.method,
-                                                                stylesheet_number()))
+                                                                stylesheet_number()), functions.ROLE_SUPERUSER)
 
 
 @app.route('/remove-performer-result', methods=['POST'])
@@ -131,19 +131,19 @@ def remove_performer_result() -> Response:
     """Redirect to method add performer in current work"""
     return goto_or_redirect(lambda: remove_performer_result_method(functions.form_to_data(request.form),
                                                                 request.method,
-                                                                stylesheet_number()))
+                                                                stylesheet_number()), functions.ROLE_SUPERUSER)
 
 
 @app.route('/top-10-workers')
 def top_workers() -> Response:
     """Return to top 10 workers page"""
-    return goto_or_redirect(lambda: top_workers_page(stylesheet_number()))
+    return goto_or_redirect(lambda: top_workers_page(stylesheet_number()), functions.NO_ROLE)
 
 
 @app.route('/add-worker')
 def add_worker() -> Response:
     """Return to top 10 workers page"""
-    return goto_or_redirect(lambda: create_new_worker_page(stylesheet_number()))
+    return goto_or_redirect(lambda: create_new_worker_page(stylesheet_number()), functions.ROLE_SUPERUSER)
 
 
 @app.route('/add-worker-to-db', methods=['POST'])
@@ -151,5 +151,5 @@ def add_worker_to_db() -> Response:
     """Redirect to method add performer in current work"""
     return goto_or_redirect(lambda: add_new_worker_method(functions.form_to_data(request.form),
                                                           request.method,
-                                                          stylesheet_number()))
+                                                          stylesheet_number()), functions.ROLE_SUPERUSER)
 

@@ -7,13 +7,19 @@ from wh_app.web.any_section import main_web_menu, faq_page, statistics_page,\
 from wh_app.supporting.pdf_operations.pdf import equips_in_point, works_from_equip,\
     works_from_performer, weekly_charts_pdf, move_equip, point_tech_information, find_work_without_date, find_equip,\
     find_point, find_work_with_date, works_from_performer_with_date, top10workers, top10points, top10equips,\
-    work_from_id
+    work_from_id, order_to_pdf, no_closed_orders, all_orders
 
 
 @app.route("/")
 def main_page() -> Response:
     """Return main web-page"""
-    return goto_or_redirect(lambda:  main_web_menu(stylesheet_number()))
+    return goto_or_redirect(lambda:  main_web_menu(stylesheet_number()), functions.NO_ROLE)
+
+
+@app.route("/access-denied")
+def access_denied() -> str:
+    """Return Access Is Denied"""
+    return result_page("<h2>Доступ к данному разделу для данного пользователя запрещен!</h2>", '/login', stylesheet_number())
 
 
 @app.route("/FAQ", methods=['GET'])
@@ -22,7 +28,7 @@ def faq() -> Response:
     return goto_or_redirect(lambda: faq_page(request.args.get('page',
                                                               default=config.full_address(),
                                                               type=str),
-                                             stylesheet_number()))
+                                             stylesheet_number()), functions.NO_ROLE)
 
 
 @app.route('/statistics', methods=['GET'])
@@ -31,7 +37,7 @@ def statistics() -> Response:
     return goto_or_redirect(lambda: statistics_page(request.args.get('page',
                                                                      default=config.full_address(),
                                                                      type=str),
-                                                    stylesheet_number()))
+                                                    stylesheet_number()), functions.NO_ROLE)
 
 
 @app.route('/system-status', methods=['GET'])
@@ -40,13 +46,13 @@ def system_status() -> Response:
     return goto_or_redirect(lambda: system_status_page(request.args.get('page',
                                                                         default=config.full_address(),
                                                                         type=str),
-                                                       stylesheet_number()))
+                                                       stylesheet_number()), functions.NO_ROLE)
 
 
 @app.route('/changelog-page')
 def changelog_page() -> Response:
     """Return ALL CHANGELOG page"""
-    return goto_or_redirect(lambda: viev_changelog(stylesheet_number()))
+    return goto_or_redirect(lambda: viev_changelog(stylesheet_number()), functions.NO_ROLE)
 
 
 @app.route("/table-to-pdf/<data>")
@@ -68,7 +74,10 @@ def html_table_to_pdf(data:str) -> Response:
                      "top10workers": top10workers,
                      "top10points": top10points,
                      "top10equips": top10equips,
-                     "work": work_from_id}
+                     "work": work_from_id,
+                     "order-to-pdf": order_to_pdf,
+                     "no-closed-orders": no_closed_orders,
+                     "all-orders": all_orders}
 
     lst_data = data.split('=')
     if len(lst_data) == 1:

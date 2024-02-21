@@ -32,3 +32,7 @@ Well Done!
 27. python3 /path/to/main.py --allstart
 28. in your browser go to to http://your_ip:5000
 Well Done!
+
+29. To add user in telegramm-bot add records in read_bot_access.py and write_bot_access.py
+30. Server use HTTPS. Certificate and privateKey in folder wh_app/cert. Generated with using openssl
+

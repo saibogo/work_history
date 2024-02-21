@@ -14,14 +14,14 @@ from wh_app.web.points_section import points_operations, all_points_table,\
 @app.route("/points")
 def points() -> Response:
     """Return main page POINTS-section"""
-    return goto_or_redirect(lambda: points_operations(stylesheet_number()))
+    return goto_or_redirect(lambda: points_operations(stylesheet_number()), functions.NO_ROLE)
 
 
 @app.route("/tech-info/<point_num>")
 def tech_info(point_num: str) -> Response:
     """Return page. contain all technical information from current point"""
     if is_integer(point_num):
-        page = Response(point_tech_info(int(point_num), stylesheet_number()))
+        page = Response(point_tech_info(int(point_num), stylesheet_number()), functions.ROLE_CUSTOMER)
     else:
         page = flask.abort(code=404)
     return page
@@ -30,13 +30,13 @@ def tech_info(point_num: str) -> Response:
 @app.route("/all-points")
 def all_points() -> Response:
     """Return page, contain all points in database """
-    return goto_or_redirect(lambda: all_points_table(stylesheet_number()))
+    return goto_or_redirect(lambda: all_points_table(stylesheet_number()), functions.NO_ROLE)
 
 
 @app.route("/create-new-point")
 def create_new_point() -> Response:
     """Return page to create new workspoint"""
-    return goto_or_redirect(lambda: create_new_point_page(stylesheet_number()))
+    return goto_or_redirect(lambda: create_new_point_page(stylesheet_number()), functions.ROLE_SUPERUSER)
 
 
 @app.route('/add-point', methods=['POST'])
@@ -44,20 +44,20 @@ def add_point() -> Response:
     """Redirect to method create new workspoint"""
     return goto_or_redirect(lambda: add_point_method(functions.form_to_data(request.form),
                                                      request.method,
-                                                     stylesheet_number()))
+                                                     stylesheet_number()), functions.ROLE_SUPERUSER)
 
 
 @app.route("/works-points")
 def works_points() -> Response:
     """Return page, contain all points in database. where status WORK=True"""
-    return goto_or_redirect(lambda: all_works_points_table(stylesheet_number()))
+    return goto_or_redirect(lambda: all_works_points_table(stylesheet_number()), functions.NO_ROLE)
 
 
 @app.route("/edit-point/<point_id>")
 def edit_point(point_id: int) -> Response:
     """Return page to edit current workspoint"""
     if is_integer(point_id):
-        page = goto_or_redirect(lambda: edit_point_method(str(point_id), stylesheet_number()))
+        page = goto_or_redirect(lambda: edit_point_method(str(point_id), stylesheet_number()), functions.ROLE_SUPERUSER)
     else:
         page = flask.abort(code=404)
     return page
@@ -67,7 +67,7 @@ def edit_point(point_id: int) -> Response:
 def on_off_point(point_id: int) -> Response:
     """Return page invert status WORK"""
     if is_integer(point_id):
-        page = goto_or_redirect(lambda: on_off_point_method(str(point_id), stylesheet_number()))
+        page = goto_or_redirect(lambda: on_off_point_method(str(point_id), stylesheet_number()), functions.ROLE_SUPERUSER)
     else:
         page = flask.abort(code=404)
     return page
@@ -78,7 +78,7 @@ def upgrade_point_info() -> Response:
     """Redirect to method upgraded data from point in database"""
     return goto_or_redirect(lambda: upgrade_point_method(functions.form_to_data(request.form),
                                                          request.method,
-                                                         stylesheet_number()))
+                                                         stylesheet_number()), functions.ROLE_SUPERUSER)
 
 
 @app.route("/invert-point-status", methods=['POST'])
@@ -86,14 +86,14 @@ def invert_point_status() -> Response:
     """Redirect to method update WORK status in database from current point"""
     return goto_or_redirect(lambda: invert_point_status_method(functions.form_to_data(request.form),
                                                                request.method,
-                                                               stylesheet_number()))
+                                                               stylesheet_number()), functions.ROLE_SUPERUSER)
 
 
 @app.route("/edit-bindings/<point_id>")
 def edit_bindings_in_point(point_id: str) -> Response:
     """Go to page with edit bindings forms"""
     if is_integer(point_id):
-        page = goto_or_redirect(lambda: create_bindings_form(point_id, stylesheet_number()))
+        page = goto_or_redirect(lambda: create_bindings_form(point_id, stylesheet_number()), functions.ROLE_SUPERUSER)
     else:
         page = flask.abort(code=404)
     return page
@@ -104,7 +104,7 @@ def add_new_binding() -> Response:
     """Redirect to method analyze data for new binding"""
     return goto_or_redirect(lambda: create_new_binding_method(functions.form_to_data(request.form),
                                                               request.method,
-                                                              stylesheet_number()))
+                                                              stylesheet_number()), functions.ROLE_SUPERUSER)
 
 
 @app.route("/remove-binding", methods=['POST'])
@@ -112,14 +112,14 @@ def remove_binding() -> Response:
     """Redirect to method. delete current binding"""
     return goto_or_redirect(lambda: delete_binding_method(functions.form_to_data(request.form),
                                                           request.method,
-                                                          stylesheet_number()))
+                                                          stylesheet_number()), functions.ROLE_SUPERUSER)
 
 
 @app.route("/edit-electric/<point_num>")
 def edit_electric(point_num: int) -> Response:
     """Create form to edit electric partition technical information to workspoint"""
     if is_integer(point_num):
-        page = goto_or_redirect(lambda: edit_tech_section(point_num, 'electric', stylesheet_number()))
+        page = goto_or_redirect(lambda: edit_tech_section(point_num, 'electric', stylesheet_number()), functions.ROLE_SUPERUSER)
     else:
         page = flask.abort(code=404)
     return page
@@ -129,7 +129,7 @@ def edit_electric(point_num: int) -> Response:
 def edit_cold_water(point_num: int) -> Response:
     """Create form to edit cold-water partition technical information to workspoint"""
     if is_integer(point_num):
-        page = goto_or_redirect(lambda: edit_tech_section(point_num, 'cold-water', stylesheet_number()))
+        page = goto_or_redirect(lambda: edit_tech_section(point_num, 'cold-water', stylesheet_number()), functions.ROLE_SUPERUSER)
     else:
         page = flask.abort(code=404)
     return page
@@ -139,7 +139,7 @@ def edit_cold_water(point_num: int) -> Response:
 def edit_hot_water(point_num: int) -> Response:
     """Create form to edit hot-water partition technical information to workspoint"""
     if is_integer(point_num):
-        page = goto_or_redirect(lambda: edit_tech_section(point_num, 'hot-water', stylesheet_number()))
+        page = goto_or_redirect(lambda: edit_tech_section(point_num, 'hot-water', stylesheet_number()), functions.ROLE_SUPERUSER)
     else:
         page = flask.abort(code=404)
     return page
@@ -149,7 +149,7 @@ def edit_hot_water(point_num: int) -> Response:
 def edit_heating(point_num: int) -> Response:
     """Create form to edit heating partition technical information to workspoint"""
     if is_integer(point_num):
-        page = goto_or_redirect(lambda: edit_tech_section(point_num, 'heating', stylesheet_number()))
+        page = goto_or_redirect(lambda: edit_tech_section(point_num, 'heating', stylesheet_number()), functions.ROLE_SUPERUSER)
     else:
         page = flask.abort(code=404)
     return page
@@ -159,7 +159,7 @@ def edit_heating(point_num: int) -> Response:
 def edit_sewerage(point_num: int) -> Response:
     """Create form to edit sewerage partition technical information to workspoint"""
     if is_integer(point_num):
-        page = goto_or_redirect(lambda: edit_tech_section(point_num, 'sewerage', stylesheet_number()))
+        page = goto_or_redirect(lambda: edit_tech_section(point_num, 'sewerage', stylesheet_number()), functions.ROLE_SUPERUSER)
     else:
         page = flask.abort(code=404)
     return page
@@ -171,7 +171,7 @@ def edit_section_method(section_name: str) -> Response:
     return goto_or_redirect(lambda: edit_point_tech_method(section_name,
                                                            functions.form_to_data(request.form),
                                                            request.method,
-                                                           stylesheet_number()))
+                                                           stylesheet_number()), functions.ROLE_SUPERUSER)
 
 
 @app.route("/svu/<point_id>")
@@ -187,7 +187,7 @@ def get_svu(point_id: str) -> Response:
 def top_10_points() -> Response:
     """Return HTML with table points with mawimal works"""
 
-    return goto_or_redirect(lambda: top_10_points_page(stylesheet_number()))
+    return goto_or_redirect(lambda: top_10_points_page(stylesheet_number()), functions.NO_ROLE)
 
 
 

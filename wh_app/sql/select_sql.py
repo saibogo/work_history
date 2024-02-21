@@ -756,10 +756,21 @@ def sql_select_no_closed_orders_limit(page_num: int) -> str:
 
 
 @log_decorator
+def sql_select_max_order_id() -> str:
+    """Return SELECT string with find maximal ID in orders table"""
+
+    query = """SELECT MAX(%(id)s) FROM %(orders)s""" % sql_consts_dict
+    return query
+
+
+@log_decorator
 def sql_select_order_from_id(order_id: str) -> str:
     """Return SQL query from select full information from ID = order_id"""
 
-    query = """SELECT * FROM %(orders)s WHERE id = {}""" % sql_consts_dict
+    query = """SELECT %(orders)s.%(id)s, %(point_name)s, %(customer)s.%(full_name)s, %(orders)s.%(date)s, %(orders)s.%(closed_date)s, %(problem)s,
+     (%(bug_in_work)s), %(orders)s.comment FROM %(orders)s JOIN %(customer)s ON %(customer_id)s = %(customer)s.%(id)s 
+      JOIN %(workspoints)s ON %(workspoints)s.%(point_id)s = %(orders)s.%(point_id)s WHERE %(orders)s.%(id)s = {} """ % sql_consts_dict
+    #query = """SELECT * FROM %(orders)s WHERE id = {}""" % sql_consts_dict
     return query.format(order_id)
 
 
@@ -935,3 +946,19 @@ def sql_select_top_workers() -> str:
              """GROUP BY %(workers)s.%(id)s ORDER BY all_works DESC""") %sql_consts_dict
 
     return query
+
+
+@log_decorator
+def sql_select_user_in_customers(user_name: str) -> str:
+    """Return SQL-string to find user in customer table"""
+
+    query = """SELECT '{0}' IN (SELECT %(full_name)s FROM %(customer)s) as all_users""" % sql_consts_dict
+    return query.format(user_name)
+
+
+@log_decorator
+def sql_select_hash_from_user(user_name: str) -> str:
+    """Return SQL-string to find hash from user = full_name"""
+
+    query = """SELECT %(hash_pass)s FROM %(customer)s WHERE %(full_name)s = '{0}'""" % sql_consts_dict
+    return query.format(user_name)

@@ -7,7 +7,7 @@ from typing import Iterable, Any, List, Tuple
 from wh_app.config_and_backup import config
 from wh_app.postgresql.database import Database
 from wh_app.sql_operations.select_operations import get_cold_water_point_info, get_sewerage_point_info,\
-    get_electric_point_info, get_heating_point_info, get_hot_water_point_info
+    get_electric_point_info, get_heating_point_info, get_hot_water_point_info, user_in_customers, get_hash_to_customer
 from wh_app.supporting import metadata
 
 
@@ -17,13 +17,17 @@ def info_string(name_module):
                                                                           metadata.__version__,
                                                                           metadata.__author__,
                                                                           metadata.__license__))
-
-
 from wh_app.web.universal_html import FIND_REQUEST
 from wh_app.web.universal_html import EDIT_CHAR
 
 
 NOT_VALUES = "Нет данных"
+ROLE_SUPERUSER = 'superuser'
+ROLE_WORKER = 'worker'
+ROLE_CUSTOMER = 'customer'
+NO_ROLE = 'no role'
+ROLES_IERARH = [ROLE_SUPERUSER, ROLE_WORKER, ROLE_CUSTOMER, NO_ROLE]
+
 
 def str_to_str_n(old_string: str, max_len: int) -> str:
     """Function return new string, separated \n"""
@@ -102,6 +106,17 @@ def is_valid_password(password: str) -> bool:
 def is_valid_customers_password(password: str, hash_in_db: str) -> bool:
     """Function compare password and passwords hashes from customer"""
     return str(create_hash(password)) == str(hash_in_db)
+
+
+def is_valid_customer(login: str, password: str) -> bool:
+    """Function find user with login and password in Database"""
+    with Database() as base:
+        _, cursor = base
+        if user_in_customers(cursor, login):
+            hash = get_hash_to_customer(cursor, login)
+            return is_valid_customers_password(password, hash)
+        else:
+            return False
 
 
 def is_superuser_password(password: str) -> bool:

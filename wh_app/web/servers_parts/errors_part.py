@@ -9,7 +9,7 @@ def page_not_found(error: Any) -> Response:
     print(error)
     return goto_or_redirect(lambda: web_template.result_page(uhtml.html_page_not_found(),
                                                              '/',
-                                                             stylesheet_number()))
+                                                             stylesheet_number()), functions.NO_ROLE)
 
 
 @app.errorhandler(405)
@@ -18,7 +18,7 @@ def method_not_allowed(error: Any) -> Response:
     print(error)
     return goto_or_redirect(lambda: web_template.result_page(uhtml.html_page_not_found(),
                                                              '/',
-                                                             stylesheet_number()))
+                                                             stylesheet_number()), functions.NO_ROLE)
 
 
 @app.errorhandler(500)
@@ -27,7 +27,7 @@ def page_internal_server_error(error: Any) -> Response:
     print(error)
     return goto_or_redirect(lambda: web_template.result_page(uhtml.html_internal_server_error(),
                                                              '/',
-                                                             stylesheet_number()))
+                                                             stylesheet_number()), functions.NO_ROLE)
 
 
 @app.route('/not_found')

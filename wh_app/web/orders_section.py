@@ -16,8 +16,9 @@ functions.info_string(__name__)
 
 def orders_main_menu(stylesheet_number: str) -> str:
     """Function create main page in ORDERS section"""
-    menu = ['Все заказчики', 'Все зарегистрированные заявки','Только незакрытые заявки', 'Зарегистрировать заявку']
-    links = ['/all-customers-table', '/all-registred-orders', '/all-no-closed-orders','/add-order']
+    menu = ['Все заказчики', 'Все зарегистрированные заявки','Только незакрытые заявки', 'Поиск по ID',
+            'Зарегистрировать заявку']
+    links = ['/all-customers-table', '/all-registred-orders', '/all-no-closed-orders', '/order-from-id', '/add-order']
     table = uhtml.universal_table('Действия с заявками',
                                   ['№', 'Действие'],
                                   functions.list_to_numer_list(menu), True, links)
@@ -47,7 +48,7 @@ def all_registered_orders_table(stylesheet_number: str) -> str:
         table = uhtml.universal_table(table_headers.orders_table_name,
                                       table_headers.orders_table,
                                       correct_orders)
-        return web_template.result_page(table, '/orders-and-customers', str(stylesheet_number))
+        return web_template.result_page(table, '/orders-and-customers', str(stylesheet_number), True, 'all-orders=0')
 
 
 def all_registered_orders_table_page(page_num: int, stylesheet_number: str) -> str:
@@ -64,7 +65,8 @@ def all_registered_orders_table_page(page_num: int, stylesheet_number: str) -> s
                                           functions.
                                           list_of_pages(select_operations.get_all_orders(cursor)),
                                           int(page_num))
-        return web_template.result_page(table + table_paging, pre_adr, stylesheet_number)
+        return web_template.result_page(table + table_paging, pre_adr, stylesheet_number,
+                                        True, 'all-orders={}'.format(page_num))
 
 
 def create_new_order_form(stylesheet_number: str) -> str:
@@ -115,7 +117,7 @@ def all_no_closed_orders_table(stylesheet_number: str) -> str:
         table = uhtml.universal_table(table_headers.orders_table_name,
                                       table_headers.orders_table,
                                       correct_orders)
-        return web_template.result_page(table, pre_addr, str(stylesheet_number))
+        return web_template.result_page(table, pre_addr, str(stylesheet_number), True, 'no-closed-orders=0')
 
 
 def all_no_closed_orders_table_page(page_num: int, stylesheet_number: str) -> str:
@@ -133,7 +135,8 @@ def all_no_closed_orders_table_page(page_num: int, stylesheet_number: str) -> st
                                           list_of_pages(select_operations.get_all_no_closed_orders(cursor)),
                                           int(page_num))
 
-        return web_template.result_page(table + table_paging, pre_addr, str(stylesheet_number))
+        return web_template.result_page(table + table_paging, pre_addr, str(stylesheet_number), True,
+                                        'no-closed-orders={}'.format(page_num))
 
 
 def _correct_orders_table(orders: List[Tuple]) -> List[List]:
@@ -160,10 +163,9 @@ def create_edit_order_form(order_id: str, stylesheet_number: str) -> str:
         pre_addr = '/orders-and-customers'
         all_customer = select_operations.get_all_customers(cursor)
         order_info = select_operations.get_order_from_id(cursor, order_id)
-        point_id = order_info[7]
-        point_info = select_operations.get_full_point_information(cursor, point_id)
+        point_name = order_info[1]
         awaliable_statuses = select_operations.get_all_order_status(cursor)
-        form = render_template('edit_order_form.html', point_name=point_info[0], order_info=order_info[4],
+        form = render_template('edit_order_form.html', point_name=point_name, order_info=order_info[5],
                                customer_name=uhtml.CUSTOMER_NAME, all_customers=all_customer, password=uhtml.PASSWORD,
                                order_status_name=uhtml.ORDER_STATUS_NAME, all_status=awaliable_statuses,
                                comment=uhtml.COMMENT, id=uhtml.ORDER_ID, order_id=order_id)
@@ -174,8 +176,8 @@ def create_edit_order_form(order_id: str, stylesheet_number: str) -> str:
 def edit_order_status_method(data: Dict, method, stylesheet_number: str) -> str:
     """Analyze data and/or add record in database"""
 
-    print(data)
     pre_adr = '/orders-and-customers'
+    print(data)
     if method == "POST":
         order_id = data[uhtml.ORDER_ID]
         customer_id = data[uhtml.CUSTOMER_NAME]
@@ -196,3 +198,31 @@ def edit_order_status_method(data: Dict, method, stylesheet_number: str) -> str:
     else:
         page = "Method in add Order not corrected!"
     return web_template.result_page(page, pre_adr, str(stylesheet_number))
+
+
+def find_order_from_id_form(stylesheet_number: str) -> str:
+    """Create form to find order in database"""
+    with Database() as base:
+        _, cursor = base
+        max_id = select_operations.get_maximal_orders_id(cursor)
+        page = render_template('find_order_from_id.html', max_order_id=max_id, order_id_name=uhtml.ORDER_ID)
+        pre_adr = '/orders-and-customers'
+        return web_template.result_page(page, pre_adr, stylesheet_number)
+
+
+def order_with_id_table(data: Dict, method, stylesheet_number: str) -> str:
+    """Create table with ONE record FROM orders table with current_id"""
+
+    pre_adr = '/orders-and-customers'
+    if method == "POST":
+        order_id = data[uhtml.ORDER_ID]
+        with Database() as base:
+            _, cursor = base
+            order = select_operations.get_order_from_id(cursor, order_id)
+            correct_orders = _correct_orders_table([order])
+            page = uhtml.universal_table(table_headers.orders_table_name,
+                                      table_headers.orders_table,
+                                      correct_orders)
+    else:
+        page = "Method in Find Order not corrected!"
+    return web_template.result_page(page, pre_adr, stylesheet_number, True, 'order-to-pdf={}'.format(order_id))

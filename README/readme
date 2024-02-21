@@ -1,6 +1,5 @@
 Need python3 modules:
 -fpdf2
--PyQt5
 
 Database structure:
 -Table workspoints - all point

@@ -13,6 +13,8 @@ path_to_passwords = lambda: str(globals()['path_to_passwords_var'])
 path_to_messages = lambda: str(globals()['path_to_messages_var'])
 path_to_sql_log = lambda : str(globals()['path_to_sql_log_var'])
 path_to_fonts = lambda: str(globals()['path_to_fonts_var'])
+path_to_certificate = lambda: str(globals()['certificate_var'])
+path_to_private_key = lambda: str(globals()['privateKey_var'])
 
 database_name = lambda: str(globals()['database_name_var'])
 user_name = lambda: str(globals()['user_name_var'])
@@ -63,6 +65,8 @@ def load_config():
         globals()['path_to_messages_var'] = path_to_project() + 'wh_app/config_and_backup/.message_to_shutdown_server'
         globals()['path_to_sql_log_var'] = tree.find('pathes/path_to_sql_log').text
         globals()['path_to_fonts_var'] = path_to_project() + 'wh_app/supporting/pdf_operations/'
+        globals()['certificate_var'] = path_to_project() + 'wh_app/cert/certificate.crt'
+        globals()['privateKey_var'] = path_to_project() + 'wh_app/cert/privateKey.key'
 
         # Database section
         globals()['database_name_var'] = tree.find('database/database_name').text
@@ -74,7 +78,7 @@ def load_config():
         # IP section
         globals()['ip_address_var'] = tree.find('web/ip_address').text
         globals()['port_var'] = tree.find('web/port').text
-        globals()['full_address_var'] = "http://" + globals()['ip_address_var'] + ':' + globals()['port_var']
+        globals()['full_address_var'] = "https://" + globals()['ip_address_var'] + ':' + globals()['port_var']
 
         # Web-interface section
         globals()['max_records_in_page_var'] = int(tree.find('web-interface/max_records_in_page').text)

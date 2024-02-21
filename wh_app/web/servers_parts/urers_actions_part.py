@@ -4,6 +4,7 @@ from wh_app.web.servers_parts.support_part import *
 from wh_app.web.universal_html import LOGIN, PASSWORD, access_denided, access_allowed, logout_user
 from wh_app.web.any_section import login_input_page, new_theme_page
 
+
 @app.route('/login')
 def login_page() -> str:
     """Redirect to LOGIN-form"""
@@ -26,6 +27,16 @@ def login_verification() -> str:
 
     if functions.is_login_and_password_correct(request.form[LOGIN], request.form[PASSWORD]):
         print("Успешная верификация пользователя ", request.form[LOGIN])
+        if functions.is_superuser_password(request.form[PASSWORD]):
+            session[SESSION_ROLE] = functions.ROLE_SUPERUSER
+        else:
+            session[SESSION_ROLE] = functions.ROLE_WORKER
+        session[LOGIN_IS_CORRECT] = True
+        session[TIME_LOGIN] = time.time()
+        session.modified = True
+        result = access_allowed(request.form[LOGIN])
+    elif functions.is_valid_customer(request.form[LOGIN], request.form[PASSWORD]):
+        session[SESSION_ROLE] = functions.ROLE_CUSTOMER
         session[LOGIN_IS_CORRECT] = True
         session[TIME_LOGIN] = time.time()
         session.modified = True
