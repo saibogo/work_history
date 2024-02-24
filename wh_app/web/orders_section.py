@@ -177,7 +177,6 @@ def edit_order_status_method(data: Dict, method, stylesheet_number: str) -> str:
     """Analyze data and/or add record in database"""
 
     pre_adr = '/orders-and-customers'
-    print(data)
     if method == "POST":
         order_id = data[uhtml.ORDER_ID]
         customer_id = data[uhtml.CUSTOMER_NAME]
