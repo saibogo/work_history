@@ -1,4 +1,3 @@
-import aiogram.utils.exceptions
 import datetime
 
 from wh_app.telegram_bot.support_bot import *
@@ -56,7 +55,7 @@ async def find_repler(message: types.Message, target: str):
     except:
         user_name = 'User ID {}'.format(user_id)
     try:
-        if user_name not in read_id_dict and user_id not in read_id_dict:
+        if not is_user_acs_read(user_id):
             raise KeyError
         with Database() as base:
             _, cursor = base
@@ -82,18 +81,18 @@ async def find_repler(message: types.Message, target: str):
         msg_del = await message.answer(user_not_access_read(user_name))
         standart_delete_message(msg_del)
 
-    except (aiogram.utils.exceptions.MessageIsTooLong, aiogram.utils.exceptions.BadRequest) as e:
+    except (MessageIsTooLong, BadRequest) as e:
         msg_dels = list()
         tmp = '\n'.join(msgs)
         for i in range(0, len(tmp), MAX_CHAR_IN_MSG):
             msg_dels.append(await message.answer(tmp[i: i + MAX_CHAR_IN_MSG]))
             standart_delete_message(msg_dels[-1])
 
-    except aiogram.utils.exceptions.MessageTextIsEmpty or IndexError:
+    except MessageTextIsEmpty or IndexError:
         msg_del = await message.answer('Ничего не найдено!', reply_markup=ReplyKeyboardRemove())
         standart_delete_message(msg_del)
 
-    except aiogram.utils.exceptions.NetworkError:
+    except NetworkError:
         msg_dels = list()
         tmp = '\n'.join(msgs)
         for i in range(len(tmp) - 5 * MAX_CHAR_IN_MSG, len(tmp), MAX_CHAR_IN_MSG):
@@ -114,7 +113,7 @@ async def last_day_message(message: types.Message):
         user_name = 'User ID {}'.format(user_id)
 
     try:
-        if user_name not in read_id_dict and user_id not in read_id_dict:
+        if not is_user_acs_read(user_id):
             raise KeyError
         with Database() as base:
             _, cursor = base
@@ -131,10 +130,10 @@ async def last_day_message(message: types.Message):
     except KeyError:
         msg_del = await message.answer(user_not_access_read(user_name))
         standart_delete_message(msg_del)
-    except aiogram.utils.exceptions.MessageTextIsEmpty or IndexError:
+    except MessageTextIsEmpty or IndexError:
         msg_del = await message.answer('Ничего не найдено!', reply_markup=ReplyKeyboardRemove())
         standart_delete_message(msg_del)
-    except aiogram.utils.exceptions.MessageIsTooLong:
+    except MessageIsTooLong:
         msg_dels = list()
         tmp = '\n'.join(msgs)
         for i in range(0, len(tmp), MAX_CHAR_IN_MSG):

@@ -59,7 +59,7 @@ async def point_info(message: types.Message):
         except:
             user_name = 'User ID {}'.format(user_id)
         try:
-            if user_name not in read_id_dict and user_id not in read_id_dict:
+            if not is_telegram_user_reader(cursor, user_id):
                 raise KeyError
             if point_id == '0':
                 raise IndexError
@@ -87,7 +87,7 @@ async def point_info(message: types.Message):
             if not found_error_data:
                 msg_del1 = await message.answer('Зарегистрировать новое оборудование?', reply_markup=standart_keyboard(kb))
                 standart_delete_message(msg_del1)
-        except aiogram.utils.exceptions.MessageIsTooLong:
+        except MessageIsTooLong:
             tmp = '\n'.join(msg)
             msg_dels = list()
             for i in range(0, len(tmp), MAX_CHAR_IN_MSG):
@@ -108,7 +108,7 @@ async def get_svu(message: types.Message):
         except:
             user_name = 'User ID {}'.format(user_id)
         try:
-            if user_name not in read_id_dict and user_id not in read_id_dict:
+            if not is_telegram_user_reader(cursor, user_id):
                 raise KeyError
             if point_id > int(get_maximal_points_id(cursor)) or point_id < 1:
                 raise IndexError
@@ -141,7 +141,7 @@ async def get_tech_info(message: types.Message):
         except:
             user_name = 'User ID {}'.format(user_id)
         try:
-            if user_name not in read_id_dict and user_id not in read_id_dict:
+            if not is_telegram_user_reader(cursor, user_id):
                 raise KeyError
             if point_id > int(get_maximal_points_id(cursor)) or point_id < 1:
                 raise IndexError

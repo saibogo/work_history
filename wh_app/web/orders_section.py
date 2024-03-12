@@ -1,5 +1,7 @@
 """This module contain functions to create all orders-pages"""
 import datetime
+
+import flask
 from flask import render_template
 from typing import List, Tuple, Dict
 
@@ -217,11 +219,15 @@ def order_with_id_table(data: Dict, method, stylesheet_number: str) -> str:
         order_id = data[uhtml.ORDER_ID]
         with Database() as base:
             _, cursor = base
-            order = select_operations.get_order_from_id(cursor, order_id)
-            correct_orders = _correct_orders_table([order])
-            page = uhtml.universal_table(table_headers.orders_table_name,
-                                      table_headers.orders_table,
-                                      correct_orders)
+            try:
+                order = select_operations.get_order_from_id(cursor, order_id)
+                correct_orders = _correct_orders_table([order])
+                page = uhtml.universal_table(table_headers.orders_table_name,
+                                             table_headers.orders_table,
+                                             correct_orders)
+            except IndexError:
+                page = uhtml.html_page_not_found()
+
     else:
         page = "Method in Find Order not corrected!"
     return web_template.result_page(page, pre_adr, stylesheet_number, True, 'order-to-pdf={}'.format(order_id))

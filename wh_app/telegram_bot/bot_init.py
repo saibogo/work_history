@@ -5,6 +5,8 @@ from aiogram import Bot, Dispatcher, executor, types, filters
 from aiogram.utils.exceptions import MessageTextIsEmpty
 
 from wh_app.supporting import functions
+from wh_app.postgresql.database import Database
+from wh_app.sql_operations.select_operations import get_all_telegram_chats
 from wh_app.telegram_bot.bot_state_machine import BotStateMachine
 from wh_app.config_and_backup.config import path_to_telegram_token, path_to_messages
 from wh_app.telegram_bot.point_bot import all_points, send_statistic, point_info, not_create_record, get_svu,\
@@ -16,7 +18,6 @@ from wh_app.telegram_bot.bugs_bot import all_bugs, start_create_new_bug, new_bug
     invert_bug_status_from_bot
 from wh_app.telegram_bot.work_bot import start_create_record
 from wh_app.telegram_bot.work_bot import problem_repler, work_repler, get_work_record
-from wh_app.telegram_bot.read_bot_access import chats
 from wh_app.telegram_bot.support_bot import standart_delete_message
 from wh_app.telegram_bot.find_bot import main_find_menu, find_menu, find_repler, last_day_message
 from wh_app.telegram_bot.workers_bot import send_workers_message
@@ -60,23 +61,29 @@ async def start_message():
     global bot_is_restarted
     messages_del = []
     if bot_is_restarted:
-        for chat in chats:
-            messages_del.append(await bot.send_message(chat, 'Произведен перезапуск телеграмм-бота!'))
-            standart_delete_message(messages_del[-1])
-        bot_is_restarted = False
+        with Database() as base:
+            _, cursor = base
+            chats_db = get_all_telegram_chats(cursor)
+            for chat in chats_db:
+                messages_del.append(await bot.send_message(chat, 'Произведен перезапуск телеграмм-бота!'))
+                standart_delete_message(messages_del[-1])
+            bot_is_restarted = False
     else:
         message = ""
-        try:
-            message_file = open(path_to_messages(), 'r')
-            for line in message_file:
-                message += line
-            for chat in chats:
-                messages_del.append(await bot.send_message(chat, message))
-                standart_delete_message(messages_del[-1])
-        except FileNotFoundError:
-            pass
-        except MessageTextIsEmpty:
-            pass
+        with Database() as base:
+            _, cursor = base
+            try:
+                chats_db = get_all_telegram_chats(cursor)
+                message_file = open(path_to_messages(), 'r')
+                for line in message_file:
+                    message += line
+                for chat in chats_db:
+                    messages_del.append(await bot.send_message(chat, message))
+                    standart_delete_message(messages_del[-1])
+            except FileNotFoundError:
+                pass
+            except MessageTextIsEmpty:
+                pass
 
 
 @dp.message_handler(commands=['start'])

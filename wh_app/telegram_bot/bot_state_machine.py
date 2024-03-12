@@ -5,6 +5,7 @@ class BotStateMachine(object):
     """Class singleton. Contain information Bot status"""
 
     __instance = None
+
     def __init__(self):
         pass
 

@@ -8,7 +8,7 @@ from wh_app.supporting import backup_operations
 
 functions.info_string(__name__)
 
-TYPES = ['worker_status']
+TYPES = ['worker_status', 'order_status']
 
 VIEWS_LIST = ['all_workers',
               'firsts_bindings',
@@ -27,6 +27,7 @@ TABLES_LIST = ['electric',
                'bugzilla',
                'performers',
                'works_days',
+               'chats',
                'workers',
                'posts',
                'works',

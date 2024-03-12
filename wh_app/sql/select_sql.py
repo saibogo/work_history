@@ -962,3 +962,35 @@ def sql_select_hash_from_user(user_name: str) -> str:
 
     query = """SELECT %(hash_pass)s FROM %(customer)s WHERE %(full_name)s = '{0}'""" % sql_consts_dict
     return query.format(user_name)
+
+
+@log_decorator
+def sql_select_all_telegram_chats() -> str:
+    """Return SQL-string to select all telegramm chats"""
+
+    query = """SELECT ARRAY(SELECT %(chat_id)s FROM %(chats)s)""" % sql_consts_dict
+    return query
+
+
+@log_decorator
+def sql_select_telegram_user_is_reader(user_id: int) -> str:
+    """Return SQL-string to true/false from current user read access"""
+
+    query = """SELECT {0} IN (SELECT %(chat_id)s FROM %(chats)s WHERE %(acs_read)s = True)""" % sql_consts_dict
+    return query.format(user_id)
+
+
+@log_decorator
+def sql_select_telegram_user_is_writer(user_id: int) -> str:
+    """Return SQL-string to true/false from current user write access"""
+
+    query = """SELECT {0} IN (SELECT %(chat_id)s FROM %(chats)s WHERE %(acs_write)s = True)""" % sql_consts_dict
+    return query.format(user_id)
+
+
+@log_decorator
+def sql_select_worker_id_from_chats(user_id: int) -> str:
+    """Return SQL-string to find worker_id with current chat_id"""
+
+    query = """SELECT %(worker_id)s FROM %(chats)s WHERE %(chat_id)s = {0}""" % sql_consts_dict
+    return query.format(user_id)

@@ -1,18 +1,16 @@
 import asyncio
-import importlib
-import aiogram.utils.exceptions
 from typing import List, Any
 from aiogram import types
-from aiogram.utils.exceptions import MessageCantBeDeleted, MessageToDeleteNotFound
+from aiogram.utils.exceptions import MessageCantBeDeleted, MessageToDeleteNotFound, MessageIsTooLong, MessageTextIsEmpty,\
+    NetworkError, BadRequest
 from aiogram.types import InlineKeyboardButton, ReplyKeyboardRemove, ReplyKeyboardMarkup
 from contextlib import suppress
 
-from wh_app.telegram_bot.write_bot_access import write_access_dict
 from wh_app.postgresql.database import Database
 from wh_app.config_and_backup.config import telegram_delete_message_pause, path_to_project
 from wh_app.supporting import functions
-from wh_app.sql_operations.select_operations import get_point_id_from_equip_id, get_point_name_from_id
-from wh_app.telegram_bot.read_bot_access import read_dict, read_id_dict
+from wh_app.sql_operations.select_operations import get_point_id_from_equip_id, get_point_name_from_id,\
+    is_telegram_user_reader, is_telegram_user_writer, get_worker_id_from_chats
 
 functions.info_string(__name__)
 
@@ -86,8 +84,16 @@ def get_user_id(message: types.Message) -> str:
 
 def get_malachite_id(telegram_id: str) -> str:
     """Return data from Write Access List Malachite Database"""
+    with Database() as base:
+        _, cursor = base
+        return get_worker_id_from_chats(cursor, telegram_id) if is_telegram_user_writer(cursor, telegram_id) else None
 
-    return write_access_dict[telegram_id] if telegram_id in write_access_dict else None
+
+def is_user_acs_read(user_id: int) -> bool:
+    """Return True if user awaliable access to read database"""
+    with Database() as base:
+        _, cursor = base
+        return is_telegram_user_reader(cursor, user_id)
 
 
 def standart_delete_message(msg: types.Message):

@@ -28,7 +28,7 @@ async def equip_info(message: types.Message):
         except:
             user_name = 'User ID {}'.format(user_id)
         try:
-            if user_name not in read_id_dict and user_id not in read_id_dict:
+            if not is_telegram_user_reader(cursor, user_id):
                 raise KeyError
             if equip_id == '0':
                 raise IndexError
@@ -50,7 +50,7 @@ async def equip_info(message: types.Message):
         except KeyError:
             msg_del = await message.answer(user_not_access_read(user_name))
             standart_delete_message(msg_del)
-        except aiogram.utils.exceptions.MessageIsTooLong:
+        except MessageIsTooLong:
             tmp = '\n'.join(msg)
             msg_dels = list()
             for i in range(0, len(tmp), MAX_CHAR_IN_MSG):

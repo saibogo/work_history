@@ -14,7 +14,7 @@ async def send_workers_message(message: types.Message):
         user_name = 'User ID {}'.format(user_id)
 
     try:
-        if user_name not in read_id_dict and user_id not in read_id_dict:
+        if not is_user_acs_read(user_id):
             raise KeyError
         with Database() as base:
             _, cursor = base
