@@ -4,6 +4,7 @@ from wh_app.sql_operations.select_operations import get_all_no_closed_orders, ge
 functions.info_string(__name__)
 
 
+@not_reader_decorator
 async def all_noclosed_orders(message: types.Message):
     """Return to telegram-bot all no-closed orders"""
     with Database() as base:
@@ -23,12 +24,13 @@ async def all_noclosed_orders(message: types.Message):
                 standart_delete_message(msg_dels[-1])
 
 
+@not_reader_decorator
 async def order_from_id(message: types.Message):
     """Return to telegram-bot order with ID = order_id"""
     with Database() as base:
         _, cursor = base
-        order_id  = message.text.split()[1]
         try:
+            order_id  = message.text.split()[1]
             order = get_order_from_id(cursor, order_id)
             msg = order_message(order)
             msg_del = await message.answer(msg)

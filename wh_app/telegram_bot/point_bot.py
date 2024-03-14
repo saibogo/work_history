@@ -47,20 +47,14 @@ async def send_statistic(message: types.Message):
         standart_delete_message(msg_del)
 
 
+@not_reader_decorator
 async def point_info(message: types.Message):
     """Return to telegram-bot information from point with current point_id"""
     with Database() as base:
         _, cursor = base
-        point_id = message.text.split()[1]
         found_error_data = False
         try:
-            user_id = message.from_id
-            user_name = message.from_user
-        except:
-            user_name = 'User ID {}'.format(user_id)
-        try:
-            if not is_telegram_user_reader(cursor, user_id):
-                raise KeyError
+            point_id = message.text.split()[1]
             if point_id == '0':
                 raise IndexError
             point = get_point(cursor, point_id)[0]
@@ -72,9 +66,6 @@ async def point_info(message: types.Message):
                 msg += equip_message(equip)
         except IndexError:
             msg = ['Предприятие с ID = {} не найдено'.format(point_id)]
-            found_error_data = True
-        except KeyError:
-            msg = [user_not_access_read(user_name)]
             found_error_data = True
         if not found_error_data:
             kb = [
@@ -97,19 +88,13 @@ async def point_info(message: types.Message):
             standart_delete_message(msg_del1)
 
 
+@not_reader_decorator
 async def get_svu(message: types.Message):
     """Return to telegram-bot SVU-file from selected point"""
     with Database() as base:
         _, cursor = base
-        point_id = int(message.text.split()[1])
         try:
-            user_id = message.from_id
-            user_name = message.from_user
-        except:
-            user_name = 'User ID {}'.format(user_id)
-        try:
-            if not is_telegram_user_reader(cursor, user_id):
-                raise KeyError
+            point_id = int(message.text.split()[1])
             if point_id > int(get_maximal_points_id(cursor)) or point_id < 1:
                 raise IndexError
             try:
@@ -124,25 +109,15 @@ async def get_svu(message: types.Message):
             msg = ['Предприятие с ID = {} не найдено\n Перечень предприятий /points'.format(point_id)]
             msg_del = await message.answer('\n'.join(msg), reply_markup=ReplyKeyboardRemove())
             standart_delete_message(msg_del)
-        except KeyError:
-            msg = [user_not_access_read(user_name)]
-            msg_del = await message.answer('\n'.join(msg), reply_markup=ReplyKeyboardRemove())
-            standart_delete_message(msg_del)
 
 
+@not_reader_decorator
 async def get_tech_info(message: types.Message):
     """Return technical information from workpoint"""
     with Database() as base:
         _, cursor = base
-        point_id = int(message.text.split()[1])
         try:
-            user_id = message.from_id
-            user_name = message.from_user
-        except:
-            user_name = 'User ID {}'.format(user_id)
-        try:
-            if not is_telegram_user_reader(cursor, user_id):
-                raise KeyError
+            point_id = int(message.text.split()[1])
             if point_id > int(get_maximal_points_id(cursor)) or point_id < 1:
                 raise IndexError
             msg = list()
@@ -159,9 +134,5 @@ async def get_tech_info(message: types.Message):
             standart_delete_message(msg_del)
         except IndexError:
             msg = ['Предприятие с ID = {} не найдено\n Перечень предприятий /points'.format(point_id)]
-            msg_del = await message.answer('\n'.join(msg), reply_markup=ReplyKeyboardRemove())
-            standart_delete_message(msg_del)
-        except KeyError:
-            msg = [user_not_access_read(user_name)]
             msg_del = await message.answer('\n'.join(msg), reply_markup=ReplyKeyboardRemove())
             standart_delete_message(msg_del)

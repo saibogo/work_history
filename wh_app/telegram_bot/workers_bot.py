@@ -5,25 +5,14 @@ from wh_app.sql_operations.select_operations import get_all_workers_real
 functions.info_string(__name__)
 
 
+@not_reader_decorator
 async def send_workers_message(message: types.Message):
     """Create message all workers, when status not fired"""
-    try:
-        user_id = message.from_id
-        user_name = message.from_user
-    except:
-        user_name = 'User ID {}'.format(user_id)
-
-    try:
-        if not is_user_acs_read(user_id):
-            raise KeyError
-        with Database() as base:
-            _, cursor = base
-            workers = get_all_workers_real(cursor)
-            workers_str = '\n'.join([worker_message(worker) for worker in workers])
-            msg_del = await message.answer(workers_str)
-            standart_delete_message(msg_del)
-    except KeyError:
-        msg_del = await message.answer(user_not_access_read(user_name))
+    with Database() as base:
+        _, cursor = base
+        workers = get_all_workers_real(cursor)
+        workers_str = '\n'.join([worker_message(worker) for worker in workers])
+        msg_del = await message.answer(workers_str)
         standart_delete_message(msg_del)
 
 

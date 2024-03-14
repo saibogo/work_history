@@ -6,6 +6,7 @@ from wh_app.sql_operations.update_operations import invert_bug_status_in_bugzill
 functions.info_string(__name__)
 
 
+@not_reader_decorator
 async def all_bugs(message: types.Message):
     """Return to telegram-bot all bugs"""
     with Database() as base:
@@ -44,18 +45,20 @@ def bug_message(bug: List[Any]) -> str:
     return ''.join(msg)
 
 
+@not_writer_decorator
 async def start_create_new_bug(message: types.Message):
     """Start registration new bug"""
     with Database() as base:
         _, cursor = base
         msg_del = await message.answer('Начинаем регистрацию работ новой проблемы\n'
-                                       'Используйте функцию ОТВЕТ на сообщение ниже и проблема будет записана',
-                                       reply_markup=ReplyKeyboardRemove())
+                                    'Используйте функцию ОТВЕТ на сообщение ниже и проблема будет записана',
+                                    reply_markup=ReplyKeyboardRemove())
         standart_delete_message(msg_del)
         msg_del1 = await message.answer('/new_bug\nОписание проблемы')
         standart_delete_message(msg_del1)
 
 
+@not_writer_decorator
 async def new_bug_repler(message: types.Message):
     """Handler to reply message /new_bug"""
     user_id = get_user_id(message)
@@ -72,13 +75,13 @@ async def new_bug_repler(message: types.Message):
             standart_delete_message(msg_del)
 
 
+@not_reader_decorator
 async def bug_from_bug_id(message: types.Message):
     """Create message with bug = bug_id"""
     with Database() as base:
         _, cursor = base
-        bug_id = message.text.split()[1]
         try:
-            print(get_bug_by_id(cursor, bug_id))
+            bug_id = message.text.split()[1]
             msg = bug_message(get_bug_by_id(cursor, bug_id))
             msg_del = await message.answer(msg, reply_markup=ReplyKeyboardRemove())
             standart_delete_message(msg_del)
@@ -94,33 +97,28 @@ async def bug_from_bug_id(message: types.Message):
             standart_delete_message(msg_del)
 
 
+@not_writer_decorator
 async def invert_bug_status_from_bot(message: types.Message):
     """ON-OFF bug status in database"""
-    user_id = get_user_id(message)
-    worker_id = get_malachite_id(user_id)
-    if worker_id is None:
-        msg_del = await message.answer(write_not_access)
-        standart_delete_message(msg_del)
-    else:
-        with Database() as base:
-            connection, cursor = base
-            bug_id = message.text.split('ID=')[1]
-            try:
-                invert_bug_status_in_bugzilla(cursor, bug_id)
-                connection.commit()
-                msg_del = await message.answer('Статус проблемы изменен!')
-                standart_delete_message(msg_del)
-                msg = bug_message(get_bug_by_id(cursor, bug_id))
-                msg_del1 = await message.answer(msg, reply_markup=ReplyKeyboardRemove())
-                standart_delete_message(msg_del1)
-                kb = [
-                    [InlineKeyboardButton(text='Изменить статус ID={}'.format(bug_id)),
-                     InlineKeyboardButton(text='Отмена')]
-                ]
-                msg_del2 = await message.answer('Изменить статус проблемы?', reply_markup=standart_keyboard(kb))
-                standart_delete_message(msg_del2)
-            except IndexError:
-                msg = "Проблема с таким номером отсутствует в базе данных!"
-                msg_del = await message.answer(msg)
-                standart_delete_message(msg_del)
+    with Database() as base:
+        connection, cursor = base
+        bug_id = message.text.split('ID=')[1]
+        try:
+            invert_bug_status_in_bugzilla(cursor, bug_id)
+            connection.commit()
+            msg_del = await message.answer('Статус проблемы изменен!')
+            standart_delete_message(msg_del)
+            msg = bug_message(get_bug_by_id(cursor, bug_id))
+            msg_del1 = await message.answer(msg, reply_markup=ReplyKeyboardRemove())
+            standart_delete_message(msg_del1)
+            kb = [
+                [InlineKeyboardButton(text='Изменить статус ID={}'.format(bug_id)),
+                    InlineKeyboardButton(text='Отмена')]
+            ]
+            msg_del2 = await message.answer('Изменить статус проблемы?', reply_markup=standart_keyboard(kb))
+            standart_delete_message(msg_del2)
+        except IndexError:
+            msg = "Проблема с таким номером отсутствует в базе данных!"
+            msg_del = await message.answer(msg)
+            standart_delete_message(msg_del)
 

@@ -11,22 +11,25 @@ from wh_app.telegram_bot.work_bot import work_message
 functions.info_string(__name__)
 
 
+@not_reader_decorator
 async def main_find_menu(message: types.Message):
     """Create select-menu to new FIND"""
+
     msg_del = await message.answer('Переходим к поиску', reply_markup=ReplyKeyboardRemove())
     standart_delete_message(msg_del)
     kb = [
         [InlineKeyboardButton(text='Предприятие'),
-         InlineKeyboardButton(text='Оборудование'),
-         InlineKeyboardButton(text='Работы'),
-         InlineKeyboardButton(text='Исполнители'),
-         InlineKeyboardButton(text='Отмена')]
+        InlineKeyboardButton(text='Оборудование'),
+        InlineKeyboardButton(text='Работы'),
+        InlineKeyboardButton(text='Исполнители'),
+        InlineKeyboardButton(text='Отмена')]
     ]
     msg_del1 = await message.answer('В каком разделе осуществить поиск?',
-                                    reply_markup=standart_keyboard(kb))
+                                reply_markup=standart_keyboard(kb))
     standart_delete_message(msg_del1)
 
 
+@not_reader_decorator
 async def find_menu(message: types.Message, target: str):
     """Create find-message with point. Target in ['point', 'equip', 'work', 'performer']"""
     msg_del = await message.answer('Используйте функцию ответ на сообщение ниже и введите шаблон для поиска',
@@ -45,18 +48,12 @@ async def find_menu(message: types.Message, target: str):
     standart_delete_message(msg_del1)
 
 
+@not_reader_decorator
 async def find_repler(message: types.Message, target: str):
     """Reply to /find_point ... command. Target in ['point', 'equip', 'work', 'performer']"""
     pattern = message.text
     msgs = list()
     try:
-        user_id = message.from_id
-        user_name = message.from_user
-    except:
-        user_name = 'User ID {}'.format(user_id)
-    try:
-        if not is_user_acs_read(user_id):
-            raise KeyError
         with Database() as base:
             _, cursor = base
             if target == 'point':
@@ -76,10 +73,6 @@ async def find_repler(message: types.Message, target: str):
                 pass
             msg_del = await message.answer('\n'.join(msgs),reply_markup=ReplyKeyboardRemove())
             standart_delete_message(msg_del)
-
-    except KeyError:
-        msg_del = await message.answer(user_not_access_read(user_name))
-        standart_delete_message(msg_del)
 
     except (MessageIsTooLong, BadRequest) as e:
         msg_dels = list()
@@ -103,18 +96,11 @@ async def find_repler(message: types.Message, target: str):
         standart_delete_message(msg_del)
 
 
+@not_reader_decorator
 async def last_day_message(message: types.Message):
     """Create message, contain all works in last day"""
 
     try:
-        user_id = message.from_id
-        user_name = message.from_user
-    except:
-        user_name = 'User ID {}'.format(user_id)
-
-    try:
-        if not is_user_acs_read(user_id):
-            raise KeyError
         with Database() as base:
             _, cursor = base
             current_datetime = datetime.datetime.now()
@@ -127,9 +113,6 @@ async def last_day_message(message: types.Message):
             msg_del = await message.answer('\n'.join(msgs), reply_markup=ReplyKeyboardRemove())
             standart_delete_message(msg_del)
 
-    except KeyError:
-        msg_del = await message.answer(user_not_access_read(user_name))
-        standart_delete_message(msg_del)
     except MessageTextIsEmpty or IndexError:
         msg_del = await message.answer('Ничего не найдено!', reply_markup=ReplyKeyboardRemove())
         standart_delete_message(msg_del)

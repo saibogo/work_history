@@ -11,25 +11,19 @@ create_equips_list = []
 error_in_create_field = 'Сбой при записи нового оборудования!'
 
 
+@not_reader_decorator
 async def equip_info(message: types.Message):
     """Return to telegram-bot information from equip with current equip_id"""
     with Database() as base:
         _, cursor = base
-        full_command = message.text.split()
-        equip_id = full_command[1]
-        only_last_works = True if len(full_command) < 3 else False
-        kb = [
-            [InlineKeyboardButton(text='Регистрация (ID={})'.format(equip_id)),
-             InlineKeyboardButton(text='Отмена')]
-        ]
         try:
-            user_id = message.from_id
-            user_name = message.from_user
-        except:
-            user_name = 'User ID {}'.format(user_id)
-        try:
-            if not is_telegram_user_reader(cursor, user_id):
-                raise KeyError
+            full_command = message.text.split()
+            equip_id = full_command[1]
+            only_last_works = True if len(full_command) < 3 else False
+            kb = [
+                [InlineKeyboardButton(text='Регистрация (ID={})'.format(equip_id)),
+                InlineKeyboardButton(text='Отмена')]
+            ]
             if equip_id == '0':
                 raise IndexError
             equip = [equip_id] + get_full_equip_information(cursor, equip_id)
@@ -47,9 +41,6 @@ async def equip_info(message: types.Message):
         except IndexError:
             msg_del = await message.answer('Оборудование с ID = {} не найдено'.format(equip_id))
             standart_delete_message(msg_del)
-        except KeyError:
-            msg_del = await message.answer(user_not_access_read(user_name))
-            standart_delete_message(msg_del)
         except MessageIsTooLong:
             tmp = '\n'.join(msg)
             msg_dels = list()
@@ -61,6 +52,7 @@ async def equip_info(message: types.Message):
                 standart_delete_message(msg_del)
 
 
+@not_writer_decorator
 async def start_add_new_equip(message: types.Message):
     with Database() as base:
         _, cursor = base
@@ -69,8 +61,8 @@ async def start_add_new_equip(message: types.Message):
         point_id = message.text[first_num + 1: last_num]
         point = get_point(cursor, point_id)
         msg = ['Начинаем регистрацию нового оборудования!', 'Предприятие:{}'.format(point[0][1]),
-               'Используйте функцию ОТВЕТ на 4 сообщения ниже.',
-               'Нажмите кнопку ЗАПИСАТЬ и оборудование будет внесено в базу данных']
+                'Используйте функцию ОТВЕТ на 4 сообщения ниже.',
+                'Нажмите кнопку ЗАПИСАТЬ и оборудование будет внесено в базу данных']
         msg_del = await message.answer('\n'.join(msg), reply_markup=ReplyKeyboardRemove())
         standart_delete_message(msg_del)
         create_equips_list.append(CreateEquipObject(point_id, str(message.from_id)))
@@ -85,64 +77,54 @@ async def start_add_new_equip(message: types.Message):
         standart_delete_message(msg_del2)
         msg_del3 = await message.\
             answer('/equip_serial point_ID={}\nСерийный номер(Если есть. Иначе не отвечайте на это сообщение)'.
-                   format(point_id))
+                format(point_id))
         standart_delete_message(msg_del3)
         msg_del4 = await message.\
             answer('/equip_pre_id point_ID={}\nПредыдущий ID(Если есть. Иначе не отвечайте на это сообщение)'.
-                   format(point_id))
+                format(point_id))
         standart_delete_message(msg_del4)
 
 
+@not_writer_decorator
 async def equip_repler(message: types.Message, category: str):
     """Save new field in CreateEquipObject"""
-    user_id = get_user_id(message)
-    worker_id = get_malachite_id(user_id)
-    if worker_id is None:
-        msg_del = await message.answer(write_not_access)
-        standart_delete_message(msg_del)
+    start_message = message.reply_to_message.text
+    point_id = start_message.split('=')[1].split()[0]
+    create_object = find_in_object_list(point_id, str(message.from_id))
+    if category == 'name' and create_object:
+        create_object.create_name(message.text)
+    elif category == 'model' and create_object:
+        create_object.create_model(message.text)
+    elif category == 'serial' and create_object:
+        create_object.create_serial(message.text)
+    elif category == 'pre_id' and create_object:
+        create_object.create_pre_id(message.text)
     else:
-        start_message = message.reply_to_message.text
-        point_id = start_message.split('=')[1].split()[0]
-        create_object = find_in_object_list(point_id, str(message.from_id))
-        if category == 'name' and create_object:
-            create_object.create_name(message.text)
-        elif category == 'model' and create_object:
-            create_object.create_model(message.text)
-        elif category == 'serial' and create_object:
-            create_object.create_serial(message.text)
-        elif category == 'pre_id' and create_object:
-            create_object.create_pre_id(message.text)
-        else:
-            msg_del = await message.answer(error_in_create_field)
-            standart_delete_message(msg_del)
+        msg_del = await message.answer(error_in_create_field)
+        standart_delete_message(msg_del)
 
 
+@not_writer_decorator
 async def save_new_equip(message: types.Message):
     """Examine and save new equip in database"""
-    user_id = get_user_id(message)
-    worker_id = get_malachite_id(user_id)
-    if worker_id is None:
-        msg_del = await message.answer(write_not_access)
-        standart_delete_message(msg_del)
-    else:
-        point_id = message.text.split('=')[1]
-        create_object = find_in_object_list(point_id, str(message.from_id))
-        if create_object:
-            if create_object.is_complete_data():
-                create_object.write_in_database()
-                remove_from_object_list(point_id, str(message.from_id))
-                msg_del = await message.answer('Произведена запись оборудования!', reply_markup=ReplyKeyboardRemove())
-                with Database() as base:
-                    _, cursor = base
-                    equip_id = get_last_equip_id(cursor)
-                    equip = [equip_id] + get_full_equip_information(cursor, equip_id)
-                    msg_del1 = await message.answer('\n'.join(equip_message(equip, True)))
-                    standart_delete_message(msg_del1)
-            else:
-                msg_del = await message.answer('Введенных данных недостаточно!')
+    point_id = message.text.split('=')[1]
+    create_object = find_in_object_list(point_id, str(message.from_id))
+    if create_object:
+        if create_object.is_complete_data():
+            create_object.write_in_database()
+            remove_from_object_list(point_id, str(message.from_id))
+            msg_del = await message.answer('Произведена запись оборудования!', reply_markup=ReplyKeyboardRemove())
+            with Database() as base:
+                _, cursor = base
+                equip_id = get_last_equip_id(cursor)
+                equip = [equip_id] + get_full_equip_information(cursor, equip_id)
+                msg_del1 = await message.answer('\n'.join(equip_message(equip, True)))
+                standart_delete_message(msg_del1)
         else:
-            msg_del = await message.answer(error_in_create_field)
-        standart_delete_message(msg_del)
+            msg_del = await message.answer('Введенных данных недостаточно!')
+    else:
+        msg_del = await message.answer(error_in_create_field)
+    standart_delete_message(msg_del)
 
 
 def find_in_object_list(point_id: str, user_id: str) -> CreateEquipObject:
