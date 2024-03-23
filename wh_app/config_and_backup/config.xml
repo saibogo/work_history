@@ -25,12 +25,6 @@
         <!-->Max length session in seconds<-->
         <max_session_time>21600</max_session_time>
     </web-interface>
-    <Qt>
-        <start_width_qt>500</start_width_qt>
-        <start_height_qt>220</start_height_qt>
-        <max_width_for_date>7</max_width_for_date>
-        <max_height_for_date>6</max_height_for_date>
-    </Qt>
     <telegram>
         <!-->Auto delete messages from telegram bot in seconds<-->
         <telegram_delete_message_pause>7200</telegram_delete_message_pause>

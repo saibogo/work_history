@@ -6,11 +6,6 @@ from wh_app.sql_operations import view_operation, sql_functions_operations
 from wh_app.sql_operations.select_operations import get_database_version as dbversion
 from wh_app.postgresql.database import Database
 from wh_app.supporting.cli import COMMANDS, COMMANDS_EXT
-from wh_app.supporting.auto_save_thread import AutoSaveThread
-from wh_app.supporting.auto_load_config import AutoLoadConfig
-from wh_app.simple_gui.QtGUI.support_functions import create_window
-from wh_app.simple_gui.QtGUI.start_window import start_window
-
 
 with Database() as base:
     CONNECTION, CURSOR = base
@@ -36,16 +31,5 @@ if len(sys.argv) > 1:
         print('Error command. Use --help for more information')
 
 else:
-    AUTO_SAVE_OBJ = AutoSaveThread.get_instance()
-    if not AutoSaveThread.get_status():
-        AUTO_SAVE_OBJ.start()
-    print("Autosave is work" if AutoSaveThread.get_status() else "Autosave not work")
-
-    AUTO_LOAD_OBJ = AutoLoadConfig.get_instance()
-    if not AutoLoadConfig.get_status():
-        AUTO_LOAD_OBJ.start()
-    print("Auto load config is work" if AutoLoadConfig.get_status() else "Auto Load Config not work")
-
-    app, window = create_window()
-    start_window(app, window)
+    print('Error command. Use --help for more information')
 

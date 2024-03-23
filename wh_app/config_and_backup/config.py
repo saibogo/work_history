@@ -35,11 +35,6 @@ max_pages_in_tr = lambda: int(globals()['max_pages_in_tr_var'])
 timeout_message = lambda: int(globals()['timeout_message_var'])
 max_session_time = lambda: int(globals()['max_session_time_var'])
 
-start_width_qt = lambda: int(globals()['start_width_qt_var'])
-start_height_qt = lambda: int(globals()['start_height_qt_var'])
-max_width_for_date = lambda: int(globals()['max_width_for_date_var'])
-max_height_for_date = lambda: int(globals()['max_height_for_date_var'])
-
 
 def telegram_delete_message_pause():
     return globals()['telegram_delete_message_pause_var']
@@ -85,12 +80,6 @@ def load_config():
         globals()['max_pages_in_tr_var'] = int(tree.find('web-interface/max_pages_in_tr').text)
         globals()['timeout_message_var'] = int(tree.find('web-interface/timeout_message').text)
         globals()['max_session_time_var'] = int(tree.find('web-interface/max_session_time').text)
-
-        # Qt section
-        globals()['start_width_qt_var'] = int(tree.find('Qt/start_width_qt').text)
-        globals()['start_height_qt_var'] = int(tree.find('Qt/start_height_qt').text)
-        globals()['max_width_for_date_var'] = int(tree.find('Qt/max_width_for_date').text)
-        globals()['max_height_for_date_var'] = int(tree.find('Qt/max_height_for_date').text)
 
         # Telegram section
         globals()['telegram_delete_message_pause_var'] = int(tree.find('telegram/telegram_delete_message_pause').text)
