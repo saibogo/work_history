@@ -28,7 +28,7 @@ app.secret_key = 'gleykh secret key'
 functions.info_string(__name__)
 
 THEME_NUMBER = 'theme_number'
-THEMES_MAXIMAL = 2
+THEMES_MAXIMAL = 3
 LOGIN_IS_CORRECT = 'access_is_allowed'
 TIME_LOGIN = 'time_login'
 SESSION_ROLE = 'role'

@@ -29,7 +29,6 @@ async def main_find_menu(message: types.Message):
     standart_delete_message(msg_del1)
 
 
-@not_reader_decorator
 async def find_menu(message: types.Message, target: str):
     """Create find-message with point. Target in ['point', 'equip', 'work', 'performer']"""
     msg_del = await message.answer('Используйте функцию ответ на сообщение ниже и введите шаблон для поиска',
@@ -48,7 +47,6 @@ async def find_menu(message: types.Message, target: str):
     standart_delete_message(msg_del1)
 
 
-@not_reader_decorator
 async def find_repler(message: types.Message, target: str):
     """Reply to /find_point ... command. Target in ['point', 'equip', 'work', 'performer']"""
     pattern = message.text

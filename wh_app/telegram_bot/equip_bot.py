@@ -85,7 +85,6 @@ async def start_add_new_equip(message: types.Message):
         standart_delete_message(msg_del4)
 
 
-@not_writer_decorator
 async def equip_repler(message: types.Message, category: str):
     """Save new field in CreateEquipObject"""
     start_message = message.reply_to_message.text

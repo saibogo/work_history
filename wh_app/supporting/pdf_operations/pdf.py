@@ -255,7 +255,7 @@ def no_closed_orders(page_num: int) -> FPDF:
         correct_orders = _correct_orders_table(orders)
         for i in range(len(orders)):
             correct_orders[i] = correct_orders[i][ : len(correct_orders[i]) - 1]
-        html = make_html_table(correct_orders, table_headers.orders_table[:len(table_headers.orders_table) - 1])
+        html = make_html_table(correct_orders, table_headers.orders_table_no_closed[:len(table_headers.orders_table)])
         pdf.write_html(html, table_line_separators=True)
         return pdf
 

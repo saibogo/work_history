@@ -117,7 +117,7 @@ def all_no_closed_orders_table(stylesheet_number: str) -> str:
             return all_no_closed_orders_table_page(1, stylesheet_number)
         correct_orders = _correct_orders_table(all_orders)
         table = uhtml.universal_table(table_headers.orders_table_name,
-                                      table_headers.orders_table,
+                                      table_headers.orders_table_no_closed,
                                       correct_orders)
         return web_template.result_page(table, pre_addr, str(stylesheet_number), True, 'no-closed-orders=0')
 
@@ -130,7 +130,7 @@ def all_no_closed_orders_table_page(page_num: int, stylesheet_number: str) -> st
         orders = select_operations.get_all_no_closed_orders_limit(cursor, page_num)
         correct_orders = _correct_orders_table(orders)
         table = uhtml.universal_table(table_headers.orders_table_name,
-                                      table_headers.orders_table,
+                                      table_headers.orders_table_no_closed,
                                       correct_orders)
         table_paging = uhtml.paging_table("/all-no-closed-orders/page",
                                           functions.
