@@ -8,7 +8,7 @@ div.navigation_elem {
     margin: 5px;
     border: 1px solid;
     -webkit-transform: skew(5deg);
-    background: url("/image/background2.jpg");
+    background: var(--background);
     font-style: italic;
 }
 
@@ -19,6 +19,7 @@ div.paging_elem a {
 
 div.paging_elem p {
     text-decoration: underline;
+    animation: example2 10s infinite;
 }
 
 
@@ -47,7 +48,7 @@ div.paging_elem p {
     flex: 2;
     border: solid;
     border-width: 0.5px;
-    border-color: OrangeRed;
+    border-color: var(--main-color);
     -webkit-transform: skewX(-3deg);
     font-style: italic;
     color: IndianRed;
@@ -61,22 +62,11 @@ div.paging_elem p {
     margin-bottom: 3px;
     border: solid;
     border-width: 0.5px;
-    border-color: OrangeRed;
+    border-color: var(--main-color);
     display: flex;
     -webkit-transform: skewX(-3deg);
     align-items: center;
     align-items: flex-start;
-}
-
-
-
-div.tr_div_login:nth-child(3n) {
-    }
-
-div.tr_div_login:nth-child(3n + 1) {
-}
-
-div.tr_div_login:nth-child(3n + 2) {
 }
 
 .tr_div_new_point {
@@ -93,9 +83,10 @@ div.tr_div_login:nth-child(3n + 2) {
 .tr_area {
     margin-left: 2px;
     margin-right: 2px;
-    background:#fff url("/image/background2.jpg") repeat-x;
+    background:#fff var(--background) repeat-x;
     -webkit-transform: skewX(-6deg);
-    border-color: DarkRed;
+    border-color: var(--second-color);
+    color: var(--main-color);
 }
 
 ::placeholder {
@@ -125,27 +116,28 @@ div.tr_div_login:nth-child(3n + 2) {
 .tr_select {
     margin-left: 2px;
     margin-right: 2px;
-    background:#fff url("/image/background2.jpg") repeat-x;
+    background:#fff var(--background) repeat-x;
     -webkit-transform: skewX(-6deg);
-    border-color: DarkRed;
-    color: DarkRed;
+    border-color: var(--second-color);
+    color: var(--second-color);
 }
 
 select option {
-  background-color: #e9e9e9; // Серый цвет "из 50 оттенков серого"
+  background-color: #e9e9e9;
 }
-
 
 .text_info {
     text-align: center;
-
 }
 
 .div_select {
     margin-left: 2px;
     margin-right: 2px;
-    border-top-left-radius: 12px;
-    border-color: DarkRed;
+    #border-top-left-radius: 12px;
+    background:#fff var(--background) repeat-x;
+    -webkit-transform: skewX(-6deg);
+    border-color: var(--second-color);
+    color: var(--main-color);
     width: 97%;
 }
 

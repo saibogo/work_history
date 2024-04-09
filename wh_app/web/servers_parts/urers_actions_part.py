@@ -83,6 +83,16 @@ def get_background_image(number: int) -> Response:
     return page
 
 
+@app.route('/image/background<number>.gif')
+def get_background_image_gif(number: int) -> Response:
+    """Return selected background from static folder"""
+    if is_integer(number):
+        page = send_from_directory(config.static_dir(), 'image/background{0}.gif'.format(number))
+    else:
+        page = ""
+    return page
+
+
 @app.route('/next-themes')
 def next_themes() -> str:
     """redirect to new themes methods"""

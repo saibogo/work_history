@@ -2,13 +2,23 @@ html {
    height:100%;
 }
 
+:root {
+    --main-color: PaleVioletRed;
+    --second-color: DarkOrange;
+    --background: url('/image/background2.gif');
+    background-size: cover;
+    height: 100vh;
+    padding:0;
+    margin:0;
+}
+
 body {
     display:flex;
    justify-content:center;
    height: 100%;
     background: Khaki;
-    color: OrangeRed;
-    background-image: url("/image/background2.jpg");
+    color: var(--main-color);
+    background-image: var(--background);
     background-size: 100%;
     }
 
@@ -17,6 +27,14 @@ body {
   30% { transform: scale(1.2); }
   60% { transform: rotate(5deg); }
   90% { transform: rotate(-10deg);}
+  100% {transform: rotate(5deg);}
+}
+
+@keyframes example2 {
+  0% { transform: scale(1); }
+  30% { transform: scale(1.25); }
+  60% { transform: rotate(-180deg); }
+  90% { transform: rotate(360deg);}
   100% {transform: rotate(5deg);}
 }
 
@@ -33,21 +51,20 @@ h2 {
 }
 
 a:link {
-    color: OrangeRed;
+    color: var(--main-color);
     text-decoration: none;
     }
 
 a:visited {
-    color: OrangeRed;
+    color: var(--main-color);
     text-decoration: none;
     }
 
 a:hover {
-    color: OrangeRed;
+    color: var(--main-color);
     text-decoration: none;
     -webkit-transform: rotate(5deg);
-    transition: color 1.5s ease-in,
-     background 1s ease-in;
+    transition: color 1.5s ease-in background 1s ease-in;
     }
 
 a:active {
@@ -64,26 +81,32 @@ ul {
 
 input[type=password]{
    width: 97%;
-   background:#fff url("/image/background2.jpg") repeat-x;
+   background:#fff var(--background) repeat-x;
     -webkit-transform: skewX(-6deg);
    margin-left: 2px;
    margin-right: 2px;
+   color: var(--main-color);
 }
 
 input[type=submit]{
    width: 100%;
-   background:#fff url("/image/background2.jpg") repeat-x;
+   background:#fff var(--background) repeat-x;
    -webkit-transform: skewX(-6deg);
-   color: DarkRed;
-   border-color: OrangeRed;
+   color: var(--second-color);
+   border-color: var(--main-color);
    margin-left: 2px;
    margin-right: 2px;
+}
+
+input[type=submit]:hover {
+    -webkit-transition: ease-out 0.8s;
+    box-shadow: inset 400px 0 0 0 var(--main-color);
 }
 
 input[type=number]{
    width: 97%;
    border-top-left-radius: 12px;
-   border-color: DarkRed;
+   border-color: var(--second-color);
    margin-left: 2px;
    margin-right: 2px;
 }
@@ -91,10 +114,10 @@ input[type=number]{
 input[type=datetime-local]{
    min-width: 40%;
    width: 97%;
-   background:#fff url("/image/background2.jpg") repeat-x;
+   background:#fff var(--background) repeat-x;
    -webkit-transform: skewX(-6deg);
-   border-color: OrangeRed;
-   color: DarkRed;
+   border-color: var(--main-color);
+   color: var(--second-color);
    margin-left: 2px;
    margin-right: 2px;
 }
@@ -102,17 +125,17 @@ input[type=datetime-local]{
 textarea {
     min-width: 40%;
    width: 97%;
-   background:#fff url("/image/background2.jpg") repeat-x;
+   background:#fff var(--background) repeat-x;
    -webkit-transform: skewX(-6deg);
-   border-color: OrangeRed;
-   color: DarkRed;
+   border-color: var(--main-color);
+   color: var(--second-color);
    margin-left: 2px;
    margin-right: 2px;
-   scrollbar-color: DarkRed OrangeRed;
+   scrollbar-color: var(--second-color) var(--main-color);
 }
 
 
 .tr_password {
     min-width: 25%;
-    border-color: OrangeRed;
+    border-color: var(--main-color);
 }
