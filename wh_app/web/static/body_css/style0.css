@@ -2,14 +2,19 @@ html {
    height:100%;
 }
 
+:root {
+    --main-color: MidnightBlue;
+    --color-2: DarkSlateGrey;
+    --background: url("/image/background0.jpg");
+}
 
 body {
     display:flex;
     justify-content:center;
     height: 100%;
     background: Khaki;
-    color: MidnightBlue;
-    background-image: url("/image/background0.jpg");
+    color: var(--main-color);
+    background-image: var(--background);
     background-size: 100%;
     }
 
@@ -18,12 +23,12 @@ h3 {
     }
 
 a:link {
-    color: DarkSlateGrey;
+    color: var(--color-2);
     text-decoration: none;
     }
 
 a:visited {
-    color: DarkSlateGrey;
+    color: var(--color-2);
     text-decoration: none;
     }
 
@@ -36,7 +41,7 @@ a:hover {
     }
 
 a:active {
-    color: DarkSlateGrey;
+    color: var(--color-2);
     text-decoration: none;
     font-size: large;
     }
@@ -47,12 +52,12 @@ ul {
     }
 
 li.faq_question {
-    color: MidnightBlue;
+    color: var(--main-color);
     font-style: normal;
 }
 
 li.faq_question > ul {
-    color: DarkSlateGray;
+    color: var(--color-2);
     font-style: italic;
 }
 
@@ -71,7 +76,7 @@ input[type=password]{
 input[type=submit]{
    width: 100%;
    border-top-left-radius: 12px;
-   border-color: MidnightBlue;
+   border-color: var(--main-color);
    margin-left: 2px;
    margin-right: 2px;
 }
@@ -79,7 +84,7 @@ input[type=submit]{
 input[type=number]{
    width: 97%;
    border-top-left-radius: 12px;
-   border-color: MidnightBlue;
+   border-color: var(--main-color);
    margin-left: 2px;
    margin-right: 2px;
 }
@@ -88,7 +93,7 @@ input[type=datetime-local]{
    min-width: 40%;
    width: 97%;
    border-top-left-radius: 12px;
-   border-color: MidnightBlue;
+   border-color: var(--main-color);
    margin-left: 2px;
    margin-right: 2px;
 }
@@ -101,7 +106,7 @@ textarea {
     min-width: 40%;
    width: 97%;
    border-top-left-radius: 12px;
-   border-color: MidnightBlue;
+   border-color: var(--main-color);
    margin-left: 2px;
    margin-right: 2px;
 }

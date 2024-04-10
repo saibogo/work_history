@@ -12,6 +12,15 @@ div.navigation_elem {
     font-style: italic;
 }
 
+div.navigation_elem:hover {
+    -webkit-transition: ease-out 2.5s;
+    box-shadow: inset 400px 0 0 0 var(--main-color);
+}
+
+div.navigation_elem:hover a {
+    color: var(--second-color);
+}
+
 div.paging_elem a {
     margin: 2px;
     font-style: italic;

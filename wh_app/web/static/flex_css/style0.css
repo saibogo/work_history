@@ -44,7 +44,7 @@ div.paging_elem p {
 .faq_answer {
     flex: 2;
     font-style: italic;
-    color: DarkSlateGray;
+    color: var(--color-2);
 }
 
 
@@ -61,7 +61,7 @@ div.paging_elem p {
 
 
 div.tr_div_login:nth-child(even) {
-    background-image: url("/image/background0.jpg");
+    background-image: var(--background);
     }
 
 .tr_div_new_point {
@@ -78,14 +78,14 @@ div.tr_div_login:nth-child(even) {
 
 .tr_password {
     min-width: 25%;
-    border-color: MidnightBlue;
+    border-color: var(--main-color);
 }
 
 .tr_area {
     margin-left: 2px;
     margin-right: 2px;
     border-top-left-radius: 12px;
-    border-color: MidnightBlue;
+    border-color: var(--main-color);
 }
 
 .tr_div_new_equip {
@@ -112,7 +112,7 @@ div.tr_div_login:nth-child(even) {
     margin-left: 2px;
     margin-right: 2px;
     border-top-left-radius: 12px;
-    border-color: MidnightBlue;
+    border-color: var(--main-color);
 }
 
 
@@ -126,6 +126,6 @@ div.tr_div_login:nth-child(even) {
     margin-left: 2px;
     margin-right: 2px;
     border-top-left-radius: 12px;
-    border-color: MidnightBlue;
+    border-color: var(--main-color);
     width: 97%;
 }
