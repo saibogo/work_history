@@ -2,12 +2,27 @@ html {
    height:100%;
 }
 
+:root {
+    --main-color: DarkRed;
+    --second-color: DarkKhaki;
+    --table-color-1: DarkSeaGreen;
+    --table-color-2: Aquamarine;
+    --table-color-3: LightSkyBlue;
+    --table-color-4: LightSlateGrey;
+    --table-color-5: PowderBlue;
+    --table-color-6: PaleGreen;
+    --table-color-7: DarkSeaGreen;
+    --table-color-8: DarkGrey;
+    --table-color-9: Silver;
+    --table-color-10: DimGray;
+}
+
 body {
     display:flex;
    justify-content:center;
    height: 100%;
     background: Khaki;
-    color: DarkRed;
+    color: var(--main-color);
     background-image: url("/image/background1.jpg");
     background-size: 100%;
     }
@@ -21,17 +36,17 @@ h2 {
 }
 
 a:link {
-    color: DarkRed;
+    color: var(--main-color);
     text-decoration: none;
     }
 
 a:visited {
-    color: DarkRed;
+    color: var(--main-color);
     text-decoration: none;
     }
 
 a:hover {
-    color: DarkRed;
+    color: var(--main-color);
     text-decoration: none;
     background: Olive;
     transition: color 1.5s ease-in,
@@ -59,7 +74,7 @@ input[type=password]{
 input[type=submit]{
    width: 100%;
    border-top-left-radius: 12px;
-   border-color: DarkRed;
+   border-color: var(--main-color);
    margin-left: 2px;
    margin-right: 2px;
 }
@@ -67,7 +82,7 @@ input[type=submit]{
 input[type=number]{
    width: 97%;
    border-top-left-radius: 12px;
-   border-color: DarkRed;
+   border-color: var(--main-color);
    margin-left: 2px;
    margin-right: 2px;
 }
@@ -76,7 +91,7 @@ input[type=datetime-local]{
    min-width: 40%;
    width: 97%;
    border-top-left-radius: 12px;
-   border-color: DarkRed;
+   border-color: var(--main-color);
    margin-left: 2px;
    margin-right: 2px;
 }
@@ -85,7 +100,7 @@ textarea {
     min-width: 40%;
    width: 97%;
    border-top-left-radius: 12px;
-   border-color: DarkRed;
+   border-color: var(--main-color);
    margin-left: 2px;
    margin-right: 2px;
 }
@@ -93,5 +108,5 @@ textarea {
 
 .tr_password {
     min-width: 25%;
-    border-color: DarkRed;
+    border-color: var(--main-color);
 }

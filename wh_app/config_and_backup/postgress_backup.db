@@ -1494,6 +1494,7 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 320	22	кофемашина Franke Flair	F 2M HD CE2	not number	320	t
 334	3	пароконвектомат MKN	not model	not number	334	t
 1482	41	тепловая завеса Ballu	BHC-9.000SR	05853	1095	f
+1548	37	система ХВС	not model	not number	1548	f
 356	26	витрина нейтральная для выпечки	not model	not number	356	f
 357	18	плитка напольная кухня	not model	not number	357	f
 358	18	плитка настенная кухня	not model	not number	358	f
@@ -1684,6 +1685,7 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 517	2	овощечистка FAMA	FP 103	not number	517	f
 552	4	овощечистка SIRMAN	PPJ10 SC CE	not number	552	f
 532	31	кипятильник (б/у Мак Пик)	not model	not number	532	t
+1549	44	Дверь в туалет	not model	not number	1549	f
 550	4	посудомоечная машина COMENDA	LC 700M	113078	550	f
 521	31	печь конвекционная MIWE(печь+под+расстойка)	EC 4 0604	9812328	521	t
 557	6	мойка фарфоровой посуды двухсекционная	not model	not number	557	f
@@ -1751,6 +1753,7 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 695	11	столы деревянные в ассортименте	not model	not number	695	f
 596	10	телевизор TCL	L43P8US	not number	596	t
 616	31	насос канализационный (мойка фарфора)	Grundfos Sololift-2 C3	not number	616	t
+1550	44	Туалет	not model	not number	1550	f
 615	5	пастоварка Tecnoinox	CP35E7	71910826	615	t
 627	10	вспомогательное санитарное оборудование	not model	not number	627	f
 628	5	вспомогательное санитарное оборудование	not model	not number	628	f
@@ -2697,6 +2700,8 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 1545	42	магистральная фильтровальная установка	not model	not number	1545	f
 1546	2	система вентиляции кремовый цех	not model	not number	1546	f
 1547	2	система кондиционирования горячий цех	not model	not number	1547	f
+1551	44	Рукомойник возле мойки для фарфора	not model	not number	1551	f
+1552	44	Витрина угловая	not model	not number	1552	f
 \.
 
 
@@ -9603,6 +9608,15 @@ COPY public.performers (id, work_id, worker_id) FROM stdin;
 6880	6306	1
 6881	6307	1
 6882	6308	1
+6883	6309	8
+6884	6310	1
+6885	6311	1
+6886	6308	9
+6887	6312	1
+6888	6313	9
+6889	6314	9
+6890	6315	9
+6891	6316	9
 \.
 
 
@@ -15977,6 +15991,14 @@ COPY public.works (id, id_obor, date, problem, result) FROM stdin;
 6306	74	2024-04-09 10:23:00	сломана душевая лейка правого смесителя	заменена на универсальную HB06 (строительный двор)
 6307	70	2024-04-09 12:07:55	Нет нагрева воды в танке	Укорочены и переобжаты провода питания Тэна танка
 6308	321	2024-04-09 14:43:46	Замена узла учёта ГВС	Заменён вентиль 1" вр-вр отходящий, заменён водомер Ду 25 декаст всем 90-25 номер 383100335 с начальными показаниями 0.20
+6309	123	2024-04-10 09:00:40	Не уходит вода за кофемашиной	Прочистил и промыл трубу 50 . Вода уходит
+6310	1548	2024-04-10 09:10:00	не держит ПП сбросной кран в помещении техслужбы	впаян кран 1/2" ВР-НР + ПП 20*1/2"
+6311	300	2024-04-10 12:00:00	повреждена дежа настольного планетарного миксера	выправлено
+6312	608	2024-04-10 15:02:00	не работает переключатель направления	Заменен на DeCraft 3 положения ON-OFF-ON с фиксацией(Электромир)
+6313	1549	2024-04-10 16:32:17	При закрывании двери полотно цепляет коробку	Ослабли саморезы крепления петель. Затянул саморезы крепления и провел регулеровку петель
+6314	1550	2024-04-10 16:38:19	Засор в унитаза	Прочистил. Состав туалетная бумага и гигиенические средства
+6315	1551	2024-04-10 16:40:56	Течет вода	Ослаб винт крепления выпуска к мойке, затянул
+6316	1552	2024-04-10 16:45:26	Нужно добавить светильники	Добавил 2 свеитльника LED JAZZWAY PLED T4i 300 6w 400K
 \.
 
 
@@ -16125,7 +16147,7 @@ SELECT pg_catalog.setval('public.orders_id_seq', 51, true);
 -- Name: performers_id_seq; Type: SEQUENCE SET; Schema: public; Owner: saibogo
 --
 
-SELECT pg_catalog.setval('public.performers_id_seq', 6882, true);
+SELECT pg_catalog.setval('public.performers_id_seq', 6891, true);
 
 
 --

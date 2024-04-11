@@ -59,218 +59,218 @@ div.bottom_navigation {
 
 /* sel color from 2-columns table */
 div.grid_table_2 > div.grid_table_elem:nth-child(2n) {
-    background-color: DarkSeaGreen;
+    background-color: var(--table-color-1);
 }
 
 div.grid_table_2 > div.grid_table_elem:nth-child(2n + 1) {
-    background-color: Aquamarine;
+    background-color: var(--table-color-2);
 }
 
 /* set color from 4-columns table */
 
 div.grid_table_4 > div.grid_table_elem:nth-child(4n + 1) {
-    background-color: DarkSeaGreen;
+    background-color: var(--table-color-1);
 }
 
 div.grid_table_4 > div.grid_table_elem:nth-child(4n + 2) {
-    background-color: Aquamarine;
+    background-color: var(--table-color-2);
 }
 
 div.grid_table_4 > div.grid_table_elem:nth-child(4n + 3) {
-    background-color: LightSkyBlue;
+    background-color: var(--table-color-3);
 }
 
 div.grid_table_4 > div.grid_table_elem:nth-child(4n + 4) {
-    background-color: LightSlateGrey;
+    background-color: var(--table-color-4);
 }
 
 /* set color from 5-columns table */
 
 div.grid_table_5 > div.grid_table_elem:nth-child(5n + 1) {
-    background-color: DarkSeaGreen;
+    background-color: var(--table-color-1);
 }
 
 div.grid_table_5 > div.grid_table_elem:nth-child(5n + 2) {
-    background-color: Aquamarine;
+    background-color: var(--table-color-2);
 }
 
 div.grid_table_5 > div.grid_table_elem:nth-child(5n + 3) {
-    background-color: LightSkyBlue;
+    background-color: var(--table-color-3);
 }
 
 div.grid_table_5 > div.grid_table_elem:nth-child(5n + 4) {
-    background-color: LightSlateGrey;
+    background-color: var(--table-color-4);
 }
 
 div.grid_table_5 > div.grid_table_elem:nth-child(5n + 5) {
-    background-color: PowderBlue;
+    background-color: var(--table-color-5);
 }
 
 /* set color from 6-columns table */
 
 div.grid_table_6 > div.grid_table_elem:nth-child(6n + 1) {
-    background-color: DarkSeaGreen;
+    background-color: var(--table-color-1);
 }
 
 div.grid_table_6 > div.grid_table_elem:nth-child(6n + 2) {
-    background-color: Aquamarine;
+    background-color: var(--table-color-2);
 }
 
 div.grid_table_6 > div.grid_table_elem:nth-child(6n + 3) {
-    background-color: LightSkyBlue;
+    background-color: var(--table-color-3);
 }
 
 div.grid_table_6 > div.grid_table_elem:nth-child(6n + 4) {
-    background-color: LightSlateGrey;
+    background-color: var(--table-color-4);
 }
 
 div.grid_table_6 > div.grid_table_elem:nth-child(6n + 5) {
-    background-color: PowderBlue;
+    background-color: var(--table-color-5);
 }
 
 div.grid_table_6 > div.grid_table_elem:nth-child(6n + 6) {
-    background-color: DarkSeaGreen;
+    background-color: var(--table-color-1);
 }
 /* set color from 7-columns table */
 div.grid_table_7 > div.grid_table_elem:nth-child(7n + 1) {
-    background-color: DarkSeaGreen;
+    background-color: var(--table-color-1);
 }
 
 div.grid_table_7 > div.grid_table_elem:nth-child(7n + 2) {
-    background-color: Aquamarine;
+    background-color: var(--table-color-2);
 }
 
 div.grid_table_7 > div.grid_table_elem:nth-child(7n + 3) {
-    background-color: LightSkyBlue;
+    background-color: var(--table-color-3);
 }
 
 div.grid_table_7 > div.grid_table_elem:nth-child(7n + 4) {
-    background-color: LightSlateGrey;
+    background-color: var(--table-color-4);
 }
 
 div.grid_table_7 > div.grid_table_elem:nth-child(7n + 5) {
-    background-color: PowderBlue;
+    background-color: var(--table-color-5);
 }
 
 div.grid_table_7 > div.grid_table_elem:nth-child(7n + 6) {
-    background-color: DarkSeaGreen;
+    background-color: var(--table-color-1);
 }
 
 div.grid_table_7 > div.grid_table_elem:nth-child(7n + 7) {
-    background-color: PaleGreen;
+    background-color: var(--table-color-6);
 }
 /* set color from 8-columns table */
 
 div.grid_table_8 > div.grid_table_elem:nth-child(8n + 1) {
-    background-color: DarkSeaGreen;
+    background-color: var(--table-color-1);
 }
 
 div.grid_table_8 > div.grid_table_elem:nth-child(8n + 2) {
-    background-color: Aquamarine;
+    background-color: var(--table-color-2);
 }
 
 div.grid_table_8 > div.grid_table_elem:nth-child(8n + 3) {
-    background-color: LightSkyBlue;
+    background-color: var(--table-color-3);
 }
 
 div.grid_table_8 > div.grid_table_elem:nth-child(8n + 4) {
-    background-color: LightSlateGrey;
+    background-color: var(--table-color-4);
 }
 
 div.grid_table_8 > div.grid_table_elem:nth-child(8n + 5) {
-    background-color: PowderBlue;
+    background-color: var(--table-color-5);
 }
 
 div.grid_table_8 > div.grid_table_elem:nth-child(8n + 6) {
-    background-color: DarkSeaGreen;
+    background-color: var(--table-color-7);
 }
 
 div.grid_table_8 > div.grid_table_elem:nth-child(8n + 7) {
-    background-color: PaleGreen;
+    background-color: var(--table-color-6);
 }
 
 div.grid_table_8 > div.grid_table_elem:nth-child(8n + 8) {
-    background-color: DarkGrey;
+    background-color: var(--table-color-8);
 }
 
 /* set color from 9-columns table */
 
 div.grid_table_9 > div.grid_table_elem:nth-child(9n + 1) {
-    background-color: DarkSeaGreen;
+    background-color: var(--table-color-1);
 }
 
 div.grid_table_9 > div.grid_table_elem:nth-child(9n + 2) {
-    background-color: Aquamarine;
+    background-color: var(--table-color-2);
 }
 
 div.grid_table_9 > div.grid_table_elem:nth-child(9n + 3) {
-    background-color: LightSkyBlue;
+    background-color: var(--table-color-3);
 }
 
 div.grid_table_9 > div.grid_table_elem:nth-child(9n + 4) {
-    background-color: LightSlateGrey;
+    background-color: var(--table-color-4);
 }
 
 div.grid_table_9 > div.grid_table_elem:nth-child(9n + 5) {
-    background-color: PowderBlue;
+    background-color: var(--table-color-5);
 }
 
 div.grid_table_9 > div.grid_table_elem:nth-child(9n + 6) {
-    background-color: DarkSeaGreen;
+    background-color: var(--table-color-1);
 }
 
 div.grid_table_9 > div.grid_table_elem:nth-child(9n + 7) {
-    background-color: PaleGreen;
+    background-color: var(--table-color-6);
 }
 
 div.grid_table_9 > div.grid_table_elem:nth-child(9n + 8) {
-    background-color: DarkGrey;
+    background-color: var(--table-color-8);
 }
 
 div.grid_table_9 > div.grid_table_elem:nth-child(9n + 9) {
-    background-color: Silver;
+    background-color: var(--table-color-9);
 }
 
 /* set color from 10-columns table */
 
 div.grid_table_10 > div.grid_table_elem:nth-child(10n + 1) {
-    background-color: DarkSeaGreen;
+    background-color: var(--table-color-1);
 }
 
 div.grid_table_10 > div.grid_table_elem:nth-child(10n + 2) {
-    background-color: Aquamarine;
+    background-color: var(--table-color-2);
 }
 
 div.grid_table_10 > div.grid_table_elem:nth-child(10n + 3) {
-    background-color: LightSkyBlue;
+    background-color: var(--table-color-3);
 }
 
 div.grid_table_10 > div.grid_table_elem:nth-child(10n + 4) {
-    background-color: LightSlateGrey;
+    background-color: var(--table-color-4);
 }
 
 div.grid_table_10 > div.grid_table_elem:nth-child(10n + 5) {
-    background-color: PowderBlue;
+    background-color: var(--table-color-5);
 }
 
 div.grid_table_10 > div.grid_table_elem:nth-child(10n + 6) {
-    background-color: DarkSeaGreen;
+    background-color: var(--table-color-1);
 }
 
 div.grid_table_10 > div.grid_table_elem:nth-child(10n + 7) {
-    background-color: PaleGreen;
+    background-color: var(--table-color-6);
 }
 
 div.grid_table_10 > div.grid_table_elem:nth-child(10n + 8) {
-    background-color: DarkGrey;
+    background-color: var(--table-color-8);
 }
 
 div.grid_table_10 > div.grid_table_elem:nth-child(10n + 9) {
-    background-color: Silver;
+    background-color: var(--table-color-9);
 }
 
 div.grid_table_10 > div.grid_table_elem:nth-child(10n + 10) {
-    background-color: DimGray;
+    background-color: var(--table-color-10);
 }
 
 /* Section for element in table */
