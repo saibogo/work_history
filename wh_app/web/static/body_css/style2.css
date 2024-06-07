@@ -5,6 +5,7 @@ html {
 :root {
     --main-color: PaleVioletRed;
     --second-color: DarkOrange;
+    --h-color: MediumVioletRed;
     --background: url('/image/background2.gif');
     background-size: cover;
     height: 100vh;
@@ -41,13 +42,13 @@ body {
 h3 {
     text-align: center;
     animation: example 10s infinite;
-    color: MediumVioletRed;
+    color: var(--h-color);
     }
 
 h2 {
     text-align: center;
     animation: example 10s infinite;
-    color: MediumVioletRed;
+    color: var(--h-color);
 }
 
 a:link {
@@ -105,8 +106,11 @@ input[type=submit]:hover {
 
 input[type=number]{
    width: 97%;
-   border-top-left-radius: 12px;
-   border-color: var(--second-color);
+   background:#fff var(--background) repeat-x;
+    -webkit-transform: skewX(-6deg);
+   margin-left: 2px;
+   margin-right: 2px;
+   color: var(--main-color);
    margin-left: 2px;
    margin-right: 2px;
 }

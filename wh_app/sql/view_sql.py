@@ -51,13 +51,20 @@ def statistic_view() -> str:
     """Return SQL-string contain query to create or replace statictics view"""
 
     return """CREATE OR REPLACE VIEW %(statistic)s AS 
-    SELECT MAX(%(workspoints)s.%(point_id)s) AS %(point_id)s, %(workspoints)s.%(point_name)s AS %(name_point)s, 
-    COUNT(DISTINCT %(oborudovanie)s.%(id)s) AS %(equips_count)s, 
-    COUNT(%(works)s.%(id)s) AS %(works_count)s, MAX(%(works)s.%(date)s) AS %(last_date)s 
-    FROM %(workspoints)s JOIN %(oborudovanie)s ON %(oborudovanie)s.%(point_id)s = %(workspoints)s.%(point_id)s 
-    JOIN %(works)s 
-    ON %(works)s.%(id_obor)s = %(oborudovanie)s.%(id)s 
-    GROUP BY %(name_point)s ORDER BY %(name_point)s""" % sql_consts_dict
+    WITH tmp AS(
+    SELECT %(oborudovanie)s.%(id)s AS equip_id, COUNT(%(works)s.%(id)s) AS count_works,
+     MAX(%(works)s.%(date)s) AS last_date, %(oborudovanie)s.%(point_id)s AS point_id
+    FROM %(oborudovanie)s
+    LEFT JOIN %(works)s ON %(oborudovanie)s.%(id)s = %(works)s.%(id_obor)s
+    GROUP BY %(oborudovanie)s.%(id)s
+    ORDER BY equip_id
+    )
+
+    SELECT %(workspoints)s.%(point_id)s, %(point_name)s, COUNT(tmp.equip_id) AS all_equips, SUM(count_works), MAX(last_date)
+    FROM %(workspoints)s
+    JOIN tmp ON tmp.point_id = %(workspoints)s.%(point_id)s
+    GROUP BY %(workspoints)s.%(point_id)s
+    ORDER BY %(point_name)s """ % sql_consts_dict
 
 
 @log_decorator

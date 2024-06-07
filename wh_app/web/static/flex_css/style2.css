@@ -142,7 +142,6 @@ select option {
 .div_select {
     margin-left: 2px;
     margin-right: 2px;
-    #border-top-left-radius: 12px;
     background:#fff var(--background) repeat-x;
     -webkit-transform: skewX(-6deg);
     border-color: var(--second-color);
@@ -150,4 +149,7 @@ select option {
     width: 97%;
 }
 
+.div_select option {
+    background-color: Black;
+}
 
