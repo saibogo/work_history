@@ -63,7 +63,7 @@ equip_const = {"oborudovanie": "oborudovanie",
                }
 
 replace_consts = {"cast_open_close": "point_status_to_string(is_work)",
-                  "point_working": "is_work = true",
+                  "point_working": "is_work = 'in_work'::point_status OR is_work = 'reconstruction'::point_status",
                   "worker_is_work": "workers.status != 'fired'",
                   "select_main_binding": "SELECT sub_name FROM workers WHERE" +
                                          " workers.id = bindings.worker_id " +
@@ -81,7 +81,8 @@ point_consts = {"point_id": "point_id",
                 "is_work": "is_work",
                 "treaty": "treaty",
                 "resume": "resume",
-                "deleted": "deleted"
+                "deleted": "deleted",
+                "point_status": "point_status"
                 }
 
 order_conts = {"customer": "customer",

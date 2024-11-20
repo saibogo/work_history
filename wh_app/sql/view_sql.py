@@ -9,12 +9,14 @@ functions.info_string(__name__)
 def second_bindings_view() -> str:
     """Return SQL-string contain query to create or replace seconds bindings view"""
 
-    return """CREATE OR REPLACE VIEW %(seconds_bindings)s AS 
-    SELECT %(workspoints)s.%(point_name)s AS %(point)s, string_agg(%(workers)s.%(sub_name)s, ', ') AS %(alter_workers)s 
-    FROM %(workspoints)s 
-    JOIN %(bindings)s 
-    ON %(bindings)s.%(point_id)s = %(workspoints)s.%(point_id)s AND %(workspoints)s.%(point_working)s 
-    AND %(bindings)s.%(is_main)s = false JOIN %(workers)s ON %(workers)s.%(id)s = %(bindings)s.%(worker_id)s 
+    return """CREATE OR REPLACE VIEW %(seconds_bindings)s AS
+    SELECT %(workspoints)s.%(point_name)s AS %(point)s,
+    string_agg(%(workers)s.%(sub_name)s, ', '::text) AS %(alter_workers)s
+    FROM %(workspoints)s
+     JOIN %(bindings)s ON %(bindings)s.%(point_id)s = %(workspoints)s.%(point_id)s AND 
+     (%(workspoints)s.%(is_work)s = 'in_work'::%(point_status)s OR %(workspoints)s.%(is_work)s =
+      'reconstruction'::%(point_status)s) AND %(bindings)s.%(is_main)s = false
+     JOIN %(workers)s ON %(workers)s.%(id)s = %(bindings)s.%(worker_id)s
     GROUP BY %(workspoints)s.%(point_name)s""" % sql_consts_dict
 
 

@@ -27,6 +27,7 @@ div.paging_elem p {
     flex-direction: column;
     border: 1px solid;
     background: var(--second-color);
+    background-image: url("/image/background1.jpg");
     font-style: italic;
 }
 

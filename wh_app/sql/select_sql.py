@@ -11,10 +11,13 @@ def log_decorator(func: Callable) -> Callable:
     """This decorator insert new record in log-file for function"""
     def wrap(*args) -> str:
         tmp = func(*args)
-        with open(config.path_to_sql_log(), 'a') as log_file:
-            log_file.write("====\n")
-            log_file.write(str(datetime.now()) + '\n')
-            log_file.write(tmp + '\n')
+        try:
+            with open(config.path_to_sql_log(), 'a') as log_file:
+                log_file.write("====\n")
+                log_file.write(str(datetime.now()) + '\n')
+                log_file.write(tmp + '\n')
+        except OSError:
+            print("Невозможно записать данные в лог-файл!")
         return tmp
     return wrap
 
@@ -481,7 +484,8 @@ def sql_select_max_id_point() -> str:
 def sql_select_count_works_point() -> str:
     """Return the query string select maximal number in column point_id in table workspoints"""
 
-    return """SELECT COUNT(*) FROM %(workspoints)s WHERE %(is_work)s = True""" % sql_consts_dict
+    return """SELECT COUNT(*) FROM %(workspoints)s WHERE %(is_work)s = 'in_work'::%(point_status)s OR 
+            %(is_work)s = 'reconstruction'::%(point_status)s""" % sql_consts_dict
 
 
 @log_decorator

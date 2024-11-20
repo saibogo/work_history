@@ -66,13 +66,17 @@ def all_start() -> None:
 def status_server() -> bool:
     """Function return current status web-servers"""
     try:
-        _ = requests.get("http://" + config.ip_address() + ":" + config.port() + '/add-work')
+        full_adress = "https://" + config.ip_address() + ":" + config.port() + "/system-status"
+        headers = {
+            'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.72 Safari/537.36'}
+        _ = requests.get(full_adress, headers=headers, verify=False)
         for process in psutil.process_iter():
             data = process.as_dict(attrs=['cmdline', 'pid'])
             for elem in data['cmdline']:
                 if 'work_history' in elem:
                     return True
-    except requests.ConnectionError:
+    except requests.ConnectionError as e:
+        print(e)
         return False
     return True
 

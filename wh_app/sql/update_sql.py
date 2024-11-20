@@ -40,8 +40,13 @@ def sql_update_equip(equip_id: str, equip_name: str, equip_model: str,
 def sql_inverse_points_status(point_id: str) -> str:
     """Return the query string to invert is_work section"""
 
-    query = ("""UPDATE %(workspoints)s SET %(is_work)s = NOT %(is_work)s""" +
-             """ WHERE %(point_id)s = '{0}';""") % sql_consts_dict
+    #query = ("""UPDATE %(workspoints)s SET %(is_work)s = NOT %(is_work)s""" +
+    #         """ WHERE %(point_id)s = '{0}';""") % sql_consts_dict
+    query = ("""UPDATE %(workspoints)s SET %(is_work)s = CASE
+		WHEN %(is_work)s = 'in_work'::%(point_status)s THEN 'reconstruction'::%(point_status)s
+		WHEN %(is_work)s = 'reconstruction'::%(point_status)s THEN 'closed'::%(point_status)s
+		ELSE 'in_work'::%(point_status)s
+	    END WHERE %(point_id)s = '{0}'""") % sql_consts_dict
 
     return query.format(point_id)
 
