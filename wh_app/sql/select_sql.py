@@ -486,8 +486,8 @@ def sql_select_max_id_point() -> str:
 def sql_select_count_works_point() -> str:
     """Return the query string select maximal number in column point_id in table workspoints"""
 
-    return """SELECT COUNT(*) FROM %(workspoints)s WHERE %(is_work)s = 'in_work'::%(point_status)s OR 
-            %(is_work)s = 'reconstruction'::%(point_status)s""" % sql_consts_dict
+    return """SELECT COUNT(*) FROM %(workspoints)s WHERE (%(point_working)s) AND
+     %(point_id)s != %(not_find_in_point)s""" % sql_consts_dict
 
 
 @log_decorator

@@ -87,12 +87,26 @@ def new_theme_page(stylesheet_number: str) -> str:
     return web_template.result_page(selected_new_theme(), "/", str(stylesheet_number))
 
 
-def viev_changelog(stylesheet_number: str) -> str:
+def view_changelog(stylesheet_number: str) -> str:
     """Function create Changelog web-page"""
+    if len(CHANGELOG) > config.max_records_in_page():
+        return view_changelog_page(1, stylesheet_number)
     table = uhtml.universal_table(table_headers.changelog_table_name,
                                   table_headers.changelog_table,
                                   CHANGELOG)
     return web_template.result_page(table, '/', str(stylesheet_number))
+
+
+def view_changelog_page(page_num: int, stylesheet_number: str) -> str:
+    """Function create changelog web-page with paging"""
+    start = config.max_records_in_page() * (page_num - 1)
+    stop = start + config.max_records_in_page()
+    changelog_slice = CHANGELOG[start : stop]
+    table = uhtml.universal_table(table_headers.changelog_table_name,
+                                  table_headers.changelog_table,
+                                  changelog_slice)
+    table_paging = uhtml.paging_table('/changelog-page/page', functions.list_of_pages(CHANGELOG), int(page_num))
+    return web_template.result_page(table + table_paging, '/', stylesheet_number, False)
 
 
 def login_input_page() -> str:

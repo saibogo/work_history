@@ -3,7 +3,7 @@
 from fpdf import FPDF
 from wh_app.web.servers_parts.support_part import *
 from wh_app.web.any_section import main_web_menu, faq_page, statistics_page,\
-    system_status_page, viev_changelog
+    system_status_page, view_changelog, view_changelog_page
 from wh_app.supporting.pdf_operations.pdf import equips_in_point, works_from_equip,\
     works_from_performer, weekly_charts_pdf, move_equip, point_tech_information, find_work_without_date, find_equip,\
     find_point, find_work_with_date, works_from_performer_with_date, top10workers, top10points, top10equips,\
@@ -52,7 +52,13 @@ def system_status() -> Response:
 @app.route('/changelog-page')
 def changelog_page() -> Response:
     """Return ALL CHANGELOG page"""
-    return goto_or_redirect(lambda: viev_changelog(stylesheet_number()), functions.NO_ROLE)
+    return goto_or_redirect(lambda: view_changelog(stylesheet_number()), functions.NO_ROLE)
+
+
+@app.route('/changelog-page/page/<page_num>')
+def changelog_page_paging(page_num: int) -> Response:
+    """Return ALL CHANGELOG page"""
+    return goto_or_redirect(lambda: view_changelog_page(int(page_num), stylesheet_number()), functions.NO_ROLE)
 
 
 @app.route("/table-to-pdf/<data>")
