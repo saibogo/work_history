@@ -195,7 +195,9 @@ def add_performer_in_work(work: list) -> str:
     performers = []
     with Database() as base:
         _, cursor = base
-        performers = select_operations.get_table_current_workers(cursor)
+        all_performers = select_operations.get_table_current_workers(cursor)
+        current_performers = select_operations.get_list_performers_in_work(cursor, work[0][0])
+        performers = [elem for elem in all_performers if elem not in current_performers]
     table = [(i + 1, table_headers.works_table[i], re.sub(r"<a href.*a>", '', str(work[0][i])))
              for i in range(len(work[0]))]
 

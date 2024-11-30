@@ -9,6 +9,7 @@ path_to_telegram_token = lambda: str(globals()['path_to_telegram_token_var'])
 static_dir = lambda: str(globals()['static_dir_var'])
 template_folder = lambda: str(globals()['template_folder_var'])
 path_to_dump = lambda: str(globals()['path_to_dump_var'])
+path_to_structure_dump = lambda: str(globals()['path_to_structure_dump_var'])
 path_to_passwords = lambda: str(globals()['path_to_passwords_var'])
 path_to_messages = lambda: str(globals()['path_to_messages_var'])
 path_to_sql_log = lambda : str(globals()['path_to_sql_log_var'])
@@ -56,6 +57,8 @@ def load_config():
         globals()['static_dir_var'] = path_to_project() + 'wh_app/web/static/'
         globals()['template_folder_var'] = path_to_project() + 'wh_app/web/templates'
         globals()['path_to_dump_var'] = path_to_project() + 'wh_app/config_and_backup/postgress_backup.db'
+        globals()['path_to_structure_dump_var'] = path_to_project() + 'wh_app/config_and_backup/postgress_backup_empty.db'
+
         globals()['path_to_passwords_var'] = path_to_project() + 'wh_app/config_and_backup/.users_pass'
         globals()['path_to_messages_var'] = path_to_project() + 'wh_app/config_and_backup/.message_to_shutdown_server'
         globals()['path_to_sql_log_var'] = tree.find('pathes/path_to_sql_log').text

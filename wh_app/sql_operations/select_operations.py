@@ -188,6 +188,13 @@ def get_full_info_from_works_list(cursor, ls: list) -> list:
 
 
 @get_selected_decorator
+def get_list_performers_in_work(cursor, work_id: str) -> List[str]:
+    """Return list contain all performers in current work"""
+
+    return select_sql.sql_select_all_current_performers_in_work(work_id)
+
+
+@get_selected_decorator
 def get_all_equips_list_from_like_str(cursor, s: str) -> List[Tuple]:
     """Return all equips names contain s-string
     [elem1, elem2, ..., elem_n] while elem = (equip_ID, point_name, model, serial, pre_ID)"""

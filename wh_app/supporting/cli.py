@@ -21,6 +21,7 @@ def print_help() -> None:
     print('--statusserver : View status WebServer')
     print('--cleardb: Create dump database and delete ALL DATA in workhistory database')
     print('--createdump : Create statndart backup database')
+    print('--createscheme', 'Create empty database dump')
     print('--savedb path_to_file : Save current database in file path_to_file')
     print("--adduser: Create new user if not exist")
     print("--updatepassword username : Update password from user if username exist")
@@ -37,6 +38,7 @@ COMMANDS = {'--startserver': stop_start_web.start_server,
             '--cleardb': cleardb.drop_all_data,
             '--adduser': users_operation.create_new_user,
             '--createdump': backup_operations.create_dump,
+            '--createscheme' : backup_operations.create_empty,
             '--allstart': stop_start_web.all_start}
 
 COMMANDS_EXT = {'--savedb': bcp_oper.create_dump,

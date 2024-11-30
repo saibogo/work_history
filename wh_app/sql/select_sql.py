@@ -457,7 +457,9 @@ def sql_select_all_works_from_like_str_and_date_limit(pattern: str, date_start: 
 def sql_select_count_equip() -> str:
     """Return the query string select maximal number in column ID in table oborudovanie"""
 
-    return """SELECT COUNT(*) FROM %(oborudovanie)s WHERE %(deleted)s = False""" % sql_consts_dict
+    return """SELECT COUNT(*) FROM %(oborudovanie)s JOIN %(workspoints)s 
+    ON %(oborudovanie)s.%(point_id)s = %(workspoints)s.%(point_id)s AND %(workspoints)s.%(point_id)s != %(not_find_in_point)s
+    WHERE %(deleted)s = False AND (%(point_working)s)""" % sql_consts_dict
 
 
 @log_decorator
@@ -573,6 +575,18 @@ def sql_select_all_workers_in_work(work_id: str) -> str:
     """Return SQL-query return table with all workers"""
     query = """SELECT %(worker_id)s, %(sub_name)s FROM %(performers)s 
     JOIN %(workers)s ON %(worker_id)s = %(workers)s.%(id)s WHERE %(work_id)s = {0}""" % sql_consts_dict
+    return query.format(work_id)
+
+
+@log_decorator
+def sql_select_all_current_performers_in_work(work_id: str) -> str:
+    """Return SQL-query will return table with all workers in current work"""
+    query = """SELECT %(worker_id)s, %(sub_name)s, %(name)s, %(phone_number)s, worker_status_to_string(%(status)s),
+     %(post_name)s, %(emloyee_date)s FROM %(performers)s 
+     JOIN %(workers)s ON %(workers)s.%(id)s = %(performers)s.%(worker_id)s 
+     JOIN %(posts)s ON %(posts)s.%(id)s = %(workers)s.%(post_id)s
+     WHERE %(work_id)s = {0} AND %(worker_is_work)s""" % sql_consts_dict
+
     return query.format(work_id)
 
 
@@ -791,7 +805,7 @@ def sql_select_all_point_except_id(point_id: str) -> str:
     """Return all point except point_id == id"""
 
     query = ("""SELECT %(point_id)s, %(point_name)s FROM %(workspoints)s""" +
-             """ WHERE %(point_id)s != {0} and %(is_work)s = true;""") % sql_consts_dict
+             """ WHERE %(point_id)s != {0} and %(point_working)s;""") % sql_consts_dict
 
     return query.format(point_id)
 
@@ -928,7 +942,7 @@ def sql_select_top_points() -> str:
      %(works)s.%(date)s >= last_day_date() AND %(works)s.%(id_obor)s = %(oborudovanie)s.%(id)s) AS lastday
     FROM %(workspoints)s JOIN %(oborudovanie)s ON %(oborudovanie)s.%(point_id)s = %(workspoints)s.%(point_id)s 
     JOIN %(works)s ON %(works)s.%(id_obor)s = %(oborudovanie)s.%(id)s 
-    WHERE %(workspoints)s.%(is_work)s = true GROUP BY %(workspoints)s.%(point_id)s ORDER BY
+    WHERE %(workspoints)s.%(point_working)s GROUP BY %(workspoints)s.%(point_id)s ORDER BY
      all_works DESC LIMIT 10""") % sql_consts_dict
     return query
 

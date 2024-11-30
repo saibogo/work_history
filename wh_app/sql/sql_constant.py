@@ -62,6 +62,8 @@ equip_const = {"oborudovanie": "oborudovanie",
                "id_obor": "id_obor",
                }
 
+#point 41 it's list of decommissioned equipment
+
 replace_consts = {"cast_open_close": "point_status_to_string(is_work)",
                   "point_working": "is_work = 'in_work'::point_status OR is_work = 'reconstruction'::point_status",
                   "worker_is_work": "workers.status != 'fired'",
@@ -69,8 +71,10 @@ replace_consts = {"cast_open_close": "point_status_to_string(is_work)",
                                          " workers.id = bindings.worker_id " +
                                          "AND bindings.is_main = true",
                   "worker_status": 'worker_status_to_string(workers.status) AS "case"',
-                  "bug_in_work": "bug_status_to_string(status)"
+                  "bug_in_work": "bug_status_to_string(status)",
+                  "not_find_in_point": "41"
                   }
+
 
 point_consts = {"point_id": "point_id",
                 "point_name": "point_name",

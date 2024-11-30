@@ -1,6 +1,9 @@
 Need python3 modules:
 -fpdf2
 
+Attention! In current version database and programm point_id = 41 list of decommissioned equipment
+You can remove or change this expression in sql_constant.py
+
 Database structure:
 -Table workspoints - all point
 -Table oborudovanie - all equipments

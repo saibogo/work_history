@@ -10,7 +10,7 @@ def second_bindings_view() -> str:
     """Return SQL-string contain query to create or replace seconds bindings view"""
 
     return """CREATE OR REPLACE VIEW %(seconds_bindings)s AS
-    SELECT %(workspoints)s.%(point_name)s AS %(point)s,
+    SELECT DISTINCT %(workspoints)s.%(point_name)s AS %(point)s,
     string_agg(%(workers)s.%(sub_name)s, ', '::text) AS %(alter_workers)s
     FROM %(workspoints)s
      JOIN %(bindings)s ON %(bindings)s.%(point_id)s = %(workspoints)s.%(point_id)s AND 
@@ -25,7 +25,7 @@ def firsts_bindings_view() -> str:
     """Return SQL-string contain query to create or replace firsts bindings view"""
 
     return """CREATE OR REPLACE VIEW %(firsts_bindings)s AS 
-    SELECT %(workspoints)s.%(point_name)s, CASE WHEN %(wd)s.day1 = true 
+    SELECT DISTINCT %(workspoints)s.%(point_name)s, CASE WHEN %(wd)s.day1 = true 
     THEN (%(select_main_binding)s) 
     ELSE '--' END AS "monday", CASE WHEN %(wd)s.day2 = true 
     THEN (%(select_main_binding)s) 
@@ -65,6 +65,7 @@ def statistic_view() -> str:
     SELECT %(workspoints)s.%(point_id)s, %(point_name)s, COUNT(tmp.equip_id) AS all_equips, SUM(count_works), MAX(last_date)
     FROM %(workspoints)s
     JOIN tmp ON tmp.point_id = %(workspoints)s.%(point_id)s
+    WHERE %(workspoints)s.%(point_working)s
     GROUP BY %(workspoints)s.%(point_id)s
     ORDER BY %(point_name)s """ % sql_consts_dict
 

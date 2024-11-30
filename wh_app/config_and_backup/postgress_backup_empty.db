@@ -1,0 +1,1587 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 17.2 (Debian 17.2-1.pgdg120+1)
+-- Dumped by pg_dump version 17.2 (Debian 17.2-1.pgdg120+1)
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET transaction_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- Name: order_status; Type: TYPE; Schema: public; Owner: saibogo
+--
+
+CREATE TYPE public.order_status AS ENUM (
+    'in_work',
+    'closed',
+    'canceled'
+);
+
+
+ALTER TYPE public.order_status OWNER TO saibogo;
+
+--
+-- Name: point_status; Type: TYPE; Schema: public; Owner: postgres
+--
+
+CREATE TYPE public.point_status AS ENUM (
+    'in_work',
+    'closed',
+    'reconstruction'
+);
+
+
+ALTER TYPE public.point_status OWNER TO postgres;
+
+--
+-- Name: worker_status; Type: TYPE; Schema: public; Owner: saibogo
+--
+
+CREATE TYPE public.worker_status AS ENUM (
+    'works',
+    'fired',
+    'on_holyday',
+    'on_a_sick_leave'
+);
+
+
+ALTER TYPE public.worker_status OWNER TO saibogo;
+
+--
+-- Name: all_works_from_equip(integer); Type: FUNCTION; Schema: public; Owner: saibogo
+--
+
+CREATE FUNCTION public.all_works_from_equip(eid integer) RETURNS TABLE(id integer)
+    LANGUAGE sql
+    AS $$ 
+    SELECT id FROM works where id_obor = eid; 
+    $$;
+
+
+ALTER FUNCTION public.all_works_from_equip(eid integer) OWNER TO saibogo;
+
+--
+-- Name: bug_status_to_string(boolean); Type: FUNCTION; Schema: public; Owner: saibogo
+--
+
+CREATE FUNCTION public.bug_status_to_string(st boolean) RETURNS text
+    LANGUAGE plpgsql
+    AS $$ 
+    BEGIN 
+    IF st = true THEN RETURN 'В обработке'::text; 
+    ELSE RETURN 'Решено'::text; 
+    END IF; 
+    END; 
+    $$;
+
+
+ALTER FUNCTION public.bug_status_to_string(st boolean) OWNER TO saibogo;
+
+--
+-- Name: bug_status_to_string(public.order_status); Type: FUNCTION; Schema: public; Owner: saibogo
+--
+
+CREATE FUNCTION public.bug_status_to_string(st public.order_status) RETURNS text
+    LANGUAGE plpgsql
+    AS $$ 
+    BEGIN 
+    IF st = 'in_work' THEN RETURN 'В обработке'::text;
+    ELSIF st = 'canceled' THEN RETURN 'Отменена'::text; 
+    ELSE RETURN 'Решено'::text; 
+    END IF; 
+    END; 
+    $$;
+
+
+ALTER FUNCTION public.bug_status_to_string(st public.order_status) OWNER TO saibogo;
+
+--
+-- Name: last_day_date(); Type: FUNCTION; Schema: public; Owner: saibogo
+--
+
+CREATE FUNCTION public.last_day_date() RETURNS date
+    LANGUAGE plpgsql
+    AS $$ 
+    BEGIN 
+    RETURN NOW()::DATE - 1; END $$;
+
+
+ALTER FUNCTION public.last_day_date() OWNER TO saibogo;
+
+--
+-- Name: last_month_date(); Type: FUNCTION; Schema: public; Owner: saibogo
+--
+
+CREATE FUNCTION public.last_month_date() RETURNS date
+    LANGUAGE plpgsql
+    AS $$ 
+    BEGIN 
+    RETURN NOW()::DATE - 30; END $$;
+
+
+ALTER FUNCTION public.last_month_date() OWNER TO saibogo;
+
+--
+-- Name: last_week_date(); Type: FUNCTION; Schema: public; Owner: saibogo
+--
+
+CREATE FUNCTION public.last_week_date() RETURNS date
+    LANGUAGE plpgsql
+    AS $$ 
+    BEGIN 
+    RETURN NOW()::DATE - 7; END $$;
+
+
+ALTER FUNCTION public.last_week_date() OWNER TO saibogo;
+
+--
+-- Name: last_year_date(); Type: FUNCTION; Schema: public; Owner: saibogo
+--
+
+CREATE FUNCTION public.last_year_date() RETURNS date
+    LANGUAGE plpgsql
+    AS $$ 
+    BEGIN 
+    RETURN NOW()::DATE - 365; END $$;
+
+
+ALTER FUNCTION public.last_year_date() OWNER TO saibogo;
+
+--
+-- Name: point_status_to_string(boolean); Type: FUNCTION; Schema: public; Owner: saibogo
+--
+
+CREATE FUNCTION public.point_status_to_string(st boolean) RETURNS text
+    LANGUAGE plpgsql
+    AS $$ 
+    BEGIN 
+    IF st = true THEN RETURN 'Работает'::text; 
+    ELSE RETURN 'Не работает'::text; 
+    END IF; 
+    END; 
+    $$;
+
+
+ALTER FUNCTION public.point_status_to_string(st boolean) OWNER TO saibogo;
+
+--
+-- Name: point_status_to_string(public.point_status); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.point_status_to_string(st public.point_status) RETURNS text
+    LANGUAGE plpgsql
+    AS $$ 
+    BEGIN 
+    IF st = 'in_work'::point_status THEN RETURN 'Работает'::text;
+    ELSIF st = 'reconstruction'::point_status THEN RETURN 'На реконструкции'::text; 
+    ELSE RETURN 'Закрыто'::text; 
+    END IF; 
+    END; 
+    $$;
+
+
+ALTER FUNCTION public.point_status_to_string(st public.point_status) OWNER TO postgres;
+
+--
+-- Name: worker_status_to_string(public.worker_status); Type: FUNCTION; Schema: public; Owner: saibogo
+--
+
+CREATE FUNCTION public.worker_status_to_string(st public.worker_status) RETURNS text
+    LANGUAGE plpgsql
+    AS $$ 
+    BEGIN 
+    IF st = 'works'::worker_status THEN RETURN  'Работает'::text; 
+    ELSIF st = 'fired'::worker_status THEN RETURN 'Уволен'::text; 
+    ELSIF st = 'on_holyday'::worker_status THEN RETURN 'В отпуске'::text; 
+    ELSE RETURN 'На больничном'::text; 
+    END IF; 
+    END; 
+    $$;
+
+
+ALTER FUNCTION public.worker_status_to_string(st public.worker_status) OWNER TO saibogo;
+
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
+--
+-- Name: posts; Type: TABLE; Schema: public; Owner: saibogo
+--
+
+CREATE TABLE public.posts (
+    id integer NOT NULL,
+    post_name text NOT NULL
+);
+
+
+ALTER TABLE public.posts OWNER TO saibogo;
+
+--
+-- Name: workers; Type: TABLE; Schema: public; Owner: saibogo
+--
+
+CREATE TABLE public.workers (
+    id integer NOT NULL,
+    name text NOT NULL,
+    sub_name text NOT NULL,
+    phone_number text DEFAULT ''::text NOT NULL,
+    post_id integer,
+    status public.worker_status DEFAULT 'works'::public.worker_status NOT NULL,
+    emloyee_date date DEFAULT (now())::date NOT NULL,
+    dismissal_date date
+);
+
+
+ALTER TABLE public.workers OWNER TO saibogo;
+
+--
+-- Name: all_workers; Type: VIEW; Schema: public; Owner: saibogo
+--
+
+CREATE VIEW public.all_workers AS
+ SELECT workers.id,
+    workers.sub_name,
+    workers.name,
+    workers.phone_number,
+    public.worker_status_to_string(workers.status) AS "case",
+    posts.post_name,
+    workers.emloyee_date,
+    workers.dismissal_date
+   FROM (public.workers
+     JOIN public.posts ON ((posts.id = workers.post_id)))
+  ORDER BY workers.sub_name, workers.name;
+
+
+ALTER VIEW public.all_workers OWNER TO saibogo;
+
+--
+-- Name: bindings; Type: TABLE; Schema: public; Owner: saibogo
+--
+
+CREATE TABLE public.bindings (
+    id integer NOT NULL,
+    worker_id integer NOT NULL,
+    point_id integer NOT NULL,
+    is_main boolean DEFAULT true NOT NULL
+);
+
+
+ALTER TABLE public.bindings OWNER TO saibogo;
+
+--
+-- Name: bindings_id_seq; Type: SEQUENCE; Schema: public; Owner: saibogo
+--
+
+ALTER TABLE public.bindings ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public.bindings_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: bugzilla; Type: TABLE; Schema: public; Owner: saibogo
+--
+
+CREATE TABLE public.bugzilla (
+    id integer NOT NULL,
+    problem text NOT NULL,
+    status boolean DEFAULT true NOT NULL,
+    date_start timestamp without time zone DEFAULT now(),
+    date_close timestamp without time zone
+);
+
+
+ALTER TABLE public.bugzilla OWNER TO saibogo;
+
+--
+-- Name: bugzilla_id_seq; Type: SEQUENCE; Schema: public; Owner: saibogo
+--
+
+ALTER TABLE public.bugzilla ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.bugzilla_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: chats; Type: TABLE; Schema: public; Owner: saibogo
+--
+
+CREATE TABLE public.chats (
+    id integer NOT NULL,
+    worker_id integer,
+    chat_id bigint NOT NULL,
+    acs_read boolean DEFAULT true,
+    acs_write boolean DEFAULT false,
+    nickname text DEFAULT ''::text,
+    comment text
+);
+
+
+ALTER TABLE public.chats OWNER TO saibogo;
+
+--
+-- Name: chats_id_seq; Type: SEQUENCE; Schema: public; Owner: saibogo
+--
+
+ALTER TABLE public.chats ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.chats_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: cold_water; Type: TABLE; Schema: public; Owner: saibogo
+--
+
+CREATE TABLE public.cold_water (
+    id integer NOT NULL,
+    point_id integer,
+    treaty character varying(255),
+    resume character varying(1024)
+);
+
+
+ALTER TABLE public.cold_water OWNER TO saibogo;
+
+--
+-- Name: cold_water_id_seq; Type: SEQUENCE; Schema: public; Owner: saibogo
+--
+
+ALTER TABLE public.cold_water ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public.cold_water_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: customer; Type: TABLE; Schema: public; Owner: saibogo
+--
+
+CREATE TABLE public.customer (
+    id integer NOT NULL,
+    hash_pass text NOT NULL,
+    full_name text
+);
+
+
+ALTER TABLE public.customer OWNER TO saibogo;
+
+--
+-- Name: customer_id_seq; Type: SEQUENCE; Schema: public; Owner: saibogo
+--
+
+CREATE SEQUENCE public.customer_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.customer_id_seq OWNER TO saibogo;
+
+--
+-- Name: customer_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: saibogo
+--
+
+ALTER SEQUENCE public.customer_id_seq OWNED BY public.customer.id;
+
+
+--
+-- Name: electric; Type: TABLE; Schema: public; Owner: saibogo
+--
+
+CREATE TABLE public.electric (
+    id integer NOT NULL,
+    point_id integer,
+    treaty character varying(255),
+    resume character varying(1024)
+);
+
+
+ALTER TABLE public.electric OWNER TO saibogo;
+
+--
+-- Name: electic_id_seq; Type: SEQUENCE; Schema: public; Owner: saibogo
+--
+
+ALTER TABLE public.electric ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public.electic_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: works_days; Type: TABLE; Schema: public; Owner: saibogo
+--
+
+CREATE TABLE public.works_days (
+    worker_id integer,
+    day1 boolean DEFAULT true,
+    day2 boolean DEFAULT true,
+    day3 boolean DEFAULT true,
+    day4 boolean DEFAULT true,
+    day5 boolean DEFAULT true,
+    day6 boolean DEFAULT true,
+    day7 boolean DEFAULT true
+);
+
+
+ALTER TABLE public.works_days OWNER TO saibogo;
+
+--
+-- Name: workspoints; Type: TABLE; Schema: public; Owner: saibogo
+--
+
+CREATE TABLE public.workspoints (
+    point_id integer NOT NULL,
+    point_name text NOT NULL,
+    point_address text NOT NULL,
+    is_work public.point_status DEFAULT 'in_work'::public.point_status
+);
+
+
+ALTER TABLE public.workspoints OWNER TO saibogo;
+
+--
+-- Name: firsts_bindings; Type: VIEW; Schema: public; Owner: saibogo
+--
+
+CREATE VIEW public.firsts_bindings AS
+ SELECT DISTINCT workspoints.point_name,
+        CASE
+            WHEN (wd.day1 = true) THEN ( SELECT workers.sub_name
+               FROM public.workers
+              WHERE ((workers.id = bindings.worker_id) AND (bindings.is_main = true)))
+            ELSE '--'::text
+        END AS monday,
+        CASE
+            WHEN (wd.day2 = true) THEN ( SELECT workers.sub_name
+               FROM public.workers
+              WHERE ((workers.id = bindings.worker_id) AND (bindings.is_main = true)))
+            ELSE '--'::text
+        END AS thuesday,
+        CASE
+            WHEN (wd.day3 = true) THEN ( SELECT workers.sub_name
+               FROM public.workers
+              WHERE ((workers.id = bindings.worker_id) AND (bindings.is_main = true)))
+            ELSE '--'::text
+        END AS wednesday,
+        CASE
+            WHEN (wd.day4 = true) THEN ( SELECT workers.sub_name
+               FROM public.workers
+              WHERE ((workers.id = bindings.worker_id) AND (bindings.is_main = true)))
+            ELSE '--'::text
+        END AS thoursday,
+        CASE
+            WHEN (wd.day5 = true) THEN ( SELECT workers.sub_name
+               FROM public.workers
+              WHERE ((workers.id = bindings.worker_id) AND (bindings.is_main = true)))
+            ELSE '--'::text
+        END AS friday,
+        CASE
+            WHEN (wd.day6 = true) THEN ( SELECT workers.sub_name
+               FROM public.workers
+              WHERE ((workers.id = bindings.worker_id) AND (bindings.is_main = true)))
+            ELSE '--'::text
+        END AS saturday,
+        CASE
+            WHEN (wd.day7 = true) THEN ( SELECT workers.sub_name
+               FROM public.workers
+              WHERE ((workers.id = bindings.worker_id) AND (bindings.is_main = true)))
+            ELSE '--'::text
+        END AS sunday
+   FROM ((public.workspoints
+     JOIN public.bindings ON ((((bindings.point_id = workspoints.point_id) AND (workspoints.is_work = 'in_work'::public.point_status)) OR (workspoints.is_work = 'reconstruction'::public.point_status))))
+     JOIN public.works_days wd ON (((wd.worker_id = bindings.worker_id) AND (bindings.is_main = true))))
+  ORDER BY workspoints.point_name;
+
+
+ALTER VIEW public.firsts_bindings OWNER TO saibogo;
+
+--
+-- Name: heating; Type: TABLE; Schema: public; Owner: saibogo
+--
+
+CREATE TABLE public.heating (
+    id integer NOT NULL,
+    point_id integer,
+    treaty character varying(255),
+    resume character varying(1024)
+);
+
+
+ALTER TABLE public.heating OWNER TO saibogo;
+
+--
+-- Name: heating_id_seq; Type: SEQUENCE; Schema: public; Owner: saibogo
+--
+
+ALTER TABLE public.heating ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public.heating_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: hot_water; Type: TABLE; Schema: public; Owner: saibogo
+--
+
+CREATE TABLE public.hot_water (
+    id integer NOT NULL,
+    point_id integer,
+    treaty character varying(255),
+    resume character varying(1024)
+);
+
+
+ALTER TABLE public.hot_water OWNER TO saibogo;
+
+--
+-- Name: hot_water_id_seq; Type: SEQUENCE; Schema: public; Owner: saibogo
+--
+
+ALTER TABLE public.hot_water ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public.hot_water_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: oborudovanie; Type: TABLE; Schema: public; Owner: saibogo
+--
+
+CREATE TABLE public.oborudovanie (
+    id integer NOT NULL,
+    point_id integer NOT NULL,
+    name text NOT NULL,
+    model text NOT NULL,
+    serial_num text NOT NULL,
+    pre_id integer,
+    deleted boolean DEFAULT false
+);
+
+
+ALTER TABLE public.oborudovanie OWNER TO saibogo;
+
+--
+-- Name: oborudovanie_id_seq; Type: SEQUENCE; Schema: public; Owner: saibogo
+--
+
+ALTER TABLE public.oborudovanie ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.oborudovanie_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: orders; Type: TABLE; Schema: public; Owner: saibogo
+--
+
+CREATE TABLE public.orders (
+    id integer NOT NULL,
+    customer_id integer,
+    date timestamp without time zone,
+    status public.order_status NOT NULL,
+    problem text,
+    closed_date timestamp without time zone,
+    comment text,
+    point_id integer
+);
+
+
+ALTER TABLE public.orders OWNER TO saibogo;
+
+--
+-- Name: orders_id_seq; Type: SEQUENCE; Schema: public; Owner: saibogo
+--
+
+CREATE SEQUENCE public.orders_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.orders_id_seq OWNER TO saibogo;
+
+--
+-- Name: orders_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: saibogo
+--
+
+ALTER SEQUENCE public.orders_id_seq OWNED BY public.orders.id;
+
+
+--
+-- Name: performers; Type: TABLE; Schema: public; Owner: saibogo
+--
+
+CREATE TABLE public.performers (
+    id integer NOT NULL,
+    work_id integer,
+    worker_id integer
+);
+
+
+ALTER TABLE public.performers OWNER TO saibogo;
+
+--
+-- Name: performers_id_seq; Type: SEQUENCE; Schema: public; Owner: saibogo
+--
+
+ALTER TABLE public.performers ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public.performers_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: posts_id_seq; Type: SEQUENCE; Schema: public; Owner: saibogo
+--
+
+ALTER TABLE public.posts ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public.posts_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: seconds_bindings; Type: VIEW; Schema: public; Owner: saibogo
+--
+
+CREATE VIEW public.seconds_bindings AS
+ SELECT DISTINCT workspoints.point_name AS point,
+    string_agg(workers.sub_name, ', '::text) AS alter_workers
+   FROM ((public.workspoints
+     JOIN public.bindings ON (((bindings.point_id = workspoints.point_id) AND ((workspoints.is_work = 'in_work'::public.point_status) OR (workspoints.is_work = 'reconstruction'::public.point_status)) AND (bindings.is_main = false))))
+     JOIN public.workers ON ((workers.id = bindings.worker_id)))
+  GROUP BY workspoints.point_name;
+
+
+ALTER VIEW public.seconds_bindings OWNER TO saibogo;
+
+--
+-- Name: sewerage; Type: TABLE; Schema: public; Owner: saibogo
+--
+
+CREATE TABLE public.sewerage (
+    id integer NOT NULL,
+    point_id integer,
+    treaty character varying(255),
+    resume character varying(1024)
+);
+
+
+ALTER TABLE public.sewerage OWNER TO saibogo;
+
+--
+-- Name: sewerage_id_seq; Type: SEQUENCE; Schema: public; Owner: saibogo
+--
+
+ALTER TABLE public.sewerage ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public.sewerage_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: statistic; Type: VIEW; Schema: public; Owner: saibogo
+--
+
+CREATE VIEW public.statistic AS
+SELECT
+    NULL::integer AS point_id,
+    NULL::text AS point_name,
+    NULL::bigint AS all_equips,
+    NULL::numeric AS sum,
+    NULL::timestamp without time zone AS max;
+
+
+ALTER VIEW public.statistic OWNER TO saibogo;
+
+--
+-- Name: workers_id_seq; Type: SEQUENCE; Schema: public; Owner: saibogo
+--
+
+ALTER TABLE public.workers ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public.workers_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: works; Type: TABLE; Schema: public; Owner: saibogo
+--
+
+CREATE TABLE public.works (
+    id integer NOT NULL,
+    id_obor integer NOT NULL,
+    date timestamp without time zone NOT NULL,
+    problem text NOT NULL,
+    result text NOT NULL
+);
+
+
+ALTER TABLE public.works OWNER TO saibogo;
+
+--
+-- Name: works_from_worker; Type: VIEW; Schema: public; Owner: saibogo
+--
+
+CREATE VIEW public.works_from_worker AS
+ SELECT works.id,
+    workspoints.point_name,
+    oborudovanie.name,
+    oborudovanie.model,
+    oborudovanie.serial_num,
+    works.date,
+    works.problem,
+    works.result,
+    tmp.all_workers
+   FROM ((((public.works
+     JOIN public.performers ON ((works.id = performers.work_id)))
+     JOIN public.oborudovanie ON ((oborudovanie.id = works.id_obor)))
+     JOIN public.workspoints ON ((workspoints.point_id = oborudovanie.point_id)))
+     JOIN ( SELECT works_1.id AS work_id,
+            string_agg(workers.sub_name, ' '::text) AS all_workers
+           FROM (((public.works works_1
+             JOIN public.oborudovanie oborudovanie_1 ON ((works_1.id_obor = oborudovanie_1.id)))
+             JOIN public.performers performers_1 ON ((works_1.id = performers_1.work_id)))
+             JOIN public.workers ON ((workers.id = performers_1.worker_id)))
+          GROUP BY works_1.id) tmp ON ((tmp.work_id = works.id)));
+
+
+ALTER VIEW public.works_from_worker OWNER TO saibogo;
+
+--
+-- Name: works_id_seq; Type: SEQUENCE; Schema: public; Owner: saibogo
+--
+
+ALTER TABLE public.works ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.works_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: works_likes; Type: VIEW; Schema: public; Owner: saibogo
+--
+
+CREATE VIEW public.works_likes AS
+ SELECT works.id,
+    workspoints.point_name,
+    oborudovanie.name,
+    oborudovanie.model,
+    oborudovanie.serial_num,
+    works.date,
+    works.problem,
+    works.result,
+    tmp.all_workers
+   FROM (((public.works
+     JOIN public.oborudovanie ON ((oborudovanie.id = works.id_obor)))
+     JOIN public.workspoints ON ((workspoints.point_id = oborudovanie.point_id)))
+     JOIN ( SELECT works_1.id AS work_id,
+            string_agg(workers.sub_name, ' '::text) AS all_workers
+           FROM (((public.works works_1
+             JOIN public.oborudovanie oborudovanie_1 ON ((works_1.id_obor = oborudovanie_1.id)))
+             JOIN public.performers ON ((works_1.id = performers.work_id)))
+             JOIN public.workers ON ((workers.id = performers.worker_id)))
+          GROUP BY works_1.id) tmp ON ((tmp.work_id = works.id)));
+
+
+ALTER VIEW public.works_likes OWNER TO saibogo;
+
+--
+-- Name: workspoints_point_id_seq; Type: SEQUENCE; Schema: public; Owner: saibogo
+--
+
+ALTER TABLE public.workspoints ALTER COLUMN point_id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.workspoints_point_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: customer id; Type: DEFAULT; Schema: public; Owner: saibogo
+--
+
+ALTER TABLE ONLY public.customer ALTER COLUMN id SET DEFAULT nextval('public.customer_id_seq'::regclass);
+
+
+--
+-- Name: orders id; Type: DEFAULT; Schema: public; Owner: saibogo
+--
+
+ALTER TABLE ONLY public.orders ALTER COLUMN id SET DEFAULT nextval('public.orders_id_seq'::regclass);
+
+
+--
+-- Name: bindings bindings_pkey; Type: CONSTRAINT; Schema: public; Owner: saibogo
+--
+
+ALTER TABLE ONLY public.bindings
+    ADD CONSTRAINT bindings_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: chats chats_pkey; Type: CONSTRAINT; Schema: public; Owner: saibogo
+--
+
+ALTER TABLE ONLY public.chats
+    ADD CONSTRAINT chats_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: cold_water cold_water_pkey; Type: CONSTRAINT; Schema: public; Owner: saibogo
+--
+
+ALTER TABLE ONLY public.cold_water
+    ADD CONSTRAINT cold_water_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: customer customer_pkey; Type: CONSTRAINT; Schema: public; Owner: saibogo
+--
+
+ALTER TABLE ONLY public.customer
+    ADD CONSTRAINT customer_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: electric electic_pkey; Type: CONSTRAINT; Schema: public; Owner: saibogo
+--
+
+ALTER TABLE ONLY public.electric
+    ADD CONSTRAINT electic_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: heating heating_pkey; Type: CONSTRAINT; Schema: public; Owner: saibogo
+--
+
+ALTER TABLE ONLY public.heating
+    ADD CONSTRAINT heating_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: hot_water hot_water_pkey; Type: CONSTRAINT; Schema: public; Owner: saibogo
+--
+
+ALTER TABLE ONLY public.hot_water
+    ADD CONSTRAINT hot_water_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: oborudovanie oborudovanie_pkey; Type: CONSTRAINT; Schema: public; Owner: saibogo
+--
+
+ALTER TABLE ONLY public.oborudovanie
+    ADD CONSTRAINT oborudovanie_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: orders orders_pkey; Type: CONSTRAINT; Schema: public; Owner: saibogo
+--
+
+ALTER TABLE ONLY public.orders
+    ADD CONSTRAINT orders_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: performers performers_pkey; Type: CONSTRAINT; Schema: public; Owner: saibogo
+--
+
+ALTER TABLE ONLY public.performers
+    ADD CONSTRAINT performers_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: posts posts_pkey; Type: CONSTRAINT; Schema: public; Owner: saibogo
+--
+
+ALTER TABLE ONLY public.posts
+    ADD CONSTRAINT posts_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: sewerage sewerage_pkey; Type: CONSTRAINT; Schema: public; Owner: saibogo
+--
+
+ALTER TABLE ONLY public.sewerage
+    ADD CONSTRAINT sewerage_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: workers workers_pkey; Type: CONSTRAINT; Schema: public; Owner: saibogo
+--
+
+ALTER TABLE ONLY public.workers
+    ADD CONSTRAINT workers_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: works works_pkey; Type: CONSTRAINT; Schema: public; Owner: saibogo
+--
+
+ALTER TABLE ONLY public.works
+    ADD CONSTRAINT works_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: workspoints workspoints_pkey; Type: CONSTRAINT; Schema: public; Owner: saibogo
+--
+
+ALTER TABLE ONLY public.workspoints
+    ADD CONSTRAINT workspoints_pkey PRIMARY KEY (point_id);
+
+
+--
+-- Name: statistic _RETURN; Type: RULE; Schema: public; Owner: saibogo
+--
+
+CREATE OR REPLACE VIEW public.statistic AS
+ WITH tmp AS (
+         SELECT oborudovanie.id AS equip_id,
+            count(works.id) AS count_works,
+            max(works.date) AS last_date,
+            oborudovanie.point_id
+           FROM (public.oborudovanie
+             LEFT JOIN public.works ON ((oborudovanie.id = works.id_obor)))
+          GROUP BY oborudovanie.id
+          ORDER BY oborudovanie.id
+        )
+ SELECT workspoints.point_id,
+    workspoints.point_name,
+    count(tmp.equip_id) AS all_equips,
+    sum(tmp.count_works) AS sum,
+    max(tmp.last_date) AS max
+   FROM (public.workspoints
+     JOIN tmp ON ((tmp.point_id = workspoints.point_id)))
+  WHERE ((workspoints.is_work = 'in_work'::public.point_status) OR (workspoints.is_work = 'reconstruction'::public.point_status))
+  GROUP BY workspoints.point_id
+  ORDER BY workspoints.point_name;
+
+
+--
+-- Name: bindings bindings_point_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: saibogo
+--
+
+ALTER TABLE ONLY public.bindings
+    ADD CONSTRAINT bindings_point_id_fkey FOREIGN KEY (point_id) REFERENCES public.workspoints(point_id);
+
+
+--
+-- Name: bindings bindings_worker_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: saibogo
+--
+
+ALTER TABLE ONLY public.bindings
+    ADD CONSTRAINT bindings_worker_id_fkey FOREIGN KEY (worker_id) REFERENCES public.workers(id);
+
+
+--
+-- Name: chats chats_worker_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: saibogo
+--
+
+ALTER TABLE ONLY public.chats
+    ADD CONSTRAINT chats_worker_id_fkey FOREIGN KEY (worker_id) REFERENCES public.workers(id);
+
+
+--
+-- Name: cold_water cold_water_point; Type: FK CONSTRAINT; Schema: public; Owner: saibogo
+--
+
+ALTER TABLE ONLY public.cold_water
+    ADD CONSTRAINT cold_water_point FOREIGN KEY (point_id) REFERENCES public.workspoints(point_id);
+
+
+--
+-- Name: electric electric_point; Type: FK CONSTRAINT; Schema: public; Owner: saibogo
+--
+
+ALTER TABLE ONLY public.electric
+    ADD CONSTRAINT electric_point FOREIGN KEY (point_id) REFERENCES public.workspoints(point_id);
+
+
+--
+-- Name: heating heating_point; Type: FK CONSTRAINT; Schema: public; Owner: saibogo
+--
+
+ALTER TABLE ONLY public.heating
+    ADD CONSTRAINT heating_point FOREIGN KEY (point_id) REFERENCES public.workspoints(point_id);
+
+
+--
+-- Name: hot_water hot_water_point; Type: FK CONSTRAINT; Schema: public; Owner: saibogo
+--
+
+ALTER TABLE ONLY public.hot_water
+    ADD CONSTRAINT hot_water_point FOREIGN KEY (point_id) REFERENCES public.workspoints(point_id);
+
+
+--
+-- Name: oborudovanie oborudovanie_point_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: saibogo
+--
+
+ALTER TABLE ONLY public.oborudovanie
+    ADD CONSTRAINT oborudovanie_point_id_fkey FOREIGN KEY (point_id) REFERENCES public.workspoints(point_id);
+
+
+--
+-- Name: oborudovanie oborudovanie_pre_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: saibogo
+--
+
+ALTER TABLE ONLY public.oborudovanie
+    ADD CONSTRAINT oborudovanie_pre_id_fkey FOREIGN KEY (pre_id) REFERENCES public.oborudovanie(id);
+
+
+--
+-- Name: orders orders_customer_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: saibogo
+--
+
+ALTER TABLE ONLY public.orders
+    ADD CONSTRAINT orders_customer_id_fkey FOREIGN KEY (customer_id) REFERENCES public.customer(id);
+
+
+--
+-- Name: performers performers_work_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: saibogo
+--
+
+ALTER TABLE ONLY public.performers
+    ADD CONSTRAINT performers_work_id_fkey FOREIGN KEY (work_id) REFERENCES public.works(id);
+
+
+--
+-- Name: performers performers_worker_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: saibogo
+--
+
+ALTER TABLE ONLY public.performers
+    ADD CONSTRAINT performers_worker_id_fkey FOREIGN KEY (worker_id) REFERENCES public.workers(id);
+
+
+--
+-- Name: orders point_constr; Type: FK CONSTRAINT; Schema: public; Owner: saibogo
+--
+
+ALTER TABLE ONLY public.orders
+    ADD CONSTRAINT point_constr FOREIGN KEY (point_id) REFERENCES public.workspoints(point_id);
+
+
+--
+-- Name: sewerage sewerage_point; Type: FK CONSTRAINT; Schema: public; Owner: saibogo
+--
+
+ALTER TABLE ONLY public.sewerage
+    ADD CONSTRAINT sewerage_point FOREIGN KEY (point_id) REFERENCES public.workspoints(point_id);
+
+
+--
+-- Name: workers workers_post_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: saibogo
+--
+
+ALTER TABLE ONLY public.workers
+    ADD CONSTRAINT workers_post_id_fkey FOREIGN KEY (post_id) REFERENCES public.posts(id);
+
+
+--
+-- Name: works_days works_days_worker_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: saibogo
+--
+
+ALTER TABLE ONLY public.works_days
+    ADD CONSTRAINT works_days_worker_id_fkey FOREIGN KEY (worker_id) REFERENCES public.workers(id);
+
+
+--
+-- Name: works works_id_obor_fkey; Type: FK CONSTRAINT; Schema: public; Owner: saibogo
+--
+
+ALTER TABLE ONLY public.works
+    ADD CONSTRAINT works_id_obor_fkey FOREIGN KEY (id_obor) REFERENCES public.oborudovanie(id);
+
+
+--
+-- Name: SCHEMA public; Type: ACL; Schema: -; Owner: pg_database_owner
+--
+
+GRANT CREATE ON SCHEMA public TO saibogo;
+
+
+--
+-- Name: FUNCTION all_works_from_equip(eid integer); Type: ACL; Schema: public; Owner: saibogo
+--
+
+REVOKE ALL ON FUNCTION public.all_works_from_equip(eid integer) FROM saibogo;
+GRANT ALL ON FUNCTION public.all_works_from_equip(eid integer) TO saibogo WITH GRANT OPTION;
+
+
+--
+-- Name: FUNCTION bug_status_to_string(st boolean); Type: ACL; Schema: public; Owner: saibogo
+--
+
+REVOKE ALL ON FUNCTION public.bug_status_to_string(st boolean) FROM saibogo;
+GRANT ALL ON FUNCTION public.bug_status_to_string(st boolean) TO saibogo WITH GRANT OPTION;
+
+
+--
+-- Name: FUNCTION bug_status_to_string(st public.order_status); Type: ACL; Schema: public; Owner: saibogo
+--
+
+REVOKE ALL ON FUNCTION public.bug_status_to_string(st public.order_status) FROM saibogo;
+GRANT ALL ON FUNCTION public.bug_status_to_string(st public.order_status) TO saibogo WITH GRANT OPTION;
+
+
+--
+-- Name: FUNCTION last_day_date(); Type: ACL; Schema: public; Owner: saibogo
+--
+
+REVOKE ALL ON FUNCTION public.last_day_date() FROM saibogo;
+GRANT ALL ON FUNCTION public.last_day_date() TO saibogo WITH GRANT OPTION;
+
+
+--
+-- Name: FUNCTION last_month_date(); Type: ACL; Schema: public; Owner: saibogo
+--
+
+REVOKE ALL ON FUNCTION public.last_month_date() FROM saibogo;
+GRANT ALL ON FUNCTION public.last_month_date() TO saibogo WITH GRANT OPTION;
+
+
+--
+-- Name: FUNCTION last_week_date(); Type: ACL; Schema: public; Owner: saibogo
+--
+
+REVOKE ALL ON FUNCTION public.last_week_date() FROM saibogo;
+GRANT ALL ON FUNCTION public.last_week_date() TO saibogo WITH GRANT OPTION;
+
+
+--
+-- Name: FUNCTION last_year_date(); Type: ACL; Schema: public; Owner: saibogo
+--
+
+REVOKE ALL ON FUNCTION public.last_year_date() FROM saibogo;
+GRANT ALL ON FUNCTION public.last_year_date() TO saibogo WITH GRANT OPTION;
+
+
+--
+-- Name: FUNCTION point_status_to_string(st boolean); Type: ACL; Schema: public; Owner: saibogo
+--
+
+REVOKE ALL ON FUNCTION public.point_status_to_string(st boolean) FROM saibogo;
+GRANT ALL ON FUNCTION public.point_status_to_string(st boolean) TO saibogo WITH GRANT OPTION;
+
+
+--
+-- Name: FUNCTION worker_status_to_string(st public.worker_status); Type: ACL; Schema: public; Owner: saibogo
+--
+
+REVOKE ALL ON FUNCTION public.worker_status_to_string(st public.worker_status) FROM saibogo;
+GRANT ALL ON FUNCTION public.worker_status_to_string(st public.worker_status) TO saibogo WITH GRANT OPTION;
+
+
+--
+-- Name: TABLE posts; Type: ACL; Schema: public; Owner: saibogo
+--
+
+REVOKE ALL ON TABLE public.posts FROM saibogo;
+GRANT ALL ON TABLE public.posts TO saibogo WITH GRANT OPTION;
+GRANT ALL ON TABLE public.posts TO PUBLIC;
+
+
+--
+-- Name: TABLE workers; Type: ACL; Schema: public; Owner: saibogo
+--
+
+REVOKE ALL ON TABLE public.workers FROM saibogo;
+GRANT ALL ON TABLE public.workers TO saibogo WITH GRANT OPTION;
+GRANT ALL ON TABLE public.workers TO PUBLIC;
+
+
+--
+-- Name: TABLE all_workers; Type: ACL; Schema: public; Owner: saibogo
+--
+
+REVOKE ALL ON TABLE public.all_workers FROM saibogo;
+GRANT ALL ON TABLE public.all_workers TO saibogo WITH GRANT OPTION;
+GRANT ALL ON TABLE public.all_workers TO PUBLIC;
+
+
+--
+-- Name: TABLE bindings; Type: ACL; Schema: public; Owner: saibogo
+--
+
+REVOKE ALL ON TABLE public.bindings FROM saibogo;
+GRANT ALL ON TABLE public.bindings TO saibogo WITH GRANT OPTION;
+GRANT ALL ON TABLE public.bindings TO PUBLIC;
+
+
+--
+-- Name: SEQUENCE bindings_id_seq; Type: ACL; Schema: public; Owner: saibogo
+--
+
+REVOKE ALL ON SEQUENCE public.bindings_id_seq FROM saibogo;
+GRANT ALL ON SEQUENCE public.bindings_id_seq TO saibogo WITH GRANT OPTION;
+GRANT ALL ON SEQUENCE public.bindings_id_seq TO PUBLIC;
+
+
+--
+-- Name: TABLE bugzilla; Type: ACL; Schema: public; Owner: saibogo
+--
+
+REVOKE ALL ON TABLE public.bugzilla FROM saibogo;
+GRANT ALL ON TABLE public.bugzilla TO saibogo WITH GRANT OPTION;
+GRANT ALL ON TABLE public.bugzilla TO PUBLIC;
+
+
+--
+-- Name: SEQUENCE bugzilla_id_seq; Type: ACL; Schema: public; Owner: saibogo
+--
+
+REVOKE ALL ON SEQUENCE public.bugzilla_id_seq FROM saibogo;
+GRANT ALL ON SEQUENCE public.bugzilla_id_seq TO saibogo WITH GRANT OPTION;
+GRANT ALL ON SEQUENCE public.bugzilla_id_seq TO PUBLIC;
+
+
+--
+-- Name: TABLE chats; Type: ACL; Schema: public; Owner: saibogo
+--
+
+REVOKE ALL ON TABLE public.chats FROM saibogo;
+GRANT ALL ON TABLE public.chats TO saibogo WITH GRANT OPTION;
+GRANT ALL ON TABLE public.chats TO PUBLIC;
+
+
+--
+-- Name: SEQUENCE chats_id_seq; Type: ACL; Schema: public; Owner: saibogo
+--
+
+REVOKE ALL ON SEQUENCE public.chats_id_seq FROM saibogo;
+GRANT ALL ON SEQUENCE public.chats_id_seq TO saibogo WITH GRANT OPTION;
+GRANT ALL ON SEQUENCE public.chats_id_seq TO PUBLIC;
+
+
+--
+-- Name: TABLE cold_water; Type: ACL; Schema: public; Owner: saibogo
+--
+
+REVOKE ALL ON TABLE public.cold_water FROM saibogo;
+GRANT ALL ON TABLE public.cold_water TO saibogo WITH GRANT OPTION;
+GRANT ALL ON TABLE public.cold_water TO PUBLIC;
+
+
+--
+-- Name: SEQUENCE cold_water_id_seq; Type: ACL; Schema: public; Owner: saibogo
+--
+
+REVOKE ALL ON SEQUENCE public.cold_water_id_seq FROM saibogo;
+GRANT ALL ON SEQUENCE public.cold_water_id_seq TO saibogo WITH GRANT OPTION;
+GRANT ALL ON SEQUENCE public.cold_water_id_seq TO PUBLIC;
+
+
+--
+-- Name: TABLE customer; Type: ACL; Schema: public; Owner: saibogo
+--
+
+REVOKE ALL ON TABLE public.customer FROM saibogo;
+GRANT ALL ON TABLE public.customer TO saibogo WITH GRANT OPTION;
+GRANT ALL ON TABLE public.customer TO PUBLIC;
+
+
+--
+-- Name: SEQUENCE customer_id_seq; Type: ACL; Schema: public; Owner: saibogo
+--
+
+REVOKE ALL ON SEQUENCE public.customer_id_seq FROM saibogo;
+GRANT ALL ON SEQUENCE public.customer_id_seq TO saibogo WITH GRANT OPTION;
+GRANT ALL ON SEQUENCE public.customer_id_seq TO PUBLIC;
+
+
+--
+-- Name: TABLE electric; Type: ACL; Schema: public; Owner: saibogo
+--
+
+REVOKE ALL ON TABLE public.electric FROM saibogo;
+GRANT ALL ON TABLE public.electric TO saibogo WITH GRANT OPTION;
+GRANT ALL ON TABLE public.electric TO PUBLIC;
+
+
+--
+-- Name: SEQUENCE electic_id_seq; Type: ACL; Schema: public; Owner: saibogo
+--
+
+REVOKE ALL ON SEQUENCE public.electic_id_seq FROM saibogo;
+GRANT ALL ON SEQUENCE public.electic_id_seq TO saibogo WITH GRANT OPTION;
+GRANT ALL ON SEQUENCE public.electic_id_seq TO PUBLIC;
+
+
+--
+-- Name: TABLE works_days; Type: ACL; Schema: public; Owner: saibogo
+--
+
+REVOKE ALL ON TABLE public.works_days FROM saibogo;
+GRANT ALL ON TABLE public.works_days TO saibogo WITH GRANT OPTION;
+GRANT ALL ON TABLE public.works_days TO PUBLIC;
+
+
+--
+-- Name: TABLE workspoints; Type: ACL; Schema: public; Owner: saibogo
+--
+
+REVOKE ALL ON TABLE public.workspoints FROM saibogo;
+GRANT ALL ON TABLE public.workspoints TO saibogo WITH GRANT OPTION;
+GRANT ALL ON TABLE public.workspoints TO PUBLIC;
+
+
+--
+-- Name: TABLE heating; Type: ACL; Schema: public; Owner: saibogo
+--
+
+REVOKE ALL ON TABLE public.heating FROM saibogo;
+GRANT ALL ON TABLE public.heating TO saibogo WITH GRANT OPTION;
+GRANT ALL ON TABLE public.heating TO PUBLIC;
+
+
+--
+-- Name: SEQUENCE heating_id_seq; Type: ACL; Schema: public; Owner: saibogo
+--
+
+REVOKE ALL ON SEQUENCE public.heating_id_seq FROM saibogo;
+GRANT ALL ON SEQUENCE public.heating_id_seq TO saibogo WITH GRANT OPTION;
+GRANT ALL ON SEQUENCE public.heating_id_seq TO PUBLIC;
+
+
+--
+-- Name: TABLE hot_water; Type: ACL; Schema: public; Owner: saibogo
+--
+
+REVOKE ALL ON TABLE public.hot_water FROM saibogo;
+GRANT ALL ON TABLE public.hot_water TO saibogo WITH GRANT OPTION;
+GRANT ALL ON TABLE public.hot_water TO PUBLIC;
+
+
+--
+-- Name: SEQUENCE hot_water_id_seq; Type: ACL; Schema: public; Owner: saibogo
+--
+
+REVOKE ALL ON SEQUENCE public.hot_water_id_seq FROM saibogo;
+GRANT ALL ON SEQUENCE public.hot_water_id_seq TO saibogo WITH GRANT OPTION;
+GRANT ALL ON SEQUENCE public.hot_water_id_seq TO PUBLIC;
+
+
+--
+-- Name: TABLE oborudovanie; Type: ACL; Schema: public; Owner: saibogo
+--
+
+REVOKE ALL ON TABLE public.oborudovanie FROM saibogo;
+GRANT ALL ON TABLE public.oborudovanie TO saibogo WITH GRANT OPTION;
+GRANT ALL ON TABLE public.oborudovanie TO PUBLIC;
+
+
+--
+-- Name: SEQUENCE oborudovanie_id_seq; Type: ACL; Schema: public; Owner: saibogo
+--
+
+REVOKE ALL ON SEQUENCE public.oborudovanie_id_seq FROM saibogo;
+GRANT ALL ON SEQUENCE public.oborudovanie_id_seq TO saibogo WITH GRANT OPTION;
+GRANT ALL ON SEQUENCE public.oborudovanie_id_seq TO PUBLIC;
+
+
+--
+-- Name: TABLE orders; Type: ACL; Schema: public; Owner: saibogo
+--
+
+REVOKE ALL ON TABLE public.orders FROM saibogo;
+GRANT ALL ON TABLE public.orders TO saibogo WITH GRANT OPTION;
+GRANT ALL ON TABLE public.orders TO PUBLIC;
+
+
+--
+-- Name: SEQUENCE orders_id_seq; Type: ACL; Schema: public; Owner: saibogo
+--
+
+REVOKE ALL ON SEQUENCE public.orders_id_seq FROM saibogo;
+GRANT ALL ON SEQUENCE public.orders_id_seq TO saibogo WITH GRANT OPTION;
+GRANT ALL ON SEQUENCE public.orders_id_seq TO PUBLIC;
+
+
+--
+-- Name: TABLE performers; Type: ACL; Schema: public; Owner: saibogo
+--
+
+REVOKE ALL ON TABLE public.performers FROM saibogo;
+GRANT ALL ON TABLE public.performers TO saibogo WITH GRANT OPTION;
+GRANT ALL ON TABLE public.performers TO PUBLIC;
+
+
+--
+-- Name: SEQUENCE performers_id_seq; Type: ACL; Schema: public; Owner: saibogo
+--
+
+REVOKE ALL ON SEQUENCE public.performers_id_seq FROM saibogo;
+GRANT ALL ON SEQUENCE public.performers_id_seq TO saibogo WITH GRANT OPTION;
+GRANT ALL ON SEQUENCE public.performers_id_seq TO PUBLIC;
+
+
+--
+-- Name: SEQUENCE posts_id_seq; Type: ACL; Schema: public; Owner: saibogo
+--
+
+REVOKE ALL ON SEQUENCE public.posts_id_seq FROM saibogo;
+GRANT ALL ON SEQUENCE public.posts_id_seq TO saibogo WITH GRANT OPTION;
+GRANT ALL ON SEQUENCE public.posts_id_seq TO PUBLIC;
+
+
+--
+-- Name: TABLE sewerage; Type: ACL; Schema: public; Owner: saibogo
+--
+
+REVOKE ALL ON TABLE public.sewerage FROM saibogo;
+GRANT ALL ON TABLE public.sewerage TO saibogo WITH GRANT OPTION;
+GRANT ALL ON TABLE public.sewerage TO PUBLIC;
+
+
+--
+-- Name: SEQUENCE sewerage_id_seq; Type: ACL; Schema: public; Owner: saibogo
+--
+
+REVOKE ALL ON SEQUENCE public.sewerage_id_seq FROM saibogo;
+GRANT ALL ON SEQUENCE public.sewerage_id_seq TO saibogo WITH GRANT OPTION;
+GRANT ALL ON SEQUENCE public.sewerage_id_seq TO PUBLIC;
+
+
+--
+-- Name: TABLE statistic; Type: ACL; Schema: public; Owner: saibogo
+--
+
+REVOKE ALL ON TABLE public.statistic FROM saibogo;
+GRANT ALL ON TABLE public.statistic TO saibogo WITH GRANT OPTION;
+GRANT ALL ON TABLE public.statistic TO PUBLIC;
+
+
+--
+-- Name: SEQUENCE workers_id_seq; Type: ACL; Schema: public; Owner: saibogo
+--
+
+REVOKE ALL ON SEQUENCE public.workers_id_seq FROM saibogo;
+GRANT ALL ON SEQUENCE public.workers_id_seq TO saibogo WITH GRANT OPTION;
+GRANT ALL ON SEQUENCE public.workers_id_seq TO PUBLIC;
+
+
+--
+-- Name: TABLE works; Type: ACL; Schema: public; Owner: saibogo
+--
+
+REVOKE ALL ON TABLE public.works FROM saibogo;
+GRANT ALL ON TABLE public.works TO saibogo WITH GRANT OPTION;
+GRANT ALL ON TABLE public.works TO PUBLIC;
+
+
+--
+-- Name: TABLE works_from_worker; Type: ACL; Schema: public; Owner: saibogo
+--
+
+REVOKE ALL ON TABLE public.works_from_worker FROM saibogo;
+GRANT ALL ON TABLE public.works_from_worker TO saibogo WITH GRANT OPTION;
+GRANT ALL ON TABLE public.works_from_worker TO PUBLIC;
+
+
+--
+-- Name: SEQUENCE works_id_seq; Type: ACL; Schema: public; Owner: saibogo
+--
+
+REVOKE ALL ON SEQUENCE public.works_id_seq FROM saibogo;
+GRANT ALL ON SEQUENCE public.works_id_seq TO saibogo WITH GRANT OPTION;
+GRANT ALL ON SEQUENCE public.works_id_seq TO PUBLIC;
+
+
+--
+-- Name: TABLE works_likes; Type: ACL; Schema: public; Owner: saibogo
+--
+
+REVOKE ALL ON TABLE public.works_likes FROM saibogo;
+GRANT ALL ON TABLE public.works_likes TO saibogo WITH GRANT OPTION;
+GRANT ALL ON TABLE public.works_likes TO PUBLIC;
+
+
+--
+-- Name: SEQUENCE workspoints_point_id_seq; Type: ACL; Schema: public; Owner: saibogo
+--
+
+REVOKE ALL ON SEQUENCE public.workspoints_point_id_seq FROM saibogo;
+GRANT ALL ON SEQUENCE public.workspoints_point_id_seq TO saibogo WITH GRANT OPTION;
+GRANT ALL ON SEQUENCE public.workspoints_point_id_seq TO PUBLIC;
+
+
+--
+-- PostgreSQL database dump complete
+--
+
