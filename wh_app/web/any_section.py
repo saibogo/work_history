@@ -12,6 +12,8 @@ from wh_app.supporting import system_status
 from wh_app.config_and_backup import table_headers
 from wh_app.web.universal_html import selected_new_theme, logpass_table, replace_decor
 from wh_app.supporting.metadata import CHANGELOG
+from wh_app.supporting.parser_eesk.eens_data import get_eens_data, EeensException
+from wh_app.supporting.parser_eesk.eesk_data import get_eesk_data, EeskException
 
 functions.info_string(__name__)
 
@@ -21,12 +23,49 @@ def main_web_menu(stylesheet_number: str) -> str:
     name = "Доступные действия"
     menu_items = ['Операции с предприятиями', 'Операции с оборудованием', 'Операции с ремонтами',
                   'Операции с сотрудниками', 'Баг-трекер системы', 'Работа с заявками',
-                  'Изменить тему оформления', 'Изменения в системе', 'Выйти из системы']
+                  'Изменить тему оформления', 'Изменения в системе', 'Вспомогательные сервисы', 'Выйти из системы']
     links_list = ['/points', '/equips', '/works', '/workers', '/bugs', '/orders-and-customers', '/next-themes',
-                  '/changelog-page', '/logout']
+                  '/changelog-page', '/external-services', '/logout']
     table = uhtml.universal_table(name, ['№', 'Перейти к'], [(i + 1, menu_items[i]) for i in range(len(menu_items))],
                                   True, links_list)
     return web_template.result_page(table, "", stylesheet_number)
+
+
+@replace_decor
+def external_services_page(stylesheet_number: str) -> str:
+    """Function create page with all services in services-list"""
+    name = "Доступные сервисы"
+    menu_items = ['Планируемые отключения электроэнергии']
+    links_list = ['/power-outages']
+    table = uhtml.universal_table(name, ['№', 'Перейти к'], [(i + 1, menu_items[i]) for i in range(len(menu_items))],
+                                  True, links_list)
+    return web_template.result_page(table, "", str(stylesheet_number))
+
+
+@replace_decor
+def power_outages_page(stylesheet_number: str) -> str:
+    """Function create page with all correct outages"""
+
+    try:
+        eens_list = [[elem['num'], elem['startDate'], elem['endDate'],
+                      elem['objects'], elem['street'], elem['link']] for elem in get_eens_data()]
+
+        table1 = render_template('universal_table.html', table_name='По данным Екатеринбургэнергосбыт',
+                                 headers=['N телефонограммы', 'Начало', 'Окончание', 'Обьекты', 'Улицы', 'Ссылка на телефонограмму'],
+                                 data=eens_list, num_columns=6)
+    except EeensException as e:
+        table1 = render_template('universal_table.html', table_name='Данные Екатеринбургэнергосбыт недоступны',
+                                 table_headers=[], date=[])
+
+    try:
+        eesk_list = [[elem[2], elem[3], elem[4], elem[6]] for elem in get_eesk_data()]
+        table2 = render_template('universal_table.html', table_name='По данным Екатеринбургской Электросетевой Компании',
+                                 headers=['Город', 'Улицы', 'Начало', 'Окончание'], data=eesk_list, num_columns=4)
+    except EeskException as e:
+        table2 = render_template('universal_table.html', table_name='Данные Екатеринбургской Электросетевой Компании недоступны',
+                                 table_headers=[], date=[])
+
+    return web_template.result_page(table1 + table2, "/external-services", str(stylesheet_number), False)
 
 
 @replace_decor

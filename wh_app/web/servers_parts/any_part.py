@@ -3,7 +3,7 @@
 from fpdf import FPDF
 from wh_app.web.servers_parts.support_part import *
 from wh_app.web.any_section import main_web_menu, faq_page, statistics_page,\
-    system_status_page, view_changelog, view_changelog_page
+    system_status_page, view_changelog, view_changelog_page, external_services_page, power_outages_page
 from wh_app.supporting.pdf_operations.pdf import equips_in_point, works_from_equip,\
     works_from_performer, weekly_charts_pdf, move_equip, point_tech_information, find_work_without_date, find_equip,\
     find_point, find_work_with_date, works_from_performer_with_date, top10workers, top10points, top10equips,\
@@ -29,6 +29,18 @@ def faq() -> Response:
                                                               default=config.full_address(),
                                                               type=str),
                                              stylesheet_number()), functions.NO_ROLE)
+
+
+@app.route("/external-services")
+def external_services() -> Response:
+    """Return page with list of external services"""
+    return goto_or_redirect(lambda: external_services_page(stylesheet_number()), functions.NO_ROLE)
+
+
+@app.route("/power-outages")
+def power_outages() -> Response:
+    """Return page with list of external services"""
+    return goto_or_redirect(lambda: power_outages_page(stylesheet_number()), functions.NO_ROLE)
 
 
 @app.route('/statistics', methods=['GET'])

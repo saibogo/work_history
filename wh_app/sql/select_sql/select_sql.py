@@ -1,32 +1,7 @@
 """This module create RAW-query to SELECT in database"""
 
-from typing import *
-from datetime import datetime
-
-from wh_app.config_and_backup import config
-from wh_app.sql.sql_constant import sql_consts_dict
-
-
-def log_decorator(func: Callable) -> Callable:
-    """This decorator insert new record in log-file for function"""
-    def wrap(*args) -> str:
-        tmp = func(*args)
-        try:
-            with open(config.path_to_sql_log(), 'a') as log_file:
-                log_file.write("====\n")
-                log_file.write(str(datetime.now()) + '\n')
-                log_file.write(tmp + '\n')
-        except OSError:
-            print("Невозможно записать данные в лог-файл!")
-        return tmp
-    return wrap
-
-
-def _limit_and_offset(page_num: int) -> str:
-    """Return substring like LIMIT 5 OFFSET 7"""
-
-    return " LIMIT {0} OFFSET {1}".format(config.max_records_in_page(),
-                        (int(page_num) - 1) * config.max_records_in_page())
+from wh_app.sql.select_sql.points_select import *
+from wh_app.sql.select_sql.equipments_select import *
 
 
 @log_decorator
@@ -36,90 +11,8 @@ def sql_counter(sql_query: str) -> str:
     return """SELECT COUNT (*) FROM ({0}) AS foo""".format(sql_query)
 
 
-@log_decorator
-def sql_select_point(id_point: str) -> str:
-    """Returns the string of the query for selecting a point by a unique number
-    Example:
-     SELECT point_id, point_name, point_address, CASE WHEN is_work = true
-     THEN 'Open' ELSE 'Closed' END
-     FROM workspoints WHERE point_id = 13 ORDER BY point_name"""
-
-    formatter = ("WHERE %(point_id)s = " % sql_consts_dict + str(id_point))\
-        if (str(id_point) != '' and str(id_point) != '0') else ""
-
-    query = """SELECT %(point_id)s, %(point_name)s, %(point_address)s,
-     %(cast_open_close)s 
-     FROM %(workspoints)s {0} ORDER BY %(point_name)s""" % sql_consts_dict
-    return query.format(formatter)
 
 
-@log_decorator
-def sql_select_all_works_points() -> str:
-    """Return the string of the query for selected a point where status is 'work'
-    Example:
-    SELECT point_id, point_name, point_address,
-    CASE WHEN is_work = true THEN 'Работает' ELSE 'Закрыто' END
-    FROM workspoints WHERE is_work = true ORDER BY point_name"""
-
-    return ("""SELECT %(point_id)s, %(point_name)s, %(point_address)s, """ +
-            """%(cast_open_close)s FROM %(workspoints)s""" +
-            """ WHERE %(point_working)s ORDER BY %(point_name)s""") % sql_consts_dict
-
-
-@log_decorator
-def sql_select_equipment_in_point(point: str) -> str:
-    """Returns the query string for selecting all equipment items at a given point
-    Example:
-        SELECT oborudovanie.id, workspoints.point_name, oborudovanie.name,
-         oborudovanie.model, oborudovanie.serial_num, oborudovanie.pre_id
-         FROM oborudovanie
-         JOIN workspoints ON workspoints.point_id = oborudovanie.point_id
-         WHERE oborudovanie.point_id = 11 ORDER BY oborudovanie.name"""
-
-    formatter = ("WHERE %(oborudovanie)s.%(point_id)s = " % sql_consts_dict + str(point))\
-        if (str(point) != '' and str(point) != '0') else ''
-
-    query = ("""SELECT %(oborudovanie)s.%(id)s, %(workspoints)s.%(point_name)s,""" +
-             """ %(oborudovanie)s.%(name)s, %(oborudovanie)s.%(model)s,""" +
-             """ %(oborudovanie)s.%(serial_num)s, %(oborudovanie)s.%(pre_id)s""" +
-             """ FROM %(oborudovanie)s JOIN %(workspoints)s ON """ +
-             """%(workspoints)s.%(point_id)s = %(oborudovanie)s.%(point_id)s {0}""" +
-             """ AND %(oborudovanie)s.%(deleted)s = false""" +
-             """ ORDER BY %(oborudovanie)s.%(name)s""") % sql_consts_dict
-
-    return query.format(formatter)
-
-
-sql_select_all_equipment = sql_select_equipment_in_point('')
-
-
-@log_decorator
-def sql_select_equipment_in_point_limit(point: str, page_num: int) -> str:
-    """Returns the query string for selecting all equipment items at a given point use LIMIT
-    Example:
-        SELECT oborudovanie.id, workspoints.point_name, oborudovanie.name, oborudovanie.model,
-        oborudovanie.serial_num, oborudovanie.pre_id FROM oborudovanie
-        JOIN workspoints ON workspoints.point_id =oborudovanie.point_id
-        WHERE oborudovanie.point_id = 7 ORDER BY oborudovanie.name LIMIT 5 OFFSET 15
-        """
-
-    formatter = ("WHERE %(oborudovanie)s.%(point_id)s = " % sql_consts_dict + str(point))\
-        if (str(point) != '' and str(point) != '0') else ''
-    query = ("""SELECT %(oborudovanie)s.%(id)s, %(workspoints)s.%(point_name)s,""" +
-             """ %(oborudovanie)s.%(name)s, %(oborudovanie)s.%(model)s,""" +
-             """ %(oborudovanie)s.%(serial_num)s, %(oborudovanie)s.%(pre_id)s """ +
-             """FROM %(oborudovanie)s JOIN %(workspoints)s """ +
-             """ON %(workspoints)s.%(point_id)s = %(oborudovanie)s.%(point_id)s {0}""" +
-             """ AND %(oborudovanie)s.%(deleted)s = false""" +
-             """ ORDER BY %(oborudovanie)s.%(name)s""") % sql_consts_dict
-
-    return  query.format(formatter) + _limit_and_offset(page_num)
-
-
-@log_decorator
-def sql_select_all_equipment_limit(page_num: int) -> str:
-    """Create SELECT to ALL equipment use Limit records in page"""
-    return sql_select_equipment_in_point_limit('', page_num)
 
 
 @log_decorator
@@ -167,7 +60,7 @@ def sql_select_work_from_equip_id_limit(id_equip: str, page_num: int) -> str:
         """
     query = ("""SELECT * FROM %(works_likes)s WHERE %(id)s IN """ +
              """(SELECT * FROM all_works_from_equip({0}))""" +
-             """ ORDER BY %(date)s """) % sql_consts_dict + _limit_and_offset(page_num)
+             """ ORDER BY %(date)s """) % sql_consts_dict + limit_and_offset(page_num)
 
     return query.format(id_equip)
 
@@ -183,21 +76,8 @@ def sql_select_all_works() -> str:
 def sql_select_all_works_limit(page_num: int) -> str:
     """Returns the query string to select all repairs corresponding to the equipments use LIMIT"""
 
-    query = """SELECT * FROM %(works_likes)s ORDER BY %(date)s""" % sql_consts_dict + _limit_and_offset(page_num)
+    query = """SELECT * FROM %(works_likes)s ORDER BY %(date)s""" % sql_consts_dict + limit_and_offset(page_num)
     return query
-
-
-@log_decorator
-def sql_select_information_to_point(id_point: str) -> str:
-    """Returns the string of the request for complete information
-    about the point with the given number
-    Example:
-        SELECT point_name, point_address FROM workspoints WHERE point_id = id_point
-        """
-
-    query = ("""SELECT %(point_name)s, %(point_address)s, %(cast_open_close)s  """ +
-             """FROM %(workspoints)s WHERE %(point_id)s = {0}""") % sql_consts_dict
-    return query.format(id_point)
 
 
 @log_decorator
@@ -217,7 +97,7 @@ def sql_select_all_orders_limit(page_num: int) -> str:
     query = """SELECT orders.%(id)s, %(point_name)s, %(customer)s.%(full_name)s, %(orders)s.%(date)s, %(orders)s.%(closed_date)s,
      %(problem)s, (%(bug_in_work)s), %(orders)s.comment FROM %(orders)s JOIN %(customer)s ON
       %(customer_id)s = %(customer)s.%(id)s JOIN %(workspoints)s ON %(workspoints)s.%(point_id)s = %(orders)s.%(point_id)s
-       ORDER BY %(id)s """ % sql_consts_dict + _limit_and_offset(page_num)
+       ORDER BY %(id)s """ % sql_consts_dict + limit_and_offset(page_num)
 
     return query
 
@@ -232,121 +112,6 @@ def sql_select_work_from_id(id_work: str) -> str:
     query = """SELECT * FROM %(works_likes)s WHERE %(id)s = {0}""" % sql_consts_dict
 
     return query.format(id_work)
-
-
-@log_decorator
-def sql_select_equip_from_like_str(pattern: str) -> str:
-    """Return the query string select equips from like-string
-    Example:
-        SELECT id, workspoints.point_name, name, model, serial_num, pre_id
-        FROM oborudovanie
-        JOIN workspoints ON oborudovanie.point_id = workspoints.point_id
-        WHERE LOWER(name) LIKE LOWER('HuraKan')
-        OR LOWER(model) LIKE LOWER('HR-2000')
-        ORDER BY name
-        """
-
-    if pattern != '*':
-        words = '%' + pattern.replace(' ', '%') + '%'
-        query = ("""SELECT %(id)s, %(workspoints)s.%(point_name)s, """ +
-                 """%(name)s, %(model)s, %(serial_num)s, %(pre_id)s FROM %(oborudovanie)s""" +
-                 """ JOIN %(workspoints)s ON %(oborudovanie)s.%(point_id)s = """ +
-                 """ %(workspoints)s.%(point_id)s WHERE LOWER(%(name)s)""" +
-                 """ LIKE LOWER('{0}') OR LOWER(%(model)s) LIKE LOWER('{0}')""" +
-                 """ OR LOWER(%(serial_num)s) LIKE LOWER('{0}') ORDER BY %(name)s""") % sql_consts_dict
-        result = query.format(words)
-    else:
-        query = ("""SELECT %(id)s, %(workspoints)s.%(point_name)s, """ +
-                 """%(name)s, %(model)s, %(serial_num)s, %(pre_id)s FROM """ +
-                 """ %(oborudovanie)s  JOIN %(workspoints)s ON """ +
-                 """%(oborudovanie)s.%(point_id)s = %(workspoints)s.%(point_id)s """ +
-                 """ORDER BY %(name)s""") % sql_consts_dict
-        result = query
-    return result
-
-
-@log_decorator
-def sql_select_equip_from_like_str_limit(pattern: str, page_num: str) -> str:
-    """Return the query string select equips from like-string use LIMIT and OFFSET
-    Example:
-        SELECT id, workspoints.point_name, name, model, serial_num, pre_id
-        FROM oborudovanie
-        JOIN workspoints
-        ON oborudovanie.point_id = workspoints.point_id
-        WHERE LOWER(name) LIKE LOWER('RaTiONaL')
-        OR LOWER(model) LIKE LOWER('RatioNal')
-        ORDER BY name LIMIT 10 OFFSET 30
-        """
-
-    if pattern != '*':
-        words = '%' + pattern.replace(' ', '%') + '%'
-        query = ("""SELECT %(id)s, %(workspoints)s.%(point_name)s, %(name)s,""" +
-                 """ %(model)s, %(serial_num)s, %(pre_id)s FROM %(oborudovanie)s """ +
-                 """JOIN %(workspoints)s ON %(oborudovanie)s.%(point_id)s =""" +
-                 """ %(workspoints)s.%(point_id)s WHERE LOWER(%(name)s)""" +
-                 """ LIKE LOWER('{0}') OR LOWER(%(model)s) LIKE LOWER('{0}') """ +
-                 """OR LOWER(%(serial_num)s) LIKE LOWER('{0}')  ORDER BY %(name)s """) % sql_consts_dict + _limit_and_offset(page_num)
-        result = query.format(words)
-    else:
-        query = ("""SELECT %(id)s, %(workspoints)s.%(point_name)s, %(name)s,""" +
-                 """ %(model)s, %(serial_num)s, %(pre_id)s FROM %(oborudovanie)s""" +
-                 """ JOIN %(workspoints)s ON %(oborudovanie)s.%(point_id)s = """ +
-                 """ %(workspoints)s.%(point_id)s ORDER BY %(name)s""") % sql_consts_dict + _limit_and_offset(page_num)
-        result = query
-    return result
-
-
-@log_decorator
-def sql_select_point_from_like_str(pattern: str) -> str:
-    """Return the query string select points from like-string
-    Example:
-        SELECT * FROM workspoints
-        WHERE (LOWER(point_name) LIKE LOWER('PoINT'))
-        OR
-        (LOWER(point_address) LIKE LOWER('PoINT'))
-        ORDER BY point_name
-        """
-
-    if pattern != '*':
-        like_string = '%' + pattern.replace(' ', '%') + '%'
-        query = ("""SELECT * FROM %(workspoints)s WHERE (LOWER(%(point_name)s)""" +
-                 """ LIKE LOWER('{0}')) OR (LOWER(%(point_address)s) LIKE""" +
-                 """ LOWER('{0}')) ORDER BY %(point_name)s""") % sql_consts_dict
-
-        result = query.format(like_string)
-    else:
-        query = ("""SELECT * FROM %(workspoints)s  ORDER BY %(point_name)s""") %\
-                sql_consts_dict
-        result = query
-    return result
-
-
-@log_decorator
-def sql_select_point_from_like_str_limit(pattern: str, page_num: str) -> str:
-    """Return the query string select points from like-string
-    Example:
-        SELECT point_id, point_name, point_address,
-        CASE WHEN is_work = true THEN 'Работает' ELSE 'Закрыто' END
-        FROM workspoints WHERE (LOWER({point_name})
-        LIKE LOWER('Пб')) OR (LOWER(point_address) LIKE LOWER('Пб'))
-        ORDER BY point_name LIMIT 15 OFFSET 45
-        """
-
-    if pattern != '*':
-        like_string = '%' + pattern.replace(' ', '%') + '%'
-        query = ("""SELECT %(point_id)s, %(point_name)s, %(point_address)s,""" +
-                 """ %(cast_open_close)s FROM %(workspoints)s WHERE""" +
-                 """ (LOWER(%(point_name)s) LIKE LOWER('{0}')) OR """ +
-                 """ (LOWER(%(point_address)s) LIKE LOWER('{0}')) ORDER BY """ +
-                 """ %(point_name)s """) % sql_consts_dict + _limit_and_offset(page_num)
-
-        result = query.format(like_string)
-    else:
-        query = ("""SELECT %(point_id)s, %(point_name)s, %(point_address)s,""" +
-                 """ %(cast_open_close)s FROM %(workspoints)s ORDER BY""" +
-                 """ %(point_name)s """) % sql_consts_dict + _limit_and_offset(page_num)
-        result = query
-    return result
 
 
 @log_decorator
@@ -387,12 +152,12 @@ def sql_select_all_works_from_like_str_limit(pattern: str, page_num: str) -> str
         like_string = '%' + pattern.replace(' ', '%') + '%'
         query = ("""SELECT * FROM %(works_likes)s WHERE (LOWER (%(problem)s)""" +
                  """ LIKE LOWER('{0}')) OR (LOWER(%(result)s) LIKE LOWER('{0}'))""" +
-                 """ ORDER BY %(date)s, %(name)s """) % sql_consts_dict + _limit_and_offset(page_num)
+                 """ ORDER BY %(date)s, %(name)s """) % sql_consts_dict + limit_and_offset(page_num)
 
         result = query.format(like_string)
     else:
         query = ("""SELECT * FROM %(works_likes)s ORDER BY""" +
-                 """ %(date)s, %(name)s """) % sql_consts_dict + _limit_and_offset(page_num)
+                 """ %(date)s, %(name)s """) % sql_consts_dict + limit_and_offset(page_num)
         result = query
     return result
 
@@ -442,52 +207,15 @@ def sql_select_all_works_from_like_str_and_date_limit(pattern: str, date_start: 
         query = ("""SELECT * FROM works_likes WHERE ((LOWER (problem)""" +
                  """ LIKE LOWER('{0}')) OR (LOWER(result) LIKE LOWER('{0}')))""" +
                  """ AND (date BETWEEN '{1}' AND '{2}') ORDER BY """ +
-                 """ date, name """) % sql_consts_dict + _limit_and_offset(page_num)
+                 """ date, name """) % sql_consts_dict + limit_and_offset(page_num)
 
         result = query.format(like_string, date_start, date_stop)
 
     else:
         query = ("""SELECT * FROM works_likes WHERE date BETWEEN '{0}' AND '{1}' """ +
-                 """ORDER BY  date, name """) % sql_consts_dict + _limit_and_offset(page_num)
+                 """ORDER BY  date, name """) % sql_consts_dict + limit_and_offset(page_num)
         result = query.format(date_start, date_stop)
     return result
-
-
-@log_decorator
-def sql_select_count_equip() -> str:
-    """Return the query string select maximal number in column ID in table oborudovanie"""
-
-    return """SELECT COUNT(*) FROM %(oborudovanie)s JOIN %(workspoints)s 
-    ON %(oborudovanie)s.%(point_id)s = %(workspoints)s.%(point_id)s AND %(workspoints)s.%(point_id)s != %(not_find_in_point)s
-    WHERE %(deleted)s = False AND (%(point_working)s)""" % sql_consts_dict
-
-
-@log_decorator
-def sql_select_last_equip_id() -> str:
-    """return query, contain select to last equip-id"""
-
-    return """SELECT MAX(%(id)s) from %(oborudovanie)s""" %sql_consts_dict
-
-
-@log_decorator
-def sql_select_next_id_equip() -> str:
-    """Return the query string select maximal number in column ID in table oborudovanie"""
-
-    return """SELECT MAX(%(id)s) + 1 FROM %(oborudovanie)s""" % sql_consts_dict
-
-@log_decorator
-def sql_select_max_id_point() -> str:
-    """Return the query string select maximal number in column point_id in table workspoints"""
-
-    return """SELECT MAX(%(point_id)s) FROM %(workspoints)s""" % sql_consts_dict
-
-
-@log_decorator
-def sql_select_count_works_point() -> str:
-    """Return the query string select maximal number in column point_id in table workspoints"""
-
-    return """SELECT COUNT(*) FROM %(workspoints)s WHERE (%(point_working)s) AND
-     %(point_id)s != %(not_find_in_point)s""" % sql_consts_dict
 
 
 @log_decorator
@@ -502,37 +230,6 @@ def sql_select_next_work_id() -> str:
     """Return the query string select maximal number in column id in table works"""
 
     return """SELECT MAX(%(id)s) + 1 FROM %(works)s;""" % sql_consts_dict
-
-
-@log_decorator
-def sql_select_point_id_from_equip_id(equip_id: str) -> str:
-    """Return the query string select a point contain this equip"""
-
-    return (("""SELECT %(point_id)s FROM %(oborudovanie)s""" +
-             """ WHERE %(id)s = {0}""") % sql_consts_dict).format(equip_id)
-
-
-@log_decorator
-def sql_select_full_equips_info(equip_id: str) -> str:
-    """Return SQL-query contain query to complete information from equip
-    Example:
-        SELECT workspoints.point_name
-        AS point_name, oborudovanie.name AS name, oborudovanie.model AS model,
-        oborudovanie.serial_num AS serial_num, oborudovanie.pre_id AS pre_id
-        FROM oborudovanie
-        JOIN workspoints ON workspoints.point_id = oborudovanie.point_id
-        WHERE oborudovanie.id = 256
-        """
-
-    query = ("""SELECT %(workspoints)s.%(point_name)s AS %(point_name)s,""" +
-             """ %(oborudovanie)s.%(name)s AS %(name)s, %(oborudovanie)s.%(model)s """ +
-             """ AS %(model)s, %(oborudovanie)s.%(serial_num)s AS %(serial_num)s,""" +
-             """ %(oborudovanie)s.%(pre_id)s AS %(pre_id)s FROM %(oborudovanie)s """ +
-             """JOIN %(workspoints)s ON %(workspoints)s.%(point_id)s =""" +
-             """ %(oborudovanie)s.%(point_id)s WHERE""" +
-             """ %(oborudovanie)s.%(id)s = {0}""") % sql_consts_dict
-
-    return query.format(equip_id)
 
 
 @log_decorator
@@ -643,7 +340,7 @@ def sql_select_works_from_worker_limit(id_worker: str, page_num: int) -> str:
              """ %(model)s, %(serial_num)s, %(date)s, %(problem)s, %(result)s,""" +
              """ %(all_workers)s FROM %(works_from_worker)s JOIN %(performers)s """ +
              """ON %(performers)s.%(worker_id)s = {0} AND %(works_from_worker)s.%(id)s""" +
-             """ = %(performers)s.%(work_id)s ORDER BY %(date)s """) % sql_consts_dict + _limit_and_offset(page_num)
+             """ = %(performers)s.%(work_id)s ORDER BY %(date)s """) % sql_consts_dict + limit_and_offset(page_num)
 
     return query.format(id_worker)
 
@@ -657,7 +354,7 @@ def sql_select_works_from_performer_and_date(id_worker: str, date_start: str, da
              """ON %(performers)s.%(worker_id)s = {0} AND %(works_from_worker)s.%(id)s = %(performers)s.%(work_id)s """ +
              """WHERE %(date)s >= '{1}' and %(date)s <= '{2}' """ +
              """ORDER BY %(date)s """) % sql_consts_dict
-    query = query + _limit_and_offset(page_num) if page_num != 0 else query
+    query = query + limit_and_offset(page_num) if page_num != 0 else query
     return query.format(id_worker, date_start, date_stop)
 
 
@@ -700,7 +397,7 @@ def sql_select_all_bugs_in_bugzilla_limit(page_num: str) -> str:
     query = ("""SELECT %(id)s, %(problem)s, %(bug_in_work)s,""" +
              """ TO_CHAR( %(date_start)s, 'yyyy-mm-dd HH:MI:SS'),""" +
              """ TO_CHAR( %(date_close)s, 'yyyy-mm-dd HH:MI:SS') FROM %(bugzilla)s """ +
-             """ ORDER BY %(id)s """) % sql_consts_dict + _limit_and_offset(page_num)
+             """ ORDER BY %(id)s """) % sql_consts_dict + limit_and_offset(page_num)
     return query
 
 
@@ -720,7 +417,7 @@ def sql_select_all_bugs_in_work_in_bugzilla_limit(page_num: str) -> str:
 
     query = ("""SELECT %(id)s, %(problem)s, %(bug_in_work)s,""" +
              """ TO_CHAR( %(date_start)s, 'yyyy-mm-dd HH:MI:SS') FROM %(bugzilla)s""" +
-             """ WHERE %(status)s = true ORDER BY %(id)s """) % sql_consts_dict + _limit_and_offset(page_num)
+             """ WHERE %(status)s = true ORDER BY %(id)s """) % sql_consts_dict + limit_and_offset(page_num)
     return query
 
 
@@ -768,7 +465,7 @@ def sql_select_no_closed_orders_limit(page_num: int) -> str:
     query = ("""SELECT orders.%(id)s, %(point_name)s, %(customer)s.%(full_name)s, %(orders)s.%(date)s, %(orders)s.%(closed_date)s, %(problem)s, """ +
              """(%(bug_in_work)s), %(orders)s.comment, row_number() OVER (ORDER BY orders.id) FROM %(orders)s JOIN %(customer)s ON %(customer_id)s = %(customer)s.%(id)s""" +
              """ JOIN %(workspoints)s ON %(workspoints)s.%(point_id)s = %(orders)s.%(point_id)s WHERE %(status)s =
-              'in_work' ORDER BY %(id)s """) % sql_consts_dict + _limit_and_offset(page_num)
+              'in_work' ORDER BY %(id)s """) % sql_consts_dict + limit_and_offset(page_num)
 
     return query
 
@@ -808,16 +505,6 @@ def sql_select_all_point_except_id(point_id: str) -> str:
              """ WHERE %(point_id)s != {0} and %(point_working)s;""") % sql_consts_dict
 
     return query.format(point_id)
-
-
-@log_decorator
-def sql_select_name_from_point_id(point_id: str) -> str:
-    """Return point_name from point_id == id"""
-
-    query = ("""SELECT %(point_name)s FROM %(workspoints)s""" +
-             """ WHERE %(point_id)s = {0};""") % sql_consts_dict
-
-    return query.format(str(point_id))
 
 
 @log_decorator
@@ -925,25 +612,6 @@ def sql_select_top_works() -> str:
        %(workspoints)s ON %(workspoints)s.%(point_id)s = %(oborudovanie)s.%(point_id)s GROUP BY 
        %(workspoints)s.%(point_name)s, %(oborudovanie)s.%(id)s ORDER BY all_works DESC LIMIT 10""") % sql_consts_dict
 
-    return query
-
-
-@log_decorator
-def sql_select_top_points() -> str:
-    """Return query contain SELECT-strintg to 10 first string in point -> sum works"""
-
-    query = ("""SELECT %(workspoints)s.%(point_id)s, %(point_name)s, COUNT(%(works)s.%(id)s) AS all_works,
-     MIN(works.date), MAX(works.date), (SELECT COUNT(%(works)s.%(id)s) FROM %(works)s JOIN %(oborudovanie)s 
-     ON %(oborudovanie)s.%(point_id)s = %(workspoints)s.%(point_id)s WHERE %(works)s.%(date)s >= last_year_date() 
-     AND %(works)s.%(id_obor)s = %(oborudovanie)s.%(id)s) AS lastyear, (SELECT COUNT(%(works)s.%(id)s) FROM %(works)s 
-     JOIN %(oborudovanie)s ON %(oborudovanie)s.%(point_id)s = %(workspoints)s.%(point_id)s WHERE %(works)s.%(date)s >= 
-     last_month_date() AND %(works)s.%(id_obor)s = %(oborudovanie)s.%(id)s) AS lastmonth, (SELECT COUNT(%(works)s.%(id)s) 
-     FROM %(works)s JOIN %(oborudovanie)s ON %(oborudovanie)s.%(point_id)s = %(workspoints)s.%(point_id)s WHERE 
-     %(works)s.%(date)s >= last_day_date() AND %(works)s.%(id_obor)s = %(oborudovanie)s.%(id)s) AS lastday
-    FROM %(workspoints)s JOIN %(oborudovanie)s ON %(oborudovanie)s.%(point_id)s = %(workspoints)s.%(point_id)s 
-    JOIN %(works)s ON %(works)s.%(id_obor)s = %(oborudovanie)s.%(id)s 
-    WHERE %(workspoints)s.%(point_working)s GROUP BY %(workspoints)s.%(point_id)s ORDER BY
-     all_works DESC LIMIT 10""") % sql_consts_dict
     return query
 
 

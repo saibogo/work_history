@@ -4,7 +4,7 @@ import psycopg2
 from typing import *
 
 from wh_app.supporting import functions
-from wh_app.sql import select_sql
+from wh_app.sql.select_sql import select_sql
 
 
 def commit(connection: psycopg2.connect) -> None:

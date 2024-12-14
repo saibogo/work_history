@@ -1,5 +1,5 @@
 from wh_app.supporting import functions
-from wh_app.sql.select_sql import log_decorator
+from wh_app.sql.select_sql.select_sql import log_decorator
 
 functions.info_string(__name__)
 
