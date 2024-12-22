@@ -1,9 +1,11 @@
 import requests
 from datetime import date, datetime
 
-from wh_app.supporting.parser_eesk.parser_config import url_eens, pattern_list, separated
+from wh_app.supporting.parser_eesk.parser_config import url_eens, separated
 from wh_app.supporting.parser_eesk.eens_exception import EeensException
 from wh_app.supporting import functions
+from wh_app.postgresql.database import Database
+from wh_app.sql_operations.select_operations import get_all_find_patterns
 
 functions.info_string(__name__)
 
@@ -13,6 +15,10 @@ def get_eens_data() -> list:
 
     date_start = date.today()
     filtred_date = []
+    pattern_list = []
+    with Database() as base:
+        _, cursor = base
+        pattern_list = get_all_find_patterns(cursor)
     try:
         print(separated)
         print("Попытка получения данных с {}".format(url_eens))

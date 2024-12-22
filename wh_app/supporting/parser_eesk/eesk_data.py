@@ -2,9 +2,11 @@ import pandas as pd
 import requests
 from datetime import date, datetime
 
-from wh_app.supporting.parser_eesk.parser_config import url_eesk, pattern_list
+from wh_app.supporting.parser_eesk.parser_config import url_eesk
 from wh_app.supporting.parser_eesk.eesk_exception import EeskException
 from wh_app.supporting import functions
+from wh_app.postgresql.database import Database
+from wh_app.sql_operations.select_operations import get_all_find_patterns
 
 functions.info_string(__name__)
 
@@ -40,6 +42,10 @@ def is_row_with_correct_date(row) -> bool:
 
 def is_cell_equal_pattern(cell) -> bool:
     """True if one or more string from patterns found in cell"""
+    pattern_list = []
+    with Database() as base:
+        _, cursor = base
+        pattern_list = get_all_find_patterns(cursor)
     for pattern in pattern_list:
         if pattern.lower() in str(cell).lower():
             return True

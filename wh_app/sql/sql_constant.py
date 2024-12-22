@@ -24,7 +24,8 @@ any_consts = {"id": "id",
               "chats": "chats",
               "chat_id": "chat_id",
               "acs_read": "acs_read",
-              "acs_write": "acs_write"
+              "acs_write": "acs_write",
+              "find_patterns": "find_patterns"
               }
 
 workers_const = {"all_workers": "all_workers",

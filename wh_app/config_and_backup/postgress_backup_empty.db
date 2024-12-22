@@ -445,6 +445,17 @@ ALTER TABLE public.electric ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
 
 
 --
+-- Name: find_patterns; Type: TABLE; Schema: public; Owner: saibogo
+--
+
+CREATE TABLE public.find_patterns (
+    pattern text
+);
+
+
+ALTER TABLE public.find_patterns OWNER TO saibogo;
+
+--
 -- Name: works_days; Type: TABLE; Schema: public; Owner: saibogo
 --
 
@@ -924,6 +935,14 @@ ALTER TABLE ONLY public.customer
 
 ALTER TABLE ONLY public.electric
     ADD CONSTRAINT electic_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: find_patterns find_patterns_pattern_key; Type: CONSTRAINT; Schema: public; Owner: saibogo
+--
+
+ALTER TABLE ONLY public.find_patterns
+    ADD CONSTRAINT find_patterns_pattern_key UNIQUE (pattern);
 
 
 --

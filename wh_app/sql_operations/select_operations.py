@@ -36,6 +36,13 @@ def list_to_list_decorator(func: Callable) -> Callable:
     return wrap
 
 
+def list_tuples_to_list_decorator(func: Callable) -> Callable:
+    """[(elem,), (elem1,), ...] -> [elem, elem1, ...]"""
+    def wrap(*args) -> List[Any]:
+        return [elem[0] for elem in func(*args)]
+    return wrap
+
+
 def list_to_first_tuple_decorator(func: Callable) -> Callable:
     """List[Tuple[Any]] -> List[str]"""
     def wrap(*args) -> List[str]:
@@ -311,6 +318,14 @@ def get_all_works_like_word(cursor, word: str) -> List[Tuple[int, str, str, str,
     datetime, problem, result, performers_names)"""
 
     return select_sql.sql_select_all_works_from_like_str(word)
+
+
+@list_tuples_to_list_decorator
+@get_selected_decorator
+def get_all_find_patterns(cursor) -> List[str]:
+    """Function return list of all unique find patterns"""
+
+    return select_sql.sql_select_all_find_patterns()
 
 
 @get_selected_decorator

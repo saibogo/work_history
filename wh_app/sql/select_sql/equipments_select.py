@@ -1,8 +1,6 @@
-from typing import *
-from datetime import datetime
+"""This module contain all SELECT to EQUIPMENT"""
 
 from wh_app.sql.sql_constant import sql_consts_dict
-from wh_app.config_and_backup import config
 
 from wh_app.sql.select_sql.points_select import log_decorator, limit_and_offset
 
@@ -168,5 +166,13 @@ def sql_select_full_equips_info(equip_id: str) -> str:
              """ %(oborudovanie)s.%(point_id)s WHERE""" +
              """ %(oborudovanie)s.%(id)s = {0}""") % sql_consts_dict
 
+    return query.format(equip_id)
+
+
+@log_decorator
+def sql_select_equip_deleted_status(equip_id: str) -> str:
+    """Return query like select deleted from oborudovanie where id = 761"""
+
+    query = """SELECT %(deleted)s FROM %(oborudovanie)s WHERE %(id)s = {}""" % sql_consts_dict
     return query.format(equip_id)
 
