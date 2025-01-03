@@ -6,7 +6,7 @@ from aiogram.utils.exceptions import MessageTextIsEmpty
 
 from wh_app.supporting import functions
 from wh_app.postgresql.database import Database
-from wh_app.sql_operations.select_operations import get_all_telegram_chats
+from wh_app.sql_operations.select_operations.select_operations import get_all_telegram_chats
 from wh_app.telegram_bot.bot_state_machine import BotStateMachine
 from wh_app.config_and_backup.config import path_to_telegram_token, path_to_messages
 from wh_app.telegram_bot.point_bot import all_points, send_statistic, point_info, not_create_record, get_svu,\
@@ -20,7 +20,7 @@ from wh_app.telegram_bot.work_bot import start_create_record
 from wh_app.telegram_bot.work_bot import problem_repler, work_repler, get_work_record
 from wh_app.telegram_bot.support_bot import standart_delete_message
 from wh_app.telegram_bot.find_bot import main_find_menu, find_menu, find_repler, last_day_message
-from wh_app.telegram_bot.workers_bot import send_workers_message
+from wh_app.telegram_bot.workers_bot import send_workers_message, today_schedule_message, week_schedule_message
 from wh_app.telegram_bot.orders_bot import all_noclosed_orders, order_from_id
 
 functions.info_string(__name__)
@@ -307,15 +307,18 @@ async def top10_command(message: types.Message):
     await send_top10(message)
 
 
+@dp.message_handler(commands=['schedule_today'])
+async def schedule_today_command(message: types.Message):
+    await today_schedule_message(message)
+
+
+@dp.message_handler(commands=['schedule_week'])
+async def schedule_week_command(message: types.Message):
+    await week_schedule_message(message)
+
+
 @dp.message_handler()
 async def not_correct_command(message: types.Message):
     """Return to telegram-bot system-status"""
     await send_command_not_found(message)
-
-
-
-
-
-
-
 

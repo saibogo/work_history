@@ -1,7 +1,7 @@
 import asyncio
 
 from wh_app.telegram_bot.support_bot import *
-from wh_app.sql_operations.select_operations import get_full_equip_information, get_last_works_from_equip_id,\
+from wh_app.sql_operations.select_operations.select_operations import get_full_equip_information, get_last_works_from_equip_id,\
     get_works_from_equip_id, get_point, get_count_equips, get_equip_deleted_status, get_last_equip_id
 from wh_app.telegram_bot.create_equip_object import CreateEquipObject
 

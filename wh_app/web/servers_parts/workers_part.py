@@ -5,7 +5,8 @@ from wh_app.web.workers_section import workers_menu, all_workers_table,\
     works_days_page, works_from_performers_table, add_performer_to_work,\
     add_performer_result_method, weekly_chart_page, create_edit_worker_form, update_worker_information,\
     current_workers_table,  remove_performer_from_work,\
-    remove_performer_result_method, top_workers_page, create_new_worker_page, add_new_worker_method
+    remove_performer_result_method, top_workers_page, create_new_worker_page, add_new_worker_method, schedule_menu_page,\
+    today_schedule_page, week_schedule_page
 
 
 @app.route("/workers")
@@ -153,3 +154,20 @@ def add_worker_to_db() -> Response:
                                                           request.method,
                                                           stylesheet_number()), functions.ROLE_SUPERUSER)
 
+
+@app.route('/schedule-menu')
+def schedule_menu() -> Response:
+    """Return menu with current schedule"""
+    return goto_or_redirect(lambda: schedule_menu_page(stylesheet_number()), functions.NO_ROLE)
+
+
+@app.route('/today-schedule')
+def today_schedule() -> Response:
+    """Return table with all workers work today"""
+    return goto_or_redirect(lambda: today_schedule_page(stylesheet_number()), functions.NO_ROLE)
+
+
+@app.route('/week-schedule')
+def week_schedule() -> Response:
+    """Return table with all workers work today and +7 days"""
+    return goto_or_redirect(lambda: week_schedule_page(stylesheet_number()), functions.NO_ROLE)

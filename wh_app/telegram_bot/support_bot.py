@@ -9,7 +9,7 @@ from contextlib import suppress
 from wh_app.postgresql.database import Database
 from wh_app.config_and_backup.config import telegram_delete_message_pause, path_to_project
 from wh_app.supporting import functions
-from wh_app.sql_operations.select_operations import get_point_id_from_equip_id, get_point_name_from_id,\
+from wh_app.sql_operations.select_operations.select_operations import get_point_id_from_equip_id, get_point_name_from_id,\
     is_telegram_user_reader, is_telegram_user_writer, get_worker_id_from_chats
 
 functions.info_string(__name__)

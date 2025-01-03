@@ -83,3 +83,18 @@ def last_year_funct() -> str:
     return """CREATE OR REPLACE FUNCTION last_year_date() RETURNS DATE as $$ 
     BEGIN 
     RETURN NOW()::DATE - 365; END $$ LANGUAGE plpgsql;"""
+
+
+@log_decorator
+def work_day_type_to_string() -> str:
+    """Create or replace SQL function mapping work_day_type to sting"""
+
+    return """CREATE OR REPLACE FUNCTION work_day_type_to_string(st work_day_type) RETURNS text AS $$ 
+    BEGIN 
+    IF st = 'schedule_8_18'::work_day_type THEN RETURN '09:00 - 18:00'::text; 
+    ELSIF st = 'schedule_7_19'::work_day_type THEN RETURN '07:00 - 19-00'::text; 
+    ELSIF st = 'shedule_service'::work_day_type THEN RETURN 'По графику ТО'::text; 
+    ELSE RETURN 'Спецграфик'::text; 
+    END IF; 
+    END; 
+    $$ LANGUAGE plpgsql;"""

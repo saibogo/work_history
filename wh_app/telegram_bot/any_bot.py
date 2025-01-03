@@ -1,6 +1,6 @@
 from wh_app.telegram_bot.support_bot import *
 from wh_app.supporting.system_status import SystemStatus
-from wh_app.sql_operations.select_operations import get_top_10_works, get_top_10_points, get_top_10_workers
+from wh_app.sql_operations.select_operations.select_operations import get_top_10_works, get_top_10_points, get_top_10_workers
 from wh_app.config_and_backup.table_headers import top_10_points_name, top_10_points, top_10_equips_name, top_10_equips,\
     top_10_workers_table_name, top_10_workers_table
 
@@ -19,7 +19,9 @@ async def send_help(message: types.Message):
     msg1 = ['/start -- запуск бота', '/help -- вызов данной справки', '/status -- получение статуса системы',
            '/statistic -- статистика работ','/top10 - список обьектов и оборудования с самым большим количеством работ',
             '/changelog -- просмотреть список изменений',
-            '/points -- все зарегистрированные предприятия']
+            '/points -- все зарегистрированные предприятия',
+            '/schedule_today -- список сотрудников, которые работают СЕГОДНЯ',
+            '/schedule_week -- список сотрудников, работающих сегодня и в течении следующих 7 дней']
     msg2 = ['<b><i>Внимание! Следующие команды требуют Разрешения на чтение.</i></b>',
             '<b><i><u>&lt;Параметр&gt;</u> обозначает число и вводится через пробел</i></b>']
     msg3 = ['/bugs -- Известные проблемы с системой',

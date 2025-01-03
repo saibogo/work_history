@@ -44,6 +44,20 @@ CREATE TYPE public.point_status AS ENUM (
 ALTER TYPE public.point_status OWNER TO postgres;
 
 --
+-- Name: work_day_type; Type: TYPE; Schema: public; Owner: saibogo
+--
+
+CREATE TYPE public.work_day_type AS ENUM (
+    'schedule_8_18',
+    'schedule_7_19',
+    'shedule_service',
+    'schedule_special'
+);
+
+
+ALTER TYPE public.work_day_type OWNER TO saibogo;
+
+--
 -- Name: worker_status; Type: TYPE; Schema: public; Owner: saibogo
 --
 
@@ -191,6 +205,25 @@ CREATE FUNCTION public.point_status_to_string(st public.point_status) RETURNS te
 
 
 ALTER FUNCTION public.point_status_to_string(st public.point_status) OWNER TO postgres;
+
+--
+-- Name: work_day_type_to_string(public.work_day_type); Type: FUNCTION; Schema: public; Owner: saibogo
+--
+
+CREATE FUNCTION public.work_day_type_to_string(st public.work_day_type) RETURNS text
+    LANGUAGE plpgsql
+    AS $$ 
+    BEGIN 
+    IF st = 'schedule_8_18'::work_day_type THEN RETURN '09:00 - 18:00'::text; 
+    ELSIF st = 'schedule_7_19'::work_day_type THEN RETURN '07:00 - 19-00'::text; 
+    ELSIF st = 'shedule_service'::work_day_type THEN RETURN 'По графику ТО'::text; 
+    ELSE RETURN 'Спецграфик'::text; 
+    END IF; 
+    END; 
+    $$;
+
+
+ALTER FUNCTION public.work_day_type_to_string(st public.work_day_type) OWNER TO saibogo;
 
 --
 -- Name: worker_status_to_string(public.worker_status); Type: FUNCTION; Schema: public; Owner: saibogo
@@ -784,6 +817,19 @@ ALTER TABLE public.workers ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
 
 
 --
+-- Name: workers_schedule; Type: TABLE; Schema: public; Owner: saibogo
+--
+
+CREATE TABLE public.workers_schedule (
+    work_date date,
+    worker_id integer,
+    day_type public.work_day_type
+);
+
+
+ALTER TABLE public.workers_schedule OWNER TO saibogo;
+
+--
 -- Name: works; Type: TABLE; Schema: public; Owner: saibogo
 --
 
@@ -1170,6 +1216,14 @@ ALTER TABLE ONLY public.sewerage
 
 ALTER TABLE ONLY public.workers
     ADD CONSTRAINT workers_post_id_fkey FOREIGN KEY (post_id) REFERENCES public.posts(id);
+
+
+--
+-- Name: workers_schedule workers_schedule_worker_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: saibogo
+--
+
+ALTER TABLE ONLY public.workers_schedule
+    ADD CONSTRAINT workers_schedule_worker_id_fkey FOREIGN KEY (worker_id) REFERENCES public.workers(id);
 
 
 --

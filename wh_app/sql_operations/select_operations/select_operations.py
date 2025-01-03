@@ -701,3 +701,10 @@ def get_worker_id_from_chats(cursor, user_id: int) -> int:
     """Return worker_id from chats-table"""
 
     return select_sql.sql_select_worker_id_from_chats(user_id)
+
+
+@get_selected_decorator
+def get_schedule_to_date(cursor, select_date: str) -> List[List]:
+    """Return list with all workers work in selected date"""
+
+    return select_sql.sql_select_schedule_from_date(select_date)

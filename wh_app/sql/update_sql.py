@@ -9,7 +9,7 @@ functions.info_string(__name__)
 
 
 @log_decorator
-def sql_update_point(point_id:str, point_name: str, point_address: str) -> str:
+def sql_update_point(point_id: str, point_name: str, point_address: str) -> str:
     """Returns the query string to update point information """
 
     query = ("""UPDATE %(workspoints)s SET %(point_name)s = '{0}', %(point_address)s = '{1}'""" +
@@ -40,13 +40,11 @@ def sql_update_equip(equip_id: str, equip_name: str, equip_model: str,
 def sql_inverse_points_status(point_id: str) -> str:
     """Return the query string to invert is_work section"""
 
-    #query = ("""UPDATE %(workspoints)s SET %(is_work)s = NOT %(is_work)s""" +
-    #         """ WHERE %(point_id)s = '{0}';""") % sql_consts_dict
-    query = ("""UPDATE %(workspoints)s SET %(is_work)s = CASE
-		WHEN %(is_work)s = 'in_work'::%(point_status)s THEN 'reconstruction'::%(point_status)s
-		WHEN %(is_work)s = 'reconstruction'::%(point_status)s THEN 'closed'::%(point_status)s
-		ELSE 'in_work'::%(point_status)s
-	    END WHERE %(point_id)s = '{0}'""") % sql_consts_dict
+    query = ("""UPDATE %(workspoints)s SET %(is_work)s = CASE 
+    WHEN %(is_work)s = 'in_work'::%(point_status)s THEN 'reconstruction'::%(point_status)s 
+    WHEN %(is_work)s = 'reconstruction'::%(point_status)s THEN 'closed'::%(point_status)s 
+    ELSE 'in_work'::%(point_status)s 
+    END WHERE %(point_id)s = '{0}'""") % sql_consts_dict
 
     return query.format(point_id)
 
@@ -60,7 +58,7 @@ def sql_inverse_worker_status(worker_id: str) -> str:
 
 
 @log_decorator
-def sql_update_worker_info(worker_id: str, name: str, sub_name: str,phone_number: str, post_id: str,
+def sql_update_worker_info(worker_id: str, name: str, sub_name: str, phone_number: str, post_id: str,
                            status: str, employee_date: datetime.date) -> str:
     """Return the query string to update worker information"""
 
@@ -107,9 +105,9 @@ def sql_set_deleted_status(equip_id: str) -> str:
 def sql_invert_bug_status(bug_id: str) -> str:
     """Create query to inverted bug-status in database"""
 
-    query = ("""UPDATE %(bugzilla)s SET %(status)s = NOT %(status)s,""" +\
-            """ %(date_close)s = CASE %(status)s WHEN true THEN NOW() ELSE NULL END """ +\
-            """  WHERE %(id)s = {}""") % sql_consts_dict
+    query = ("""UPDATE %(bugzilla)s SET %(status)s = NOT %(status)s,""" + \
+             """ %(date_close)s = CASE %(status)s WHEN true THEN NOW() ELSE NULL END """ + \
+             """  WHERE %(id)s = {}""") % sql_consts_dict
     return query.format(bug_id)
 
 
@@ -137,7 +135,7 @@ def sql_update_order_info_in_work(order_id: str, comment: str) -> str:
 
 
 @log_decorator
-def sql_update_order_info_not_work(order_id: str, status: str,comment: str) -> str:
+def sql_update_order_info_not_work(order_id: str, status: str, comment: str) -> str:
     """Create query to set order status in in_work and update comment"""
 
     query = """UPDATE %(orders)s SET %(status)s = '{1}', %(closed_date)s = NOW(), %(comment)s = '{2}' WHERE %(id)s = {0}

@@ -1,5 +1,5 @@
 from wh_app.telegram_bot.support_bot import *
-from wh_app.sql_operations.select_operations import get_full_equip_information, get_works_from_equip_id,\
+from wh_app.sql_operations.select_operations.select_operations import get_full_equip_information, get_works_from_equip_id,\
     get_full_information_to_work
 from wh_app.telegram_bot.create_work_object import CreateWorkObject
 

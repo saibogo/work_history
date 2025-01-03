@@ -79,3 +79,17 @@ def sql_select_worker_id_from_chats(user_id: int) -> str:
 
     query = """SELECT %(worker_id)s FROM %(chats)s WHERE %(chat_id)s = {0}""" % sql_consts_dict
     return query.format(user_id)
+
+
+@log_decorator
+def sql_select_schedule_from_date(date: str) -> str:
+    """Return SQL-string fo select all worker and schedule for selected date
+    Date is format: YYYY-MM-DD"""
+
+    query = """SELECT DISTINCT %(work_date)s, %(name)s, %(sub_name)s, %(post_name)s, %(phone_number)s,
+     work_day_type_to_string(%(day_type)s) FROM %(workers_schedule)s JOIN %(workers)s ON
+      %(workers)s.%(id)s = %(worker_id)s JOIN %(posts)s ON %(posts)s.%(id)s = %(workers)s.%(post_id)s 
+      WHERE %(worker_is_work)s AND %(work_date)s = '{}'::date ORDER BY
+       %(work_date)s, %(sub_name)s, %(name)s""" % sql_consts_dict
+
+    return query.format(date)

@@ -1,5 +1,5 @@
 from wh_app.telegram_bot.support_bot import *
-from wh_app.sql_operations.select_operations import get_all_no_closed_orders, get_order_from_id
+from wh_app.sql_operations.select_operations.select_operations import get_all_no_closed_orders, get_order_from_id
 
 functions.info_string(__name__)
 

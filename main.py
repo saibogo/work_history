@@ -3,7 +3,7 @@
 import sys
 
 from wh_app.sql_operations import view_operation, sql_functions_operations
-from wh_app.sql_operations.select_operations import get_database_version as dbversion
+from wh_app.sql_operations.select_operations.select_operations import get_database_version as dbversion
 from wh_app.postgresql.database import Database
 from wh_app.supporting.cli import COMMANDS, COMMANDS_EXT
 

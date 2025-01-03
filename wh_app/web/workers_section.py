@@ -7,7 +7,7 @@ import wh_app.web.template as web_template
 import wh_app.web.universal_html as uhtml
 from wh_app.postgresql.database import Database
 from wh_app.sql_operations import insert_operations
-from wh_app.sql_operations import select_operations
+from wh_app.sql_operations.select_operations import select_operations
 from wh_app.sql_operations import update_operations
 from wh_app.sql_operations import delete_operations
 from wh_app.supporting import functions
@@ -26,10 +26,48 @@ def workers_menu(stylesheet_number: str) -> str:
     """Return main page from WORKERS section"""
     name = 'Действия с сотрудниками'
     menu = ['Все зарегистрированные сотрудники', 'Только работающие',  'Привязки по предприятиям',
-            'Рабочие дни', 'TOP-10 по зарегистрированным работам', "Добавить сотрудника"]
-    links_list = ['/all-workers', '/not-fired-workers', '/works-days', '/weekly-chart', '/top-10-workers', '/add-worker']
+            'Рабочие дни', 'TOP-10 по зарегистрированным работам', "Добавить сотрудника", "Сотрудники на смене"]
+    links_list = ['/all-workers', '/not-fired-workers', '/works-days', '/weekly-chart', '/top-10-workers',
+                  '/add-worker', '/schedule-menu']
     table = uhtml.universal_table(name, ['№', 'Доступное действие'], functions.list_to_numer_list(menu), True, links_list)
     return web_template.result_page(table, '/', str(stylesheet_number))
+
+
+def schedule_menu_page(stylesheet_number: str) -> str:
+    """Return submenu with all current shedulle section"""
+    name = 'Текущие графики'
+    menu = ['График на сегодня', 'График на неделю']
+    links_list = ['/today-schedule', '/week-schedule']
+    table = uhtml.universal_table(name, ['№', 'Период'], functions.list_to_numer_list(menu), True, links_list)
+    return web_template.result_page(table, '/workers-menu', str(stylesheet_number))
+
+
+def today_schedule_page(stylesheet_number: str) -> str:
+    """Return all worker who work today"""
+    with Database() as base:
+        _, cursor = base
+        today_date = datetime.date.today()
+        schedule_list = select_operations.get_schedule_to_date(cursor, str(today_date))
+        table = render_template('universal_table.html', table_name=table_headers.schedule_table_name,
+                                num_columns=len(table_headers.schedule_table), headers=table_headers.schedule_table,
+                                data=schedule_list)
+        return web_template.result_page(table, '/schedule-menu', stylesheet_number)
+
+
+def week_schedule_page(stylesheet_number: str) -> str:
+    """Return all worker work today and +7 days include"""
+    with Database() as base:
+        _, cursor = base
+        result = []
+        for i in range(7):
+            today_date = datetime.date.today() + datetime.timedelta(days=i)
+            schedule_list = select_operations.get_schedule_to_date(cursor, str(today_date))
+            for elem in schedule_list:
+                result.append(elem)
+        table = render_template('universal_table.html', table_name=table_headers.schedule_table_name,
+                                num_columns=len(table_headers.schedule_table), headers=table_headers.schedule_table,
+                                data=result)
+        return web_template.result_page(table, '/schedule-menu', stylesheet_number)
 
 
 def all_workers_table(stylesheet_number: str) -> str:

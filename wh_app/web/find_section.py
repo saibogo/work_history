@@ -5,7 +5,7 @@ from flask import redirect
 import wh_app.web.template as web_template
 import wh_app.web.universal_html as uhtml
 from wh_app.postgresql.database import Database
-from wh_app.sql_operations import select_operations
+from wh_app.sql_operations.select_operations import select_operations
 from wh_app.supporting import functions
 from wh_app.config_and_backup import table_headers
 from wh_app.web.points_section import create_edit_links, create_tech_links

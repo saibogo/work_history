@@ -7,7 +7,7 @@ import re
 
 from wh_app.config_and_backup import config
 from wh_app.postgresql.database import Database
-from wh_app.sql_operations import select_operations
+from wh_app.sql_operations.select_operations import select_operations
 from wh_app.supporting import functions
 from wh_app.config_and_backup import table_headers
 

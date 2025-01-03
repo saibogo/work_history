@@ -1,5 +1,5 @@
 from wh_app.telegram_bot.support_bot import *
-from wh_app.sql_operations.select_operations import get_all_works_points, get_statistic, get_point, get_equip_in_point,\
+from wh_app.sql_operations.select_operations.select_operations import get_all_works_points, get_statistic, get_point, get_equip_in_point,\
     get_maximal_points_id,  get_electric_point_info, get_heating_point_info, get_sewerage_point_info,\
     get_hot_water_point_info, get_cold_water_point_info, get_full_point_information
 from wh_app.config_and_backup.table_headers import point_tech_table

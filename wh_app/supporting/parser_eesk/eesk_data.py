@@ -6,7 +6,7 @@ from wh_app.supporting.parser_eesk.parser_config import url_eesk
 from wh_app.supporting.parser_eesk.eesk_exception import EeskException
 from wh_app.supporting import functions
 from wh_app.postgresql.database import Database
-from wh_app.sql_operations.select_operations import get_all_find_patterns
+from wh_app.sql_operations.select_operations.select_operations import get_all_find_patterns
 
 functions.info_string(__name__)
 

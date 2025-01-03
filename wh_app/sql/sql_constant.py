@@ -1,4 +1,4 @@
-"""This module contain all names from database"""
+"""This module contain all names from database to replace in %()s expressions"""
 
 
 any_consts = {"id": "id",
@@ -25,7 +25,8 @@ any_consts = {"id": "id",
               "chat_id": "chat_id",
               "acs_read": "acs_read",
               "acs_write": "acs_write",
-              "find_patterns": "find_patterns"
+              "find_patterns": "find_patterns",
+              "day_type": "day_type"
               }
 
 workers_const = {"all_workers": "all_workers",
@@ -41,7 +42,9 @@ workers_const = {"all_workers": "all_workers",
                  "post_id": "post_id",
                  "case": "case",
                  "emloyee_date": "emloyee_date",
-                 "dismissal_date": "dismissal_date"
+                 "dismissal_date": "dismissal_date",
+                 "work_date": "work_date",
+                 "workers_schedule": "workers_schedule"
                  }
 
 works_const = {"works_likes": "works_likes",

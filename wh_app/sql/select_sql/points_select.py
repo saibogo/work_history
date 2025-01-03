@@ -182,7 +182,7 @@ def sql_select_all_point_except_id(point_id: str) -> str:
     """Return all point except point_id == id"""
 
     query = ("""SELECT %(point_id)s, %(point_name)s FROM %(workspoints)s""" +
-             """ WHERE %(point_id)s != {0} and %(point_working)s;""") % sql_consts_dict
+             """ WHERE %(point_id)s != {0} and %(point_working)s ORDER BY %(point_name)s""") % sql_consts_dict
 
     return query.format(point_id)
 

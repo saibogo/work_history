@@ -6,7 +6,7 @@ from typing import Iterable, Any, List, Tuple
 
 from wh_app.config_and_backup import config
 from wh_app.postgresql.database import Database
-from wh_app.sql_operations.select_operations import get_cold_water_point_info, get_sewerage_point_info,\
+from wh_app.sql_operations.select_operations.select_operations import get_cold_water_point_info, get_sewerage_point_info,\
     get_electric_point_info, get_heating_point_info, get_hot_water_point_info, user_in_customers, get_hash_to_customer
 from wh_app.supporting import metadata
 

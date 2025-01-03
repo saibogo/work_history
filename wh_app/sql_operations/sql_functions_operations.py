@@ -58,6 +58,11 @@ def create_or_replace_last_year_funct(cursor) -> None:
     create_function(cursor, functions_sql.last_year_funct())
 
 
+def create_or_replace_work_day_type_to_string(cursor) -> None:
+    """Add or replace in database function work day type to string"""
+    create_function(cursor, functions_sql.work_day_type_to_string())
+
+
 def all_sql_functions_list() -> list:
     """Return list contain all function to create virtual tables"""
 
@@ -68,4 +73,5 @@ def all_sql_functions_list() -> list:
             create_or_replace_last_day_funct,
             create_or_replace_last_week_funct,
             create_or_replace_last_month_funct,
-            create_or_replace_last_year_funct]
+            create_or_replace_last_year_funct,
+            create_or_replace_work_day_type_to_string]

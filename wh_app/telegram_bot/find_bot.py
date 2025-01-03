@@ -1,7 +1,7 @@
 import datetime
 
 from wh_app.telegram_bot.support_bot import *
-from wh_app.sql_operations.select_operations import get_all_points_list_from_like_str,\
+from wh_app.sql_operations.select_operations.select_operations import get_all_points_list_from_like_str,\
     get_all_equips_list_from_like_str, get_all_works_like_word, get_worker_id_from_name, get_all_works_from_worker_id,\
     get_all_works_like_word_and_date
 from wh_app.telegram_bot.point_bot import point_message
