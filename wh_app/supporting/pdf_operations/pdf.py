@@ -3,10 +3,11 @@
 from fpdf import FPDF, HTMLMixin
 from typing import List, Any, Tuple
 from flask import render_template
+from datetime import date, timedelta
 
 from wh_app.postgresql.database import Database
 from wh_app.supporting import functions
-from wh_app.sql_operations import select_operations
+from wh_app.sql_operations.select_operations import select_operations
 from wh_app.config_and_backup import table_headers
 from wh_app.config_and_backup.config import path_to_fonts
 from wh_app.web.orders_section import _correct_orders_table
@@ -274,6 +275,35 @@ def all_orders(page_num: int) -> FPDF:
             correct_orders[i] = correct_orders[i][ : len(correct_orders[i]) - 1]
         html = make_html_table(correct_orders, table_headers.orders_table[:len(table_headers.orders_table) - 1])
         pdf.write_html(html, table_line_separators=True)
+        return pdf
+
+
+def schedule_td() -> FPDF:
+    """Create table contain all workers who work today"""
+    with Database() as base:
+        _, cursor = base
+        pdf = create_document('Landscape')
+        today_date = date.today()
+        schedule_list = select_operations.get_schedule_to_date(cursor, str(today_date))
+        html = make_html_table(schedule_list, table_headers.schedule_table)
+        pdf.write_html(html, table_line_separators=True)
+        return pdf
+
+
+def schedule_wk() -> FPDF:
+    """Create table contain all workers who work today and +7 days"""
+    with Database() as base:
+        _, cursor = base
+        pdf = create_document('Landscape')
+        htmls = []
+        for i in range(7):
+            result = []
+            today_date = date.today() + timedelta(days=i)
+            schedule_list = select_operations.get_schedule_to_date(cursor, str(today_date))
+            for elem in schedule_list:
+                result.append(elem)
+            htmls.append(make_html_table(schedule_list, table_headers.schedule_table))
+        pdf.write_html('\n'.join(htmls), table_line_separators=True)
         return pdf
 
 

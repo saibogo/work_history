@@ -93,3 +93,13 @@ def sql_select_schedule_from_date(date: str) -> str:
        %(work_date)s, %(sub_name)s, %(name)s""" % sql_consts_dict
 
     return query.format(date)
+
+
+@log_decorator
+def sql_select_all_work_days_type() -> str:
+    """Return all pairs (work day type, str(work day type))"""
+
+    query = """SELECT tmp1, work_day_type_to_string(tmp1) FROM (SELECT unnest(enum_range(NULL::work_day_type)) AS tmp1)
+     AS tmp""" % sql_consts_dict
+
+    return query

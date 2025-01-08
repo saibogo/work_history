@@ -708,3 +708,10 @@ def get_schedule_to_date(cursor, select_date: str) -> List[List]:
     """Return list with all workers work in selected date"""
 
     return select_sql.sql_select_schedule_from_date(select_date)
+
+
+@get_selected_decorator
+def get_all_work_days_types(cursor) -> List:
+    """Return list with all pairs (day type, string with day_type)"""
+
+    return select_sql.sql_select_all_work_days_type()

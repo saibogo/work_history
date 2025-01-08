@@ -7,7 +7,7 @@ from wh_app.web.any_section import main_web_menu, faq_page, statistics_page,\
 from wh_app.supporting.pdf_operations.pdf import equips_in_point, works_from_equip,\
     works_from_performer, weekly_charts_pdf, move_equip, point_tech_information, find_work_without_date, find_equip,\
     find_point, find_work_with_date, works_from_performer_with_date, top10workers, top10points, top10equips,\
-    work_from_id, order_to_pdf, no_closed_orders, all_orders
+    work_from_id, order_to_pdf, no_closed_orders, all_orders, schedule_td, schedule_wk
 
 
 @app.route("/")
@@ -95,7 +95,9 @@ def html_table_to_pdf(data:str) -> Response:
                      "work": work_from_id,
                      "order-to-pdf": order_to_pdf,
                      "no-closed-orders": no_closed_orders,
-                     "all-orders": all_orders}
+                     "all-orders": all_orders,
+                     "schedule-td": schedule_td,
+                     "schedule-wk": schedule_wk}
 
     lst_data = data.split('=')
     if len(lst_data) == 1:

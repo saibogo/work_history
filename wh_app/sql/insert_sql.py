@@ -100,3 +100,10 @@ def sql_add_new_order(customer_id: str, point_id: str, order_info: str) -> str:
     query = """INSERT INTO %(orders)s (%(customer_id)s, %(date)s, %(status)s, %(problem)s, %(point_id)s) 
     VALUES ({0}, NOW(), 'in_work', '{1}', {2})""" % sql_consts_dict
     return query.format(customer_id, order_info, point_id)
+
+
+@log_decorator
+def sql_add_new_day_in_schedule(work_day: str, worker_id: int, day_type: str) -> str:
+    """Return SQL-string to insert new schedule-day in schedule database"""
+    query = """INSERT INTO %(workers_schedule)s VALUES('{0}', {1}, '{2}')""" % sql_consts_dict
+    return query.format(work_day, worker_id, day_type)

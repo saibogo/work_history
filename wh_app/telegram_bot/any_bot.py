@@ -1,8 +1,12 @@
 from wh_app.telegram_bot.support_bot import *
 from wh_app.supporting.system_status import SystemStatus
-from wh_app.sql_operations.select_operations.select_operations import get_top_10_works, get_top_10_points, get_top_10_workers
+from wh_app.sql_operations.select_operations.select_operations import get_top_10_works, get_top_10_points,\
+    get_top_10_workers, get_all_find_patterns
 from wh_app.config_and_backup.table_headers import top_10_points_name, top_10_points, top_10_equips_name, top_10_equips,\
     top_10_workers_table_name, top_10_workers_table
+from wh_app.supporting.parser_eesk.eens_data import get_eens_data, EeensException
+from wh_app.supporting.parser_eesk.eesk_data import get_eesk_data, EeskException
+from wh_app.config_and_backup import table_headers
 
 functions.info_string(__name__)
 
@@ -21,7 +25,8 @@ async def send_help(message: types.Message):
             '/changelog -- просмотреть список изменений',
             '/points -- все зарегистрированные предприятия',
             '/schedule_today -- список сотрудников, которые работают СЕГОДНЯ',
-            '/schedule_week -- список сотрудников, работающих сегодня и в течении следующих 7 дней']
+            '/schedule_week -- список сотрудников, работающих сегодня и в течении следующих 7 дней',
+            '/power_outages -- информация о планируемых отключениях э/э со стороны Екатеринбургэнергосбыт и ЕЭСК']
     msg2 = ['<b><i>Внимание! Следующие команды требуют Разрешения на чтение.</i></b>',
             '<b><i><u>&lt;Параметр&gt;</u> обозначает число и вводится через пробел</i></b>']
     msg3 = ['/bugs -- Известные проблемы с системой',
@@ -99,3 +104,69 @@ async def send_top10(message: types.Message):
         standart_delete_message(msg_del1)
         msg_del2 = await message.answer(msg_workers, reply_markup=ReplyKeyboardRemove())
         standart_delete_message(msg_del2)
+
+
+async def power_outages(message: types.Message):
+    """Return all records about power outages from EENS.ru and EESK.ru"""
+    try:
+        msg = list()
+        msg = msg + __message_from_eens() + [separator] + __message_from_eesk() + [separator] + __patterns_to_power_outages()
+        msg_del = await message.answer('\n'.join(msg), reply_markup=ReplyKeyboardRemove())
+        standart_delete_message(msg_del)
+    except (MessageIsTooLong, BadRequest) as e:
+        msg_dels = list()
+        tmp = '\n'.join(msg)
+        for i in range(0, len(tmp), MAX_CHAR_IN_MSG):
+            msg_dels.append(await message.answer(tmp[i: i + MAX_CHAR_IN_MSG]))
+            standart_delete_message(msg_dels[-1])
+    except MessageTextIsEmpty or IndexError:
+        msg_del = await message.answer('Ничего не найдено!', reply_markup=ReplyKeyboardRemove())
+        standart_delete_message(msg_del)
+
+    except NetworkError:
+        msg_dels = list()
+        tmp = '\n'.join(msg)
+        for i in range(len(tmp) - 5 * MAX_CHAR_IN_MSG, len(tmp), MAX_CHAR_IN_MSG):
+            msg_dels.append(await message.answer(tmp[i: i + MAX_CHAR_IN_MSG]))
+            standart_delete_message(msg_dels[-1])
+        msg_del = await message.answer('Результатов слишком много!. Вывод был ограничен!',
+                                       reply_markup=ReplyKeyboardRemove())
+        standart_delete_message(msg_del)
+
+
+def __message_from_eens() -> list:
+    """Return data from EENS.ru"""
+    msg = list()
+    try:
+        eens_list = [[elem['num'], elem['startDate'], elem['endDate'],
+                      elem['objects'], elem['street'], elem['link']] for elem in get_eens_data()]
+        for phone in eens_list:
+            phone[-1] = '{}'.format(phone[-1])
+        msg = [create_message_for_top(table_headers.eens_table_name, table_headers.eens_table, eens_list)]
+    except EeensException as e:
+        msg.append('Данные с сайта Екатеринбургэнергосбыт недоступны')
+
+    return msg
+
+
+def __message_from_eesk() -> list:
+    """Return data from EESK.ru"""
+    msg = list()
+    try:
+        eesk_list = [[elem[2], elem[3], elem[4], elem[6]] for elem in get_eesk_data()]
+        msg = [create_message_for_top(table_headers.eesk_table_name, table_headers.eesk_table, eesk_list)]
+    except EeskException as e:
+        msg = ['Данные с сайта ЕЭСК недоступны']
+
+    return msg
+
+
+def __patterns_to_power_outages() -> list:
+    """Return all find patterns in database to find correct outages"""
+    msg = list()
+    with Database() as base:
+        _, cursor = base
+        find_list = get_all_find_patterns(cursor)
+        msg = [separator, 'Список слов для поиска возможных отключений', ''] + find_list
+        return ['\n'.join(msg)]
+

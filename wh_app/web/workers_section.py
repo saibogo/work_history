@@ -36,8 +36,8 @@ def workers_menu(stylesheet_number: str) -> str:
 def schedule_menu_page(stylesheet_number: str) -> str:
     """Return submenu with all current shedulle section"""
     name = 'Текущие графики'
-    menu = ['График на сегодня', 'График на неделю']
-    links_list = ['/today-schedule', '/week-schedule']
+    menu = ['График на сегодня', 'График на неделю', 'Добавить рабочую смену']
+    links_list = ['/today-schedule', '/week-schedule', '/add-info-in-schedule']
     table = uhtml.universal_table(name, ['№', 'Период'], functions.list_to_numer_list(menu), True, links_list)
     return web_template.result_page(table, '/workers-menu', str(stylesheet_number))
 
@@ -51,22 +51,36 @@ def today_schedule_page(stylesheet_number: str) -> str:
         table = render_template('universal_table.html', table_name=table_headers.schedule_table_name,
                                 num_columns=len(table_headers.schedule_table), headers=table_headers.schedule_table,
                                 data=schedule_list)
-        return web_template.result_page(table, '/schedule-menu', stylesheet_number)
+        return web_template.result_page(table, '/schedule-menu', stylesheet_number, True, 'schedule-td')
 
 
 def week_schedule_page(stylesheet_number: str) -> str:
     """Return all worker work today and +7 days include"""
     with Database() as base:
         _, cursor = base
-        result = []
+        tables = []
         for i in range(7):
+            result = []
             today_date = datetime.date.today() + datetime.timedelta(days=i)
             schedule_list = select_operations.get_schedule_to_date(cursor, str(today_date))
             for elem in schedule_list:
                 result.append(elem)
-        table = render_template('universal_table.html', table_name=table_headers.schedule_table_name,
-                                num_columns=len(table_headers.schedule_table), headers=table_headers.schedule_table,
-                                data=result)
+            table = render_template('universal_table.html', table_name=str(today_date),
+                                    num_columns=len(table_headers.schedule_table), headers=table_headers.schedule_table, data=result)
+            tables.append(table)
+        return web_template.result_page('\n'.join(tables), '/schedule-menu', stylesheet_number, True, 'schedule-wk')
+
+
+def add_info_in_schedule_form(stylesheet_number: str) -> str:
+    """Create form to add new information in shedule"""
+    with Database() as base:
+        _, cursor = base
+        cd = functions.date_to_browser()
+        performers = select_operations.get_all_workers_real(cursor)
+        days_types = select_operations.get_all_work_days_types(cursor)
+        table = render_template('add_work_day_in_schedule.html', current_date=cd, performers=performers,
+                                performer_name=uhtml.PERFORMER, days_types=days_types, work_day_type=uhtml.WORK_DAY_TYPE,
+                                password=uhtml.PASSWORD)
         return web_template.result_page(table, '/schedule-menu', stylesheet_number)
 
 
@@ -418,4 +432,26 @@ def add_new_worker_method(data, method, stylesheet_number: str) -> str:
             page = uhtml.pass_is_not_valid()
     else:
         page = '<h2>Method in Remove performer not corrected!</h2>'
+    return web_template.result_page(page, pre_adr, str(stylesheet_number))
+
+
+def insert_new_schedule_in_db(data, method, stylesheet_number: str) -> str:
+    """Add new info in schedule"""
+    pre_adr = 'schedule-menu'
+    if method == 'POST':
+        performer = data[uhtml.PERFORMER]
+        day_datetype = data['day_datetime']
+        correct_date = day_datetype[:day_datetype.index('T')]
+        work_day_type = data[uhtml.WORK_DAY_TYPE]
+        password = data[uhtml.PASSWORD]
+        if functions.is_superuser_password(password):
+            with Database() as base:
+                connection, cursor = base
+                insert_operations.insert_new_day_in_schedule(cursor, correct_date, performer, work_day_type)
+                connection.commit()
+                page = uhtml.operation_completed()
+        else:
+            page = uhtml.pass_is_not_valid()
+    else:
+        page = '<h2>Method in Add new data in Shedule not corrected!</h2>'
     return web_template.result_page(page, pre_adr, str(stylesheet_number))

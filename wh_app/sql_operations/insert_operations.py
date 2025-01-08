@@ -1,4 +1,4 @@
-from wh_app.sql_operations import select_operations
+from wh_app.sql_operations.select_operations import select_operations
 from wh_app.sql.insert_sql import *
 
 functions.info_string(__name__)
@@ -61,5 +61,11 @@ def insert_new_order(cursor, customer_id: str, point_id: str, order_info: str) -
     """add new order in database"""
 
     cursor.execute(sql_add_new_order(customer_id, point_id, order_info))
+
+
+def insert_new_day_in_schedule(cursor, work_day: str, worker_id: int, day_type: str) -> None:
+    """add new record in work schedule"""
+
+    cursor.execute(sql_add_new_day_in_schedule(str(work_day), int(worker_id), str(day_type)))
 
 

@@ -13,7 +13,7 @@ from wh_app.telegram_bot.point_bot import all_points, send_statistic, point_info
     get_tech_info
 from wh_app.telegram_bot.equip_bot import equip_info, start_add_new_equip, save_new_equip, equip_repler
 from wh_app.telegram_bot.any_bot import send_welcome, send_help, send_status, send_command_not_found, send_changelog,\
-    send_top10
+    send_top10, power_outages
 from wh_app.telegram_bot.bugs_bot import all_bugs, start_create_new_bug, new_bug_repler, bug_from_bug_id,\
     invert_bug_status_from_bot
 from wh_app.telegram_bot.work_bot import start_create_record
@@ -86,90 +86,96 @@ async def start_message():
                 pass
 
 
-@dp.message_handler(commands=['start'])
+@dp.message_handler(filters.Command(commands=['start'], ignore_case=True))
 async def start_command(message: types.Message):
     await send_welcome(message)
 
 
-@dp.message_handler(commands=['help'])
+@dp.message_handler(filters.Command(commands=['help'], ignore_case=True))
 async def help_command(message: types.Message):
     """Return to telegram-bot HELP-message"""
     await send_help(message)
 
 
-@dp.message_handler(commands=['status'])
+@dp.message_handler(filters.Command(commands=['status'], ignore_case=True))
 async def status_command(message: types.Message):
     """Return to telegram-bot system-status"""
     await send_status(message)
 
 
-@dp.message_handler(commands=['statistic'])
+@dp.message_handler(filters.Command(commands=['power_outages'], ignore_case=True))
+async def power_outages_command(message: types.Message):
+    """Return to telegram-bot system-status"""
+    await power_outages(message)
+
+
+@dp.message_handler(filters.Command(commands=['statistic'], ignore_case=True))
 async def statistic_command(message: types.Message):
     await send_statistic(message)
 
 
-@dp.message_handler(commands=['points'])
+@dp.message_handler(filters.Command(commands=['points'], ignore_case=True))
 async def points_command(message: types.Message):
     await all_points(message)
 
 
-@dp.message_handler(commands=['changelog'])
+@dp.message_handler(filters.Command(commands=['changelog'], ignore_case=True))
 async def changelog_command(message: types.Message):
     await send_changelog(message)
 
 
-@dp.message_handler(commands=['lastday'])
+@dp.message_handler(filters.Command(commands=['lastday'], ignore_case=True))
 async def lastday_command(message: types.Message):
     await last_day_message(message)
 
 
-@dp.message_handler(regexp='point\s+[0-9]{1,}')
+@dp.message_handler(regexp='/[pP][oO][iI][nN][tT]\s+[0-9]{1,}')
 async def point_command(message: types.Message):
     await point_info(message)
 
 
-@dp.message_handler(regexp='svu\s+[0-9]{1,}')
+@dp.message_handler(regexp='/[sS][vV][uU]\s+[0-9]{1,}')
 async def get_svu_command(message: types.Message):
     await get_svu(message)
 
 
-@dp.message_handler(regexp='tech\s+[0-9]{1,}')
+@dp.message_handler(regexp='/[tT][eE][cC][hH]\s+[0-9]{1,}')
 async def get_tech_command(message: types.Message):
     await get_tech_info(message)
 
 
-@dp.message_handler(commands=['bugs'])
+@dp.message_handler(filters.Command(commands=['bugs'], ignore_case=True))
 async def bugs_command(message: types.Message):
     """Return to telegram-bot all bugs"""
     await all_bugs(message)
 
 
-@dp.message_handler(commands=['orders'])
+@dp.message_handler(filters.Command(commands=['orders'], ignore_case=True))
 async def all_orders_command(message: types.Message):
     """Return in telegramm bot list of all no-closed orders"""
     await all_noclosed_orders(message)
 
 
-@dp.message_handler(regexp='/order\s+[0-9]{1,}')
+@dp.message_handler(regexp='/[oO][rR][dD][eE][rR]\s+[0-9]{1,}')
 async def order_command(message: types.Message):
     """Return message in telegram-bot with order where ID = order_id"""
     await order_from_id(message)
 
 
-@dp.message_handler(commands=['workers'])
+@dp.message_handler(filters.Command(commands=['workers'], ignore_case=True))
 async def workers_command(message: types.Message):
     """Return to telegram-bot all bugs"""
     await send_workers_message(message)
 
 
-@dp.message_handler(regexp='/work\s+[0-9]{1,}')
+@dp.message_handler(regexp='/[wW][oO][rR][kK]\s+[0-9]{1,}')
 async def work_command(message: types.Message):
     """Return to telegram bot info from work whit work_id == ID
     Example /work 1546"""
     await get_work_record(message)
 
 
-@dp.message_handler(regexp='/bug\s+[0-9]{1,}')
+@dp.message_handler(regexp='/[bB][uU][gG]\s+[0-9]{1,}')
 async def bug_from_id_command(message: types.Message):
     """Return bug with id == bug_id"""
     await bug_from_bug_id(message)
@@ -220,7 +226,8 @@ async def save_new_equip_command(message: types.message):
     await save_new_equip(message)
 
 
-@dp.message_handler(filters.RegexpCommandsFilter(regexp_commands=['equip\s+[0-9]{1,}\s+all', 'equip\s+[0-9]{1,}']))
+@dp.message_handler(filters.RegexpCommandsFilter(regexp_commands=['/[eE][qQ][uU][iI][pP]\s+[0-9]{1,}\s+[aA][lL][lL]',
+                                                                  '/[eE][qQ][uU][iI][pP]\s+[0-9]{1,}']))
 async def equip_info_command(message: types.Message):
     await equip_info(message)
 
@@ -248,7 +255,7 @@ async def exec_in_new_work(message: types.Message):
     await work_repler(message)
 
 
-@dp.message_handler(commands=['find'])
+@dp.message_handler(filters.Command(commands=['find'], ignore_case=True))
 async def find_command(message: types.Message):
     """Start menu select find-type"""
     await main_find_menu(message)
@@ -302,17 +309,17 @@ async def find_performer_repler_command(message: types.Message):
     await find_repler(message, 'performer')
 
 
-@dp.message_handler(commands=['top10'])
+@dp.message_handler(filters.Command(commands=['top10'], ignore_case=True))
 async def top10_command(message: types.Message):
     await send_top10(message)
 
 
-@dp.message_handler(commands=['schedule_today'])
+@dp.message_handler(filters.Command(commands=['schedule_today'], ignore_case=True))
 async def schedule_today_command(message: types.Message):
     await today_schedule_message(message)
 
 
-@dp.message_handler(commands=['schedule_week'])
+@dp.message_handler(filters.Command(commands=['schedule_week'], ignore_case=True))
 async def schedule_week_command(message: types.Message):
     await week_schedule_message(message)
 

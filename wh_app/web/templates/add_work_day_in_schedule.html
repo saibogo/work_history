@@ -1,0 +1,39 @@
+<h2>Внесение сотрудника в график</h2>
+<form action="/insert-info-in-schedule" method="post">
+    <div class="container">
+        <div class="tr_div_login">
+            <div class="faq_quest">Выберите дату</div>
+            <div class="faq_answer">
+                <input type="datetime-local" name="day_datetime" value="{{current_date}}">
+            </div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Выберите Сотрудника</div>
+            <div class="faq_answer">
+                <select  name="{{performer_name}}" class="tr_select">
+                    {% for performer in performers %}
+                        <option value={{performer[0]}}>{{performer[1]}}</option>
+                    {% endfor %}
+            </select>
+            </div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Тип рабочего дня</div>
+            <div class="faq_answer">
+                <select  name="{{work_day_type}}" class="tr_select">
+                    {% for day_type in days_types %}
+                        <option value="{{day_type[0]}}">{{day_type[1]}}</option>
+                    {% endfor %}
+            </select>
+            </div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Пароль администратора:</div>
+            <div class="faq_answer"><input type="password" name="{{password}}"></div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest"></div>
+            <div class="faq_answer"><input type="submit" value="Применить изменения"></div>
+        </div>
+    </div>
+</form>
