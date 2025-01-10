@@ -15,9 +15,15 @@ from wh_app.sql_operations.select_operations.select_operations import get_point_
 functions.info_string(__name__)
 
 separator = '=' * 10
+d_separator = '*' * 40
 bender_message = "Машины восстанут! Поцелуйте мой блестящий металлический зад!"
 write_not_access = 'Вам не разрешена запись в базу данных'
 MAX_CHAR_IN_MSG = 4000
+
+
+def date_separator(date) -> str:
+    """Return string with selected date"""
+    return '\n\n<b><i>' + d_separator + '\n' + str(date) + '\n' + d_separator + '</i></b>'
 
 
 def not_reader_decorator(func: Callable) -> Callable:

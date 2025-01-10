@@ -52,20 +52,20 @@ async def week_schedule_message(message: types.Message):
             _, cursor = base
             msg = list()
             for i in range(7):
-                msg.append(separator)
                 today_date = str(datetime.date.today() + datetime.timedelta(days=i))
+                msg.append(date_separator(today_date))
                 schedule_list = get_schedule_to_date(cursor, today_date)
                 for worker in schedule_list:
                     msg.append(separator)
                     for i in range(len(table_headers.schedule_table)):
                         msg.append('{}: {}'.format(table_headers.schedule_table[i], worker[i]))
-            msg_del = await message.answer('\n'.join(msg))
+            msg_del = await message.answer('\n'.join(msg), parse_mode='HTML')
             standart_delete_message(msg_del)
     except (MessageIsTooLong, BadRequest) as e:
         msg_dels = list()
         tmp = '\n'.join(msg)
         for i in range(0, len(tmp), MAX_CHAR_IN_MSG):
-            msg_dels.append(await message.answer(tmp[i: i + MAX_CHAR_IN_MSG]))
+            msg_dels.append(await message.answer(tmp[i: i + MAX_CHAR_IN_MSG], parse_mode='HTML'))
             standart_delete_message(msg_dels[-1])
 
     except MessageTextIsEmpty or IndexError:
@@ -76,7 +76,7 @@ async def week_schedule_message(message: types.Message):
         msg_dels = list()
         tmp = '\n'.join(msg)
         for i in range(len(tmp) - 5 * MAX_CHAR_IN_MSG, len(tmp), MAX_CHAR_IN_MSG):
-            msg_dels.append(await message.answer(tmp[i: i + MAX_CHAR_IN_MSG]))
+            msg_dels.append(await message.answer(tmp[i: i + MAX_CHAR_IN_MSG], parse_mode='HTML'))
             standart_delete_message(msg_dels[-1])
         msg_del = await message.answer('Результатов слишком много!. Вывод был ограничен!',
                                        reply_markup=ReplyKeyboardRemove())

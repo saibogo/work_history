@@ -120,6 +120,21 @@ CREATE FUNCTION public.bug_status_to_string(st public.order_status) RETURNS text
 ALTER FUNCTION public.bug_status_to_string(st public.order_status) OWNER TO saibogo;
 
 --
+-- Name: date_to_date_and_day_string(date); Type: FUNCTION; Schema: public; Owner: saibogo
+--
+
+CREATE FUNCTION public.date_to_date_and_day_string(d date) RETURNS text
+    LANGUAGE plpgsql
+    AS $$
+    BEGIN
+    RETURN d || '(' || To_Char(d, 'TMDAY') || ')' :: text;
+    END;
+    $$;
+
+
+ALTER FUNCTION public.date_to_date_and_day_string(d date) OWNER TO saibogo;
+
+--
 -- Name: last_day_date(); Type: FUNCTION; Schema: public; Owner: saibogo
 --
 

@@ -98,3 +98,14 @@ def work_day_type_to_string() -> str:
     END IF; 
     END; 
     $$ LANGUAGE plpgsql;"""
+
+
+@log_decorator
+def date_to_date_and_day_of_week() -> str:
+    """Create or replace SQL function mapping date to string likes YYYY-MM-DD(Day of week)"""
+
+    return """CREATE OR REPLACE FUNCTION date_to_date_and_day_string(d DATE) RETURNS text AS $$
+    BEGIN
+    RETURN d || '(' || To_Char(d, 'TMDAY') || ')' :: text;
+    END;
+    $$ LANGUAGE plpgsql;"""

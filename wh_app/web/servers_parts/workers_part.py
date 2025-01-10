@@ -1,4 +1,5 @@
 """This module contain all actions with workers and performers for Flask server.py"""
+import flask
 
 from wh_app.web.servers_parts.support_part import *
 from wh_app.web.workers_section import workers_menu, all_workers_table,\
@@ -164,13 +165,13 @@ def schedule_menu() -> Response:
 @app.route('/today-schedule')
 def today_schedule() -> Response:
     """Return table with all workers work today"""
-    return goto_or_redirect(lambda: today_schedule_page(stylesheet_number()), functions.NO_ROLE)
+    return  flask.make_response(today_schedule_page(stylesheet_number()))
 
 
 @app.route('/week-schedule')
 def week_schedule() -> Response:
     """Return table with all workers work today and +7 days"""
-    return goto_or_redirect(lambda: week_schedule_page(stylesheet_number()), functions.NO_ROLE)
+    return flask.make_response(week_schedule_page(stylesheet_number()))
 
 
 @app.route('/add-info-in-schedule')

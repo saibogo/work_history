@@ -120,6 +120,21 @@ CREATE FUNCTION public.bug_status_to_string(st public.order_status) RETURNS text
 ALTER FUNCTION public.bug_status_to_string(st public.order_status) OWNER TO saibogo;
 
 --
+-- Name: date_to_date_and_day_string(date); Type: FUNCTION; Schema: public; Owner: saibogo
+--
+
+CREATE FUNCTION public.date_to_date_and_day_string(d date) RETURNS text
+    LANGUAGE plpgsql
+    AS $$
+    BEGIN
+    RETURN d || '(' || To_Char(d, 'TMDAY') || ')' :: text;
+    END;
+    $$;
+
+
+ALTER FUNCTION public.date_to_date_and_day_string(d date) OWNER TO saibogo;
+
+--
 -- Name: last_day_date(); Type: FUNCTION; Schema: public; Owner: saibogo
 --
 
@@ -1125,7 +1140,9 @@ COPY public.bugzilla (id, problem, status, date_start, date_close) FROM stdin;
 103	необходимо реализовать журнал событий(например вход пользователя в систему)	t	2025-01-03 17:53:22.836777	\N
 102	необходимо реализовать отображение сотрудников на смене, а также возможность редактирования их графика	f	2025-01-03 10:30:23.977131	2025-01-04 11:46:58.872053
 99	необходимо реализовать просмотр планируемых отключений э/э через телеграмм бот	f	2024-12-18 09:23:12.909727	2025-01-07 10:24:37.542088
-104	необходимо реализовать сохранение списка сотрудников на смене в pdf	t	2025-01-07 16:31:25.750006	\N
+104	необходимо реализовать сохранение списка сотрудников на смене в pdf	f	2025-01-07 16:31:25.750006	2025-01-08 12:34:03.321195
+105	необходимо реализовать допуск к чтению страниц с недельным графиком сотрудников без использования сессий	f	2025-01-09 08:24:24.017701	2025-01-09 09:19:06.36821
+106	при просмотре графика сотрудников на смене и недельного графика необходимо указывать день недели	f	2025-01-09 10:06:24.764092	2025-01-09 10:57:45.712882
 \.
 
 
@@ -1865,7 +1882,6 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 605	21	витрина охлаждаемая десертная	not model	not number	605	f
 606	23	весы CAS настольные	SW-05	not number	606	f
 607	6	светильники бра Конус(зал)	not model	not number	607	f
-608	2	машина раскаточная (Италия)	not model	not number	608	f
 609	2	плита индукционная Техно-ТТ 4 комфорки	ИПП-410134	12.101136	609	f
 610	21	стены стеклянные зал	not model	not number	610	f
 611	29	ВРУ	not model	not number	611	f
@@ -3102,6 +3118,8 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 1814	47	мойка двухсекционная кухня	not model	not number	95	f
 1815	10	Пушка тепловая Ballu	BHP-P2-9	1002007072200765503264	1473	f
 1816	34	Дверь на мойку	not model	not number	1816	f
+1817	45	Магистральная фильтровальная установка раздача	not model	not number	1817	f
+608	2	машина раскаточная Rollmatic	SH50B/07		608	f
 \.
 
 
@@ -11621,6 +11639,16 @@ COPY public.performers (id, work_id, worker_id) FROM stdin;
 8476	7769	10
 8477	7770	10
 8478	7770	1
+8479	7771	1
+8480	7772	9
+8481	7773	1
+8482	7774	8
+8483	7775	9
+8484	7776	1
+8485	7777	15
+8486	7778	15
+8487	7779	15
+8488	7780	8
 \.
 
 
@@ -11736,6 +11764,30 @@ COPY public.workers_schedule (work_date, worker_id, day_type) FROM stdin;
 2025-01-13	10	shedule_service
 2025-01-13	6	shedule_service
 2025-01-13	5	shedule_service
+2025-01-14	1	schedule_8_18
+2025-01-14	8	schedule_8_18
+2025-01-14	9	schedule_8_18
+2025-01-14	15	schedule_8_18
+2025-01-14	10	shedule_service
+2025-01-14	5	shedule_service
+2025-01-14	6	shedule_service
+2025-01-15	1	schedule_8_18
+2025-01-15	9	schedule_8_18
+2025-01-15	10	shedule_service
+2025-01-15	6	shedule_service
+2025-01-15	5	shedule_service
+2025-01-16	1	schedule_8_18
+2025-01-16	9	schedule_8_18
+2025-01-16	8	schedule_7_19
+2025-01-16	10	shedule_service
+2025-01-16	5	shedule_service
+2025-01-16	6	shedule_service
+2025-01-15	15	schedule_7_19
+2025-01-17	1	schedule_8_18
+2025-01-17	8	schedule_7_19
+2025-01-17	10	shedule_service
+2025-01-17	5	shedule_service
+2025-01-17	6	shedule_service
 \.
 
 
@@ -19509,6 +19561,16 @@ COPY public.works (id, id_obor, date, problem, result) FROM stdin;
 7768	297	2024-12-30 19:00:00	чистка жироуловителей	вычищен
 7769	210	2024-12-30 19:30:00	чистка жироуловителей	вычищен
 7770	297	2025-01-07 20:18:00	не уходит вода с жироуловителя	Засор в отходящей трубе. Прочищено троссом. Промыто большим количеством кипятка с моющим средством
+7771	382	2025-01-08 11:59:00	плановая чистка	силами АКС КРОТ прочищен участок от колодца за жироуловителем до сборного колодца(спираль + цепь). Вычищены отложения в колодце за жироуловителем - примерно ведро жирового осадка
+7772	608	2025-01-08 11:00:00	сломан переключатель направления	Заменен на DeCraft I-0-II НО-НО (Электромир)
+7773	608	2025-01-08 14:47:00	задирает мягкое тесто	вычищены верхние ножи. Удалось немного сжать коромысло крепления ножей но необходима замена всех ножей
+7774	629	2025-01-08 14:59:05	Заменить дозатор мыла	Заменён, напротив железной мойки.
+7775	1817	2025-01-08 17:22:21	Установка корпуса фильтра экогейзер	Перед фильтром Britta(Инхорека) установил корпус и фильтр экогейзер(Ситилинк) (20мк 10").  подключил к водопровоу и проложил расределительную магистраль металлопластиковой трубой 16мм с цанговыми фитингами. Заменил фильтрующий элемент Britta
+7776	76	2025-01-09 12:03:00	течет вода из под правой мойки	Вычищен и установлен на корректное место сифон-разрыв струи. Обнаружено переполнение жироуловителя - необходима чистка
+7777	930	2025-01-09 12:25:45	Сломался декоративный уголок	Сьездил в Леруа купил новый. Приклеил на место
+7778	694	2025-01-09 12:32:23	Заменить диспенсер для жидкого мыла	Поставил новый
+7779	106	2025-01-09 12:38:44	Порвался провод от проигрывателя	Съездил купил новый. Установил.
+7780	1077	2025-01-09 19:07:57	Открепить диван для перетяжки	Открутил саморезы и боковой подлокотник. Готов для транспортировке
 \.
 
 
@@ -19596,7 +19658,7 @@ SELECT pg_catalog.setval('public.bindings_id_seq', 107, true);
 -- Name: bugzilla_id_seq; Type: SEQUENCE SET; Schema: public; Owner: saibogo
 --
 
-SELECT pg_catalog.setval('public.bugzilla_id_seq', 104, true);
+SELECT pg_catalog.setval('public.bugzilla_id_seq', 106, true);
 
 
 --
@@ -19659,7 +19721,7 @@ SELECT pg_catalog.setval('public.orders_id_seq', 71, true);
 -- Name: performers_id_seq; Type: SEQUENCE SET; Schema: public; Owner: saibogo
 --
 
-SELECT pg_catalog.setval('public.performers_id_seq', 8478, true);
+SELECT pg_catalog.setval('public.performers_id_seq', 8488, true);
 
 
 --
