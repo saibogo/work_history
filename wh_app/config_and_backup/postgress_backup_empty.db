@@ -381,7 +381,8 @@ CREATE TABLE public.chats (
     acs_read boolean DEFAULT true,
     acs_write boolean DEFAULT false,
     nickname text DEFAULT ''::text,
-    comment text
+    comment text,
+    is_blocked boolean DEFAULT false
 );
 
 

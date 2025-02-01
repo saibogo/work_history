@@ -44,7 +44,8 @@ workers_const = {"all_workers": "all_workers",
                  "emloyee_date": "emloyee_date",
                  "dismissal_date": "dismissal_date",
                  "work_date": "work_date",
-                 "workers_schedule": "workers_schedule"
+                 "workers_schedule": "workers_schedule",
+                 "is_blocked": "is_blocked"
                  }
 
 works_const = {"works_likes": "works_likes",

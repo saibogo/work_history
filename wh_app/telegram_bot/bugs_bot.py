@@ -18,7 +18,7 @@ async def all_bugs(message: types.Message):
         try:
             msg_del = await message.answer('\n'.join(msg))
             standart_delete_message(msg_del)
-        except MessageIsTooLong:
+        except (MessageIsTooLong, BadRequest) as e:
             tmp = '\n'.join(msg)
             msg_dels = list()
             for i in range(0, len(tmp), MAX_CHAR_IN_MSG):

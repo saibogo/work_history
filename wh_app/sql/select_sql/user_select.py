@@ -55,7 +55,7 @@ def sql_select_hash_from_user(user_name: str) -> str:
 def sql_select_all_telegram_chats() -> str:
     """Return SQL-string to select all telegramm chats"""
 
-    query = """SELECT ARRAY(SELECT %(chat_id)s FROM %(chats)s)""" % sql_consts_dict
+    query = """SELECT ARRAY(SELECT %(chat_id)s FROM %(chats)s WHERE %(is_blocked)s = False)""" % sql_consts_dict
     return query
 
 
@@ -63,7 +63,8 @@ def sql_select_all_telegram_chats() -> str:
 def sql_select_telegram_user_is_reader(user_id: int) -> str:
     """Return SQL-string to true/false from current user read access"""
 
-    query = """SELECT {0} IN (SELECT %(chat_id)s FROM %(chats)s WHERE %(acs_read)s = True)""" % sql_consts_dict
+    query = """SELECT {0} IN (SELECT %(chat_id)s FROM %(chats)s WHERE %(acs_read)s = True 
+    AND %(is_blocked)s = False)""" % sql_consts_dict
     return query.format(user_id)
 
 
@@ -71,5 +72,6 @@ def sql_select_telegram_user_is_reader(user_id: int) -> str:
 def sql_select_telegram_user_is_writer(user_id: int) -> str:
     """Return SQL-string to true/false from current user write access"""
 
-    query = """SELECT {0} IN (SELECT %(chat_id)s FROM %(chats)s WHERE %(acs_write)s = True)""" % sql_consts_dict
+    query = """SELECT {0} IN (SELECT %(chat_id)s FROM %(chats)s WHERE %(acs_write)s = True 
+    AND %(is_blocked)s = False)""" % sql_consts_dict
     return query.format(user_id)
