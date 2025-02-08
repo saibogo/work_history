@@ -64,15 +64,86 @@ def week_schedule_page(stylesheet_number: str) -> str:
             today_date = datetime.date.today() + datetime.timedelta(days=i)
             schedule_list = select_operations.get_schedule_to_date(cursor, str(today_date))
             for elem in schedule_list:
-                result.append(elem)
+                name = elem[1]
+                sub_name = elem[2]
+                worker_id = select_operations.get_worker_id_from_schedule(cursor, str(today_date), name, sub_name)
+                tmp = [field for field in elem] + ['<a href="/edit-worker-schedule/{}/{}">{}</a>'.
+                                                   format(str(today_date), str(worker_id),uhtml.EDIT_CHAR)]
+                result.append(tmp)
+            headers_ext = table_headers.schedule_table + ['Действия']
             table = render_template('universal_table.html', table_name=str(today_date),
-                                    num_columns=len(table_headers.schedule_table), headers=table_headers.schedule_table, data=result)
+                                    num_columns=len(headers_ext), headers=headers_ext, data=result)
             tables.append(table)
         return web_template.result_page('\n'.join(tables), '/schedule-menu', stylesheet_number, True, 'schedule-wk')
 
 
+def create_form_to_edit_schedule(work_date: str, worker_id: int, stylesheet_number: str) -> str:
+    """Return form to edit current schedule day"""
+    with Database() as base:
+        _, cursor = base
+        worker_info = select_operations.get_info_from_worker(cursor, worker_id)
+        worker_name = '{} {}'.format(worker_info[1], worker_info[2])
+        all_schedule_type = select_operations.get_all_work_days_types(cursor)
+        table = render_template('edit_schedule_form.html', worker_id_name=uhtml.WORKER_ID, worker_id=worker_id,
+                            worker_day_name=uhtml.WORK_DATETIME, worker_day=work_date, worker_name=worker_name,
+                                day_status_name=uhtml.WORK_DAY_TYPE, all_status=all_schedule_type,
+                                password=uhtml.PASSWORD)
+    return web_template.result_page(table, '/schedule-menu', stylesheet_number)
+
+
+def change_schedule_day_type(data, method, stylesheet_number: str) -> str:
+    """Change day type in schedule database"""
+    if method == 'POST':
+        pre_addr = '/schedule-menu'
+        password = data[uhtml.PASSWORD]
+        if functions.is_superuser_password(password):
+            work_day_type = data[uhtml.WORK_DAY_TYPE]
+            worker_id = data[uhtml.WORKER_ID]
+            work_day = data[uhtml.WORK_DATETIME]
+            with Database() as base:
+                connections, cursor = base
+                update_operations.update_schedule_day(cursor, worker_id, work_day, work_day_type)
+                connections.commit()
+                return web_template.result_page(uhtml.operation_completed(),
+                                                pre_addr,
+                                                str(stylesheet_number))
+        else:
+            return web_template.result_page(uhtml.pass_is_not_valid(),
+                                            pre_addr,
+                                            str(stylesheet_number))
+    else:
+        return web_template.result_page('Method in Change Schedule not corrected!',
+                                        '/schedule-menu',
+                                        str(stylesheet_number))
+
+
+def delete_schedule_day(data, method, stylesheet_number: str) -> str:
+    """Delete day from workers schedule table in database"""
+    if method =='POST':
+        pre_addr = '/schedule-menu'
+        password = data[uhtml.PASSWORD]
+        if functions.is_superuser_password(password):
+            worker_id = data[uhtml.WORKER_ID]
+            work_day = data[uhtml.WORK_DATETIME]
+            with Database() as base:
+                connections, cursor = base
+                delete_operations.delete_work_day_from_schedule(cursor, worker_id, work_day)
+                connections.commit()
+                return web_template.result_page(uhtml.operation_completed(),
+                                                pre_addr,
+                                                str(stylesheet_number))
+        else:
+            return web_template.result_page(uhtml.pass_is_not_valid(),
+                                            pre_addr,
+                                            str(stylesheet_number))
+    else:
+        return web_template.result_page('Method in Delete Schedule not corrected!',
+                                        '/schedule-menu',
+                                        str(stylesheet_number))
+
+
 def add_info_in_schedule_form(stylesheet_number: str) -> str:
-    """Create form to add new information in shedule"""
+    """Create form to add new information in schedule"""
     with Database() as base:
         _, cursor = base
         cd = functions.date_to_browser()

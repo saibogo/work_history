@@ -19,3 +19,11 @@ def sql_delete_performer(work_id: str, performer_id: str) -> str:
     """Return SQL-string to delete performer from work with selected id"""
     query = """DELETE FROM %(performers)s WHERE %(work_id)s = {0} AND %(worker_id)s = {1}""" % sql_consts_dict
     return query.format(work_id, performer_id)
+
+
+@log_decorator
+def sql_delete_day_from_schedule(worker_id: int, work_date: str) -> str:
+    """Return SQL-string to delete day from schedule table"""
+
+    query = """DELETE FROM workers_schedule WHERE work_date = '{}' AND worker_id = {}""" % sql_consts_dict
+    return query.format(work_date, worker_id)

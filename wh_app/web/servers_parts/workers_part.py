@@ -7,7 +7,8 @@ from wh_app.web.workers_section import workers_menu, all_workers_table,\
     add_performer_result_method, weekly_chart_page, create_edit_worker_form, update_worker_information,\
     current_workers_table,  remove_performer_from_work,\
     remove_performer_result_method, top_workers_page, create_new_worker_page, add_new_worker_method, schedule_menu_page,\
-    today_schedule_page, week_schedule_page, add_info_in_schedule_form, insert_new_schedule_in_db
+    today_schedule_page, week_schedule_page, add_info_in_schedule_form, insert_new_schedule_in_db,\
+    create_form_to_edit_schedule, change_schedule_day_type, delete_schedule_day
 
 
 @app.route("/workers")
@@ -166,6 +167,25 @@ def schedule_menu() -> Response:
 def today_schedule() -> Response:
     """Return table with all workers work today"""
     return  flask.make_response(today_schedule_page(stylesheet_number()))
+
+
+@app.route('/edit-worker-schedule/<work_date>/<worker_id>')
+def edit_worker_schedule(work_date: str, worker_id: int) -> Response:
+    """Return form with edit current schedule"""
+    return goto_or_redirect(lambda: create_form_to_edit_schedule(work_date, worker_id, stylesheet_number()),
+                            functions.ROLE_SUPERUSER)
+
+
+@app.route('/new-schedule-status', methods=['POST'])
+def new_schedule_status() -> Response:
+    """Redirect to method changed work_day_status"""
+    print(functions.form_to_data(request.form))
+    if functions.form_to_data(request.form)['actions_type'] == 'Edit':
+        return goto_or_redirect(lambda: change_schedule_day_type(request.form, request.method, stylesheet_number()),
+                                functions.ROLE_SUPERUSER)
+    else:
+        return goto_or_redirect(lambda: delete_schedule_day(request.form, request.method, stylesheet_number()),
+                                functions.ROLE_SUPERUSER)
 
 
 @app.route('/week-schedule')

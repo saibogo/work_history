@@ -715,3 +715,11 @@ def get_all_work_days_types(cursor) -> List:
     """Return list with all pairs (day type, string with day_type)"""
 
     return select_sql.sql_select_all_work_days_type()
+
+
+@list_to_first_int_decorator
+@get_selected_decorator
+def get_worker_id_from_schedule(cursor, date: str, worker_name: str, worker_subname: str) -> int:
+    """Return worker_id from schedule-table where date, worker_name, subname in schedule"""
+
+    return select_sql.sql_select_worker_id_from_schedule(date, worker_name, worker_subname)

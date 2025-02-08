@@ -141,3 +141,12 @@ def sql_update_order_info_not_work(order_id: str, status: str, comment: str) -> 
     query = """UPDATE %(orders)s SET %(status)s = '{1}', %(closed_date)s = NOW(), %(comment)s = '{2}' WHERE %(id)s = {0}
      """ % sql_consts_dict
     return query.format(order_id, status, comment)
+
+
+@log_decorator
+def sql_update_schedule(worker_id: int, work_date: str, day_type: str) -> str:
+    """Create query to update schedule table"""
+
+    query = """UPDATE %(workers_schedule)s SET %(day_type)s = '{}' WHERE %(work_date)s = '{}'
+     AND %(worker_id)s = {}""" % sql_consts_dict
+    return query.format(day_type, work_date, worker_id)

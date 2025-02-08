@@ -105,3 +105,13 @@ def sql_select_all_work_days_type() -> str:
      AS tmp""" % sql_consts_dict
 
     return query
+
+
+@log_decorator
+def sql_select_worker_id_from_schedule(date: str, worker_name: str, worker_subname: str) -> str:
+    """Return worker_id from schedule-table where date, worker_name, subname in schedule"""
+
+    query = """SELECT %(worker_id)s FROM %(workers_schedule)s JOIN %(workers)s ON %(workers)s.%(id)s = %(worker_id)s 
+    WHERE %(work_date)s = '{}'::DATE AND %(name)s = '{}' AND %(sub_name)s = '{}'""" % sql_consts_dict
+
+    return query.format(date, worker_name, worker_subname)

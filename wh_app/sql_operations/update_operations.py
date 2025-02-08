@@ -90,3 +90,9 @@ def update_order_info_not_work(cursor, order_id: str, status: str,comment: str) 
 
     cursor.execute(sql_update_order_info_not_work(order_id, status,comment))
 
+
+def update_schedule_day(cursor, worker_id: int, work_date: str, day_type: str) -> None:
+    """Update information from day type in schedule table"""
+
+    cursor.execute(sql_update_schedule(worker_id, work_date, day_type))
+

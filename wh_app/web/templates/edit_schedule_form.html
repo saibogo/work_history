@@ -1,0 +1,44 @@
+<h2>Изменение рабочего графика</h2>
+<form action="/new-schedule-status" method="post">
+    <div class="container">
+        <div class="tr_div_login">
+            <div class="faq_quest">Дата</div>
+            <div class="faq_answer">{{worker_day}}</div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Сотрудник</div>
+            <div class="faq_answer">{{worker_name}}</div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Выбрать тип графика</div>
+            <div class="faq_answer">
+                <select class="div_select" name="{{day_status_name}}">
+                    {% for status in all_status %}
+                    <option value="{{status[0]}}">{{status[1]}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Тип изменения</div>
+            <div class="faq_answer">
+                <select class="div_select" name="actions_type">
+                    <option value="Edit">Изменить тип смены</option>
+                    <option value="Delete">Удалить смену</option>
+                </select>
+            </div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Пароль суперпользователя:</div>
+            <div class="faq_answer"><input type="password" name="{{password}}"></div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest"></div>
+            <div class="faq_answer">
+                <input type="submit" value="Внести изменения" var="Change">
+            </div>
+        </div>
+        <input type="hidden" name="{{worker_id_name}}" value="{{worker_id}}">
+        <input type="hidden" name="{{worker_day_name}}" value="{{worker_day}}">
+    </div>
+</form>
