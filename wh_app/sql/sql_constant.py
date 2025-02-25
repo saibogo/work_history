@@ -26,7 +26,21 @@ any_consts = {"id": "id",
               "acs_read": "acs_read",
               "acs_write": "acs_write",
               "find_patterns": "find_patterns",
-              "day_type": "day_type"
+              "day_type": "day_type",
+              "meter_type": "meter_type",
+              "device_id": "device_id",
+              "is_active": "is_active",
+              "device_type": "device_type",
+              "start_date": "start_date",
+              "stop_date": "stop_date",
+              "verification_date": "verification_date",
+              "points_meter_devices": "points_meter_devices",
+              "meter_devices": "meter_devices",
+              "meter_readings": "meter_readings",
+              "devices_id": "devices_id",
+              "read_date": "read_date",
+              "reading": "reading",
+              "Kt": "Kt"
               }
 
 workers_const = {"all_workers": "all_workers",

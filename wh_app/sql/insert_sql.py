@@ -107,3 +107,12 @@ def sql_add_new_day_in_schedule(work_day: str, worker_id: int, day_type: str) ->
     """Return SQL-string to insert new schedule-day in schedule database"""
     query = """INSERT INTO %(workers_schedule)s VALUES('{0}', {1}, '{2}')""" % sql_consts_dict
     return query.format(work_day, worker_id, day_type)
+
+
+@log_decorator
+def sql_add_new_reading_to_meter_device(device_id: int, reading_date: str, value: int) -> str:
+    """Return INSERT-string to Add new record in devices history"""
+
+    query = """INSERT INTO %(meter_readings)s (%(devices_id)s, %(read_date)s, %(reading)s) 
+    VALUES ({0}, '{1}'::DATE, {2})""" % sql_consts_dict
+    return query.format(device_id, reading_date, value)

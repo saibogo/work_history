@@ -1,0 +1,13 @@
+<h2>зарегистрировать новые показания</h2>
+<div class="container">
+    <form action="/add-reading" method="post">
+        <div class="tr_div_new_point">
+                <input type="hidden" name="{{device_id_name}}" value="{{device_id}}">
+                <input name="{{reading_name}}" placeholder="Показания. Только целые числа" class="tr_area" pattern="\d*">
+                <input type="datetime-local" name="{{work_datetime}}" value="{{date_to_browser}}">
+                <input type="password" name="{{password}}" class="tr_password" placeholder="Обязательно">
+                <input type="submit" value="Отправить">
+
+        </div>
+    </form>
+</div>

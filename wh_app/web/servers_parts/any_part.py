@@ -3,7 +3,8 @@
 from fpdf import FPDF
 from wh_app.web.servers_parts.support_part import *
 from wh_app.web.any_section import main_web_menu, faq_page, statistics_page,\
-    system_status_page, view_changelog, view_changelog_page, external_services_page, power_outages_page
+    system_status_page, view_changelog, view_changelog_page, external_services_page, power_outages_page,\
+    meter_devices_menu_page, all_meter_devices_page, all_reading_to_device_page, add_reading_method
 from wh_app.supporting.pdf_operations.pdf import equips_in_point, works_from_equip,\
     works_from_performer, weekly_charts_pdf, move_equip, point_tech_information, find_work_without_date, find_equip,\
     find_point, find_work_with_date, works_from_performer_with_date, top10workers, top10points, top10equips,\
@@ -41,6 +42,34 @@ def external_services() -> Response:
 def power_outages() -> Response:
     """Return page with list of external services"""
     return goto_or_redirect(lambda: power_outages_page(stylesheet_number()), functions.NO_ROLE)
+
+
+@app.route("/meter-devices")
+def meter_devices() -> Response:
+    """Goto to page with menu included all action with meter devices"""
+
+    return goto_or_redirect(lambda: meter_devices_menu_page(stylesheet_number()), functions.ROLE_WORKER)
+
+
+@app.route("/all-meter-devices")
+def all_meter_devices() -> Response:
+    """Goto to page with all meter devices in database"""
+
+    return goto_or_redirect(lambda: all_meter_devices_page(stylesheet_number()), functions.ROLE_WORKER)
+
+
+@app.route('/get-devices-reading/<device_id>')
+def get_devices_reading(device_id: int) -> Response:
+    """Goto to page with all records from current meter device"""
+
+    return goto_or_redirect(lambda: all_reading_to_device_page(int(device_id), stylesheet_number()), functions.ROLE_WORKER)
+
+
+@app.route('/add-reading', methods=['POST'])
+def add_reading() -> Response:
+    """Goto to method add new record in history devices_readings"""
+    return goto_or_redirect(lambda: add_reading_method(functions.form_to_data(request.form), request.method,
+                                                       stylesheet_number()), functions.ROLE_WORKER)
 
 
 @app.route('/statistics', methods=['GET'])

@@ -300,9 +300,11 @@ def schedule_wk() -> FPDF:
             result = []
             today_date = date.today() + timedelta(days=i)
             schedule_list = select_operations.get_schedule_to_date(cursor, str(today_date))
+            if len(schedule_list) == 0:
+                continue
             for elem in schedule_list:
                 result.append(elem)
-            htmls.append(make_html_table(schedule_list, table_headers.schedule_table))
+            htmls.append(make_html_table(result, table_headers.schedule_table))
         pdf.write_html('\n'.join(htmls), table_line_separators=True)
         return pdf
 

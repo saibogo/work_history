@@ -68,6 +68,11 @@ def create_or_replace_date_to_date_and_day(cursor) -> None:
     create_function(cursor, functions_sql.date_to_date_and_day_of_week())
 
 
+def create_or_replace_meter_type_to_string(cursor) -> None:
+    """Add or replace in database function meter_type -> string(meter_type)"""
+    create_function(cursor, functions_sql.meter_type_to_string())
+
+
 def all_sql_functions_list() -> list:
     """Return list contain all function to create virtual tables"""
 
@@ -80,4 +85,5 @@ def all_sql_functions_list() -> list:
             create_or_replace_last_month_funct,
             create_or_replace_last_year_funct,
             create_or_replace_work_day_type_to_string,
-            create_or_replace_date_to_date_and_day]
+            create_or_replace_date_to_date_and_day,
+            create_or_replace_meter_type_to_string]

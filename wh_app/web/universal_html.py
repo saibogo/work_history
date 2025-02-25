@@ -67,6 +67,8 @@ EMPLOYEE_DATE = "employee_date"
 CUSTOMER_NAME = "customer"
 ORDER_STATUS_NAME = "order_status"
 ORDER_ID = "order_id"
+DEVICE_ID = "device_id"
+READING_NAME = "reading"
 
 
 def link_or_str(elem: str, link_type: bool = False, link: str = '') -> str:
@@ -128,6 +130,15 @@ def universal_table(name: str, headers: list, data: list, links: bool = False,
 def add_new_point() -> str:
     """Function return string contain form to add new point"""
     return render_template('add_new_point.html', point_name=POINT_NAME, point_address=POINT_ADDRESS, password=PASSWORD)
+
+
+def add_new_reading(device_id: int) -> str:
+    """Function return string contain form to add new reading to meter device"""
+    date_to_browser = functions.date_to_browser()
+    tmp = render_template('add_new_reading.html', device_id_name=DEVICE_ID, device_id=device_id,
+                          reading_name=READING_NAME, work_datetime=WORK_DATETIME, date_to_browser=date_to_browser,
+                          password=PASSWORD)
+    return tmp
 
 
 def add_new_equip(point_id: str) -> str:

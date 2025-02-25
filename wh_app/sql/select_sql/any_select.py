@@ -41,3 +41,4 @@ def sql_select_database_version() -> str:
 @log_decorator
 def sql_select_all_find_patterns() -> str:
     return """SELECT * FROM %(find_patterns)s""" % sql_consts_dict
+

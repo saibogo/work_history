@@ -109,3 +109,18 @@ def date_to_date_and_day_of_week() -> str:
     RETURN d || '(' || To_Char(d, 'TMDAY') || ')' :: text;
     END;
     $$ LANGUAGE plpgsql;"""
+
+
+@log_decorator
+def meter_type_to_string() -> str:
+    """Create or replace SQL function mapping meter_type to humans string"""
+
+    return """CREATE OR REPLACE FUNCTION meter_type_to_string(m meter_type) RETURNS text AS $$
+    BEGIN 
+    IF m = 'electricity'::meter_type THEN RETURN 'электроэнергия':: text;
+    ELSIF m ='cold_water'::meter_type THEN RETURN 'ХВС'::text;
+    ELSIF m = 'hot_water'::meter_type THEN RETURN 'ГВС'::text;
+    ELSE RETURN 'отопление'::text;
+    END IF;
+    END;
+    $$ LANGUAGE plpgsql;"""

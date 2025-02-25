@@ -69,3 +69,9 @@ def insert_new_day_in_schedule(cursor, work_day: str, worker_id: int, day_type: 
     cursor.execute(sql_add_new_day_in_schedule(str(work_day), int(worker_id), str(day_type)))
 
 
+def insert_new_reading_to_meter_device(cursor, device_id: int, reading_date: str, value: int) -> None:
+    """Add new record in history current device meter"""
+
+    cursor.execute(sql_add_new_reading_to_meter_device(device_id, reading_date, value))
+
+

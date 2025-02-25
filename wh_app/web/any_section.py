@@ -7,6 +7,7 @@ import wh_app.web.universal_html as uhtml
 from wh_app.config_and_backup import config
 from wh_app.postgresql.database import Database
 from wh_app.sql_operations.select_operations import select_operations
+from wh_app.sql_operations.insert_operations import insert_new_reading_to_meter_device
 from wh_app.supporting import functions
 from wh_app.supporting import system_status
 from wh_app.config_and_backup import table_headers
@@ -35,11 +36,80 @@ def main_web_menu(stylesheet_number: str) -> str:
 def external_services_page(stylesheet_number: str) -> str:
     """Function create page with all services in services-list"""
     name = "Доступные сервисы"
-    menu_items = ['Планируемые отключения электроэнергии']
-    links_list = ['/power-outages']
+    menu_items = ['Планируемые отключения электроэнергии', 'Приборы учета']
+    links_list = ['/power-outages', '/meter-devices']
     table = uhtml.universal_table(name, ['№', 'Перейти к'], [(i + 1, menu_items[i]) for i in range(len(menu_items))],
                                   True, links_list)
     return web_template.result_page(table, "", str(stylesheet_number))
+
+
+@replace_decor
+def meter_devices_menu_page(stylesheet_number: str) -> str:
+    """Function create main menu for work with all meter devices"""
+    name = "Работа с приборами учета энергоресурсов"
+    menu_items = ['Все зарегистрированные приборы учета']
+    links_list = ['/all-meter-devices']
+    table = uhtml.universal_table(name, ['№', 'Перейти к'], [(i + 1, menu_items[i]) for i in range(len(menu_items))],
+                                  True, links_list)
+    return web_template.result_page(table, "/external-services", str(stylesheet_number))
+
+
+def all_meter_devices_page(stylesheet_number: str) -> str:
+    """Function create page with all meter devices in database"""
+
+    with Database() as base:
+        _, cursor = base
+        devices = select_operations.get_all_meter_devices(cursor)
+        links = ['/get-devices-reading/{}'.format(elem[0]) for elem in devices]
+        table = uhtml.universal_table(table_headers.meter_devices_table_name, table_headers.meter_devices_table,
+                                      devices, True, links)
+
+        return web_template.result_page(table, "/meter-devices", str(stylesheet_number))
+
+
+def all_reading_to_device_page(device_id: int, stylesheet_number: str) -> str:
+    """Function create table with all reading to meter device with device_id"""
+
+    with Database() as base:
+        _, cursor = base
+        readings = select_operations.get_all_reading_from_device(cursor, device_id)
+        table = uhtml.universal_table(table_headers.readings_device_table_name, table_headers.readings_device_table,
+                                      readings, False)
+        table_new = uhtml.add_new_reading(device_id)
+        return web_template.result_page(table + table_new, "/all-meter-devices", str(stylesheet_number))
+
+
+def add_reading_method(data, method, stylesheet_number: str) -> str:
+    """Function validate all data and if correct add record in devices rading history"""
+    if method == 'POST':
+        reading = data[uhtml.READING_NAME]
+        device_id = data[uhtml.DEVICE_ID]
+        pre_adr = '/get-devices-reading/{}'.format(device_id)
+        reading_datetime = data[uhtml.WORK_DATETIME].replace("T", ' ')
+        if reading_datetime.count(':') < 2: #YYYY-MM-DD HH:MM:SS
+            reading_datetime += ':00'
+        password = data[uhtml.PASSWORD]
+        if functions.is_superuser_password(password):
+            try:
+                correct_reading = int(reading)
+                if correct_reading >= 0:
+                    with Database() as base:
+                        connection, cursor = base
+                        insert_new_reading_to_meter_device(cursor, device_id, reading_datetime, reading)
+                        connection.commit()
+                        page = uhtml.operation_completed()
+                else:
+                    page = uhtml.data_is_not_valid()
+            except:
+                page = uhtml.data_is_not_valid()
+            print(data)
+        else:
+            page = uhtml.pass_is_not_valid()
+        return web_template.result_page(page, pre_adr, str(stylesheet_number))
+    else:
+        return web_template.result_page("Method in Move Work not corrected!",
+                                        "/all-meter-devices",
+                                        str(stylesheet_number))
 
 
 @replace_decor
