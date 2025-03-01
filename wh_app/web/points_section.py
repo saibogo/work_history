@@ -25,7 +25,12 @@ def create_edit_links(point_id: str) -> str:
 def create_tech_links(point_id: str) -> str:
     """Create technical info links"""
     return '<a href="/tech-info/{0}">{1}</a> <a href="/svu/{0}">{2}</a>'. \
-        format(point_id, uhtml.PAPERS_CHAR, uhtml.SVU_CHAR)
+        format(point_id, uhtml.PAPERS_CHAR, uhtml.SVU_CHAR) + create_meter_links(point_id)
+
+
+def create_meter_links(point_id: str) -> str:
+    """Create link to meter devices"""
+    return '<a href="/meters-in-point/{0}" title = "Перечень приборов учета">{1}</a>'.format(point_id, uhtml.METER_CHAR)
 
 
 def points_operations(stylesheet_number: str) -> str:

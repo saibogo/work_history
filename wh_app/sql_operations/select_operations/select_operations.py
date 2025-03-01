@@ -737,3 +737,10 @@ def get_all_reading_from_device(cursor, id: int) -> List[Tuple]:
     """Return all reading from device with device_id = id"""
 
     return select_sql.sql_select_reading_meter_from_id(id)
+
+
+@get_selected_decorator
+def get_all_worked_meter_in_point(cursor, point_id: int) -> List[Tuple]:
+    """Return all worked meter devices in point"""
+
+    return select_sql.sql_select_all_works_meter_in_point(point_id)

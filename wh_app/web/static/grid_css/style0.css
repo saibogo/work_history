@@ -59,6 +59,9 @@ div.bottom_navigation {
     grid-template-columns: repeat(10, auto);
 }
 
+.grid_table_11 {
+    grid-template-columns: repeat(11, auto);
+}
 
 /* sel color from 2-columns table */
 div.grid_table_2 > div.grid_table_elem:nth-child(2n) {

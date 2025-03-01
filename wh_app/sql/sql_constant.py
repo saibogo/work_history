@@ -40,7 +40,9 @@ any_consts = {"id": "id",
               "devices_id": "devices_id",
               "read_date": "read_date",
               "reading": "reading",
-              "Kt": "Kt"
+              "Kt": "Kt",
+              "is_inner": "is_inner",
+              "comment": "comment"
               }
 
 workers_const = {"all_workers": "all_workers",

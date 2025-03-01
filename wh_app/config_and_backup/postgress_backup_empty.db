@@ -694,7 +694,9 @@ CREATE TABLE public.meter_devices (
     start_date date NOT NULL,
     stop_date date,
     verification_date date,
-    kt integer DEFAULT 1
+    kt integer DEFAULT 1,
+    is_inner boolean DEFAULT true NOT NULL,
+    comment text DEFAULT ''::text NOT NULL
 );
 
 

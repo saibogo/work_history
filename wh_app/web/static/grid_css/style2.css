@@ -56,6 +56,10 @@ div.bottom_navigation {
     grid-template-columns: repeat(10, auto);
 }
 
+.grid_table_11 {
+    grid-template-columns: repeat(11, auto);
+}
+
 /* Section for element in table */
 .grid_table_elem {
     display: flex;

@@ -17,6 +17,7 @@ functions.info_string(__name__)
 ON_OFF_CHAR = '&#9211'
 PAPERS_CHAR = '&#128441;'
 SVU_CHAR = '&#9889;'
+METER_CHAR = '&#9099;'
 EDIT_CHAR = '&#9998'
 BINDING_CHAR = '🔨'
 REMOVE_CHAR = 'A&#8646;B'

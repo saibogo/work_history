@@ -67,6 +67,17 @@ def all_meter_devices_page(stylesheet_number: str) -> str:
         return web_template.result_page(table, "/meter-devices", str(stylesheet_number))
 
 
+def all_meter_devices_in_point_page(point_id: int, stylesheet_number: str) -> str:
+    """Function create page with all meter devices in current point"""
+    with Database() as base:
+        _, cursor = base
+        devices = select_operations.get_all_worked_meter_in_point(cursor, point_id)
+        links = ['/get-devices-reading/{}'.format(elem[0]) for elem in devices]
+        table = uhtml.universal_table(table_headers.meter_devices_table_name, table_headers.meter_devices_table,
+                                      devices, True, links)
+        return web_template.result_page(table, "/meter-devices", str(stylesheet_number))
+
+
 def all_reading_to_device_page(device_id: int, stylesheet_number: str) -> str:
     """Function create table with all reading to meter device with device_id"""
 
@@ -75,8 +86,36 @@ def all_reading_to_device_page(device_id: int, stylesheet_number: str) -> str:
         readings = select_operations.get_all_reading_from_device(cursor, device_id)
         table = uhtml.universal_table(table_headers.readings_device_table_name, table_headers.readings_device_table,
                                       readings, False)
+        to_bar_button = '<div id="navigation_div">' \
+                        '<div class="navigation_elem"><a href="/to-bar-meter/{0}">График расходов за периоды</a></div>' \
+                        '<div class="navigation_elem"><a href="/to-bar-meter-avr/{0}">График средних расходов</a></div>' \
+                        '</div>'.format(device_id)
         table_new = uhtml.add_new_reading(device_id)
-        return web_template.result_page(table + table_new, "/all-meter-devices", str(stylesheet_number))
+        return web_template.result_page(table + to_bar_button + table_new, "/all-meter-devices", str(stylesheet_number))
+
+
+def meter_readings_bar_page(device_id: int,  stylesheet_number: str) -> str:
+    """Create simple bar with data from device meter"""
+    with Database() as base:
+        _, cursor = base
+        readings = select_operations.get_all_reading_from_device(cursor, device_id)
+        data = [(reading[6], reading[2]) for reading in readings]
+        max_elem = max([reading[6] for reading in readings])
+        data_new = list(map(lambda elem: (elem[0] * 400 / max_elem, '{0}\n{1}'.format(elem[0], elem[1])), data))
+        table = render_template('meter_bar.html', data=data_new)
+        return web_template.result_page(table, '/get-devices-reading/{}'.format(device_id), str(stylesheet_number))
+
+
+def meter_readings_bar_page_avr(device_id: int,  stylesheet_number: str) -> str:
+    """Create simple bar with data from device meter"""
+    with Database() as base:
+        _, cursor = base
+        readings = select_operations.get_all_reading_from_device(cursor, device_id)
+        data = [(reading[7], reading[2]) for reading in readings]
+        max_elem = max([reading[7] for reading in readings])
+        data_new = list(map(lambda elem: (elem[0] * 400 / max_elem, '{0}\n{1}'.format(elem[0], elem[1])), data))
+        table = render_template('meter_bar.html', data=data_new)
+        return web_template.result_page(table, '/get-devices-reading/{}'.format(device_id), str(stylesheet_number))
 
 
 def add_reading_method(data, method, stylesheet_number: str) -> str:
