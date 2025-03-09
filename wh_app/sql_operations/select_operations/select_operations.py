@@ -733,6 +733,13 @@ def get_all_meter_devices(cursor) -> List[Tuple]:
 
 
 @get_selected_decorator
+def get_all_worked_meter_devices(cursor) -> List[Tuple]:
+    """Return all meter devices in database"""
+
+    return select_sql.sql_select_all_meter_devices("WORKED")
+
+
+@get_selected_decorator
 def get_all_reading_from_device(cursor, id: int) -> List[Tuple]:
     """Return all reading from device with device_id = id"""
 
@@ -740,7 +747,43 @@ def get_all_reading_from_device(cursor, id: int) -> List[Tuple]:
 
 
 @get_selected_decorator
+def get_all_date_and_readings_from_device(cursor, device_id: int) -> List[Tuple]:
+    """Return all records like (id, read_date, reading) from current meter device"""
+
+    return select_sql.sql_select_readings_and_dates_from_device(device_id)
+
+
+@get_selected_decorator
+def get_last24_date_and_readings_from_device(cursor, device_id: int) -> List[Tuple]:
+    """Return all records like (id, read_date, reading) from current meter device"""
+
+    return select_sql.sql_select_readings_and_dates_from_device(device_id, True)
+
+
+@get_selected_decorator
 def get_all_worked_meter_in_point(cursor, point_id: int) -> List[Tuple]:
     """Return all worked meter devices in point"""
 
     return select_sql.sql_select_all_works_meter_in_point(point_id)
+
+
+@get_selected_decorator
+def get_full_info_from_meter_device(cursor, device_id: int) -> List[Tuple]:
+    """Return all information from current device"""
+    return select_sql.sql_select_full_information_from_meter_device(device_id)
+
+
+@list_to_first_str_decorator
+@get_selected_decorator
+def get_count_all_meter_devices(cursor) -> str:
+    """Return COUNT(all meter devices)"""
+
+    return select_sql.sql_select_count_all_meter_devices()
+
+
+@list_to_first_str_decorator
+@get_selected_decorator
+def get_count_worked_meter_devices(cursor) -> str:
+    """Return COUNT(all meter devices)"""
+
+    return select_sql.sql_select_count_worked_meter_devices()

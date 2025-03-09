@@ -47,8 +47,8 @@ def external_services_page(stylesheet_number: str) -> str:
 def meter_devices_menu_page(stylesheet_number: str) -> str:
     """Function create main menu for work with all meter devices"""
     name = "Работа с приборами учета энергоресурсов"
-    menu_items = ['Все зарегистрированные приборы учета']
-    links_list = ['/all-meter-devices']
+    menu_items = ['Все зарегистрированные приборы учета', 'Только действующие']
+    links_list = ['/all-meter-devices', '/worked-meter-devices']
     table = uhtml.universal_table(name, ['№', 'Перейти к'], [(i + 1, menu_items[i]) for i in range(len(menu_items))],
                                   True, links_list)
     return web_template.result_page(table, "/external-services", str(stylesheet_number))
@@ -60,6 +60,19 @@ def all_meter_devices_page(stylesheet_number: str) -> str:
     with Database() as base:
         _, cursor = base
         devices = select_operations.get_all_meter_devices(cursor)
+        links = ['/get-devices-reading/{}'.format(elem[0]) for elem in devices]
+        table = uhtml.universal_table(table_headers.meter_devices_table_name, table_headers.meter_devices_table,
+                                      devices, True, links)
+
+        return web_template.result_page(table, "/meter-devices", str(stylesheet_number))
+
+
+def all_worked_meter_devices(stylesheet_number: str) -> str:
+    """Function create page with all meter devices in database"""
+
+    with Database() as base:
+        _, cursor = base
+        devices = select_operations.get_all_worked_meter_devices(cursor)
         links = ['/get-devices-reading/{}'.format(elem[0]) for elem in devices]
         table = uhtml.universal_table(table_headers.meter_devices_table_name, table_headers.meter_devices_table,
                                       devices, True, links)
@@ -130,7 +143,7 @@ def add_reading_method(data, method, stylesheet_number: str) -> str:
         password = data[uhtml.PASSWORD]
         if functions.is_superuser_password(password):
             try:
-                correct_reading = int(reading)
+                correct_reading = float(reading)
                 if correct_reading >= 0:
                     with Database() as base:
                         connection, cursor = base
@@ -141,7 +154,6 @@ def add_reading_method(data, method, stylesheet_number: str) -> str:
                     page = uhtml.data_is_not_valid()
             except:
                 page = uhtml.data_is_not_valid()
-            print(data)
         else:
             page = uhtml.pass_is_not_valid()
         return web_template.result_page(page, pre_adr, str(stylesheet_number))
@@ -195,6 +207,8 @@ def faq_page(pre_adr: str, stylesheet_number: str) -> str:
         max_point_id = select_operations.get_maximal_points_id(cursor)
         count_works_points = select_operations.get_count_works_points(cursor)
         count_works = select_operations.get_maximal_work_id(cursor)
+        all_meter_devices = select_operations.get_count_all_meter_devices(cursor)
+        worked_meter_devices = select_operations.get_count_worked_meter_devices(cursor)
         hardware = web_template.faq_state_machine('hardware')
         tecnology = web_template.faq_state_machine('tecnology')
         multiuser = web_template.faq_state_machine('multiuser')
@@ -204,7 +218,9 @@ def faq_page(pre_adr: str, stylesheet_number: str) -> str:
                    'Предприятий всего: <a href="{0}/all-points">{1}</a>'.format(config.full_address(), max_point_id),
                    'Предприятий действующих: <a href="{0}/works-points">{1}</a>'.format(config.full_address(),
                                                                                         count_works_points),
-                   'Произведенных работ: <a href="{0}/all-works">{1}</a>'.format(config.full_address(), count_works)]
+                   'Произведенных работ: <a href="{0}/all-works">{1}</a>'.format(config.full_address(), count_works),
+                   'Приборов учета зарегистрировано: <a href="/all-meter-devices">{0}</a>'.format(all_meter_devices),
+                   '(Из них работающих на данный момент:<a href="/worked-meter-devices">{0}</a>)'.format(worked_meter_devices)]
         database_size = select_operations.get_size_database(cursor)
         average_works_in_date = "{:.2f}".format(select_operations.get_count_unique_works(cursor) /
                                                select_operations.get_count_unique_dates_in_works(cursor))

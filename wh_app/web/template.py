@@ -14,7 +14,7 @@ def hardware_needs_list() -> list:
 
     return ['Компьютер во внутренней сети компании Малахит',
             'Браузер с поддержкой технологии ' +
-            '<a href="https://www.w3.org/Style/CSS/Overview.en.html">CSS</a>']
+            '<a href="https://www.w3.org/Style/CSS/Overview.en.html">CSS</a>(Предпочтительно Mozilla Firefox)']
 
 
 def used_tecnology_list() -> list:
@@ -26,10 +26,7 @@ def used_tecnology_list() -> list:
             'Используется язык программирования ' +
             '<a href="https://www.python.org/">Python3</a>',
             'Также для создания сообщений пользователям использован язык' +
-            '<a href="https://www.javascript.com/">JavaScript</a>',
-            'Для клиентского приложения использована связка ' +
-            '<a href="https://www.python.org/">Python3</a> + ' +
-            '<a href="https://www.qt.io/qt-for-python">PyQt</a>']
+            '<a href="https://www.javascript.com/">JavaScript</a>']
 
 
 def how_many_users_list() -> list:
@@ -45,7 +42,7 @@ def update_system_in_future_list() -> list:
 
     return ['Планируется изменение структуры базы данных и внедрение многопользовательского режима',
             'Планируется  расширение работы с аргументами командной строки',
-            'В связи с редким использованием, планируется полный отказ от десктоп-версии приложения',
+            'Планируется внедрение NoSQL системы для хранения деталировок оборудования'
             ]
 
 

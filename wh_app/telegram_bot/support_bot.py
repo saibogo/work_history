@@ -43,7 +43,7 @@ def not_reader_decorator(func: Callable) -> Callable:
 
 
 def not_writer_decorator(func: Callable) -> Callable:
-    """If user not reader, to return standart answer"""
+    """If user not writer, to return standart answer"""
     async def wrapper(message):
         try:
             user_id = message.from_id

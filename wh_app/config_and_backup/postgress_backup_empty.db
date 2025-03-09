@@ -732,7 +732,7 @@ CREATE TABLE public.meter_readings (
     id integer NOT NULL,
     devices_id integer,
     read_date date NOT NULL,
-    reading integer NOT NULL
+    reading numeric(13,3) NOT NULL
 );
 
 

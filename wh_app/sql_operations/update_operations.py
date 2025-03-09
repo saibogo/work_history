@@ -96,3 +96,9 @@ def update_schedule_day(cursor, worker_id: int, work_date: str, day_type: str) -
 
     cursor.execute(sql_update_schedule(worker_id, work_date, day_type))
 
+
+def update_meter_reading(cursor, device_id: int, current_date: str, new_reading: float) -> None:
+    """Update reading in database where device_id and current_date"""
+
+    cursor.execute(sql_update_meter_reading(device_id, current_date, new_reading))
+

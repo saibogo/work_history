@@ -9,12 +9,12 @@ from wh_app.postgresql.database import Database
 from wh_app.sql_operations.select_operations.select_operations import get_all_telegram_chats
 from wh_app.telegram_bot.bot_state_machine import BotStateMachine
 from wh_app.config_and_backup.config import path_to_telegram_token, path_to_messages
-from wh_app.telegram_bot.point_bot import all_points, send_statistic, point_info, not_create_record, get_svu,\
+from wh_app.telegram_bot.point_bot import all_points, send_statistic, point_info, not_create_record, get_svu, \
     get_tech_info
 from wh_app.telegram_bot.equip_bot import equip_info, start_add_new_equip, save_new_equip, equip_repler
-from wh_app.telegram_bot.any_bot import send_welcome, send_help, send_status, send_command_not_found, send_changelog,\
+from wh_app.telegram_bot.any_bot import send_welcome, send_help, send_status, send_command_not_found, send_changelog, \
     send_top10, power_outages
-from wh_app.telegram_bot.bugs_bot import all_bugs, start_create_new_bug, new_bug_repler, bug_from_bug_id,\
+from wh_app.telegram_bot.bugs_bot import all_bugs, start_create_new_bug, new_bug_repler, bug_from_bug_id, \
     invert_bug_status_from_bot
 from wh_app.telegram_bot.work_bot import start_create_record
 from wh_app.telegram_bot.work_bot import problem_repler, work_repler, get_work_record
@@ -22,6 +22,8 @@ from wh_app.telegram_bot.support_bot import standart_delete_message
 from wh_app.telegram_bot.find_bot import main_find_menu, find_menu, find_repler, last_day_message
 from wh_app.telegram_bot.workers_bot import send_workers_message, today_schedule_message, week_schedule_message
 from wh_app.telegram_bot.orders_bot import all_noclosed_orders, order_from_id
+from wh_app.telegram_bot.meter_devices_bot import start_view_meter_devices, start_view_reading_meter_device,\
+    start_create_readings_record, new_reading_repler
 
 functions.info_string(__name__)
 
@@ -129,17 +131,17 @@ async def lastday_command(message: types.Message):
     await last_day_message(message)
 
 
-@dp.message_handler(regexp='/[pP][oO][iI][nN][tT]\s+[0-9]{1,}')
+@dp.message_handler(regexp='/[pP][oO][iI][nN][tT]\s+[0-9]{1,}')  # /point N
 async def point_command(message: types.Message):
     await point_info(message)
 
 
-@dp.message_handler(regexp='/[sS][vV][uU]\s+[0-9]{1,}')
+@dp.message_handler(regexp='/[sS][vV][uU]\s+[0-9]{1,}') # /svu N
 async def get_svu_command(message: types.Message):
     await get_svu(message)
 
 
-@dp.message_handler(regexp='/[tT][eE][cC][hH]\s+[0-9]{1,}')
+@dp.message_handler(regexp='/[tT][eE][cC][hH]\s+[0-9]{1,}') # /tech N
 async def get_tech_command(message: types.Message):
     await get_tech_info(message)
 
@@ -175,7 +177,7 @@ async def work_command(message: types.Message):
     await get_work_record(message)
 
 
-@dp.message_handler(regexp='/[bB][uU][gG]\s+[0-9]{1,}')
+@dp.message_handler(regexp='/[bB][uU][gG]\s+[0-9]{1,}') # /bug 123
 async def bug_from_id_command(message: types.Message):
     """Return bug with id == bug_id"""
     await bug_from_bug_id(message)
@@ -199,6 +201,17 @@ async def invert_bug_status_message(message: types.Message):
 @dp.message_handler(lambda message: message.text and 'Новое оборудование' in message.text)
 async def create_new_equip_command(message: types.Message):
     await start_add_new_equip(message)
+
+
+@dp.message_handler(lambda message: message.text and 'Приборы учета' in message.text)
+async def view_meter_devices(message: types.Message):
+    await start_view_meter_devices(message)
+
+
+@dp.message_handler(regexp='/[pP][uU]\s+[0-9]{1,}') # /pu N
+async def view_reading_to_meter_device(message: types.Message):
+    """Return readings with id == device_id"""
+    await start_view_reading_meter_device(message)
 
 
 @dp.message_handler(lambda message: message.reply_to_message and '/equip_name' in message.reply_to_message.text)
@@ -235,6 +248,17 @@ async def equip_info_command(message: types.Message):
 @dp.message_handler(text=['Отмена'])
 async def not_create_command(message: types.Message):
     await not_create_record(message)
+
+
+@dp.message_handler(lambda message: message.text and 'Внести показания' in message.text)
+async def new_reading_command(message: types.Message):
+    """Start registration new readind to meter device"""
+    await start_create_readings_record(message)
+
+
+@dp.message_handler(lambda message: message.reply_to_message and '/new_reading_id' in message.reply_to_message.text)
+async def insert_reading_command(message: types.Message):
+    await new_reading_repler(message)
 
 
 @dp.message_handler(lambda message: message.text and 'Регистрация' in message.text)
@@ -328,4 +352,3 @@ async def schedule_week_command(message: types.Message):
 async def not_correct_command(message: types.Message):
     """Return to telegram-bot system-status"""
     await send_command_not_found(message)
-

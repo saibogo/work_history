@@ -150,3 +150,12 @@ def sql_update_schedule(worker_id: int, work_date: str, day_type: str) -> str:
     query = """UPDATE %(workers_schedule)s SET %(day_type)s = '{}' WHERE %(work_date)s = '{}'
      AND %(worker_id)s = {}""" % sql_consts_dict
     return query.format(day_type, work_date, worker_id)
+
+
+@log_decorator
+def sql_update_meter_reading(device_id: int, current_date: str, new_reading: float) -> str:
+    """Update meter device reading with date and device_id"""
+
+    query = """UPDATE %(meter_readings)s SET %(reading)s = {0} WHERE (%(devices_id)s = {1} AND %(read_date)s = '{2}')""" % sql_consts_dict
+
+    return query.format(new_reading, device_id, current_date)
