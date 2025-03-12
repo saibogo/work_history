@@ -42,7 +42,11 @@ any_consts = {"id": "id",
               "reading": "reading",
               "Kt": "Kt",
               "is_inner": "is_inner",
-              "comment": "comment"
+              "comment": "comment",
+              "positive_calc": "positive_calc",
+              "calculation_schemes": "calculation_schemes",
+              "devices_type": "devices_type",
+              "negative_calc": "negative_calc"
               }
 
 workers_const = {"all_workers": "all_workers",

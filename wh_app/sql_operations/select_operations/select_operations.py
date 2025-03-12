@@ -773,6 +773,37 @@ def get_full_info_from_meter_device(cursor, device_id: int) -> List[Tuple]:
     return select_sql.sql_select_full_information_from_meter_device(device_id)
 
 
+@get_selected_decorator
+def get_all_meter_types(cursor) -> List[Tuple]:
+    """Return all meter types in database"""
+    return select_sql.sql_select_all_meter_types()
+
+
+@get_selected_decorator
+def get_all_positive_device_in_scheme(cursor, point_id: int, device_type: str) -> List[Tuple]:
+    """Return all positive elements in scheme with point_id and meter device type"""
+    return select_sql.sql_select_all_positive_schemes_to_point_and_meter_type(point_id, device_type)
+
+
+@get_selected_decorator
+def get_all_negative_device_in_scheme(cursor, point_id: int, device_type: str) -> List[Tuple]:
+    """Return all positive elements in scheme with point_id and meter device type"""
+    return select_sql.sql_select_all_negative_schemes_to_point_and_meter_type(point_id, device_type)
+
+
+@list_to_first_str_decorator
+@get_selected_decorator
+def get_russian_units_of_measure(cursor, devices_type: str) -> str:
+    return select_sql.sql_select_unit_meter_from_type(devices_type)
+
+
+@list_to_first_str_decorator
+@get_selected_decorator
+def get_russian_devices_type(cursor, devices_type: str) -> str:
+    """Return russian name to meter type"""
+    return select_sql.sql_select_russian_string_from_meter_type(devices_type)
+
+
 @list_to_first_str_decorator
 @get_selected_decorator
 def get_count_all_meter_devices(cursor) -> str:

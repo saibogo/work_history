@@ -28,6 +28,10 @@ div.bottom_navigation {
     grid-template-columns: 10% auto;
 }
 
+.grid_table_3 {
+    grid-template-columns: repeat(3, auto);
+}
+
 .grid_table_4 {
     grid-template-columns: repeat(4, auto);
 }

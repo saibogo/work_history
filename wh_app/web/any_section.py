@@ -1,6 +1,7 @@
 """This module contain any web-pages"""
 
 from flask import render_template
+from typing import List
 
 import wh_app.web.template as web_template
 import wh_app.web.universal_html as uhtml
@@ -88,7 +89,73 @@ def all_meter_devices_in_point_page(point_id: int, stylesheet_number: str) -> st
         links = ['/get-devices-reading/{}'.format(elem[0]) for elem in devices]
         table = uhtml.universal_table(table_headers.meter_devices_table_name, table_headers.meter_devices_table,
                                       devices, True, links)
-        return web_template.result_page(table, "/meter-devices", str(stylesheet_number))
+        table1 = _table_with_schemes(point_id)
+        return web_template.result_page(table + table1, "/meter-devices", str(stylesheet_number))
+
+
+def _all_correct_calculation_schemes(point_id: int) -> List[List]:
+    """Return list with all correct calculation schemes in this point"""
+    with Database() as base:
+        _, cursor = base
+        all_types = select_operations.get_all_meter_types(cursor)
+        schemes = []
+        for meter_type in all_types:
+            schemes.append((meter_type[0],
+                            select_operations.get_all_positive_device_in_scheme(cursor, point_id, meter_type[0]),
+                            select_operations.get_all_negative_device_in_scheme(cursor, point_id, meter_type[0])))
+        correct_schemes = []
+        for scheme in schemes:
+            correct_schemes.append([scheme[0], [], []])
+            for elem in scheme[1]:
+                correct_schemes[-1][1].append(elem[0])
+            for elem in scheme[2]:
+                correct_schemes[-1][2].append(elem[0])
+        not_empty_schemes = list(filter(lambda elem: elem[1] or elem[2], correct_schemes))
+        return not_empty_schemes
+
+
+def _calculate_in_schemes(point_id) -> List[List]:
+    """Return alavaliable calculation scheme in point and summary result"""
+    raw_schemes = _all_correct_calculation_schemes(point_id)
+    with Database() as base:
+        _, cursor = base
+        for scheme in raw_schemes:
+            result = 0
+            for pu in scheme[1]:
+                try:
+                    result += select_operations.get_all_reading_from_device(cursor, pu)[-1][-1]
+                except IndexError:
+                    result += 0
+            for pu in scheme[2]:
+                try:
+                    result -= select_operations.get_all_reading_from_device(cursor, pu)[-1][-1]
+                except IndexError:
+                    result -= 0
+            scheme.append(select_operations.get_russian_units_of_measure(cursor, scheme[0]))
+            scheme.append(result)
+            scheme[0] = select_operations.get_russian_devices_type(cursor, scheme[0])
+    return raw_schemes
+
+
+def _table_with_schemes(point_id) -> str:
+    """Function return table with all calculating schemes if they exist"""
+    schemes = _calculate_in_schemes(point_id)
+    if len(schemes) == 0:
+        result = ""
+    else:
+        new_schemes = []
+        for scheme in schemes:
+            new_schemes.append([])
+            for elem in scheme:
+                if isinstance(elem, list):
+                    tmp = ', '.join([str(pu) for pu in elem])
+                    new_schemes[-1].append(tmp)
+                else:
+                    new_schemes[-1].append(elem)
+        result = uhtml.universal_table(table_headers.calc_schemes_table_name,
+                                       table_headers.calc_schemes_table,
+                                       new_schemes)
+    return result
 
 
 def all_reading_to_device_page(device_id: int, stylesheet_number: str) -> str:
@@ -99,12 +166,28 @@ def all_reading_to_device_page(device_id: int, stylesheet_number: str) -> str:
         readings = select_operations.get_all_reading_from_device(cursor, device_id)
         table = uhtml.universal_table(table_headers.readings_device_table_name, table_headers.readings_device_table,
                                       readings, False)
-        to_bar_button = '<div id="navigation_div">' \
+        to_bar_button = '<div id="navigation_div">''<div class="navigation_elem">' \
+                        '<a href="/to-only-reading/{0}">Только показания</a></div>' \
                         '<div class="navigation_elem"><a href="/to-bar-meter/{0}">График расходов за периоды</a></div>' \
                         '<div class="navigation_elem"><a href="/to-bar-meter-avr/{0}">График средних расходов</a></div>' \
                         '</div>'.format(device_id)
         table_new = uhtml.add_new_reading(device_id)
         return web_template.result_page(table + to_bar_button + table_new, "/all-meter-devices", str(stylesheet_number))
+
+
+def only_reading_to_device_page(device_id: int, stylesheet_number: str) -> str:
+    """Function create page with simple table including all readings for this device meter"""
+    with Database() as base:
+        _, cursor = base
+        device_info = select_operations.get_full_info_from_meter_device(cursor, device_id)
+        if len(device_info) == 0:
+            table = uhtml.data_is_not_valid()
+        else:
+            readings = select_operations.get_all_date_and_readings_from_device(cursor, device_id)
+            table_name = table_headers.small_readings_table_name.format(device_info[0][3] + ' ' + device_info[0][2],
+                                                                        device_info[0][9], device_info[0][1])
+            table = uhtml.universal_table(table_name, table_headers.small_readings_table, readings)
+    return web_template.result_page(table, '/get-devices-reading/{}'.format(device_id), stylesheet_number)
 
 
 def meter_readings_bar_page(device_id: int,  stylesheet_number: str) -> str:

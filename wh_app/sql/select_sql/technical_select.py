@@ -94,7 +94,7 @@ def sql_select_reading_meter_from_id(id: int) -> str:
       AS delta_days , %(Kt)s FROM reading_lst
     JOIN %(meter_devices)s ON %(meter_devices)s.%(id)s = {0})
     SELECT %(id)s, %(serial_num)s, %(read_date)s, %(reading)s, diff, %(Kt)s, diff * %(Kt)s AS full_diff,
-      diff * %(Kt)s / delta_days FROM tmp OFFSET 1""" % sql_consts_dict
+      ROUND(diff * %(Kt)s / delta_days, 3) FROM tmp OFFSET 1""" % sql_consts_dict
 
     return query.format(str(id))
 
@@ -141,3 +141,43 @@ def sql_select_count_worked_meter_devices() -> str:
 
     query = """SELECT COUNT(*) FROM %(meter_devices)s WHERE is_active = true""" % sql_consts_dict
     return query
+
+
+@log_decorator
+def sql_select_all_positive_schemes_to_point_and_meter_type(point_id: int, device_type: str) -> str:
+    """Return SQL-string to SELECT all positive schemes in point with meter_type = device_type"""
+
+    query = """SELECT unnest(%(positive_calc)s) FROM %(calculation_schemes)s WHERE %(point_id)s = {0} 
+    AND %(devices_type)s = '{1}'""" % sql_consts_dict
+    return query.format(point_id, device_type)
+
+
+@log_decorator
+def sql_select_all_negative_schemes_to_point_and_meter_type(point_id: int, device_type: str) -> str:
+    """Return SQL-string to SELECT all negative schemes in point with meter_type = device_type"""
+
+    query = """SELECT unnest(%(negative_calc)s) FROM %(calculation_schemes)s WHERE %(point_id)s = {0} 
+    AND %(devices_type)s = '{1}'""" % sql_consts_dict
+    return query.format(point_id, device_type)
+
+
+@log_decorator
+def sql_select_all_meter_types() -> str:
+    """Return all meter types in database"""
+
+    query = """SELECT unnest(enum_range(NULL::%(meter_type)s))""" % sql_consts_dict
+    return query
+
+
+@log_decorator
+def sql_select_unit_meter_from_type(devices_type: str) -> str:
+    """Return name of unit meter in russian"""
+
+    return """SELECT units_of_measure_string('{}')""".format(devices_type)
+
+
+@log_decorator
+def sql_select_russian_string_from_meter_type(devices_type: str) -> str:
+    """Return russian name to meter type"""
+
+    return """SELECT meter_type_to_string('{}')""".format((devices_type))

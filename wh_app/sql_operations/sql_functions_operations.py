@@ -73,6 +73,11 @@ def create_or_replace_meter_type_to_string(cursor) -> None:
     create_function(cursor, functions_sql.meter_type_to_string())
 
 
+def create_or_replace_units_of_measure_string(cursor) -> None:
+    """Add or replace SQL function to mapping meter_type to units of measure"""
+    create_function(cursor, functions_sql.units_of_measure())
+
+
 def all_sql_functions_list() -> list:
     """Return list contain all function to create virtual tables"""
 
@@ -86,4 +91,5 @@ def all_sql_functions_list() -> list:
             create_or_replace_last_year_funct,
             create_or_replace_work_day_type_to_string,
             create_or_replace_date_to_date_and_day,
-            create_or_replace_meter_type_to_string]
+            create_or_replace_meter_type_to_string,
+            create_or_replace_units_of_measure_string]

@@ -120,7 +120,24 @@ def meter_type_to_string() -> str:
     IF m = 'electricity'::meter_type THEN RETURN 'электроэнергия':: text;
     ELSIF m ='cold_water'::meter_type THEN RETURN 'ХВС'::text;
     ELSIF m = 'hot_water'::meter_type THEN RETURN 'ГВС'::text;
-    ELSE RETURN 'отопление'::text;
+    ELSIF m = 'warm_energy'::meter_type THEN RETURN 'тепловая энергия Гкал'::text;
+    ELSE RETURN 'тепловая энергия м.куб.'::text;
     END IF;
     END;
     $$ LANGUAGE plpgsql;"""
+
+
+@log_decorator
+def units_of_measure() -> str:
+    """Create or replace SQL function to convert meter_type to units of measure"""
+
+    return """CREATE OR REPLACE FUNCTION units_of_measure_string(m meter_type) RETURNS text AS $$
+        BEGIN 
+        IF m = 'electricity'::meter_type THEN RETURN 'кВт*час':: text;
+        ELSIF m ='cold_water'::meter_type THEN RETURN 'м.куб.'::text;
+        ELSIF m = 'hot_water'::meter_type THEN RETURN 'м.куб.'::text;
+        ELSIF m = 'warm_energy'::meter_type THEN RETURN 'Гкал'::text;
+        ELSE RETURN 'м.куб.'::text;
+        END IF;
+        END;
+        $$ LANGUAGE plpgsql;"""
