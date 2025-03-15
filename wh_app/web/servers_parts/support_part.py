@@ -44,6 +44,11 @@ def stylesheet_number() -> str:
     return session.get(THEME_NUMBER)
 
 
+def get_login_from_session() -> str:
+    """Return login in SESSION from web-version"""
+    return session[uhtml.LOGIN]
+
+
 def access_is_allowed() -> bool:
     """Function return if user input correct login and password"""
     if (LOGIN_IS_CORRECT in session) and\

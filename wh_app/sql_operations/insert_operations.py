@@ -75,3 +75,9 @@ def insert_new_reading_to_meter_device(cursor, device_id: int, reading_date: str
     cursor.execute(sql_add_new_reading_to_meter_device(device_id, reading_date, value))
 
 
+def insert_new_customer_in_database(cursor, nickname: str, description: str, hash_pass: str) -> None:
+    """Add new customer in database"""
+
+    cursor.execute(sql_add_new_customer(nickname, description, hash_pass))
+
+

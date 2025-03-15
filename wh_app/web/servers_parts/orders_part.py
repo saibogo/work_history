@@ -4,7 +4,7 @@ from wh_app.web.servers_parts.support_part import *
 from wh_app.web.orders_section import all_customers_table, orders_main_menu,\
     all_registered_orders_table, create_new_order_form, create_order_method, all_no_closed_orders_table,\
     create_edit_order_form, edit_order_status_method, all_registered_orders_table_page, all_no_closed_orders_table_page,\
-    find_order_from_id_form, order_with_id_table
+    find_order_from_id_form, order_with_id_table, create_new_customer_form, create_new_customer_method
 
 
 @app.route('/orders-and-customers')
@@ -17,6 +17,19 @@ def orders_and_customers() -> Response:
 def all_customers_table_server() -> Response:
     """Return ALL CUSTOMERS page"""
     return goto_or_redirect(lambda: all_customers_table(stylesheet_number()), functions.ROLE_CUSTOMER)
+
+
+@app.route('/add-new-customer')
+def add_new_customer() -> Response:
+    """go to new form to create new customer"""
+    return goto_or_redirect(lambda: create_new_customer_form(stylesheet_number()), functions.ROLE_SUPERUSER)
+
+
+@app.route('/create_new_customer', methods=['POST'])
+def create_new_customer() -> Response:
+    """Go to analyze and add new customer in database"""
+    return goto_or_redirect(lambda: create_new_customer_method(functions.form_to_data(request.form), request.method,
+                                                        stylesheet_number()), functions.ROLE_SUPERUSER)
 
 
 @app.route('/all-registred-orders')

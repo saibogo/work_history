@@ -3,6 +3,7 @@
 import hashlib
 from datetime import datetime
 from typing import Iterable, Any, List, Tuple
+from flask import session
 
 from wh_app.config_and_backup import config
 from wh_app.postgresql.database import Database
@@ -17,6 +18,8 @@ def info_string(name_module):
                                                                           metadata.__version__,
                                                                           metadata.__author__,
                                                                           metadata.__license__))
+
+
 from wh_app.web.universal_html import FIND_REQUEST
 from wh_app.web.universal_html import EDIT_CHAR
 
@@ -25,8 +28,23 @@ NOT_VALUES = "Нет данных"
 ROLE_SUPERUSER = 'superuser'
 ROLE_WORKER = 'worker'
 ROLE_CUSTOMER = 'customer'
-NO_ROLE = 'no role'
+NO_ROLE = 'no_role'
 ROLES_IERARH = [ROLE_SUPERUSER, ROLE_WORKER, ROLE_CUSTOMER, NO_ROLE]
+
+
+def get_role_description(role: str) -> str:
+    """Return role description in russian lang"""
+    if role == NO_ROLE:
+        result = "Без роли(Возможен только частичный просмотр)"
+    elif role == ROLE_CUSTOMER:
+        result = "Заказчик(Возможен частичный просмотр и ограниченный ввод)"
+    elif role == ROLE_WORKER:
+        result = "Сотрудник техслужбы(Доступно большинство функций системы)"
+    elif role == ROLE_SUPERUSER:
+        result = "Администратор системы(Доступны все функции)"
+    else:
+        result = "Роль не определена"
+    return result
 
 
 def str_to_str_n(old_string: str, max_len: int) -> str:
@@ -68,13 +86,13 @@ def full_equip_to_view(equip: list) -> list:
 
 
 def read_all_users() -> dict:
-    """Function return dict contain all users in workhistory system"""
+    """Function return dict contain all users in workhistory system liked {user_name: hash_of_password}"""
 
     result = {}
     try:
         file_passwords = open(config.path_to_passwords(), mode='r')
         for line in file_passwords:
-            user, pass_hash = line.split()
+            user, pass_hash, role = line.split()
             result[user] = int(pass_hash)
         file_passwords.close()
     except FileNotFoundError:
@@ -83,12 +101,27 @@ def read_all_users() -> dict:
 
 
 def save_all_users(users: dict) -> None:
-    """Save users and hashes in file"""
+    """Save users and hashes in file. User dict liked {'user_name': [hash, 'user_role']}"""
 
     file_passwords = open(config.path_to_passwords(), mode='w')
     for user in users:
-        file_passwords.write('{0} {1}\n'.format(user, users[user]))
+        file_passwords.write('{0} {1} {2}\n'.format(user, users[user][0], users[user][1]))
     file_passwords.close()
+
+
+def add_record_in_login_log(user: str, role: str, ip: str) -> None:
+    """Save datetime, username and role for login in system"""
+
+    log_file = open(config.path_to_login_log(), mode='a')
+    log_file.write('Login user {0} with user role = {1} in {2} from IP = {3}\n'.format(user, role, datetime.now().isoformat(), ip))
+    log_file.close()
+
+
+def add_record_in_logout_log(user: str, ip: str) -> None:
+    """Save datetime and username for logout system"""
+    log_file = open(config.path_to_login_log(), mode='a')
+    log_file.write('Logout user {0} in {1} from IP = {2}\n'.format(user, datetime.now().isoformat(), ip))
+    log_file.close()
 
 
 def create_hash(pattern: str) -> int:
@@ -99,8 +132,16 @@ def create_hash(pattern: str) -> int:
 
 def is_valid_password(password: str) -> bool:
     """Function compare password and passwords hashes"""
-
-    return create_hash(password) in read_all_users().values()
+    username = session['login']
+    user_role = session['role']
+    if user_role in [ROLE_SUPERUSER, ROLE_WORKER, NO_ROLE]:
+        all_users = read_all_users()
+        result = (username in all_users.keys()) and (create_hash(password) == all_users[username])
+    elif user_role == ROLE_CUSTOMER:
+        result = is_valid_customer(username, password)
+    else:
+        result = False
+    return result
 
 
 def is_valid_customers_password(password: str, hash_in_db: str) -> bool:
@@ -121,11 +162,11 @@ def is_valid_customer(login: str, password: str) -> bool:
 
 def is_superuser_password(password: str) -> bool:
     """Function compare password and superuser password hash"""
-
-    try:
-        return read_all_users()["saibogo"] == create_hash(password)
-    except KeyError:
-        return False
+    username = session['login']
+    all_users = read_all_users()
+    return (username in all_users.keys()) \
+           and (create_hash(password) == all_users[username]) \
+           and get_user_role(username) == ROLE_SUPERUSER
 
 
 def is_login_and_password_correct(login: str, password: str) -> bool:
@@ -135,6 +176,29 @@ def is_login_and_password_correct(login: str, password: str) -> bool:
         return read_all_users()[login] == create_hash(password)
     except KeyError:
         return False
+
+
+def get_user_role(login: str) -> str:
+    """Return ROLE of user"""
+    result = NO_ROLE
+    try:
+        file_passwords = open(config.path_to_passwords(), mode='r')
+        for line in file_passwords:
+            user, pass_hash, role = line.split()
+            if user == login:
+                if role == ROLE_SUPERUSER:
+                    result = ROLE_SUPERUSER
+                elif role == ROLE_WORKER:
+                    result = ROLE_WORKER
+                elif role == ROLE_CUSTOMER:
+                    result = ROLE_CUSTOMER
+                else:
+                    result = NO_ROLE
+        file_passwords.close()
+    except FileNotFoundError:
+        print("File {0} not found!".format(config.path_to_passwords()))
+    return result
+
 
 
 def form_to_data(form: dict) -> dict:

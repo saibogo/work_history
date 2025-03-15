@@ -17,7 +17,7 @@ def sql_select_all_bindings_to_point(point_id: str):
 def sql_select_all_customers() -> str:
     """Return all records in table customer"""
 
-    return """SELECT id, full_name FROM %(customer_table)s ORDER BY %(id)s""" % sql_consts_dict
+    return """SELECT %(id)s, %(full_name)s, %(description)s FROM %(customer_table)s ORDER BY %(id)s""" % sql_consts_dict
 
 
 @log_decorator

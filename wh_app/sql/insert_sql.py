@@ -116,3 +116,11 @@ def sql_add_new_reading_to_meter_device(device_id: int, reading_date: str, value
     query = """INSERT INTO %(meter_readings)s (%(devices_id)s, %(read_date)s, %(reading)s) 
     VALUES ({0}, '{1}'::DATE, {2})""" % sql_consts_dict
     return query.format(device_id, reading_date, value)
+
+
+@log_decorator
+def sql_add_new_customer(nickname: str, description: str, hash_pass: str) -> str:
+    """Return INSERT string to add new customer"""
+
+    query = """INSERT INTO %(customer)s (%(hash_pass)s, %(full_name)s, %(description)s) VALUES ('{}', '{}', '{}')""" % sql_consts_dict
+    return query.format(hash_pass, nickname, description)

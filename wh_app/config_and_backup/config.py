@@ -12,7 +12,8 @@ path_to_dump = lambda: str(globals()['path_to_dump_var'])
 path_to_structure_dump = lambda: str(globals()['path_to_structure_dump_var'])
 path_to_passwords = lambda: str(globals()['path_to_passwords_var'])
 path_to_messages = lambda: str(globals()['path_to_messages_var'])
-path_to_sql_log = lambda : str(globals()['path_to_sql_log_var'])
+path_to_sql_log = lambda: str(globals()['path_to_sql_log_var'])
+path_to_login_log = lambda: str(globals()['path_to_login_log_var'])
 path_to_fonts = lambda: str(globals()['path_to_fonts_var'])
 path_to_certificate = lambda: str(globals()['certificate_var'])
 path_to_private_key = lambda: str(globals()['privateKey_var'])
@@ -62,6 +63,7 @@ def load_config():
         globals()['path_to_passwords_var'] = path_to_project() + 'wh_app/config_and_backup/.users_pass'
         globals()['path_to_messages_var'] = path_to_project() + 'wh_app/config_and_backup/.message_to_shutdown_server'
         globals()['path_to_sql_log_var'] = tree.find('pathes/path_to_sql_log').text
+        globals()['path_to_login_log_var'] = tree.find('pathes/path_to_login_log').text
         globals()['path_to_fonts_var'] = path_to_project() + 'wh_app/supporting/pdf_operations/'
         globals()['certificate_var'] = path_to_project() + 'wh_app/cert/certificate.crt'
         globals()['privateKey_var'] = path_to_project() + 'wh_app/cert/privateKey.key'

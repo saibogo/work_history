@@ -19,9 +19,10 @@ functions.info_string(__name__)
 
 def orders_main_menu(stylesheet_number: str) -> str:
     """Function create main page in ORDERS section"""
-    menu = ['Все заказчики', 'Все зарегистрированные заявки','Только незакрытые заявки', 'Поиск по ID',
-            'Зарегистрировать заявку']
-    links = ['/all-customers-table', '/all-registred-orders', '/all-no-closed-orders', '/order-from-id', '/add-order']
+    menu = ['Все заказчики', 'Добавить заказчика',
+            'Все зарегистрированные заявки','Только незакрытые заявки', 'Поиск по ID', 'Зарегистрировать заявку']
+    links = ['/all-customers-table', '/add-new-customer', '/all-registred-orders', '/all-no-closed-orders',
+             '/order-from-id', '/add-order']
     table = uhtml.universal_table('Действия с заявками',
                                   ['№', 'Действие'],
                                   functions.list_to_numer_list(menu), True, links)
@@ -38,6 +39,47 @@ def all_customers_table(stylesheet_number: str) -> str:
                                       select_operations.get_all_customers(cursor))
 
         return web_template.result_page(table, '/orders-and-customers', str(stylesheet_number))
+
+
+def create_new_customer_form(stylesheet_number: str) -> str:
+    """Function create page with form to create new customer"""
+    pre_adr = '/orders-and-customers'
+    form = render_template('add_new_customer.html', password=uhtml.PASSWORD, full_name=uhtml.FULL_NAME,
+                           last_name=uhtml.LAST_NAME, first_name=uhtml.FIRST_NAME, password_1=uhtml.PASSWORD1,
+                           password_2=uhtml.PASSWORD2)
+    return web_template.result_page(form, pre_adr, str(stylesheet_number))
+
+
+def create_new_customer_method(data: Dict, method, stylesheet_number: str) -> str:
+    """Function analyze and if all correct add new customer in database"""
+    pre_adr = '/orders-and-customers'
+    if method == 'POST':
+        password = data[uhtml.PASSWORD]
+        full_name = data[uhtml.FULL_NAME]
+        first_name = data[uhtml.FIRST_NAME]
+        last_name = data[uhtml.LAST_NAME]
+        password1 = data[uhtml.PASSWORD1]
+        password2 = data[uhtml.PASSWORD2]
+        if functions.is_superuser_password(password):
+            if password1 == password2:
+                with Database() as base:
+                    connection, cursor = base
+                    user_in_db = select_operations.user_in_customers(cursor, full_name)
+                    if user_in_db:
+                        page = '<h2>Пользователь {} уже зарегистрирован в системе!</h2>'.format(full_name)
+                    else:
+                        description = '{} {}'.format(last_name, first_name)
+                        new_hash = functions.create_hash(password1)
+                        insert_operations.insert_new_customer_in_database(cursor, full_name, description, new_hash)
+                        connection.commit()
+                        page = uhtml.operation_completed()
+            else:
+                page = "<h2>Пароль_1 и Пароль_2 не совпадают!</h2>"
+        else:
+            page = uhtml.pass_is_not_valid()
+    else:
+        page = '<h2>Method in Add New Customer not corrected!</h2>'
+    return web_template.result_page(page, pre_adr, stylesheet_number)
 
 
 def all_registered_orders_table(stylesheet_number: str) -> str:

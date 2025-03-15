@@ -1,7 +1,9 @@
 """This module contain any web-pages"""
+import datetime
 
 from flask import render_template
 from typing import List
+from calendar import monthrange
 
 import wh_app.web.template as web_template
 import wh_app.web.universal_html as uhtml
@@ -89,7 +91,10 @@ def all_meter_devices_in_point_page(point_id: int, stylesheet_number: str) -> st
         links = ['/get-devices-reading/{}'.format(elem[0]) for elem in devices]
         table = uhtml.universal_table(table_headers.meter_devices_table_name, table_headers.meter_devices_table,
                                       devices, True, links)
-        table1 = _table_with_schemes(point_id)
+        if functions.session['role'] == functions.ROLE_SUPERUSER:
+            table1 = _table_with_schemes(point_id)
+        else:
+            table1 = ''
         return web_template.result_page(table + table1, "/meter-devices", str(stylesheet_number))
 
 
@@ -100,9 +105,12 @@ def _all_correct_calculation_schemes(point_id: int) -> List[List]:
         all_types = select_operations.get_all_meter_types(cursor)
         schemes = []
         for meter_type in all_types:
-            schemes.append((meter_type[0],
-                            select_operations.get_all_positive_device_in_scheme(cursor, point_id, meter_type[0]),
-                            select_operations.get_all_negative_device_in_scheme(cursor, point_id, meter_type[0])))
+            all_schemes = select_operations.get_all_calc_schemes_for_point_and_type(cursor, point_id, meter_type[0])
+            for schm in all_schemes:
+                schemes.append((meter_type[0],
+                                select_operations.get_all_positive_device_in_scheme(cursor, schm),
+                                select_operations.get_all_negative_device_in_scheme(cursor, schm),
+                                select_operations.get_comment_in_calc_scheme(cursor, schm)))
         correct_schemes = []
         for scheme in schemes:
             correct_schemes.append([scheme[0], [], []])
@@ -110,13 +118,23 @@ def _all_correct_calculation_schemes(point_id: int) -> List[List]:
                 correct_schemes[-1][1].append(elem[0])
             for elem in scheme[2]:
                 correct_schemes[-1][2].append(elem[0])
+            correct_schemes[-1].append(scheme[3])
         not_empty_schemes = list(filter(lambda elem: elem[1] or elem[2], correct_schemes))
         return not_empty_schemes
+
+
+def _link_to_meter_device(meter_id: int) -> str:
+    """Return a href link to meter devices"""
+    with Database() as base:
+        _, cursor = base
+        full_meter_dev_info = select_operations.get_full_info_from_meter_device(cursor, meter_id)
+    return '<a href="/get-devices-reading/{0}" title="{1}">{0}</a>'.format(meter_id, full_meter_dev_info[0][10])
 
 
 def _calculate_in_schemes(point_id) -> List[List]:
     """Return alavaliable calculation scheme in point and summary result"""
     raw_schemes = _all_correct_calculation_schemes(point_id)
+    days_in_month = monthrange(datetime.datetime.now().year, datetime.datetime.now().month)[1]
     with Database() as base:
         _, cursor = base
         for scheme in raw_schemes:
@@ -133,6 +151,7 @@ def _calculate_in_schemes(point_id) -> List[List]:
                     result -= 0
             scheme.append(select_operations.get_russian_units_of_measure(cursor, scheme[0]))
             scheme.append(result)
+            scheme.append(result * days_in_month)
             scheme[0] = select_operations.get_russian_devices_type(cursor, scheme[0])
     return raw_schemes
 
@@ -148,7 +167,7 @@ def _table_with_schemes(point_id) -> str:
             new_schemes.append([])
             for elem in scheme:
                 if isinstance(elem, list):
-                    tmp = ', '.join([str(pu) for pu in elem])
+                    tmp = ', '.join([_link_to_meter_device(pu) for pu in elem])
                     new_schemes[-1].append(tmp)
                 else:
                     new_schemes[-1].append(elem)

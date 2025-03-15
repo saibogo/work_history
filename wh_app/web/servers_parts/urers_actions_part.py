@@ -16,6 +16,10 @@ def login_page() -> str:
 def logout_page() -> str:
     """Function call logout-function for user and redirect to LOGOUT-page"""
 
+    user_name = session[LOGIN]
+    user_ip = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
+    print('Пользователь {} покинул систему'.format(user_name))
+    functions.add_record_in_logout_log(user_name, user_ip)
     session[LOGIN_IS_CORRECT] = False
     session.modified = True
     return result_page(logout_user(), '/login', stylesheet_number())
@@ -24,23 +28,38 @@ def logout_page() -> str:
 @app.route('/login-verification',  methods=['POST'])
 def login_verification() -> str:
     """Function compare pair login-password with data in system and redirect to new page"""
+    user_ip = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
 
     if functions.is_login_and_password_correct(request.form[LOGIN], request.form[PASSWORD]):
-        print("Успешная верификация пользователя ", request.form[LOGIN])
-        if functions.is_superuser_password(request.form[PASSWORD]):
+        user_name = request.form[LOGIN]
+        print("Успешная верификация пользователя ", user_name)
+        user_role = functions.get_user_role(user_name)
+        if functions.is_login_and_password_correct( user_name, request.form[PASSWORD]) \
+                and user_role == functions.ROLE_SUPERUSER:
             session[SESSION_ROLE] = functions.ROLE_SUPERUSER
-        else:
+            session[LOGIN] = user_name
+        elif user_role == functions.ROLE_WORKER:
             session[SESSION_ROLE] = functions.ROLE_WORKER
+            session[LOGIN] = user_name
+        else:
+            session[LOGIN] = user_name
+            session[SESSION_ROLE] = functions.NO_ROLE
         session[LOGIN_IS_CORRECT] = True
         session[TIME_LOGIN] = time.time()
         session.modified = True
         result = access_allowed(request.form[LOGIN])
+        print('Для пользователя установлена роль: ', functions.get_role_description(session[SESSION_ROLE]))
+        functions.add_record_in_login_log(user_name, session[SESSION_ROLE], user_ip)
     elif functions.is_valid_customer(request.form[LOGIN], request.form[PASSWORD]):
+        print("Успешная верификация пользователя ", request.form[LOGIN])
         session[SESSION_ROLE] = functions.ROLE_CUSTOMER
+        session[LOGIN] = request.form[LOGIN]
         session[LOGIN_IS_CORRECT] = True
         session[TIME_LOGIN] = time.time()
         session.modified = True
         result = access_allowed(request.form[LOGIN])
+        print('Для пользователя установлена роль: ', functions.get_role_description(session[SESSION_ROLE]))
+        functions.add_record_in_login_log(request.form[LOGIN], session[SESSION_ROLE], user_ip)
     else:
         print("Неудачная попытка входа пользователя ", request.form[LOGIN])
         result = access_denided(request.form[LOGIN])

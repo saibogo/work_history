@@ -144,21 +144,36 @@ def sql_select_count_worked_meter_devices() -> str:
 
 
 @log_decorator
-def sql_select_all_positive_schemes_to_point_and_meter_type(point_id: int, device_type: str) -> str:
-    """Return SQL-string to SELECT all positive schemes in point with meter_type = device_type"""
+def sql_select_all_awaliable_schemes_for_type_and_point(point_id: int, devices_type: str) -> str:
+    """Return SQL-string to get all awaliable calculation schemes"""
 
-    query = """SELECT unnest(%(positive_calc)s) FROM %(calculation_schemes)s WHERE %(point_id)s = {0} 
-    AND %(devices_type)s = '{1}'""" % sql_consts_dict
-    return query.format(point_id, device_type)
+    query = """SELECT %(id)s FROM %(calculation_schemes)s WHERE %(point_id)s = {0} AND %(devices_type)s = '{1}'""" \
+            % sql_consts_dict
+    return query.format(point_id, devices_type)
 
 
 @log_decorator
-def sql_select_all_negative_schemes_to_point_and_meter_type(point_id: int, device_type: str) -> str:
-    """Return SQL-string to SELECT all negative schemes in point with meter_type = device_type"""
+def sql_select_all_positive_schemes_from_schemes_id(schemes_id: int) -> str:
+    """Return SQL-string to SELECT all positive schemes from schemes with id"""
 
-    query = """SELECT unnest(%(negative_calc)s) FROM %(calculation_schemes)s WHERE %(point_id)s = {0} 
-    AND %(devices_type)s = '{1}'""" % sql_consts_dict
-    return query.format(point_id, device_type)
+    query = """SELECT unnest(%(positive_calc)s) FROM %(calculation_schemes)s WHERE %(id)s = {}""" % sql_consts_dict
+    return query.format(schemes_id)
+
+
+@log_decorator
+def sql_select_all_negative_schemes_from_schemes_id(schemes_id: int) -> str:
+    """Return SQL-string to SELECT all negative schemes from schemes with id"""
+
+    query = """SELECT unnest(%(negative_calc)s) FROM %(calculation_schemes)s WHERE %(id)s = {}""" % sql_consts_dict
+    return query.format(schemes_id)
+
+
+@log_decorator
+def sql_select_schemes_comment_from_schemes_id(schemes_id: int) -> str:
+    """Return SQL-string to get comment with current calculation scheme"""
+
+    query = """SELECT %(comment)s FROM %(calculation_schemes)s WHERE %(id)s = {}""" % sql_consts_dict
+    return query.format(schemes_id)
 
 
 @log_decorator

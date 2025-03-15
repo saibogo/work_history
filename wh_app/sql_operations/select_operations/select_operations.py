@@ -779,16 +779,29 @@ def get_all_meter_types(cursor) -> List[Tuple]:
     return select_sql.sql_select_all_meter_types()
 
 
+@list_tuples_to_list_decorator
 @get_selected_decorator
-def get_all_positive_device_in_scheme(cursor, point_id: int, device_type: str) -> List[Tuple]:
-    """Return all positive elements in scheme with point_id and meter device type"""
-    return select_sql.sql_select_all_positive_schemes_to_point_and_meter_type(point_id, device_type)
+def get_all_calc_schemes_for_point_and_type(cursor, point_id: int, devices_type: str) -> List[Tuple]:
+    """Return all awaliable calculation schemes"""
+    return select_sql.sql_select_all_awaliable_schemes_for_type_and_point(point_id, devices_type)
 
 
 @get_selected_decorator
-def get_all_negative_device_in_scheme(cursor, point_id: int, device_type: str) -> List[Tuple]:
-    """Return all positive elements in scheme with point_id and meter device type"""
-    return select_sql.sql_select_all_negative_schemes_to_point_and_meter_type(point_id, device_type)
+def get_all_positive_device_in_scheme(cursor, schemes_id: int) -> List[Tuple]:
+    """Return all positive elements in scheme with shemes_id"""
+    return select_sql.sql_select_all_positive_schemes_from_schemes_id(schemes_id)
+
+
+@get_selected_decorator
+def get_all_negative_device_in_scheme(cursor, schemes_id: int) -> List[Tuple]:
+    """Return all positive elements in scheme with shemes_id"""
+    return select_sql.sql_select_all_negative_schemes_from_schemes_id(schemes_id)
+
+
+@list_to_first_str_decorator
+@get_selected_decorator
+def get_comment_in_calc_scheme(cursor, schemes_id: int) -> str:
+    return select_sql.sql_select_schemes_comment_from_schemes_id(schemes_id)
 
 
 @list_to_first_str_decorator

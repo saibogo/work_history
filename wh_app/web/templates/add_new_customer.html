@@ -1,0 +1,50 @@
+<h2>Регистрация нового заказчика</h2>
+<form action="/create_new_customer" method="post">
+    <div class="container">
+        <div class="tr_div_login">
+            <div class="faq_quest">Псевдоним(Минимум два символа. Только латинские буквы и цифры)</div>
+            <div class="faq_answer">
+                <input name="{{full_name}}" class="tr_area" pattern="[a-zA-Z]{1,}[a-zA-Z0-9]{1,}">
+            </div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Фамилия(Только русские буквы. Минимум 2 символа)</div>
+            <div class="faq_answer">
+                <input name="{{last_name}}" class="tr_area" pattern="[а-яА-Я]{2,}">
+            </div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Имя(Только русские буквы. Минимум 2 символа)</div>
+            <div class="faq_answer">
+                <input name="{{first_name}}" class="tr_area" pattern="[а-яА-Я]{2,}">
+            </div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Задайте пароль(Минимум 5 любых символов)</div>
+            <div class="faq_answer">
+                <input name="{{password_1}}" class="tr_area" pattern="\S{5,}">
+            </div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Повторите пароль(Минимум 5 любых символов)</div>
+            <div class="faq_answer">
+                <input name="{{password_2}}" class="tr_area" pattern="\S{5,}">
+            </div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Пароль администратора</div>
+            <div class="faq_answer">
+                <input type="password" name="{{password}}" class="tr_password" placeholder="Пароль(Обязательно)">
+            </div>
+        </div>
+
+        <div class="tr_div_login">
+            <div class="faq_quest">
+
+            </div>
+            <div class="faq_answer">
+                <input type="submit" value="Отправить">
+            </div>
+        </div>
+    </div>
+</form>

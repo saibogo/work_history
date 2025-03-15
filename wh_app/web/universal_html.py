@@ -70,6 +70,11 @@ ORDER_STATUS_NAME = "order_status"
 ORDER_ID = "order_id"
 DEVICE_ID = "device_id"
 READING_NAME = "reading"
+FULL_NAME = "full_name"
+LAST_NAME = "last_name"
+FIRST_NAME = "first_name"
+PASSWORD1 = "password_1"
+PASSWORD2 = "password_2"
 
 
 def link_or_str(elem: str, link_type: bool = False, link: str = '') -> str:
