@@ -553,6 +553,13 @@ def get_order_from_id(cursor, order_id: str) -> Tuple:
     return select_sql.sql_select_order_from_id(order_id)
 
 
+@list_to_first_int_decorator
+@get_selected_decorator
+def get_last_order_id_in_work(cursor) -> int:
+    """Function return id to last order with status in_work"""
+    return select_sql.sql_select_last_orders_id_in_work()
+
+
 @list_to_first_bool_decorator
 @get_selected_decorator
 def user_in_customers(cursor, user_name: str) -> bool:

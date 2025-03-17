@@ -4,8 +4,8 @@
         <path_to_project>/home/saibogo/PycharmProjects/work_history/</path_to_project>
         <path_to_pdf>/home/saibogo/Документы/report.pdf</path_to_pdf>
         <path_to_telegram_token>/home/saibogo/telegram_token.txt</path_to_telegram_token>
-        <path_to_sql_log>/home/saibogo/Документы/workhistory_sql.log</path_to_sql_log>
-        <path_to_login_log>/home/saibogo/Документы/workhistory_logins.log</path_to_login_log>
+        <path_to_sql_log>/home/saibogo/Документы/WHS_logs/workhistory_sql.log</path_to_sql_log>
+        <path_to_login_log>/home/saibogo/Документы//WHS_logsworkhistory_logins.log</path_to_login_log>
     </pathes>
     <database>
         <database_name>workhistory</database_name>

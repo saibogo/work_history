@@ -1430,6 +1430,9 @@ COPY public.bugzilla (id, problem, status, date_start, date_close) FROM stdin;
 126	необходимо проверять соответствие логина и пароля для текущей сессии	f	2025-03-14 19:48:51.040645	2025-03-14 22:19:44.97231
 125	необходимо заблокировать классу ROLE_WORKER доступ к просмотру аналитики потребления	f	2025-03-14 19:48:01.114739	2025-03-14 22:20:00.000445
 69	необходимо добавить подпункт добавить/удалить заказчика в меню работы с заявками	f	2024-02-02 11:59:00.692016	2025-03-15 18:42:12.750433
+127	необходимо продумать способ оповещения о созданной заявке	t	2025-03-15 18:54:09.098356	\N
+128	необходимо добавить возможность создания расчетных схем в разделе просмотр приборов учета для предприятия	t	2025-03-15 19:49:29.822644	\N
+129	при отображении списка заявок в поле полное имя указан псевдоним а не полное имя	t	2025-03-15 20:39:38.26355	\N
 \.
 
 
@@ -1438,57 +1441,98 @@ COPY public.bugzilla (id, problem, status, date_start, date_close) FROM stdin;
 --
 
 COPY public.calculation_schemes (id, point_id, positive_calc, negative_calc, devices_type, comment) FROM stdin;
-1	1	{8,10}	\N	electricity	
-2	25	{88}	{86}	cold_water	
-3	25	{89}	{85}	hot_water	
-4	25	{87}	{}	electricity	
-6	2	{9}	{43,52,45,49}	cold_water	
-7	2	{1}	{44,53,46,50}	hot_water	
-8	28	{39,40,41,42}	{}	electricity	
-9	18	{66,67,68}	{}	electricity	
-10	17	{60,61}	{}	electricity	
-12	38	{24,25,26}	{}	electricity	
-15	4	{94,97}	{95,96}	electricity	
-16	31	{20,21}	{}	electricity	
-17	45	{101,104}	{}	cold_water	
-18	45	{100,103}	{}	hot_water	
-19	36	{124}	\N	electricity	
-20	36	{123}	\N	cold_water	
-21	36	{122}	\N	hot_water	
-22	8	{57}	\N	electricity	
-23	8	{58}	\N	cold_water	
-24	28	{43}	\N	cold_water	
-25	28	{44}	\N	hot_water	
-5	2	{111,112,113,114,115,116,117,118,119,120,121}	{}	electricity	По внутренним ПУ
-26	2	{29,30,31,32,33,34}	{39,40,41,42,51,47,48,8,10,38}	electricity	По внешним ПУ
-13	10	{24,25,26}	{66,67,68,60,61,59}	electricity	По внешним ПУ
-27	10	{6}	{}	cold_water	
-28	10	{7}	{}	hot_water	
-29	33	{51}	{}	electricity	
-31	33	{53}	{}	hot_water	
-32	27	{47}	{}	electricity	
-33	27	{45}	{}	cold_water	
-34	27	{46}	{}	hot_water	
-35	20	{48}	{}	electricity	
-36	20	{49}	{}	cold_water	
-37	20	{50}	{}	hot_water	
-38	18	{64}	{}	hot_water	
-39	18	{65}	{}	cold_water	
-11	17	{2}	{65,6}	cold_water	По внешним ПУ
-40	38	{2}	{}	cold_water	
-41	39	{17}	{}	electricity	
-42	37	{9}	{}	cold_water	
-43	37	{1}	{}	hot_water	
-44	26	{56}	{}	electricity	
-45	26	{54}	{}	cold_water	
-46	26	{55}	{}	hot_water	
-47	30	{14}	{}	hot_water	
-30	33	{52}	{}	cold_water	
-48	30	{4}	{}	hot_water	
-49	4	{98}	{}	hot_water	
-50	4	{99}	{}	cold_water	
-14	37	{29,30,31,32,33,34}	{}	electricity	По внешним ПУ
-51	37	{39,40,41,42,51,47,48,38,111,112,113,114,115,116,117,118,119,120,121,8,10}	{}	electricity	По внутренним ПУ
+90	28	{39,40,41,42}	\N	electricity	
+91	28	{43}	\N	cold_water	
+92	28	{44}	\N	hot_water	
+93	33	{51}	\N	electricity	
+94	33	{52}	\N	cold_water	
+95	33	{53}	\N	hot_water	
+96	27	{47}	\N	electricity	
+97	27	{45}	\N	cold_water	
+98	27	{46}	\N	hot_water	
+99	20	{48}	\N	electricity	
+100	20	{49}	\N	cold_water	
+101	20	{50}	\N	hot_water	
+102	18	{66,67,68}	\N	electricity	
+103	18	{65}	\N	cold_water	
+104	18	{64}	\N	hot_water	
+105	17	{60,61}	\N	electricity	
+106	17	{62}	\N	cold_water	
+107	17	{63}	\N	hot_water	По внутренним ПУ
+108	17	{125}	{64,7}	hot_water	По внешним ПУ
+109	38	{24,25,26}	{}	electricity	
+110	38	{2}	{}	cold_water	
+111	38	{125}	{}	hot_water	
+112	39	{17}	{}	electricity	
+113	37	{29,30,31,32,33,34}	{}	electricity	
+114	37	{9}	{}	cold_water	
+115	37	{1}	{}	hot_water	
+116	2	{111,112,113,114,115,116,117,118,119,120,121}	{}	electricity	По внутренним ПУ
+117	2	{29,30,31,32,33,34}	{38,39,40,41,42,51,47,48,8,10}	electricity	По внешним ПУ
+118	2	{9}	{43,52,45,49}	cold_water	По внешним ПУ вместе с ПБ
+119	2	{1}	{44,53,46,50}	hot_water	По внешним ПУ вместе с ПБ
+120	26	{56}	{}	electricity	
+121	26	{54}	{}	cold_water	
+122	26	{55}	{}	hot_water	
+123	30	{14}	{}	cold_water	
+124	30	{4}	{}	hot_water	
+125	5	{77}	{}	electricity	
+126	5	{76}	{}	cold_water	
+127	5	{75}	{}	hot_water	
+128	4	{94,97}	{95,96}	electricity	
+129	4	{99}	{}	cold_water	
+130	4	{98}	{}	hot_water	
+131	42	{108}	{}	electricity	
+132	42	{109}	{}	cold_water	
+133	42	{110}	{}	hot_water	
+134	34	{11}	{}	electricity	
+135	34	{12}	{}	cold_water	
+136	34	{13}	{}	hot_water	
+137	8	{57}	{}	electricity	
+138	8	{58}	{}	cold_water	
+139	21	{35}	{}	electricity	
+140	21	{37}	{}	cold_water	
+141	21	{36}	{}	hot_water	
+142	10	{6}	{}	cold_water	
+143	10	{7}	{}	hot_water	
+144	10	{24,25,26}	{59,60,61,66,67,68}	electricity	По внешним ПУ
+145	1	{8,10}	{}	electricity	
+146	6	{72}	{}	electricity	
+147	6	{74}	{}	cold_water	
+148	6	{73}	{}	hot_water	
+149	9	{90}	{}	electricity	
+150	9	{83}	{}	cold_water	
+151	9	{84}	{}	hot_water	
+152	46	{105}	{}	electricity	
+153	46	{106}	{}	cold_water	
+154	46	{107}	{}	hot_water	
+155	31	{20,21}	{}	electricity	
+156	31	{22}	{}	cold_water	
+157	31	{23}	{}	hot_water	
+158	25	{87}	{}	electricity	
+159	25	{88}	{86}	cold_water	
+160	25	{89}	{85}	hot_water	
+161	7	{91}	{}	electricity	
+162	7	{92}	{}	cold_water	
+163	7	{93}	{}	hot_water	
+164	44	{78}	{}	electricity	
+165	44	{80}	{}	cold_water	
+166	44	{79}	{}	hot_water	
+167	44	{81}	{}	warm_energy	
+168	44	{82}	{}	warm_volume	
+169	45	{102}	{}	electricity	
+170	45	{101,104}	{}	cold_water	
+171	45	{100,103}	{}	hot_water	
+172	13	{70}	{}	electricity	По главному
+173	13	{71}	{}	electricity	По контрольному
+174	13	{28}	{}	cold_water	По контрольному
+175	13	{27}	{}	hot_water	По контрольному
+176	36	{124}	{}	electricity	
+177	36	{123}	{}	cold_water	
+178	36	{122}	{}	hot_water	
+179	3	{15}	{}	cold_water	
+180	3	{5}	{}	hot_water	
+181	19	{69}	{}	electricity	
 \.
 
 
@@ -1694,8 +1738,6 @@ COPY public.meter_devices (id, device_type, model, serial_num, is_active, start_
 33	electricity	Меркурий 230 ART-03 PQRSIDN	29912573 - 17 г.	t	2017-09-05	\N	\N	20	f	
 34	electricity	Меркурий 230 ART-03 PQRSIDN	29912543 - 17 г.	t	2017-09-05	\N	\N	50	f	
 35	electricity	Энергомера CE307 R33.145.0	011790128927189	t	2018-07-01	\N	2018-06-27	1	f	
-36	cold_water	БЕТАР СГВ-15	39290292	t	2019-11-01	\N	2019-09-01	1	f	
-37	hot_water	METER СВ-15Г	C238246U 10	t	2021-10-15	\N	2021-07-07	1	f	
 8	electricity	Энергомера CE 301 R31(33)146 JAZ	008842089000050	t	2015-09-01	\N	\N	1	t	вентиляция
 38	electricity	Энергомера CE306 R33 145 JAZ	103760552	t	2016-10-01	\N	2016-05-05	1	t	серверная
 10	electricity	Агат 3-4.5.2	183775	t	2023-10-01	\N	2023-07-01	40	t	ЩР
@@ -1736,6 +1778,7 @@ COPY public.meter_devices (id, device_type, model, serial_num, is_active, start_
 73	hot_water	НОРМА ИС СВК-20Г	3269319 А 15	t	2020-08-01	\N	\N	1	f	
 77	electricity	Меркурий 230 ART 03 RN	31621910-17г	t	2017-06-01	\N	2017-01-01	40	f	
 78	electricity	Энергомера CE 303 S31 746 JAVZ	011702189136276	t	2024-01-01	\N	2023-08-03	1	f	
+37	cold_water	METER СВ-15Г	C238246U 10	t	2021-10-15	\N	2021-07-07	1	f	
 79	hot_water	БЕТАР СГВ-15	40572648	t	2024-01-01	\N	2019-12-09	1	f	
 80	cold_water	БЕТАР СГВ-15Д	40572524	t	2024-01-01	\N	2019-12-09	1	f	
 83	cold_water	БЕТАР СГВ-15	46571379	t	2021-10-01	\N	2021-07-02	1	f	
@@ -1782,6 +1825,8 @@ COPY public.meter_devices (id, device_type, model, serial_num, is_active, start_
 122	hot_water	GERRIDA СВК-20Г	0300172659	t	2023-05-01	\N	2021-12-27	1	f	
 123	cold_water	GERRIDA СВК-20Г	0300163457	t	2023-05-01	\N	2021-10-29	1	f	
 124	electricity	ЭНЕРГОМЕРА CE301 R33 146 JAZ	008842174207340	t	2023-05-01	\N	2022-03-15	1	f	
+36	hot_water	БЕТАР СГВ-15	39290292	t	2019-11-01	\N	2019-09-01	1	f	
+125	hot_water	ВСКМ90-25	050435	t	2012-01-01	\N	\N	1	t	
 \.
 
 
@@ -2113,11 +2158,18 @@ COPY public.meter_readings (id, devices_id, read_date, reading) FROM stdin;
 326	98	2025-03-13	7331.543
 327	97	2025-03-13	55631.300
 278	95	2025-03-03	130000.000
-323	95	2025-03-13	130000.000
 95	44	2024-12-01	8398.781
 328	122	2025-03-13	1355.807
 329	123	2025-03-13	1224.835
 330	124	2025-03-13	328739.750
+331	94	2025-03-15	56403.280
+332	95	2025-03-15	138416.000
+333	96	2025-03-15	38749.880
+334	37	2025-03-16	3606.202
+335	36	2025-03-16	3172.882
+336	35	2025-03-16	373741.440
+337	125	2025-03-16	2542.157
+323	95	2025-03-13	137000.000
 \.
 
 
@@ -3899,9 +3951,7 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 1800	10	кипятильник Hurakan	HKN-HVZ25M	HKNHVZ25M2021018	1027	f
 1027	12	кипятильник Hurakan	HKN-HVZ25M	HKNHVZ25M2021018	1027	t
 1371	12	тепловая завеса Ballu	BHC-L08-T03	not number	1371	t
-1802	47	жироуловитель подраковинный (дальняя мойка)	not model	not number	962	f
 962	12	жироуловитель подраковинный (дальняя мойка)	not model	not number	962	t
-1803	47	жироуловитель подраковинный (фарфор)	ЖИРОЛОFF «СТАНДАРТ» 0,5/25	not number	995	f
 995	12	жироуловитель подраковинный (фарфор)	ЖИРОЛОFF «СТАНДАРТ» 0,5/25	not number	995	t
 1804	41	кипятильник Animo	WKT 10n VA	not number	461	f
 461	12	кипятильник Animo	WKT 10n VA	not number	461	t
@@ -3917,7 +3967,6 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 1811	41	Оборудование летнего кафе	not model	not number	1628	f
 1628	12	Оборудование летнего кафе	not model	not number	1628	t
 1812	19	ледогенератор HURAKAN настольный	HKN-IMF15	IMF 15.08.2022.009	1295	f
-1813	47	мойка двухсекционная(вход на раздачу)	not model	not number	385	f
 385	12	мойка двухсекционная(вход на раздачу)	not model	not number	385	t
 1815	10	Пушка тепловая Ballu	BHP-P2-9	1002007072200765503264	1473	f
 1816	34	Дверь на мойку	not model	not number	1816	f
@@ -3946,6 +3995,8 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 1801	47	тепловая завеса Ballu	BHC-L08-T03	not number	1371	t
 1814	47	мойка двухсекционная кухня	not model	not number	95	t
 1819	8	Блинница настольная двухнофорочная	not model	not number	1819	t
+1802	47	жироуловитель подраковинный (дальняя мойка)	not model	not number	962	t
+1813	47	мойка двухсекционная(вход на раздачу)	not model	not number	385	t
 1832	44	Холодильник на раздаче для фруктов	not model	not number	1832	f
 1833	39	Фасад штукатурка	not model	not number	1833	f
 1834	30	Жалюзи электрические оконные(дальний кабинет)	not model	not number	1834	f
@@ -3980,6 +4031,10 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 1863	19	Wiesheu Minimat	Minimat 64-L	10252361	5	f
 1864	26	Блинница настольная двухнофорочная	Fimar CRP2	not number	1819	f
 1865	7	Потолок подвесной. Грильято.	not model	not number	1865	f
+1866	41	жироуловитель подраковинный (дальняя мойка)	not model	not number	1802	f
+1867	19	мойка двухсекционная(вход на раздачу)	not model	not number	1813	f
+1868	41	жироуловитель подраковинный (фарфор)	ЖИРОЛОFF «СТАНДАРТ» 0,5/25	not number	1803	f
+1803	47	жироуловитель подраковинный (фарфор)	ЖИРОЛОFF «СТАНДАРТ» 0,5/25	not number	995	t
 \.
 
 
@@ -4083,6 +4138,9 @@ COPY public.orders (id, customer_id, date, status, problem, closed_date, comment
 96	1	2025-03-14 19:50:55.270481	in_work	необходимо установить новую посудомоечную машину	\N	\N	11
 97	1	2025-03-14 21:21:23.046945	in_work	необходимо произвести повторный монтаж всего ранее демонтированного перед реконструкцией оборудования	\N	\N	11
 82	1	2025-03-07 21:45:39.606279	in_work	необходимо получить технические условия и выполнить переоборудование узла учета ГВС	\N		38
+99	1	2025-03-15 19:48:42.756477	in_work	необходимо заказать все неработающие индукторы и пульты в горячем цехе, а также установить их на плиты	\N	\N	2
+100	1	2025-03-15 20:38:34.747163	in_work	необходимо заменить смеситель в служебном туалете	\N	\N	4
+101	1	2025-03-16 13:42:38.022052	in_work	повторно исследовать учетную схему электроснабжения с определением Кт трансформаторов тока	\N	\N	4
 \.
 
 
@@ -12978,6 +13036,19 @@ COPY public.performers (id, work_id, worker_id) FROM stdin;
 8932	8175	10
 8933	8176	15
 8934	8177	15
+8935	8178	1
+8936	8179	1
+8937	8180	1
+8938	8181	1
+8939	8182	1
+8940	8183	15
+8941	8184	1
+8942	8185	15
+8943	8186	1
+8944	8187	1
+8945	8188	15
+8946	8189	15
+8947	8190	15
 \.
 
 
@@ -13109,6 +13180,7 @@ COPY public.points_meter_devices (id, point, device_id) FROM stdin;
 123	36	122
 124	36	123
 125	36	124
+126	38	125
 \.
 
 
@@ -13522,7 +13594,6 @@ COPY public.workers_schedule (work_date, worker_id, day_type) FROM stdin;
 2025-03-14	6	shedule_service
 2025-03-15	1	schedule_8_18
 2025-03-15	15	schedule_7_19
-2025-03-16	9	schedule_8_18
 2025-03-16	15	schedule_7_19
 2025-03-17	9	schedule_8_18
 2025-03-17	8	schedule_7_19
@@ -21702,6 +21773,7 @@ COPY public.works (id, id_obor, date, problem, result) FROM stdin;
 8163	1865	2025-03-13 22:56:49	Замерить площадь потолка для замены.	Замерил. Цвет белый. Размер ячейки 50*50. Предположительно грильято Албес 50*50*40
 8164	530	2025-03-14 12:17:13	Выпала кнопка включения питания.	Разобрал. Поставил кнопку на место.
 8165	1662	2025-03-14 16:00:00	диагностика состояния кровли после снегопадов	Совместно с сотрудниками отдела развития очищены дренажные отверстия и созданы каналы стока воды
+8184	110	2025-03-16 11:09:23	Постоянно срабатывает аварийная сигнализация	Диагностика. Прочищен в каналы пневмодатчиков - жировые пробки незначительно. Внимание двигатель номер 2 неисправен - не стартует. Требуется замена. Отключен от питания на плате
 8168	186	2025-03-15 07:56:28	Заменить фильтр.	Заменил фильтр В150 Плюс,10"5мкр
 8169	1589	2025-03-15 13:15:48	Разболталась ножка у стола.	Закрепил. Поставил на место
 8170	1670	2025-03-15 13:19:48	Качаются стеллажи на кухне и в коридоре.	Закрепил на саморезы к стене.
@@ -21712,6 +21784,18 @@ COPY public.works (id, id_obor, date, problem, result) FROM stdin;
 8175	586	2025-03-14 22:00:00	плановая чистка сборного жироуловителя холодный цех	вычищен
 8176	1855	2025-03-15 14:44:30	Не срабатывает пусковое реле.	Поставил запасную.Сломанную увёз в мастерскую.
 8177	427	2025-03-15 17:31:33	Оторвался крепёж от ножки стула.	Засверлился, закрепил на место.
+8178	1802	2025-03-15 19:37:00	Перемещение оборудования	Перемещено из склад оборудования Пышма в Перечень списанного оборудования.
+8179	1813	2025-03-15 19:38:00	Перемещение оборудования	Перемещено из склад оборудования Пышма в Склад Толедова.
+8180	1803	2025-03-15 19:38:00	Перемещение оборудования	Перемещено из склад оборудования Пышма в Перечень списанного оборудования.
+8181	365	2025-03-15 21:14:09	Замена ТЭНа	Поступил от ооо тиниус. Заменён вместе с прокладкой. Внимание, желательно поменять наконечники кабеля питания тэна. Проверено на программе Слоек. Нагрев, пар, два режима скорости реверс в порядке
+8182	117	2025-03-15 22:34:37	Монтаж подсветки зонта зоны пасты	Установлен LED светильник 4000К 20 Вт на боковую поверхность зонта. Питание от розетки главного экрана выдачи заказов через вилку и выключатель, смонтированный возле зонта. Кабель ШВВП 2*0.75 в кабель канале
+8183	892	2025-03-16 08:07:35	Сломались две вешалки. Лопнул деревянный крепёж.	Проклеил лопнувшие места,стянул хомутами.собрал,поставил на место.
+8185	1723	2025-03-16 14:31:28	Сломана кнопка переключения температуры.	Перепоял кнопку.Проверил. Работает. Увёз в Нагорный.
+8186	1006	2025-03-16 14:49:00	течет вода с потолка мясного цеха	Подтопление с канализации арендного помещения БАСТА. Информация передана руководителю Арендного помещения
+8187	110	2025-03-16 20:55:35	Повторная диагностика	Под ножом измельчителя обнаружен разбухший повербанк, который блокировал вращение двигателя номер 2(левого). Станция восстановлена и переведена в двухдвигательный режим
+8188	667	2025-03-16 22:43:18	Сгорел удлинитель в который включены холодильники.	Заменил на новый. Проверил. Работает.
+8189	663	2025-03-16 22:46:56	Протекает кран подачи воды.	Купил новый (Лемана про).Заменил.
+8190	887	2025-03-16 22:52:07	Засор канализации кофемашины	Прочистил шлангом с водой.
 \.
 
 
@@ -21799,14 +21883,14 @@ SELECT pg_catalog.setval('public.bindings_id_seq', 107, true);
 -- Name: bugzilla_id_seq; Type: SEQUENCE SET; Schema: public; Owner: saibogo
 --
 
-SELECT pg_catalog.setval('public.bugzilla_id_seq', 126, true);
+SELECT pg_catalog.setval('public.bugzilla_id_seq', 129, true);
 
 
 --
 -- Name: calculation_schemes_id_seq; Type: SEQUENCE SET; Schema: public; Owner: saibogo
 --
 
-SELECT pg_catalog.setval('public.calculation_schemes_id_seq', 51, true);
+SELECT pg_catalog.setval('public.calculation_schemes_id_seq', 181, true);
 
 
 --
@@ -21855,14 +21939,14 @@ SELECT pg_catalog.setval('public.hot_water_id_seq', 23, true);
 -- Name: meter_devices_id_seq; Type: SEQUENCE SET; Schema: public; Owner: saibogo
 --
 
-SELECT pg_catalog.setval('public.meter_devices_id_seq', 124, true);
+SELECT pg_catalog.setval('public.meter_devices_id_seq', 125, true);
 
 
 --
 -- Name: meter_readings_id_seq; Type: SEQUENCE SET; Schema: public; Owner: saibogo
 --
 
-SELECT pg_catalog.setval('public.meter_readings_id_seq', 330, true);
+SELECT pg_catalog.setval('public.meter_readings_id_seq', 337, true);
 
 
 --
@@ -21876,14 +21960,14 @@ SELECT pg_catalog.setval('public.oborudovanie_id_seq', 1, false);
 -- Name: orders_id_seq; Type: SEQUENCE SET; Schema: public; Owner: saibogo
 --
 
-SELECT pg_catalog.setval('public.orders_id_seq', 98, true);
+SELECT pg_catalog.setval('public.orders_id_seq', 101, true);
 
 
 --
 -- Name: performers_id_seq; Type: SEQUENCE SET; Schema: public; Owner: saibogo
 --
 
-SELECT pg_catalog.setval('public.performers_id_seq', 8934, true);
+SELECT pg_catalog.setval('public.performers_id_seq', 8947, true);
 
 
 --
@@ -21897,7 +21981,7 @@ SELECT pg_catalog.setval('public.points_meter_devices_device_id_seq', 1, false);
 -- Name: points_meter_devices_id_seq; Type: SEQUENCE SET; Schema: public; Owner: saibogo
 --
 
-SELECT pg_catalog.setval('public.points_meter_devices_id_seq', 125, true);
+SELECT pg_catalog.setval('public.points_meter_devices_id_seq', 126, true);
 
 
 --

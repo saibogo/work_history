@@ -13,6 +13,7 @@ from wh_app.sql_operations.select_operations import select_operations
 from wh_app.sql_operations import insert_operations, update_operations
 from wh_app.supporting import functions
 from wh_app.config_and_backup import table_headers
+from wh_app.telegram_bot.bot_init import add_new_order_in_loop
 
 functions.info_string(__name__)
 
@@ -143,6 +144,8 @@ def create_order_method(data: Dict, method, stylesheet_number: str) -> str:
                 insert_operations.insert_new_order(cursor, customer_id, point_id, order_info)
                 connection.commit()
                 page = uhtml.operation_completed()
+                new_order_id = select_operations.get_last_order_id_in_work(cursor)
+                add_new_order_in_loop(new_order_id)
             else:
                 page = uhtml.pass_is_not_valid()
     else:

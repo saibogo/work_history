@@ -19,7 +19,7 @@ def sql_select_all_orders_type() -> str:
 def sql_select_all_orders_limit(page_num: int) -> str:
     """Returns the query string to select all repairs corresponding to the orders use LIMIT"""
 
-    query = """SELECT orders.%(id)s, %(point_name)s, %(customer)s.%(full_name)s, %(orders)s.%(date)s, %(orders)s.%(closed_date)s,
+    query = """SELECT orders.%(id)s, %(point_name)s, %(customer)s.%(description)s, %(orders)s.%(date)s, %(orders)s.%(closed_date)s,
      %(problem)s, (%(bug_in_work)s), %(orders)s.comment FROM %(orders)s JOIN %(customer)s ON
       %(customer_id)s = %(customer)s.%(id)s JOIN %(workspoints)s ON %(workspoints)s.%(point_id)s = %(orders)s.%(point_id)s
        ORDER BY %(id)s """ % sql_consts_dict + limit_and_offset(page_num)
@@ -31,7 +31,7 @@ def sql_select_all_orders_limit(page_num: int) -> str:
 def sql_select_all_orders() -> str:
     """Return all records in table orders"""
 
-    query = ("""SELECT orders.%(id)s, %(point_name)s, %(customer)s.%(full_name)s, %(orders)s.%(date)s, %(orders)s.%(closed_date)s, %(problem)s, """ +
+    query = ("""SELECT orders.%(id)s, %(point_name)s, %(customer)s.%(description)s, %(orders)s.%(date)s, %(orders)s.%(closed_date)s, %(problem)s, """ +
              """(%(bug_in_work)s), %(orders)s.comment FROM %(orders)s JOIN %(customer)s ON %(customer_id)s = %(customer)s.%(id)s""" +
              """ JOIN %(workspoints)s ON %(workspoints)s.%(point_id)s = %(orders)s.%(point_id)s ORDER BY %(id)s""") % sql_consts_dict
 
@@ -42,7 +42,7 @@ def sql_select_all_orders() -> str:
 def sql_select_no_closed_orders() -> str:
     """Return all records in table orders"""
 
-    query = ("""SELECT orders.%(id)s, %(point_name)s, %(customer)s.%(full_name)s, %(orders)s.%(date)s, %(orders)s.%(closed_date)s, %(problem)s, """ +
+    query = ("""SELECT orders.%(id)s, %(point_name)s, %(customer)s.%(description)s, %(orders)s.%(date)s, %(orders)s.%(closed_date)s, %(problem)s, """ +
              """(%(bug_in_work)s), %(orders)s.comment, row_number() OVER (ORDER BY orders.id) FROM %(orders)s JOIN %(customer)s ON %(customer_id)s = %(customer)s.%(id)s""" +
              """ JOIN %(workspoints)s ON %(workspoints)s.%(point_id)s = %(orders)s.%(point_id)s WHERE %(status)s =
               'in_work' ORDER BY %(id)s""") % sql_consts_dict
@@ -54,7 +54,7 @@ def sql_select_no_closed_orders() -> str:
 def sql_select_no_closed_orders_limit(page_num: int) -> str:
     """Return all records in table orders with LIMIT"""
 
-    query = ("""SELECT orders.%(id)s, %(point_name)s, %(customer)s.%(full_name)s, %(orders)s.%(date)s, %(orders)s.%(closed_date)s, %(problem)s, """ +
+    query = ("""SELECT orders.%(id)s, %(point_name)s, %(customer)s.%(description)s, %(orders)s.%(date)s, %(orders)s.%(closed_date)s, %(problem)s, """ +
              """(%(bug_in_work)s), %(orders)s.comment, row_number() OVER (ORDER BY orders.id) FROM %(orders)s JOIN %(customer)s ON %(customer_id)s = %(customer)s.%(id)s""" +
              """ JOIN %(workspoints)s ON %(workspoints)s.%(point_id)s = %(orders)s.%(point_id)s WHERE %(status)s =
               'in_work' ORDER BY %(id)s """) % sql_consts_dict + limit_and_offset(page_num)
@@ -74,7 +74,7 @@ def sql_select_max_order_id() -> str:
 def sql_select_order_from_id(order_id: str) -> str:
     """Return SQL query from select full information from ID = order_id"""
 
-    query = """SELECT %(orders)s.%(id)s, %(point_name)s, %(customer)s.%(full_name)s, %(orders)s.%(date)s, %(orders)s.%(closed_date)s, %(problem)s,
+    query = """SELECT %(orders)s.%(id)s, %(point_name)s, %(customer)s.%(description)s, %(orders)s.%(date)s, %(orders)s.%(closed_date)s, %(problem)s,
      (%(bug_in_work)s), %(orders)s.comment FROM %(orders)s JOIN %(customer)s ON %(customer_id)s = %(customer)s.%(id)s 
       JOIN %(workspoints)s ON %(workspoints)s.%(point_id)s = %(orders)s.%(point_id)s WHERE %(orders)s.%(id)s = {} """ % sql_consts_dict
     return query.format(order_id)
@@ -128,3 +128,11 @@ def sql_select_get_bug_by_id(bug_id: str) -> str:
     query = ("""SELECT %(id)s, %(problem)s, %(bug_in_work)s, %(date_start)s, %(date_close)s
      FROM %(bugzilla)s WHERE %(id)s = {0}""") % sql_consts_dict
     return query.format(bug_id)
+
+
+@log_decorator
+def sql_select_last_orders_id_in_work() -> str:
+    """Return query string to get last order id in work"""
+
+    query = """SELECT %(id)s FROM %(orders)s WHERE %(status)s = 'in_work' ORDER BY %(id)s DESC LIMIT 1""" % sql_consts_dict
+    return query

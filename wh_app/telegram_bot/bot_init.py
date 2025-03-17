@@ -6,7 +6,7 @@ from aiogram.utils.exceptions import MessageTextIsEmpty
 
 from wh_app.supporting import functions
 from wh_app.postgresql.database import Database
-from wh_app.sql_operations.select_operations.select_operations import get_all_telegram_chats
+from wh_app.sql_operations.select_operations.select_operations import get_all_telegram_chats, get_order_from_id
 from wh_app.telegram_bot.bot_state_machine import BotStateMachine
 from wh_app.config_and_backup.config import path_to_telegram_token, path_to_messages
 from wh_app.telegram_bot.point_bot import all_points, send_statistic, point_info, not_create_record, get_svu, \
@@ -21,7 +21,7 @@ from wh_app.telegram_bot.work_bot import problem_repler, work_repler, get_work_r
 from wh_app.telegram_bot.support_bot import standart_delete_message
 from wh_app.telegram_bot.find_bot import main_find_menu, find_menu, find_repler, last_day_message
 from wh_app.telegram_bot.workers_bot import send_workers_message, today_schedule_message, week_schedule_message
-from wh_app.telegram_bot.orders_bot import all_noclosed_orders, order_from_id
+from wh_app.telegram_bot.orders_bot import all_noclosed_orders, order_from_id, order_message
 from wh_app.telegram_bot.meter_devices_bot import start_view_meter_devices, start_view_reading_meter_device,\
     start_create_readings_record, new_reading_repler
 
@@ -42,6 +42,7 @@ dp = Dispatcher(bot)
 TIMEOUT_TO_SEND_INFO_MESSAGE = 60
 bot_is_restarted = True
 bot_state = BotStateMachine.get_instance()
+new_orders_dict = {}
 
 
 def repeat(coro, loop):
@@ -55,7 +56,13 @@ def start_telegram_bot():
     bot_state.set_on_status()
     loop = asyncio.get_event_loop()
     loop.call_later(TIMEOUT_TO_SEND_INFO_MESSAGE, repeat, start_message, loop)
+    loop.call_later(TIMEOUT_TO_SEND_INFO_MESSAGE, repeat, start_message_with_new_order, loop)
     executor.start_polling(dp, loop=loop)
+
+
+def add_new_order_in_loop(order_id) -> None:
+    global new_orders_dict
+    new_orders_dict[order_id] = True
 
 
 async def start_message():
@@ -86,6 +93,26 @@ async def start_message():
                 pass
             except MessageTextIsEmpty:
                 pass
+
+
+async def start_message_with_new_order():
+    """Send all users in chats-list message with a new order"""
+    global new_orders_dict
+    messages_del = []
+    if True in new_orders_dict.values():
+        for order in new_orders_dict.keys():
+            if new_orders_dict[order]:
+                with Database() as base:
+                    _, cursor = base
+                    chats_db = get_all_telegram_chats(cursor)
+                    order_info = get_order_from_id(cursor, order)
+                    message = order_message(order_info)
+                    for chat in chats_db:
+                        messages_del.append(await bot.send_message(chat, 'Зарегистрирована новая заявка!'))
+                        standart_delete_message(messages_del[-1])
+                        messages_del.append(await bot.send_message(chat, message))
+                        standart_delete_message(messages_del[-1])
+                new_orders_dict[order] = False
 
 
 @dp.message_handler(filters.Command(commands=['start'], ignore_case=True))
