@@ -15,7 +15,11 @@
             <div class="faq_answer">
                 <select class="div_select" name="{{customer_name}}">
                     {% for customer in all_customers %}
-                    <option value="{{customer[0]}}">{{customer[2]}}</option>
+                    {% if customer[0] == current_customer %}
+                        <option value="{{customer[0]}}" selected>{{customer[2]}}</option>
+                    {% else %}
+                        <option value="{{customer[0]}}">{{customer[2]}}</option>
+                    {% endif %}
                     {% endfor %}
                 </select>
             </div>

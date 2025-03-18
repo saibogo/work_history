@@ -26,6 +26,7 @@ SPACE_CHAR = '&nbsp;'
 
 PASSWORD = 'password'
 LOGIN = 'login'
+SESSION_ROLE = 'role'
 POINT_NAME = 'point_name'
 POINT_ADDRESS = 'point_address'
 POINT_ID = 'point_id'

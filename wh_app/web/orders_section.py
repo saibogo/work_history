@@ -2,7 +2,7 @@
 import datetime
 
 import flask
-from flask import render_template
+from flask import render_template, session, redirect
 from typing import List, Tuple, Dict
 
 import wh_app.web.template as web_template
@@ -21,9 +21,10 @@ functions.info_string(__name__)
 def orders_main_menu(stylesheet_number: str) -> str:
     """Function create main page in ORDERS section"""
     menu = ['Все заказчики', 'Добавить заказчика',
-            'Все зарегистрированные заявки','Только незакрытые заявки', 'Поиск по ID', 'Зарегистрировать заявку']
+            'Все зарегистрированные заявки','Только незакрытые заявки', 'Поиск по ID', 'Зарегистрировать заявку',
+            'Только мои заявки']
     links = ['/all-customers-table', '/add-new-customer', '/all-registred-orders', '/all-no-closed-orders',
-             '/order-from-id', '/add-order']
+             '/order-from-id', '/add-order', '/my-orders']
     table = uhtml.universal_table('Действия с заявками',
                                   ['№', 'Действие'],
                                   functions.list_to_numer_list(menu), True, links)
@@ -119,12 +120,25 @@ def create_new_order_form(stylesheet_number: str) -> str:
     """Return new page to create new order"""
     with Database() as base:
         _, cursor = base
+        user_name = session[uhtml.LOGIN]
+        user_role = session[uhtml.SESSION_ROLE]
+        if user_role == functions.ROLE_SUPERUSER:
+            current_customer = 0
+        elif user_role == functions.ROLE_CUSTOMER:
+            customers_info = select_operations.get_all_customers(cursor)
+            current_customer = 0
+            for elem in customers_info:
+                if elem[1] == user_name:
+                    current_customer = elem[0]
+        else:
+            return uhtml.access_denided(user_name)
+
         pre_addr = '/orders-and-customers'
         all_customer = select_operations.get_all_customers(cursor)
         all_points = select_operations.get_all_works_points(cursor)
         form = render_template('create_new_order.html', customer_name=uhtml.CUSTOMER_NAME, all_customers=all_customer,
                                point_name=uhtml.POINT_NAME, all_points=all_points, order_info=uhtml.ORDER_INFO,
-                               password=uhtml.PASSWORD)
+                               password=uhtml.PASSWORD, current_customer=current_customer)
 
         return web_template.result_page(form, pre_addr, str(stylesheet_number))
 
@@ -208,6 +222,19 @@ def create_edit_order_form(order_id: str, stylesheet_number: str) -> str:
     """Create edit order form with id = order_id"""
     with Database() as base:
         _, cursor = base
+        user_name = session[uhtml.LOGIN]
+        user_role = session[uhtml.SESSION_ROLE]
+        if user_role == functions.ROLE_SUPERUSER:
+            current_customer = 0
+        elif user_role == functions.ROLE_CUSTOMER:
+            customers_info = select_operations.get_all_customers(cursor)
+            current_customer = 0
+            for elem in customers_info:
+                if elem[1] == user_name:
+                    current_customer = elem[0]
+        else:
+            return uhtml.access_denided(user_name)
+
         pre_addr = '/orders-and-customers'
         all_customer = select_operations.get_all_customers(cursor)
         order_info = select_operations.get_order_from_id(cursor, order_id)
@@ -216,7 +243,7 @@ def create_edit_order_form(order_id: str, stylesheet_number: str) -> str:
         form = render_template('edit_order_form.html', point_name=point_name, order_info=order_info[5],
                                customer_name=uhtml.CUSTOMER_NAME, all_customers=all_customer, password=uhtml.PASSWORD,
                                order_status_name=uhtml.ORDER_STATUS_NAME, all_status=awaliable_statuses,
-                               comment=uhtml.COMMENT, id=uhtml.ORDER_ID, order_id=order_id)
+                               comment=uhtml.COMMENT, id=uhtml.ORDER_ID, order_id=order_id, current_customer=current_customer)
 
         return web_template.result_page(form, pre_addr, str(stylesheet_number))
 
@@ -231,17 +258,22 @@ def edit_order_status_method(data: Dict, method, stylesheet_number: str) -> str:
         order_status = data[uhtml.ORDER_STATUS_NAME]
         comment  = data[uhtml.COMMENT]
         password = data[uhtml.PASSWORD]
-        if functions.is_valid_customers_password(password, customer_id) or functions.is_superuser_password(password):
-            with Database() as base:
-                connection, cursor = base
+        session_user_name = session[uhtml.LOGIN]
+        session_user_role = session[uhtml.SESSION_ROLE]
+        with Database() as base:
+            connection, cursor = base
+            customer_name = select_operations.get_full_customer_info(cursor, customer_id)[2]
+            if (customer_name == session_user_name or session_user_role == functions.ROLE_SUPERUSER) \
+                    and (functions.is_valid_customer(customer_name, password) or
+                                                       functions.is_superuser_password(password)):
                 if order_status == 'in_work':
                     update_operations.update_order_info_in_work(cursor, order_id, comment)
                 else:
                     update_operations.update_order_info_not_work(cursor, order_id,order_status, comment)
                 connection.commit()
                 page = uhtml.operation_completed()
-        else:
-            page = uhtml.pass_is_not_valid()
+            else:
+                page = uhtml.pass_is_not_valid()
     else:
         page = "Method in add Order not corrected!"
     return web_template.result_page(page, pre_adr, str(stylesheet_number))
@@ -277,3 +309,39 @@ def order_with_id_table(data: Dict, method, stylesheet_number: str) -> str:
     else:
         page = "Method in Find Order not corrected!"
     return web_template.result_page(page, pre_adr, stylesheet_number, True, 'order-to-pdf={}'.format(order_id))
+
+
+def my_orders_table(stylesheet_number: str) -> str:
+    """Return table with all customers order or ALL orders if user role = superuser"""
+    user_name = session[uhtml.LOGIN]
+    user_role = functions.get_user_role(user_name)
+    if user_role == functions.ROLE_SUPERUSER:
+        return all_registered_orders_table_page(1, stylesheet_number)
+    elif user_role == functions.ROLE_CUSTOMER:
+        return my_orders_table_page(stylesheet_number, 1)
+    else:
+        return uhtml.access_denided(session[uhtml.LOGIN])
+
+
+def my_orders_table_page(stylesheet_number: str, page_num=1) -> str:
+    """Return table with all customers order or ALL orders if user role = superuser"""
+    user_name = session[uhtml.LOGIN]
+    user_role = functions.get_user_role(user_name)
+    if user_role == functions.ROLE_SUPERUSER:
+        return all_registered_orders_table_page(1, stylesheet_number)
+    elif user_role == functions.ROLE_CUSTOMER:
+        with Database() as base:
+            _, cursor = base
+            pre_addr = '/orders-and-customers'
+            page_orders = select_operations.get_all_customers_orders_limit(cursor, user_name, page_num)
+            correct_orders = _correct_orders_table(page_orders)
+            table = uhtml.universal_table(table_headers.orders_table_name,
+                                          table_headers.orders_table_no_closed,
+                                          correct_orders)
+            table_paging = uhtml.paging_table("/my-orders/",
+                                              functions.
+                                              list_of_pages(select_operations.get_all_customers_orders(cursor, user_name)),
+                                              int(page_num))
+            return web_template.result_page(table + table_paging, pre_addr, str(stylesheet_number))
+    else:
+        return uhtml.access_denided(session[uhtml.LOGIN])

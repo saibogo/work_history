@@ -55,7 +55,6 @@ def start_telegram_bot():
     """This function starting session"""
     bot_state.set_on_status()
     loop = asyncio.get_event_loop()
-    loop.call_later(TIMEOUT_TO_SEND_INFO_MESSAGE, repeat, start_message, loop)
     loop.call_later(TIMEOUT_TO_SEND_INFO_MESSAGE, repeat, start_message_with_new_order, loop)
     executor.start_polling(dp, loop=loop)
 
@@ -63,36 +62,6 @@ def start_telegram_bot():
 def add_new_order_in_loop(order_id) -> None:
     global new_orders_dict
     new_orders_dict[order_id] = True
-
-
-async def start_message():
-    """Send all users in chats-list starting message"""
-    global bot_is_restarted
-    messages_del = []
-    if bot_is_restarted:
-        with Database() as base:
-            _, cursor = base
-            chats_db = get_all_telegram_chats(cursor)
-            for chat in chats_db:
-                messages_del.append(await bot.send_message(chat, 'Произведен перезапуск телеграмм-бота!'))
-                standart_delete_message(messages_del[-1])
-            bot_is_restarted = False
-    else:
-        message = ""
-        with Database() as base:
-            _, cursor = base
-            try:
-                chats_db = get_all_telegram_chats(cursor)
-                message_file = open(path_to_messages(), 'r')
-                for line in message_file:
-                    message += line
-                for chat in chats_db:
-                    messages_del.append(await bot.send_message(chat, message))
-                    standart_delete_message(messages_del[-1])
-            except FileNotFoundError:
-                pass
-            except MessageTextIsEmpty:
-                pass
 
 
 async def start_message_with_new_order():

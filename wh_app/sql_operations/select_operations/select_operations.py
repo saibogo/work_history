@@ -568,6 +568,18 @@ def user_in_customers(cursor, user_name: str) -> bool:
 
 
 @get_selected_decorator
+def get_all_customers_orders_limit(cursor, user_name: str, page_num: int) -> List[Tuple]:
+    """Function return all customers order using LIMIT"""
+    return select_sql.sql_select_orders_from_user_limit(user_name, page_num)
+
+
+@get_selected_decorator
+def get_all_customers_orders(cursor, user_name: str) -> List[Tuple]:
+    """Function return all customers order using LIMIT"""
+    return select_sql.sql_select_orders_from_user(user_name)
+
+
+@get_selected_decorator
 def get_all_point_except_id(cursor, id: str) -> list:
     """Function return all points except point_id == id"""
     return select_sql.sql_select_all_point_except_id(str(id))

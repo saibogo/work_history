@@ -192,13 +192,17 @@ def get_user_role(login: str) -> str:
                     result = ROLE_WORKER
                 elif role == ROLE_CUSTOMER:
                     result = ROLE_CUSTOMER
+        if result == NO_ROLE:
+            with Database() as base:
+                _, cursor = base
+                if user_in_customers(cursor, login):
+                    result = ROLE_CUSTOMER
                 else:
                     result = NO_ROLE
         file_passwords.close()
     except FileNotFoundError:
         print("File {0} not found!".format(config.path_to_passwords()))
     return result
-
 
 
 def form_to_data(form: dict) -> dict:

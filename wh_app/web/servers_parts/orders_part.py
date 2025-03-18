@@ -4,7 +4,8 @@ from wh_app.web.servers_parts.support_part import *
 from wh_app.web.orders_section import all_customers_table, orders_main_menu,\
     all_registered_orders_table, create_new_order_form, create_order_method, all_no_closed_orders_table,\
     create_edit_order_form, edit_order_status_method, all_registered_orders_table_page, all_no_closed_orders_table_page,\
-    find_order_from_id_form, order_with_id_table, create_new_customer_form, create_new_customer_method
+    find_order_from_id_form, order_with_id_table, create_new_customer_form, create_new_customer_method, my_orders_table,\
+    my_orders_table_page
 
 
 @app.route('/orders-and-customers')
@@ -56,6 +57,23 @@ def create_new_order() -> Response:
 
     return goto_or_redirect(lambda: create_order_method(functions.form_to_data(request.form), request.method,
                                                         stylesheet_number()), functions.ROLE_CUSTOMER)
+
+
+@app.route('/my-orders')
+def my_orders() -> Response:
+    """Return table with all ordersto customer or all orders to superuser"""
+
+    return goto_or_redirect_from_roles_list(lambda: my_orders_table(stylesheet_number()),
+                                            [functions.ROLE_CUSTOMER, functions.ROLE_SUPERUSER])
+
+
+@app.route('/my-orders/<page_num>')
+def my_orders_pages(page_num: int) -> Response:
+    """Return table with all ordersto customer or all orders to superuser"""
+
+    return goto_or_redirect_from_roles_list(lambda: my_orders_table_page(stylesheet_number(), page_num),
+                                            [functions.ROLE_CUSTOMER, functions.ROLE_SUPERUSER])
+
 
 
 @app.route('/all-no-closed-orders')

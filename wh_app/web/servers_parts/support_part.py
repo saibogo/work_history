@@ -76,3 +76,14 @@ def goto_or_redirect(function: Callable, min_role=functions.ROLE_SUPERUSER) -> A
     else:
         return redirect('/login')
 
+
+def goto_or_redirect_from_roles_list(function: Callable, roles_list=[]) ->Any:
+    if access_is_allowed():
+        current_role = session[SESSION_ROLE]
+        if current_role in roles_list:
+            return function()
+        else:
+            return redirect('/access-denied')
+    else:
+        return redirect('/login')
+
