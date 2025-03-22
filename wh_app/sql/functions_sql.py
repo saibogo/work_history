@@ -141,3 +141,124 @@ def units_of_measure() -> str:
         END IF;
         END;
         $$ LANGUAGE plpgsql;"""
+
+
+@log_decorator
+def total_last_month() -> str:
+    """Create or replace function to calculate consumption to last month from meter device"""
+
+    return """CREATE OR REPLACE FUNCTION total_last_month(integer) RETURNS NUMERIC(13, 3) AS $$
+    DECLARE 
+        dev_id ALIAS FOR $1; d1 DATE; d2 DATE; d3 DATE; r1 NUMERIC; r3 NUMERIC; delta NUMERIC;
+	    days INTEGER; K INTEGER; days_in_month INTEGER; tmp NUMERIC;
+    BEGIN
+	    d1 = (SELECT read_date FROM meter_readings WHERE (devices_id = dev_id AND read_date <= NOW()::DATE) ORDER BY read_date DESC LIMIT 1);
+	    d2 = d1 - INTERVAL '1 MONTH';
+	    d3 = (SELECT read_date FROM meter_readings WHERE (devices_id = dev_id AND read_date <= d2::DATE) ORDER BY read_date DESC LIMIT 1);
+	    r1 = (SELECT reading FROM meter_readings WHERE (devices_id = dev_id AND read_date = d1));
+	    r3 = (SELECT reading FROM meter_readings WHERE (devices_id = dev_id AND read_date = d3));
+	    delta = r1 - r3;
+	    days = d1 - d3;
+	    K = (SELECT Kt FROM meter_devices WHERE id = dev_id);
+	    days_in_month = (SELECT EXTRACT(EPOCH FROM INTERVAL '1 MONTH') / (24*60*60));
+	    tmp = (delta * K  * days_in_month / days) :: NUMERIC(13, 3);
+	    RETURN (CASE WHEN tmp ISNULL THEN 0::NUMERIC(13, 3) ELSE tmp END);
+    END;
+    $$ LANGUAGE plpgsql;"""
+
+
+def average_from_last_readings() -> str:
+    """Create or replace function to calculate average from two last reading to meter device"""
+
+    return """CREATE OR REPLACE FUNCTION average_from_last_readings(integer) RETURNS NUMERIC(13,3) AS $$
+    DECLARE dev_id ALIAS FOR $1; d1 DATE; d2 DATE; r1 NUMERIC; r2 NUMERIC;
+	    delta NUMERIC;
+	    K INTEGER;
+	    days INTEGER;
+    BEGIN
+	    d1 = (SELECT read_date FROM meter_readings WHERE devices_id = dev_id ORDER BY read_date DESC LIMIT 1);
+	    d2 = (SELECT read_date FROM meter_readings WHERE (devices_id = dev_id AND read_date < d1) ORDER BY read_date DESC LIMIT 1);
+	    r1 = (SELECT reading FROM meter_readings WHERE (devices_id = dev_id AND read_date = d1));
+	    r2 = (SELECT reading FROM meter_readings WHERE (devices_id = dev_id AND read_date = d2));
+	    delta = r1 - r2;
+	    K = (SELECT Kt FROM meter_devices WHERE id = dev_id);
+	    days = d1 - d2;
+	    RETURN (CASE WHEN delta ISNULL THEN 0 ELSE (delta * K / days) END):: NUMERIC(13, 3);
+    END;
+    $$ LANGUAGE plpgsql;"""
+
+
+def sum_pu_in_scheme() -> str:
+    """Create or replace function return (average, average for month future, average sum between two last reading)"""
+
+    return """CREATE OR REPLACE FUNCTION sum_pu_in_scheme(integer) RETURNS NUMERIC[] AS $$
+    DECLARE
+	    schm_id ALIAS FOR $1; pos_arr INTEGER[]; neg_arr INTEGER[]; tmp NUMERIC; tmp1 NUMERIC; pu INTEGER;
+	    days INTEGER; result_arr NUMERIC[];
+    BEGIN
+	    tmp = 0;
+	    tmp1 = 0;
+	    pos_arr = (SELECT positive_calc FROM calculation_schemes WHERE id = schm_id);
+	    neg_arr = (SELECT negative_calc FROM calculation_schemes WHERE id = schm_id);
+	    IF pos_arr ISNULL THEN pos_arr = '{}'::INTEGER[]; END IF;
+	    IF neg_arr ISNULL THEN neg_arr = '{}'::INTEGER[]; END IF;
+	
+	    FOREACH pu IN ARRAY pos_arr LOOP
+		    tmp = tmp + average_from_last_readings(pu);
+		    tmp1 = tmp1 + total_last_month(pu);
+	    END LOOP;
+	
+	    FOREACH pu IN ARRAY neg_arr LOOP
+		    tmp = tmp - average_from_last_readings(pu);
+		    tmp1 = tmp1 - total_last_month(pu);
+	    END LOOP;
+
+	    days = (SELECT EXTRACT(EPOCH FROM INTERVAL '1 MONTH') / (24*60*60));
+	    result_arr = array_append(result_arr, tmp::NUMERIC(13, 3));
+	    result_arr = array_append(result_arr, (tmp * days)::NUMERIC(13, 3));
+	    result_arr = array_append(result_arr, tmp1::NUMERIC(13, 3));
+	    RETURN result_arr;
+    END;
+    $$ LANGUAGE plpgsql;"""
+
+
+def full_calculation_in_scheme() -> str:
+    """Create or replace function return dta from scheme liked [type, positive devices, negative_devices, comment,
+     type units, avr, avr in month, total last month]. All elements are TEXT"""
+
+    return """CREATE OR REPLACE FUNCTION full_calc_to_scheme(integer) RETURNS text[] AS $$
+    DECLARE schm ALIAS FOR $1; all_data text[]; pos_arr INTEGER[]; neg_arr  INTEGER[]; averages NUMERIC[];
+    BEGIN
+        all_data = ARRAY[schm];
+	    all_data = array_append(all_data, (SELECT meter_type_to_string(devices_type) FROM calculation_schemes WHERE id = schm));
+	    pos_arr = (SELECT positive_calc FROM calculation_schemes WHERE id = schm);
+	    if pos_arr ISNULL THEN pos_arr = '{}'::INTEGER[]; END IF;
+	    all_data = array_append(all_data, array_to_string(pos_arr, ' ,'));
+	    neg_arr = (SELECT negative_calc FROM calculation_schemes WHERE id = schm);
+	    if neg_arr ISNULL THEN neg_arr = '{}'::INTEGER[]; END IF;
+	    all_data = array_append(all_data, array_to_string(neg_arr, ' ,'));
+	    all_data = array_append(all_data, (SELECT comment FROM calculation_schemes WHERE id = schm));
+	    all_data = array_append(all_data, (SELECT units_of_measure_string(devices_type) FROM calculation_schemes WHERE id = schm));
+	    averages = (SELECT sum_pu_in_scheme(schm));
+	    all_data = array_append(all_data, averages[1]::TEXT);
+	    all_data = array_append(all_data, averages[2]::TEXT);
+	    all_data = array_append(all_data, averages[3]::TEXT);
+	RETURN all_data;
+    END;
+    $$ LANGUAGE plpgsql;"""
+
+
+def full_calc_all_schemes_in_point() -> str:
+    """Create SQL function return ARRAY liked [str1, str2, ...., strN]"""
+
+    return """CREATE OR REPLACE FUNCTION full_calc_all_schemes_in_point(integer) RETURNS TEXT ARRAY AS $$
+    DECLARE
+	    p_id ALIAS FOR $1; all_data TEXT ARRAY; schm INTEGER; schemes INTEGER[];
+    BEGIN
+	    schemes = (SELECT ARRAY_AGG(t.id) FROM calculation_schemes AS t WHERE point_id = p_id);
+	    FOREACH schm IN ARRAY schemes LOOP
+		    all_data = all_data || (SELECT full_calc_to_scheme(schm));
+	    END LOOP;
+	    RETURN all_data;
+    END;
+    $$ LANGUAGE plpgsql;"""

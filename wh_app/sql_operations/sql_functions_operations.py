@@ -78,6 +78,32 @@ def create_or_replace_units_of_measure_string(cursor) -> None:
     create_function(cursor, functions_sql.units_of_measure())
 
 
+def create_or_replase_total_last_month(cursor) -> None:
+    """Add or replace SQL function to calculate consumption to last month from meter device"""
+    create_function(cursor, functions_sql.total_last_month())
+
+
+def create_or_replace_average_from_last_readings(cursor) -> None:
+    """Add or replace SQL function to calculate average in day from two last reading"""
+    create_function(cursor, functions_sql.average_from_last_readings())
+
+
+def create_or_replace_analytics_in_scheme(cursor) -> None:
+    """Add or replace function return (average, average for month future, average sum between two last reading)"""
+    create_function(cursor, functions_sql.sum_pu_in_scheme())
+
+
+def create_or_replace_full_calculation_scheme(cursor) -> None:
+    """Create or replace function return dta from scheme liked [type, positive devices, negative_devices, comment,
+     type units, avr, avr in month, total last month]. All elements are TEXT"""
+    create_function(cursor, functions_sql.full_calculation_in_scheme())
+
+
+def create_or_replace_full_calc_all_schemes_in_point(cursor) -> None:
+    """Create or replace SQL function return ARRAY liked [str1, str2, ...., strN]"""
+    create_function(cursor, functions_sql.full_calc_all_schemes_in_point())
+
+
 def all_sql_functions_list() -> list:
     """Return list contain all function to create virtual tables"""
 
@@ -92,4 +118,9 @@ def all_sql_functions_list() -> list:
             create_or_replace_work_day_type_to_string,
             create_or_replace_date_to_date_and_day,
             create_or_replace_meter_type_to_string,
-            create_or_replace_units_of_measure_string]
+            create_or_replace_units_of_measure_string,
+            create_or_replase_total_last_month,
+            create_or_replace_average_from_last_readings,
+            create_or_replace_analytics_in_scheme,
+            create_or_replace_full_calculation_scheme,
+            create_or_replace_full_calc_all_schemes_in_point]

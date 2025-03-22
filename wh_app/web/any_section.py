@@ -98,82 +98,27 @@ def all_meter_devices_in_point_page(point_id: int, stylesheet_number: str) -> st
         return web_template.result_page(table + table1, "/meter-devices", str(stylesheet_number))
 
 
-def _all_correct_calculation_schemes(point_id: int) -> List[List]:
-    """Return list with all correct calculation schemes in this point"""
+def __all_calk_data_to_list(point_id: int) -> List[List]:
+    """List[str] -> List[List[str]]"""
     with Database() as base:
         _, cursor = base
-        all_types = select_operations.get_all_meter_types(cursor)
-        schemes = []
-        for meter_type in all_types:
-            all_schemes = select_operations.get_all_calc_schemes_for_point_and_type(cursor, point_id, meter_type[0])
-            for schm in all_schemes:
-                schemes.append((meter_type[0],
-                                select_operations.get_all_positive_device_in_scheme(cursor, schm),
-                                select_operations.get_all_negative_device_in_scheme(cursor, schm),
-                                select_operations.get_comment_in_calc_scheme(cursor, schm)))
-        correct_schemes = []
-        for scheme in schemes:
-            correct_schemes.append([scheme[0], [], []])
-            for elem in scheme[1]:
-                correct_schemes[-1][1].append(elem[0])
-            for elem in scheme[2]:
-                correct_schemes[-1][2].append(elem[0])
-            correct_schemes[-1].append(scheme[3])
-        not_empty_schemes = list(filter(lambda elem: elem[1] or elem[2], correct_schemes))
-        return not_empty_schemes
-
-
-def _link_to_meter_device(meter_id: int) -> str:
-    """Return a href link to meter devices"""
-    with Database() as base:
-        _, cursor = base
-        full_meter_dev_info = select_operations.get_full_info_from_meter_device(cursor, meter_id)
-    return '<a href="/get-devices-reading/{0}" title="{1}">{0}</a>'.format(meter_id, full_meter_dev_info[0][10])
-
-
-def _calculate_in_schemes(point_id) -> List[List]:
-    """Return alavaliable calculation scheme in point and summary result"""
-    raw_schemes = _all_correct_calculation_schemes(point_id)
-    days_in_month = monthrange(datetime.datetime.now().year, datetime.datetime.now().month)[1]
-    with Database() as base:
-        _, cursor = base
-        for scheme in raw_schemes:
-            result = 0
-            for pu in scheme[1]:
-                try:
-                    result += select_operations.get_all_reading_from_device(cursor, pu)[-1][-1]
-                except IndexError:
-                    result += 0
-            for pu in scheme[2]:
-                try:
-                    result -= select_operations.get_all_reading_from_device(cursor, pu)[-1][-1]
-                except IndexError:
-                    result -= 0
-            scheme.append(select_operations.get_russian_units_of_measure(cursor, scheme[0]))
-            scheme.append(result)
-            scheme.append(result * days_in_month)
-            scheme[0] = select_operations.get_russian_devices_type(cursor, scheme[0])
-    return raw_schemes
+        raw_data = select_operations.get_all_full_calc_schemes_in_point(cursor, point_id)
+        result = []
+        len_small = len(table_headers.calc_schemes_table)
+        for i in range(len(raw_data) // len_small):
+            result.append(raw_data[i * len_small: (i + 1) * len_small])
+        return result
 
 
 def _table_with_schemes(point_id) -> str:
     """Function return table with all calculating schemes if they exist"""
-    schemes = _calculate_in_schemes(point_id)
+    schemes = __all_calk_data_to_list(point_id)
     if len(schemes) == 0:
         result = ""
     else:
-        new_schemes = []
-        for scheme in schemes:
-            new_schemes.append([])
-            for elem in scheme:
-                if isinstance(elem, list):
-                    tmp = ', '.join([_link_to_meter_device(pu) for pu in elem])
-                    new_schemes[-1].append(tmp)
-                else:
-                    new_schemes[-1].append(elem)
         result = uhtml.universal_table(table_headers.calc_schemes_table_name,
                                        table_headers.calc_schemes_table,
-                                       new_schemes)
+                                       schemes)
     return result
 
 

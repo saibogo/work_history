@@ -101,6 +101,32 @@ CREATE FUNCTION public.all_works_from_equip(eid integer) RETURNS TABLE(id intege
 ALTER FUNCTION public.all_works_from_equip(eid integer) OWNER TO saibogo;
 
 --
+-- Name: average_from_last_readings(integer); Type: FUNCTION; Schema: public; Owner: saibogo
+--
+
+CREATE FUNCTION public.average_from_last_readings(integer) RETURNS numeric
+    LANGUAGE plpgsql
+    AS $_$
+    DECLARE dev_id ALIAS FOR $1; d1 DATE; d2 DATE; r1 NUMERIC; r2 NUMERIC;
+	    delta NUMERIC;
+	    K INTEGER;
+	    days INTEGER;
+    BEGIN
+	    d1 = (SELECT read_date FROM meter_readings WHERE devices_id = dev_id ORDER BY read_date DESC LIMIT 1);
+	    d2 = (SELECT read_date FROM meter_readings WHERE (devices_id = dev_id AND read_date < d1) ORDER BY read_date DESC LIMIT 1);
+	    r1 = (SELECT reading FROM meter_readings WHERE (devices_id = dev_id AND read_date = d1));
+	    r2 = (SELECT reading FROM meter_readings WHERE (devices_id = dev_id AND read_date = d2));
+	    delta = r1 - r2;
+	    K = (SELECT Kt FROM meter_devices WHERE id = dev_id);
+	    days = d1 - d2;
+	    RETURN (CASE WHEN delta ISNULL THEN 0 ELSE (delta * K / days) END):: NUMERIC(13, 3);
+    END;
+    $_$;
+
+
+ALTER FUNCTION public.average_from_last_readings(integer) OWNER TO saibogo;
+
+--
 -- Name: bug_status_to_string(boolean); Type: FUNCTION; Schema: public; Owner: saibogo
 --
 
@@ -149,6 +175,57 @@ CREATE FUNCTION public.date_to_date_and_day_string(d date) RETURNS text
 
 
 ALTER FUNCTION public.date_to_date_and_day_string(d date) OWNER TO saibogo;
+
+--
+-- Name: full_calc_all_schemes_in_point(integer); Type: FUNCTION; Schema: public; Owner: saibogo
+--
+
+CREATE FUNCTION public.full_calc_all_schemes_in_point(integer) RETURNS text[]
+    LANGUAGE plpgsql
+    AS $_$
+    DECLARE
+	    p_id ALIAS FOR $1; all_data TEXT ARRAY; schm INTEGER; schemes INTEGER[];
+    BEGIN
+	    schemes = (SELECT ARRAY_AGG(t.id) FROM calculation_schemes AS t WHERE point_id = p_id);
+	    FOREACH schm IN ARRAY schemes LOOP
+		    all_data = all_data || (SELECT full_calc_to_scheme(schm));
+	    END LOOP;
+	    RETURN all_data;
+    END;
+    $_$;
+
+
+ALTER FUNCTION public.full_calc_all_schemes_in_point(integer) OWNER TO saibogo;
+
+--
+-- Name: full_calc_to_scheme(integer); Type: FUNCTION; Schema: public; Owner: saibogo
+--
+
+CREATE FUNCTION public.full_calc_to_scheme(integer) RETURNS text[]
+    LANGUAGE plpgsql
+    AS $_$
+    DECLARE schm ALIAS FOR $1; all_data text[]; pos_arr INTEGER[]; neg_arr  INTEGER[]; averages NUMERIC[];
+    BEGIN
+        all_data = ARRAY[schm];
+	    all_data = array_append(all_data, (SELECT meter_type_to_string(devices_type) FROM calculation_schemes WHERE id = schm));
+	    pos_arr = (SELECT positive_calc FROM calculation_schemes WHERE id = schm);
+	    if pos_arr ISNULL THEN pos_arr = '{}'::INTEGER[]; END IF;
+	    all_data = array_append(all_data, array_to_string(pos_arr, ' ,'));
+	    neg_arr = (SELECT negative_calc FROM calculation_schemes WHERE id = schm);
+	    if neg_arr ISNULL THEN neg_arr = '{}'::INTEGER[]; END IF;
+	    all_data = array_append(all_data, array_to_string(neg_arr, ' ,'));
+	    all_data = array_append(all_data, (SELECT comment FROM calculation_schemes WHERE id = schm));
+	    all_data = array_append(all_data, (SELECT units_of_measure_string(devices_type) FROM calculation_schemes WHERE id = schm));
+	    averages = (SELECT sum_pu_in_scheme(schm));
+	    all_data = array_append(all_data, averages[1]::TEXT);
+	    all_data = array_append(all_data, averages[2]::TEXT);
+	    all_data = array_append(all_data, averages[3]::TEXT);
+	RETURN all_data;
+    END;
+    $_$;
+
+
+ALTER FUNCTION public.full_calc_to_scheme(integer) OWNER TO saibogo;
 
 --
 -- Name: last_day_date(); Type: FUNCTION; Schema: public; Owner: saibogo
@@ -256,6 +333,73 @@ CREATE FUNCTION public.point_status_to_string(st public.point_status) RETURNS te
 
 
 ALTER FUNCTION public.point_status_to_string(st public.point_status) OWNER TO postgres;
+
+--
+-- Name: sum_pu_in_scheme(integer); Type: FUNCTION; Schema: public; Owner: saibogo
+--
+
+CREATE FUNCTION public.sum_pu_in_scheme(integer) RETURNS numeric[]
+    LANGUAGE plpgsql
+    AS $_$
+    DECLARE
+	    schm_id ALIAS FOR $1; pos_arr INTEGER[]; neg_arr INTEGER[]; tmp NUMERIC; tmp1 NUMERIC; pu INTEGER;
+	    days INTEGER; result_arr NUMERIC[];
+    BEGIN
+	    tmp = 0;
+	    tmp1 = 0;
+	    pos_arr = (SELECT positive_calc FROM calculation_schemes WHERE id = schm_id);
+	    neg_arr = (SELECT negative_calc FROM calculation_schemes WHERE id = schm_id);
+	    IF pos_arr ISNULL THEN pos_arr = '{}'::INTEGER[]; END IF;
+	    IF neg_arr ISNULL THEN neg_arr = '{}'::INTEGER[]; END IF;
+	
+	    FOREACH pu IN ARRAY pos_arr LOOP
+		    tmp = tmp + average_from_last_readings(pu);
+		    tmp1 = tmp1 + total_last_month(pu);
+	    END LOOP;
+	
+	    FOREACH pu IN ARRAY neg_arr LOOP
+		    tmp = tmp - average_from_last_readings(pu);
+		    tmp1 = tmp1 - total_last_month(pu);
+	    END LOOP;
+
+	    days = (SELECT EXTRACT(EPOCH FROM INTERVAL '1 MONTH') / (24*60*60));
+	    result_arr = array_append(result_arr, tmp::NUMERIC(13, 3));
+	    result_arr = array_append(result_arr, (tmp * days)::NUMERIC(13, 3));
+	    result_arr = array_append(result_arr, tmp1::NUMERIC(13, 3));
+	    RETURN result_arr;
+    END;
+    $_$;
+
+
+ALTER FUNCTION public.sum_pu_in_scheme(integer) OWNER TO saibogo;
+
+--
+-- Name: total_last_month(integer); Type: FUNCTION; Schema: public; Owner: saibogo
+--
+
+CREATE FUNCTION public.total_last_month(integer) RETURNS numeric
+    LANGUAGE plpgsql
+    AS $_$
+    DECLARE 
+        dev_id ALIAS FOR $1; d1 DATE; d2 DATE; d3 DATE; r1 NUMERIC; r3 NUMERIC; delta NUMERIC;
+	    days INTEGER; K INTEGER; days_in_month INTEGER; tmp NUMERIC;
+    BEGIN
+	    d1 = (SELECT read_date FROM meter_readings WHERE (devices_id = dev_id AND read_date <= NOW()::DATE) ORDER BY read_date DESC LIMIT 1);
+	    d2 = d1 - INTERVAL '1 MONTH';
+	    d3 = (SELECT read_date FROM meter_readings WHERE (devices_id = dev_id AND read_date <= d2::DATE) ORDER BY read_date DESC LIMIT 1);
+	    r1 = (SELECT reading FROM meter_readings WHERE (devices_id = dev_id AND read_date = d1));
+	    r3 = (SELECT reading FROM meter_readings WHERE (devices_id = dev_id AND read_date = d3));
+	    delta = r1 - r3;
+	    days = d1 - d3;
+	    K = (SELECT Kt FROM meter_devices WHERE id = dev_id);
+	    days_in_month = (SELECT EXTRACT(EPOCH FROM INTERVAL '1 MONTH') / (24*60*60));
+	    tmp = (delta * K  * days_in_month / days) :: NUMERIC(13, 3);
+	    RETURN (CASE WHEN tmp ISNULL THEN 0::NUMERIC(13, 3) ELSE tmp END);
+    END;
+    $_$;
+
+
+ALTER FUNCTION public.total_last_month(integer) OWNER TO saibogo;
 
 --
 -- Name: units_of_measure_string(public.meter_type); Type: FUNCTION; Schema: public; Owner: saibogo
@@ -1406,6 +1550,7 @@ COPY public.bugzilla (id, problem, status, date_start, date_close) FROM stdin;
 99	необходимо реализовать просмотр планируемых отключений э/э через телеграмм бот	f	2024-12-18 09:23:12.909727	2025-01-07 10:24:37.542088
 104	необходимо реализовать сохранение списка сотрудников на смене в pdf	f	2025-01-07 16:31:25.750006	2025-01-08 12:34:03.321195
 103	необходимо реализовать журнал событий(например вход пользователя в систему)	f	2025-01-03 17:53:22.836777	2025-03-15 11:08:13.776122
+134	Нет доступа к просмотру списка оборудования на предприятии для заказчика	f	2025-03-19 11:53:26.81191	2025-03-21 19:50:28.223353
 105	необходимо реализовать допуск к чтению страниц с недельным графиком сотрудников без использования сессий	f	2025-01-09 08:24:24.017701	2025-01-09 09:19:06.36821
 106	при просмотре графика сотрудников на смене и недельного графика необходимо указывать день недели	f	2025-01-09 10:06:24.764092	2025-01-09 10:57:45.712882
 108	При использовании команды /bugs через телеграмм-бот ответ не приходит из за ошибки Text is too long	f	2025-01-18 11:01:58.947899	2025-01-18 13:55:01.326892
@@ -1430,12 +1575,14 @@ COPY public.bugzilla (id, problem, status, date_start, date_close) FROM stdin;
 126	необходимо проверять соответствие логина и пароля для текущей сессии	f	2025-03-14 19:48:51.040645	2025-03-14 22:19:44.97231
 125	необходимо заблокировать классу ROLE_WORKER доступ к просмотру аналитики потребления	f	2025-03-14 19:48:01.114739	2025-03-14 22:20:00.000445
 69	необходимо добавить подпункт добавить/удалить заказчика в меню работы с заявками	f	2024-02-02 11:59:00.692016	2025-03-15 18:42:12.750433
-127	необходимо продумать способ оповещения о созданной заявке	t	2025-03-15 18:54:09.098356	\N
 128	необходимо добавить возможность создания расчетных схем в разделе просмотр приборов учета для предприятия	t	2025-03-15 19:49:29.822644	\N
 129	при отображении списка заявок в поле полное имя указан псевдоним а не полное имя	f	2025-03-15 20:39:38.26355	2025-03-17 18:47:43.94838
 130	При запросе через телеграмм-бот списка заявок отображается псевдоним а не полное имя создавшего заявку	f	2025-03-17 18:49:39.513836	2025-03-17 18:52:19.828882
-131	В меню работа с заявками необходимо добавить пункт Мои Заявки, который будет открыт только для конкретного заказчика или суперпользователя	t	2025-03-18 11:11:05.613193	\N
 132	Необходимо заблокировать пункты меню с привязками сотрудников к предприятиям а также понедельные графики	t	2025-03-18 11:21:13.407149	\N
+131	В меню работа с заявками необходимо добавить пункт Мои Заявки, который будет открыт только для конкретного заказчика или суперпользователя	f	2025-03-18 11:11:05.613193	2025-03-18 20:56:12.100113
+127	необходимо продумать способ оповещения о созданной заявке	f	2025-03-15 18:54:09.098356	2025-03-18 20:56:30.858733
+135	Необходимо добавить поле Назначен сотрудник в таблицу просмотра заявок а также возможность добавления сотрудника через интернет портал	t	2025-03-19 12:14:53.565785	\N
+133	Нет доступа к просмотру списка оборудования на предприятии для заказчика	f	2025-03-19 11:53:13.005292	2025-03-21 19:50:45.031262
 \.
 
 
@@ -1536,6 +1683,9 @@ COPY public.calculation_schemes (id, point_id, positive_calc, negative_calc, dev
 179	3	{15}	{}	cold_water	
 180	3	{5}	{}	hot_water	
 181	19	{69}	{}	electricity	
+182	11	{128,129}	\N	electricity	
+183	11	{127}	\N	cold_water	
+184	11	{126}	\N	hot_water	
 \.
 
 
@@ -1589,6 +1739,7 @@ COPY public.cold_water (id, point_id, treaty, resume) FROM stdin;
 COPY public.customer (id, hash_pass, full_name, description) FROM stdin;
 1	52380570359700838927303160461451880435941242634047643826816963312413378430196	gleykh	Глейх Андрей
 3	98495709153842244150286319051560969464677828123758817845574381821594076045352	testcustomer	Тестовый Заказчик
+4	27284683975775137352046250084504654839902969067995486199759376502192326321240	shpe	Тычинская Екатерина
 \.
 
 
@@ -1831,6 +1982,10 @@ COPY public.meter_devices (id, device_type, model, serial_num, is_active, start_
 124	electricity	ЭНЕРГОМЕРА CE301 R33 146 JAZ	008842174207340	t	2023-05-01	\N	2022-03-15	1	f	
 36	hot_water	БЕТАР СГВ-15	39290292	t	2019-11-01	\N	2019-09-01	1	f	
 125	hot_water	ВСКМ90-25	050435	t	2012-01-01	\N	\N	1	t	
+126	hot_water	БЕТАР СГВ-15	42054028	t	2021-01-01	\N	2020-04-02	1	f	
+127	cold_water	БЕТАР СГВ-15	42054077	t	2021-01-01	\N	2020-04-02	1	f	
+128	electricity	OD4165	0523 00069188	t	2017-01-01	\N	\N	1	f	
+129	electricity	OD4165	0523 00069170	t	2017-01-01	\N	\N	1	f	
 \.
 
 
@@ -2174,6 +2329,11 @@ COPY public.meter_readings (id, devices_id, read_date, reading) FROM stdin;
 336	35	2025-03-16	373741.440
 337	125	2025-03-16	2542.157
 323	95	2025-03-13	137000.000
+338	9	2025-03-21	42800.410
+339	126	2025-03-19	3158.414
+340	127	2025-03-19	1151.794
+341	128	2025-03-19	688197.000
+342	129	2025-03-19	212406.000
 \.
 
 
@@ -3019,7 +3179,6 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 892	8	вешалки в ассортименте	not model	not number	892	f
 893	3	плита двухкомфорочная Тулаторгтехника	ПЭ-0,24Н	2491	893	f
 895	3	вспомогательное оборудование зал	not model	not number	895	f
-897	11	посудомоечная машина Amika	not model	not number	897	f
 898	9	супница HURAKAN	HKN-FWP	HKNFWP1120019	898	f
 899	5	стиральная машина INDESIT	not model	not number	899	f
 900	35	ВРУ	not model	not number	900	f
@@ -3041,13 +3200,14 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 913	28	входная группа (Вайнера)	not model	not number	913	f
 914	4	система канализации кухня	not model	not number	914	f
 915	19	мебель Мегаполис на хранении	not model	not number	915	f
-916	32	кофемашина Franke Flair	P 2M HD CE2	not number	77	f
 917	32	кофемолка MAZZER LUIGI	KONY ELECTRONIC	1137653	826	f
 918	19	плита индукционная Техно ТТ 2 комфорки	not model	not number	438	f
 919	7	вывеска рекламная	not model	not number	919	f
 920	2	вспомомгательный инвентарь холодный цех	not model	not number	920	f
 922	31	система сборной канализации	not model	not number	922	f
 865	2	миксер планетарный напольный (кремовый цех правый)	MX60P	MX60P_2-001 ANNO 2015	865	f
+916	32	кофемашина Franke Flair	P 2M HD CE2	not number	77	t
+897	11	посудомоечная машина Amika	not model	not number	897	t
 923	4	диваны модульные	not model	not number	923	f
 924	28	система отопления	not model	not number	924	f
 925	3	жалюзи входная гостевая группа	not model	not number	925	f
@@ -3259,7 +3419,6 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 201	26	аппарат для мягкого мороженного Taylor	Taylor 142	not number	201	t
 1129	19	коктейльный аппарат Taylor	Taylor 430	not number	200	f
 1130	19	кофемашина Franke Evolution	FRANKE Evolution Top	not number	190	f
-1131	32	кофемашина Franke Flair	not model	not number	598	f
 801	26	кофемашина Termoplan	not model	not number	640	t
 1132	19	кофемашина Termoplan	not model	not number	758	f
 1133	19	овощечистка fIMAR	PPN5X40050T	120506070	178	f
@@ -4052,6 +4211,15 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 1879	41	тепловая завеса LG	Pyrox ScreenMaster	not number	305	f
 1880	41	тепловая завеса Тропик (охрана)	not model	not number	388	f
 1881	41	тепловая завеса Тропик (экспедиция)	not model	not number	310	f
+1882	41	кофемашина Franke Flair	not model	not number	1131	f
+1131	32	кофемашина Franke Flair	not model	not number	598	t
+1883	41	кофемашина Franke Flair	P 2M HD CE2	not number	916	f
+1884	32	паяльник для полипропилена	PW-1502	15022414 1502	1884	f
+1885	32	наждак настольный	not model	not number	1885	f
+1886	47	посудомоечная машина Amika	not model	not number	897	f
+1887	11	система ХВС	not model	not number	1887	f
+1888	11	система ГВС	not model	not number	1888	f
+1889	11	посудомоечная машина Tatra	TW.H50+DR+DD	89396	1889	f
 \.
 
 
@@ -4140,18 +4308,13 @@ COPY public.orders (id, customer_id, date, status, problem, closed_date, comment
 81	1	2025-03-07 21:45:29.600293	in_work	необходимо получить технические условия и выполнить переоборудование узла учета ГВС	\N	\N	3
 83	1	2025-03-07 21:46:31.010123	in_work	необходимо перезаключить договор теплоснабжения с ПАО ТПлюс	\N	\N	29
 84	1	2025-03-07 21:47:24.453862	in_work	необходимо заменить сифоны на мойках	\N	\N	42
-85	1	2025-03-07 21:48:08.036469	in_work	необходимо приобрести и заменить оба фильтра в магистральной фильтровальной станции	\N	\N	6
 86	1	2025-03-07 21:49:17.029383	in_work	Необходимо приобрести и установить секцию предварительной очистки для магистральной фильтровальной установки	\N	\N	42
 87	1	2025-03-08 09:30:17.738928	in_work	необходимо произвести чистку магистрального жироуловителя	\N	\N	37
 88	1	2025-03-08 09:31:09.664455	closed	необходимо заменить потенциометр температуры-времени на пароконвектомате	2025-03-11 19:45:02.807976		3
 90	1	2025-03-11 19:46:40.089369	in_work	Необходимо приобрести и опробовать чугунные колеса пекарских шпилек в ротационных печах	\N	\N	2
 91	1	2025-03-11 19:47:17.073559	in_work	Необходимо приобрести и заменить часть подвесного потолка грильятто в районе зоны пасты	\N	\N	7
-92	1	2025-03-11 19:49:00.156845	in_work	Необходимо приобрести и заменить поврежденный хомут фильтра Викинг а также установить колбу фильтра обратно в систему	\N	\N	6
-93	1	2025-03-12 19:34:01.187322	in_work	необходимо заказатьновый двигатель для насосной станции возле складов. И установить	\N	\N	2
 89	1	2025-03-11 19:45:42.677057	closed	необходимо заменить поврежденнные кабели питания плит в горячем цехе	2025-03-13 00:32:54.335533		2
 74	1	2025-02-04 18:37:29.869617	closed	Необходимо установить на место статор электровентилятора печи	2025-03-13 20:15:28.706795		8
-96	1	2025-03-14 19:50:55.270481	in_work	необходимо установить новую посудомоечную машину	\N	\N	11
-97	1	2025-03-14 21:21:23.046945	in_work	необходимо произвести повторный монтаж всего ранее демонтированного перед реконструкцией оборудования	\N	\N	11
 82	1	2025-03-07 21:45:39.606279	in_work	необходимо получить технические условия и выполнить переоборудование узла учета ГВС	\N		38
 99	1	2025-03-15 19:48:42.756477	in_work	необходимо заказать все неработающие индукторы и пульты в горячем цехе, а также установить их на плиты	\N	\N	2
 100	1	2025-03-15 20:38:34.747163	in_work	необходимо заменить смеситель в служебном туалете	\N	\N	4
@@ -4160,12 +4323,27 @@ COPY public.orders (id, customer_id, date, status, problem, closed_date, comment
 95	1	2025-03-13 09:43:10.952821	closed	необходимо смонтировать подсветку зоны пасты	2025-03-17 18:47:00.616353		4
 107	1	2025-03-17 20:39:27.186398	in_work	После производства предварительного бурения и определения новых канализационных трасс необходимо совместно с подрядной организацией произвести перекладку канализационных труб Ду 100 под потолком подвала Кулинарной Фабрики	\N	\N	28
 108	1	2025-03-18 09:30:52.764604	in_work	необходимо произвести демонтаж необходимого числа диванов для перетяжки	\N	\N	9
-109	1	2025-03-18 09:31:58.364445	in_work	необходимо произвести диагностику и ремонт тепловой завесы на служебном входе: с утра греет теплом, ближе к обеду и до вечера нагрев отсутствует	\N	\N	37
-110	1	2025-03-18 11:13:18.571392	in_work	необходимо произвести техническое обслуживание силового щита	\N	\N	6
 111	1	2025-03-18 11:43:19.308455	in_work	Необходимо заказать и установить блок питания вывески(Буквы ПОЛЬ со стороны лестницы)	\N	\N	34
-113	3	2025-03-18 18:11:55.489742	in_work	необходимо установить новый абразивный диск на точильный станок	\N		32
+96	1	2025-03-14 19:50:55.270481	closed	необходимо установить новую посудомоечную машину	2025-03-21 15:30:02.572392		11
+85	1	2025-03-07 21:48:08.036469	closed	необходимо приобрести и заменить оба фильтра в магистральной фильтровальной станции	2025-03-21 15:30:29.077383		6
+110	1	2025-03-18 11:13:18.571392	closed	необходимо произвести техническое обслуживание силового щита	2025-03-22 10:37:39.701759	Внимание! Возможно необходима замена электросчетчика	6
+93	1	2025-03-12 19:34:01.187322	closed	необходимо заказатьновый двигатель для насосной станции возле складов. И установить	2025-03-22 11:44:37.973538		2
+109	1	2025-03-18 09:31:58.364445	closed	необходимо произвести диагностику и ремонт тепловой завесы на служебном входе: с утра греет теплом, ближе к обеду и до вечера нагрев отсутствует	2025-03-22 12:43:58.222106		37
 112	1	2025-03-18 18:10:34.616015	closed	необходимо опробовать паяльный аппарат	2025-03-18 20:01:30.384202		32
 114	3	2025-03-18 19:54:13.556877	closed	необходимо произвести ревизию наличия оборудования на объекте	2025-03-18 20:23:22.032989	Необходима более подробная ревизия	2
+115	1	2025-03-18 20:52:44.746128	in_work	необходимо восстановить работу дверного доводчика на служебном входе	\N	\N	37
+117	1	2025-03-19 13:25:38.802141	in_work	необходимо обновить схему вводного устройства для ПБ МЕГА	\N	\N	6
+118	1	2025-03-19 13:54:07.679608	in_work	на 26 марта запланировано отключение э/э на первой секции РП. Необходимо заказать генератор 80 кВт и запланировать его подключение	\N	\N	4
+116	4	2025-03-19 11:47:39.76454	closed	наточить ножи	2025-03-20 10:18:47.45336		31
+113	3	2025-03-18 18:11:55.489742	closed	необходимо установить новый абразивный диск на точильный станок	2025-03-20 10:19:11.277974		32
+97	1	2025-03-14 21:21:23.046945	closed	необходимо произвести повторный монтаж всего ранее демонтированного перед реконструкцией оборудования	2025-03-20 10:19:50.294784		11
+119	1	2025-03-20 15:25:03.211356	in_work	необходимо добавить потолочный светильник над столом финансового директора	\N	\N	30
+92	1	2025-03-11 19:49:00.156845	closed	Необходимо приобрести и заменить поврежденный хомут фильтра Викинг а также установить колбу фильтра обратно в систему	2025-03-21 15:31:55.657401	корпус прежний. Приобретена зажимная гайка американского метрического образца для затяжки хомута сифона	6
+120	1	2025-03-21 15:07:47.911516	closed	необходимо заменить фильтра в фильтровальной станции возле туалетов	2025-03-21 17:55:49.740337		30
+121	1	2025-03-21 17:53:47.676934	closed	необходимо восстановить дверную ручку на стеклянной внутренней двери	2025-03-21 18:24:33.56499		1
+122	1	2025-03-21 17:54:30.99398	closed	необходимо перепаять разьемы на блоке питания настольных весов кондитерского цеха	2025-03-21 19:04:10.715023		2
+123	1	2025-03-21 19:04:54.165967	in_work	необходимо установить металлическую полку над столом на линии раздачи	\N	\N	11
+124	1	2025-03-22 11:45:12.8784	in_work	необходимо установить рекламный баннер на стене со стороны ТЦ	\N	\N	11
 \.
 
 
@@ -13096,6 +13274,48 @@ COPY public.performers (id, work_id, worker_id) FROM stdin;
 8967	8210	1
 8968	8211	1
 8969	8212	8
+8970	8213	1
+8971	8214	1
+8972	8215	1
+8973	8216	8
+8974	8217	9
+8975	8218	9
+8976	8219	15
+8977	8220	15
+8978	8221	15
+8979	8222	1
+8980	8223	15
+8981	8224	15
+8982	8225	1
+8983	8226	1
+8984	8227	1
+8985	8228	1
+8986	8229	1
+8987	8230	1
+8988	8230	9
+8989	8222	9
+8990	8231	9
+8991	8232	1
+8992	8232	9
+8993	8233	15
+8994	8234	15
+8995	8235	15
+8996	8236	1
+8997	8237	8
+8998	8238	8
+8999	8239	8
+9000	8240	1
+9001	8240	9
+9002	8241	9
+9003	8242	10
+9004	8243	10
+9005	8244	8
+9006	8245	1
+9007	8246	1
+9008	8247	8
+9009	8248	1
+9010	8248	8
+9011	8249	8
 \.
 
 
@@ -13228,6 +13448,10 @@ COPY public.points_meter_devices (id, point, device_id) FROM stdin;
 124	36	123
 125	36	124
 126	38	125
+127	11	126
+128	11	127
+129	11	128
+130	11	129
 \.
 
 
@@ -13665,15 +13889,26 @@ COPY public.workers_schedule (work_date, worker_id, day_type) FROM stdin;
 2025-03-20	10	shedule_service
 2025-03-20	5	shedule_service
 2025-03-20	6	shedule_service
-2025-03-21	1	schedule_8_18
 2025-03-21	8	schedule_7_19
 2025-03-21	10	shedule_service
 2025-03-21	5	shedule_service
 2025-03-21	6	shedule_service
-2025-03-22	1	schedule_8_18
 2025-03-22	8	schedule_7_19
-2025-03-23	9	schedule_8_18
 2025-03-23	15	schedule_7_19
+2025-03-21	1	schedule_special
+2025-03-23	9	schedule_special
+2025-03-22	1	schedule_special
+2025-03-24	10	shedule_service
+2025-03-24	15	schedule_7_19
+2025-03-24	5	shedule_service
+2025-03-24	6	shedule_service
+2025-03-24	9	schedule_8_18
+2025-03-25	1	schedule_special
+2025-03-25	9	schedule_8_18
+2025-03-25	10	shedule_service
+2025-03-25	5	shedule_service
+2025-03-25	6	shedule_service
+2025-03-25	8	schedule_7_19
 \.
 
 
@@ -21826,6 +22061,7 @@ COPY public.works (id, id_obor, date, problem, result) FROM stdin;
 8149	782	2025-03-12 22:53:00	замена кабеля питания	Заменен на ПВС 5*2,5 + силовая вилка IEK 5*32
 8150	292	2025-03-12 22:55:00	замена колесиков на шпильке	установлено Колесо термостойкое поворотное (фенольное) RFG 100 Поставщик Адванта М. Внимание - запас колес исчерпан. Необходима новая поставка
 8151	1864	2025-03-13 11:09:24	Не нагревается правая комфорка	Разобрал, осмотрел.Сгорел тэн. Снял чтобы заказать новый
+8219	1885	2025-03-19 14:03:00	замена абразивного диска	Установлен круг шлифовальный для заточки инструмента 1 150х16х12,7 АК 80 L 40 м/с левый. Поставщик  - все инструменты
 8152	5	2025-03-13 12:31:44	Подготовка к переносу на хранение на складе толедова	Установлен статор двигателя. Крепление болты м5*90(желательно 80). Восстановлены все внутренние панели. Внимание, отсутствуют гайки и болты на внутренней панели
 8153	1347	2025-03-13 13:16:56	Лужа воды под кипятильником	Изношен шланг набора воды. Заменил на новый
 8154	749	2025-03-13 13:19:54	Нет пара	Прочистил паровую форсунку от накипи. Очистил вентиляционную трубу от нагара.
@@ -21860,6 +22096,7 @@ COPY public.works (id, id_obor, date, problem, result) FROM stdin;
 8183	892	2025-03-16 08:07:35	Сломались две вешалки. Лопнул деревянный крепёж.	Проклеил лопнувшие места,стянул хомутами.собрал,поставил на место.
 8185	1723	2025-03-16 14:31:28	Сломана кнопка переключения температуры.	Перепоял кнопку.Проверил. Работает. Увёз в Нагорный.
 8186	1006	2025-03-16 14:49:00	течет вода с потолка мясного цеха	Подтопление с канализации арендного помещения БАСТА. Информация передана руководителю Арендного помещения
+8221	1051	2025-03-19 18:42:47	Шумит кран и труба при включении воды.	Почистил Y-фильтры горячей и холодной воды. Проверил. Шум прекратился.
 8187	110	2025-03-16 20:55:35	Повторная диагностика	Под ножом измельчителя обнаружен разбухший повербанк, который блокировал вращение двигателя номер 2(левого). Станция восстановлена и переведена в двухдвигательный режим
 8188	667	2025-03-16 22:43:18	Сгорел удлинитель в который включены холодильники.	Заменил на новый. Проверил. Работает.
 8190	887	2025-03-16 22:52:07	Засор канализации кофемашины	Прочистил шлангом с водой.
@@ -21886,6 +22123,41 @@ COPY public.works (id, id_obor, date, problem, result) FROM stdin;
 8210	388	2025-03-18 20:18:00	Перемещение оборудования	Перемещено из Кулинарная Фабрика в Перечень списанного оборудования.
 8211	310	2025-03-18 20:18:00	Перемещение оборудования	Перемещено из Кулинарная Фабрика в Перечень списанного оборудования.
 8212	1075	2025-03-18 12:00:00	спустя некоторое время после запуска пропадает нагрев до момента длительного отключения завесы	заменено силовое реле 30F-2C-220VAC(резерв б/у). Внимание, возможно необходимо заменить кнопки включения ТЭНов
+8213	1131	2025-03-18 20:48:00	Перемещение оборудования	Перемещено из Техслужба Екатеринбург в Перечень списанного оборудования.
+8214	916	2025-03-18 20:48:00	Перемещение оборудования	Перемещено из Техслужба Екатеринбург в Перечень списанного оборудования.
+8215	1884	2025-03-18 20:49:00	ввод в эксплуатацию	поступил от поставщика(Все Инструменты). Проверен нагрев
+8216	48	2025-03-18 23:28:36	Установить, снять спинки диванов	Диванные модули слева от главного входа.Установил на место спинку дивана после перетяжки, снял следующую для отправки.
+8217	1588	2025-03-19 13:51:02	Не работает цикл ополаскивания	Во время цикла ополаскивания не вращаеся крестовина. На крестовине отсутствуют фиксаторы форсунок. из за чего не создается давление воды в форсунках. Необходима замена замена крестовины.
+8218	349	2025-03-19 14:02:15	Замена замка	Установил новый замок, ручку, цилиндр ключевой
+8220	1202	2025-03-19 16:14:22	Течёт вода из под кофемашины	Выпал шланг из основной трубы слива. Установил шланг на место.
+8222	329	2025-03-19 20:07:40	Монтажник сантехник уронил в канализацию Ду 100 мм гибкую подводку для смесителя	Использован эндоскоп 5 метров+ насадка из медного провода 4 мм. кв. Удалён из трубы. Внимание в трубе обнаружено зеркало воды примерно 10 мм от нижней точки
+8223	788	2025-03-20 08:15:11	Сломалась кранбукса.	Купил новую (Леруа) установил, проверил, работает.
+8224	1238	2025-03-20 09:03:17	Заточить ножи.	Наточил ножи 6 штук.
+8225	897	2025-03-20 09:54:00	Перемещение оборудования	Перемещено из ПБ Парк Хаус в склад оборудования Пышма.
+8226	1887	2025-03-20 04:00:00	не держит вводной кран	подрядчиком установлен дополнительный отсекающий вентиль 1/2" ВР-НР перед Y-фильтром
+8227	1888	2025-03-20 04:30:00	не держит вводной ПП вентиль	Подрядчиком установлен дополнительный отсекающий вентиль 1/2" ВР-НР перед -abkmnhjv
+8228	1040	2025-03-20 03:00:00	повторный монтаж	Подрядчиком установлены 10" колбы и фильтра 10 микрон а) над посудомоечной машиной б) слева от пекарской печи. Внимание корпус Аквафор Викинг поврежден и не устанавливался. Заказан новый на ОЗОН
+8229	1688	2025-03-20 00:00:00	реконструкция	Двери заменены на двери с барными петлями силами отдела развития
+8230	1348	2025-03-20 01:00:00	повторный монтаж	Установлен шланг 1/2" ВР-ВР (Строительный Двор)
+8231	961	2025-03-20 10:09:00	повторный монтаж оборудования	Заменено на холодильниках 2 штуки угловых вилок с з/к (Строительны двор)
+8232	1889	2025-03-20 03:15:00	монтаж	поступила от поставщика(Инхорека). Питание кабелем ПВС5*2,5 + силовая вилка 5*16. Подключена к системе грубой очистки воды через отсекающие краны. Прожаты клеммы и болты. Слив подключен в канализацию через косой тройник Ду 50 + манжета 50*25. Внимание - тройник должен стоять практически горизонтально раструбом иначе вода при сливе уходит не полностью. Проверены циклы нагрева и мойки
+8233	495	2025-03-20 13:44:33	Течёт вода из трубы под кофемашиной.	Попробовал пробить засор, не получилось. Вызвали специалистов. Устранили течь.
+8234	458	2025-03-20 16:22:27	Перевесить табличку	Купил крючки(Леруа).Перевесил табличку.
+8235	1051	2025-03-20 18:45:45	Шумит кран при включении.	Прочистил фильтры в водянных щетчиках.Шум прекратился.
+8236	381	2025-03-21 09:12:32	Печь отключилась во время выпекания по программе Багет	Сработала тепловая защита. Взведено. Нагрев в пределах нормы. Парообразование в норме. Реверс вентилятора в норме. Причина не определена. Оставлено для наблюдения
+8237	122	2025-03-21 13:00:15	Не горит один подвесной светильник ( тарелка)	Заменил блок питания. Светильник в работе. 4 шт блоков питания в запасе
+8238	152	2025-03-21 13:02:24	Замена фильтров	Заменён фильтрующий элемент на ВВ 20". Установлен на место фильтр в сборе с заменой картриджа В150+
+8239	381	2025-03-21 14:51:30	Перестала выпекать	При осмотре обнаружил, что не крутится вентилятор. Заменил два пусковых конденсатора на К78-17 12мкФ 450В и К78-17 3мкФ 450В.вентилятор в работе. Так же прочистил жаклер,отводную трубу для пара. Печь в работе
+8240	526	2025-03-20 23:30:00	повторный монтаж после реконструкции	Установлены 6 металлических полок, 3 дозатора жидкого мыла, два держателя для ножей и два диспенсера для бумажных полотенец. Основание - керамогранитная плитка
+8241	1047	2025-03-20 20:30:00	установка после реконструкции предприятия	Перекоммутирована силовая вилка питания. Внимание - в розетке 5*32 использовано только 3 гнезда: L1 N и PE. Свободные жилы кабеля были использованы монтажниками для усиления L1 и N проводников
+8242	218	2025-03-19 22:15:00	плановая чистка жироуловителей	вычищен
+8243	125	2025-03-19 23:00:00	плановая чистка жироуловителей	вычищен
+8244	1112	2025-03-21 16:25:39	Заменить фильтр	Заменил фильтр гейзер РР05-10 SL
+8245	433	2025-03-21 18:23:00	сломана ручка двери	Заменены две шпильки М8 + установлена крепежная гайка(нижняя) со стороны улицы
+8246	203	2025-03-21 19:02:00	руководитель приобрел блоки питания для весов с разьемом меньшего сечения	Перепаян разьем от старых весов с соблюдением полярности(обратная)
+8247	107	2025-03-22 00:50:30	Протяжка контактов после съемки тепловизором	Протянул контакты на автоматах и на счетчике. Нулевую шину и заземления
+8248	714	2025-03-22 09:45:00	оборваны жалюзи (дальние в зале)	полностью оборвана ламель №1. Удалили. Не работают конечники верхнего и нижнего положения. Жалюзи восстановлены но без автоматического отключения.
+8249	30	2025-03-22 11:29:00	замена двигателя	Поступил от ООО Стройэлита. Установлен в левое гнездо. Проверено
 \.
 
 
@@ -21953,12 +22225,12 @@ COPY public.workspoints (point_id, point_name, point_address, is_work) FROM stdi
 24	Донер Кебаб Современник	торговая площадка перед ТЦ Современник	closed
 14	Мак Пик Парк Хаус	Екатеринбург ТЦ Парк Хаус	closed
 35	Tarteen by Paul Bakery	ТЦ Гринвич	closed
-11	ПБ Парк Хаус	Екатеринбург ТЦ Парк Хаус	reconstruction
 1	ПБ Малышева 36	Екатеринбург Малышева 36	in_work
 22	Шеф Донер КОР	Екатеринбург ТК КОР-ДОМ Высоцкого	closed
 47	склад оборудования Пышма	Верхняя Пышма	in_work
 12	ПБ Центральный Гастроном	Екатеринбург Ленина 48	closed
 23	ПБ МЕГА-Парк	Екатеринбург, Металлургов 87, ТЦ МЕГА открытая площадка со стороны Металлургов	closed
+11	ПБ Парк Хаус	Екатеринбург ТЦ Парк Хаус	in_work
 \.
 
 
@@ -21973,14 +22245,14 @@ SELECT pg_catalog.setval('public.bindings_id_seq', 107, true);
 -- Name: bugzilla_id_seq; Type: SEQUENCE SET; Schema: public; Owner: saibogo
 --
 
-SELECT pg_catalog.setval('public.bugzilla_id_seq', 132, true);
+SELECT pg_catalog.setval('public.bugzilla_id_seq', 135, true);
 
 
 --
 -- Name: calculation_schemes_id_seq; Type: SEQUENCE SET; Schema: public; Owner: saibogo
 --
 
-SELECT pg_catalog.setval('public.calculation_schemes_id_seq', 181, true);
+SELECT pg_catalog.setval('public.calculation_schemes_id_seq', 184, true);
 
 
 --
@@ -22001,7 +22273,7 @@ SELECT pg_catalog.setval('public.cold_water_id_seq', 22, true);
 -- Name: customer_id_seq; Type: SEQUENCE SET; Schema: public; Owner: saibogo
 --
 
-SELECT pg_catalog.setval('public.customer_id_seq', 3, true);
+SELECT pg_catalog.setval('public.customer_id_seq', 4, true);
 
 
 --
@@ -22029,14 +22301,14 @@ SELECT pg_catalog.setval('public.hot_water_id_seq', 23, true);
 -- Name: meter_devices_id_seq; Type: SEQUENCE SET; Schema: public; Owner: saibogo
 --
 
-SELECT pg_catalog.setval('public.meter_devices_id_seq', 125, true);
+SELECT pg_catalog.setval('public.meter_devices_id_seq', 129, true);
 
 
 --
 -- Name: meter_readings_id_seq; Type: SEQUENCE SET; Schema: public; Owner: saibogo
 --
 
-SELECT pg_catalog.setval('public.meter_readings_id_seq', 337, true);
+SELECT pg_catalog.setval('public.meter_readings_id_seq', 342, true);
 
 
 --
@@ -22050,14 +22322,14 @@ SELECT pg_catalog.setval('public.oborudovanie_id_seq', 1, false);
 -- Name: orders_id_seq; Type: SEQUENCE SET; Schema: public; Owner: saibogo
 --
 
-SELECT pg_catalog.setval('public.orders_id_seq', 114, true);
+SELECT pg_catalog.setval('public.orders_id_seq', 124, true);
 
 
 --
 -- Name: performers_id_seq; Type: SEQUENCE SET; Schema: public; Owner: saibogo
 --
 
-SELECT pg_catalog.setval('public.performers_id_seq', 8969, true);
+SELECT pg_catalog.setval('public.performers_id_seq', 9011, true);
 
 
 --
@@ -22071,7 +22343,7 @@ SELECT pg_catalog.setval('public.points_meter_devices_device_id_seq', 1, false);
 -- Name: points_meter_devices_id_seq; Type: SEQUENCE SET; Schema: public; Owner: saibogo
 --
 
-SELECT pg_catalog.setval('public.points_meter_devices_id_seq', 126, true);
+SELECT pg_catalog.setval('public.points_meter_devices_id_seq', 130, true);
 
 
 --

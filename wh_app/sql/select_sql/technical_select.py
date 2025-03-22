@@ -196,3 +196,31 @@ def sql_select_russian_string_from_meter_type(devices_type: str) -> str:
     """Return russian name to meter type"""
 
     return """SELECT meter_type_to_string('{}')""".format((devices_type))
+
+
+@log_decorator
+def sql_select_last_month_from_device_id(device_id: int) -> str:
+    """Return query string to get last month consumption from device"""
+
+    return """SELECT total_last_month({})""".format(device_id)
+
+
+@log_decorator
+def sql_select_average_from_device_id(device_id: int) -> str:
+    """Return query string to get average from two last reading"""
+
+    return """SELECT average_from_last_readings({})""".format(device_id)
+
+
+@log_decorator
+def sql_select_calculate_in_scheme(scheme_id: int) -> str:
+    """Return tuple contain (average, average for month future, average sum between two last reading)"""
+
+    return """SELECT sum_pu_in_scheme({})""".format(scheme_id)
+
+
+@log_decorator
+def sql_select_full_calc_all_schemes_in_point(point_id: int) -> str:
+    """Return array contain all data for all calculating schemes in point"""
+
+    return """SELECT full_calc_all_schemes_in_point({})""".format(point_id)

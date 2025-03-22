@@ -101,6 +101,32 @@ CREATE FUNCTION public.all_works_from_equip(eid integer) RETURNS TABLE(id intege
 ALTER FUNCTION public.all_works_from_equip(eid integer) OWNER TO saibogo;
 
 --
+-- Name: average_from_last_readings(integer); Type: FUNCTION; Schema: public; Owner: saibogo
+--
+
+CREATE FUNCTION public.average_from_last_readings(integer) RETURNS numeric
+    LANGUAGE plpgsql
+    AS $_$
+    DECLARE dev_id ALIAS FOR $1; d1 DATE; d2 DATE; r1 NUMERIC; r2 NUMERIC;
+	    delta NUMERIC;
+	    K INTEGER;
+	    days INTEGER;
+    BEGIN
+	    d1 = (SELECT read_date FROM meter_readings WHERE devices_id = dev_id ORDER BY read_date DESC LIMIT 1);
+	    d2 = (SELECT read_date FROM meter_readings WHERE (devices_id = dev_id AND read_date < d1) ORDER BY read_date DESC LIMIT 1);
+	    r1 = (SELECT reading FROM meter_readings WHERE (devices_id = dev_id AND read_date = d1));
+	    r2 = (SELECT reading FROM meter_readings WHERE (devices_id = dev_id AND read_date = d2));
+	    delta = r1 - r2;
+	    K = (SELECT Kt FROM meter_devices WHERE id = dev_id);
+	    days = d1 - d2;
+	    RETURN (CASE WHEN delta ISNULL THEN 0 ELSE (delta * K / days) END):: NUMERIC(13, 3);
+    END;
+    $_$;
+
+
+ALTER FUNCTION public.average_from_last_readings(integer) OWNER TO saibogo;
+
+--
 -- Name: bug_status_to_string(boolean); Type: FUNCTION; Schema: public; Owner: saibogo
 --
 
@@ -149,6 +175,57 @@ CREATE FUNCTION public.date_to_date_and_day_string(d date) RETURNS text
 
 
 ALTER FUNCTION public.date_to_date_and_day_string(d date) OWNER TO saibogo;
+
+--
+-- Name: full_calc_all_schemes_in_point(integer); Type: FUNCTION; Schema: public; Owner: saibogo
+--
+
+CREATE FUNCTION public.full_calc_all_schemes_in_point(integer) RETURNS text[]
+    LANGUAGE plpgsql
+    AS $_$
+    DECLARE
+	    p_id ALIAS FOR $1; all_data TEXT ARRAY; schm INTEGER; schemes INTEGER[];
+    BEGIN
+	    schemes = (SELECT ARRAY_AGG(t.id) FROM calculation_schemes AS t WHERE point_id = p_id);
+	    FOREACH schm IN ARRAY schemes LOOP
+		    all_data = all_data || (SELECT full_calc_to_scheme(schm));
+	    END LOOP;
+	    RETURN all_data;
+    END;
+    $_$;
+
+
+ALTER FUNCTION public.full_calc_all_schemes_in_point(integer) OWNER TO saibogo;
+
+--
+-- Name: full_calc_to_scheme(integer); Type: FUNCTION; Schema: public; Owner: saibogo
+--
+
+CREATE FUNCTION public.full_calc_to_scheme(integer) RETURNS text[]
+    LANGUAGE plpgsql
+    AS $_$
+    DECLARE schm ALIAS FOR $1; all_data text[]; pos_arr INTEGER[]; neg_arr  INTEGER[]; averages NUMERIC[];
+    BEGIN
+        all_data = ARRAY[schm];
+	    all_data = array_append(all_data, (SELECT meter_type_to_string(devices_type) FROM calculation_schemes WHERE id = schm));
+	    pos_arr = (SELECT positive_calc FROM calculation_schemes WHERE id = schm);
+	    if pos_arr ISNULL THEN pos_arr = '{}'::INTEGER[]; END IF;
+	    all_data = array_append(all_data, array_to_string(pos_arr, ' ,'));
+	    neg_arr = (SELECT negative_calc FROM calculation_schemes WHERE id = schm);
+	    if neg_arr ISNULL THEN neg_arr = '{}'::INTEGER[]; END IF;
+	    all_data = array_append(all_data, array_to_string(neg_arr, ' ,'));
+	    all_data = array_append(all_data, (SELECT comment FROM calculation_schemes WHERE id = schm));
+	    all_data = array_append(all_data, (SELECT units_of_measure_string(devices_type) FROM calculation_schemes WHERE id = schm));
+	    averages = (SELECT sum_pu_in_scheme(schm));
+	    all_data = array_append(all_data, averages[1]::TEXT);
+	    all_data = array_append(all_data, averages[2]::TEXT);
+	    all_data = array_append(all_data, averages[3]::TEXT);
+	RETURN all_data;
+    END;
+    $_$;
+
+
+ALTER FUNCTION public.full_calc_to_scheme(integer) OWNER TO saibogo;
 
 --
 -- Name: last_day_date(); Type: FUNCTION; Schema: public; Owner: saibogo
@@ -256,6 +333,73 @@ CREATE FUNCTION public.point_status_to_string(st public.point_status) RETURNS te
 
 
 ALTER FUNCTION public.point_status_to_string(st public.point_status) OWNER TO postgres;
+
+--
+-- Name: sum_pu_in_scheme(integer); Type: FUNCTION; Schema: public; Owner: saibogo
+--
+
+CREATE FUNCTION public.sum_pu_in_scheme(integer) RETURNS numeric[]
+    LANGUAGE plpgsql
+    AS $_$
+    DECLARE
+	    schm_id ALIAS FOR $1; pos_arr INTEGER[]; neg_arr INTEGER[]; tmp NUMERIC; tmp1 NUMERIC; pu INTEGER;
+	    days INTEGER; result_arr NUMERIC[];
+    BEGIN
+	    tmp = 0;
+	    tmp1 = 0;
+	    pos_arr = (SELECT positive_calc FROM calculation_schemes WHERE id = schm_id);
+	    neg_arr = (SELECT negative_calc FROM calculation_schemes WHERE id = schm_id);
+	    IF pos_arr ISNULL THEN pos_arr = '{}'::INTEGER[]; END IF;
+	    IF neg_arr ISNULL THEN neg_arr = '{}'::INTEGER[]; END IF;
+	
+	    FOREACH pu IN ARRAY pos_arr LOOP
+		    tmp = tmp + average_from_last_readings(pu);
+		    tmp1 = tmp1 + total_last_month(pu);
+	    END LOOP;
+	
+	    FOREACH pu IN ARRAY neg_arr LOOP
+		    tmp = tmp - average_from_last_readings(pu);
+		    tmp1 = tmp1 - total_last_month(pu);
+	    END LOOP;
+
+	    days = (SELECT EXTRACT(EPOCH FROM INTERVAL '1 MONTH') / (24*60*60));
+	    result_arr = array_append(result_arr, tmp::NUMERIC(13, 3));
+	    result_arr = array_append(result_arr, (tmp * days)::NUMERIC(13, 3));
+	    result_arr = array_append(result_arr, tmp1::NUMERIC(13, 3));
+	    RETURN result_arr;
+    END;
+    $_$;
+
+
+ALTER FUNCTION public.sum_pu_in_scheme(integer) OWNER TO saibogo;
+
+--
+-- Name: total_last_month(integer); Type: FUNCTION; Schema: public; Owner: saibogo
+--
+
+CREATE FUNCTION public.total_last_month(integer) RETURNS numeric
+    LANGUAGE plpgsql
+    AS $_$
+    DECLARE 
+        dev_id ALIAS FOR $1; d1 DATE; d2 DATE; d3 DATE; r1 NUMERIC; r3 NUMERIC; delta NUMERIC;
+	    days INTEGER; K INTEGER; days_in_month INTEGER; tmp NUMERIC;
+    BEGIN
+	    d1 = (SELECT read_date FROM meter_readings WHERE (devices_id = dev_id AND read_date <= NOW()::DATE) ORDER BY read_date DESC LIMIT 1);
+	    d2 = d1 - INTERVAL '1 MONTH';
+	    d3 = (SELECT read_date FROM meter_readings WHERE (devices_id = dev_id AND read_date <= d2::DATE) ORDER BY read_date DESC LIMIT 1);
+	    r1 = (SELECT reading FROM meter_readings WHERE (devices_id = dev_id AND read_date = d1));
+	    r3 = (SELECT reading FROM meter_readings WHERE (devices_id = dev_id AND read_date = d3));
+	    delta = r1 - r3;
+	    days = d1 - d3;
+	    K = (SELECT Kt FROM meter_devices WHERE id = dev_id);
+	    days_in_month = (SELECT EXTRACT(EPOCH FROM INTERVAL '1 MONTH') / (24*60*60));
+	    tmp = (delta * K  * days_in_month / days) :: NUMERIC(13, 3);
+	    RETURN (CASE WHEN tmp ISNULL THEN 0::NUMERIC(13, 3) ELSE tmp END);
+    END;
+    $_$;
+
+
+ALTER FUNCTION public.total_last_month(integer) OWNER TO saibogo;
 
 --
 -- Name: units_of_measure_string(public.meter_type); Type: FUNCTION; Schema: public; Owner: saibogo

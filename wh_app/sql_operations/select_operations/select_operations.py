@@ -64,6 +64,13 @@ def list_to_first_int_decorator(func: Callable) -> Callable:
     return wrap
 
 
+def list_to_first_decimal_decorator(func: Callable) -> Callable:
+    """List[Tuple[Any]] -> String"""
+    def wrap(*args) -> float:
+        return func(*args)[0][0]
+    return wrap
+
+
 def list_to_first_bool_decorator(func: Callable) -> Callable:
     """List[Tuple[Any]] -> String"""
     def wrap(*args) -> bool:
@@ -850,3 +857,37 @@ def get_count_worked_meter_devices(cursor) -> str:
     """Return COUNT(all meter devices)"""
 
     return select_sql.sql_select_count_worked_meter_devices()
+
+
+@list_to_first_decimal_decorator
+@get_selected_decorator
+def get_last_month_consumption_from_device(cursor, device_id: int) -> float:
+    """Return calculation consumption in last 28, 29, 30 or 31 days"""
+
+    return select_sql.sql_select_last_month_from_device_id(device_id)
+
+
+@list_to_first_decimal_decorator
+@get_selected_decorator
+def get_average_from_device_id(cursor, device_id: int) -> float:
+    """Return average from two last reading. If error function -> 0"""
+
+    return select_sql.sql_select_average_from_device_id(device_id)
+
+
+@list_to_list_decorator
+@list_to_list_decorator
+@get_selected_decorator
+def get_calculation_in_scheme(cursor, scheme_id: int) -> Tuple:
+    """Return tuple contain (average, average for month future, average sum between two last reading)"""
+
+    return select_sql.sql_select_calculate_in_scheme(scheme_id)
+
+
+@list_to_first_tuple_decorator
+@list_to_first_tuple_decorator
+@get_selected_decorator
+def get_all_full_calc_schemes_in_point(cursor, point_id: int):
+    """Return all calculated data for all schemes in point"""
+
+    return select_sql.sql_select_full_calc_all_schemes_in_point(point_id)

@@ -82,6 +82,7 @@ async def start_message_with_new_order():
                         messages_del.append(await bot.send_message(chat, message))
                         standart_delete_message(messages_del[-1])
                 new_orders_dict[order] = False
+        new_orders_dict = dict(filter(lambda item: item == True, new_orders_dict.items()))
 
 
 @dp.message_handler(filters.Command(commands=['start'], ignore_case=True))
