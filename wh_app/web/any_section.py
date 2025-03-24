@@ -105,8 +105,11 @@ def __all_calk_data_to_list(point_id: int) -> List[List]:
         raw_data = select_operations.get_all_full_calc_schemes_in_point(cursor, point_id)
         result = []
         len_small = len(table_headers.calc_schemes_table)
-        for i in range(len(raw_data) // len_small):
-            result.append(raw_data[i * len_small: (i + 1) * len_small])
+        try:
+            for i in range(len(raw_data) // len_small):
+                result.append(raw_data[i * len_small: (i + 1) * len_small])
+        except TypeError:
+            pass
         return result
 
 

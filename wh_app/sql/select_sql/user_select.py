@@ -17,7 +17,9 @@ def sql_select_all_bindings_to_point(point_id: str):
 def sql_select_all_customers() -> str:
     """Return all records in table customer"""
 
-    return """SELECT %(id)s, %(full_name)s, %(description)s FROM %(customer_table)s ORDER BY %(id)s""" % sql_consts_dict
+    return """SELECT %(id)s, %(full_name)s, %(description)s, CASE 
+     WHEN %(is_active)s = True THEN 'Активен' ELSE 'Заблокирован' END AS customer_status
+     FROM %(customer_table)s ORDER BY %(id)s""" % sql_consts_dict
 
 
 @log_decorator
@@ -47,7 +49,7 @@ def sql_select_user_in_customers(user_name: str) -> str:
 def sql_select_hash_from_user(user_name: str) -> str:
     """Return SQL-string to find hash from user = full_name"""
 
-    query = """SELECT %(hash_pass)s FROM %(customer)s WHERE %(full_name)s = '{0}'""" % sql_consts_dict
+    query = """SELECT %(hash_pass)s FROM %(customer)s WHERE (%(full_name)s = '{0}' AND %(is_active)s = True)""" % sql_consts_dict
     return query.format(user_name)
 
 

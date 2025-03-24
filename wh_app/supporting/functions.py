@@ -154,8 +154,11 @@ def is_valid_customer(login: str, password: str) -> bool:
     with Database() as base:
         _, cursor = base
         if user_in_customers(cursor, login):
-            hash = get_hash_to_customer(cursor, login)
-            return is_valid_customers_password(password, hash)
+            try:
+                hash = get_hash_to_customer(cursor, login)
+                return is_valid_customers_password(password, hash)
+            except IndexError:
+                return False
         else:
             return False
 

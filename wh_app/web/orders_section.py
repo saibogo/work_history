@@ -36,11 +36,24 @@ def all_customers_table(stylesheet_number: str) -> str:
     """Functions create page, contain list of all customer in system"""
     with Database() as base:
         _, cursor = base
+        customers = select_operations.get_all_customers(cursor)
+        customers_ext = []
+        for customer in customers:
+            customers_ext.append([])
+            for elem in customer:
+                customers_ext[-1].append(elem)
+            customers_ext[-1].append('<a href="/change-customer-status/{}" title="Заблокировать/Разблокировать">+/-</a>'.format(customer[0]))
         table = uhtml.universal_table(table_headers.customers_table_name,
                                       table_headers.customers_table,
-                                      select_operations.get_all_customers(cursor))
+                                      customers_ext)
 
         return web_template.result_page(table, '/orders-and-customers', str(stylesheet_number))
+
+
+def change_customer_status_form(customer_id: int, stylesheet_number: str) -> str:
+    """Create form to change customer status"""
+
+    return "Страница в разработке"
 
 
 def create_new_customer_form(stylesheet_number: str) -> str:

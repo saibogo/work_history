@@ -256,6 +256,7 @@ def full_calc_all_schemes_in_point() -> str:
 	    p_id ALIAS FOR $1; all_data TEXT ARRAY; schm INTEGER; schemes INTEGER[];
     BEGIN
 	    schemes = (SELECT ARRAY_AGG(t.id) FROM calculation_schemes AS t WHERE point_id = p_id);
+	    IF schemes ISNULL THEN schemes = '{}'::INTEGER[]; END IF;
 	    FOREACH schm IN ARRAY schemes LOOP
 		    all_data = all_data || (SELECT full_calc_to_scheme(schm));
 	    END LOOP;
