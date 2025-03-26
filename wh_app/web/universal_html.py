@@ -67,6 +67,7 @@ POST = "post"
 BINDING_ID = "id"
 EMPLOYEE_DATE = "employee_date"
 CUSTOMER_NAME = "customer"
+CUSTOMER_ID = 'customer_id'
 ORDER_STATUS_NAME = "order_status"
 ORDER_ID = "order_id"
 DEVICE_ID = "device_id"

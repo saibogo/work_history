@@ -5,7 +5,8 @@ from wh_app.web.orders_section import all_customers_table, orders_main_menu,\
     all_registered_orders_table, create_new_order_form, create_order_method, all_no_closed_orders_table,\
     create_edit_order_form, edit_order_status_method, all_registered_orders_table_page, all_no_closed_orders_table_page,\
     find_order_from_id_form, order_with_id_table, create_new_customer_form, create_new_customer_method, my_orders_table,\
-    my_orders_table_page, change_customer_status_form
+    my_orders_table_page, change_customer_status_form, change_customer_status_method, change_customer_password_form,\
+    change_customer_password_method, add_performer_to_order_form, add_performer_in_order_method
 
 
 @app.route('/orders-and-customers')
@@ -40,6 +41,28 @@ def change_customer_status(customer_id: int) -> Response:
     return goto_or_redirect(lambda: change_customer_status_form(customer_id, stylesheet_number()), functions.ROLE_SUPERUSER)
 
 
+@app.route('/common-invert-customer-status', methods=['POST'])
+def common_invert_customer_status() -> Response:
+    """If password is superusers password, then status of customer will invert"""
+    return goto_or_redirect(lambda: change_customer_status_method(functions.form_to_data(request.form), request.method,
+                                                                  stylesheet_number()), functions.ROLE_SUPERUSER)
+
+
+@app.route('/change-customer-password/<customer_id>')
+def change_customer_password(customer_id: int) -> Response:
+    """Go to form change customer's password"""
+    return goto_or_redirect_from_roles_list(lambda: change_customer_password_form(customer_id, stylesheet_number()),
+                                            [functions.ROLE_SUPERUSER, functions.ROLE_CUSTOMER])
+
+
+@app.route('/common-change-customer-password', methods=['POST'])
+def common_change_customer_password() -> Response:
+    """Go to form change customer's password"""
+    return goto_or_redirect_from_roles_list(lambda: change_customer_password_method(functions.form_to_data(request.form),
+                                                                                    request.method, stylesheet_number()),
+                                            [functions.ROLE_SUPERUSER, functions.ROLE_CUSTOMER])
+
+
 @app.route('/all-registred-orders')
 def all_registred_orders() -> Response:
     """Return ALL ORDERS page"""
@@ -68,7 +91,7 @@ def create_new_order() -> Response:
 
 @app.route('/my-orders')
 def my_orders() -> Response:
-    """Return table with all ordersto customer or all orders to superuser"""
+    """Return table with all orders to customer or all orders to superuser"""
 
     return goto_or_redirect_from_roles_list(lambda: my_orders_table(stylesheet_number()),
                                             [functions.ROLE_CUSTOMER, functions.ROLE_SUPERUSER])
@@ -76,11 +99,25 @@ def my_orders() -> Response:
 
 @app.route('/my-orders/<page_num>')
 def my_orders_pages(page_num: int) -> Response:
-    """Return table with all ordersto customer or all orders to superuser"""
+    """Return table with all orders to customer or all orders to superuser"""
 
     return goto_or_redirect_from_roles_list(lambda: my_orders_table_page(stylesheet_number(), page_num),
                                             [functions.ROLE_CUSTOMER, functions.ROLE_SUPERUSER])
 
+
+@app.route('/add-performer-to-order/<order_id>')
+def add_performer_to_order(order_id: int) -> Response:
+    """Go to form to add performer in order with id = order_id"""
+
+    return goto_or_redirect(lambda: add_performer_to_order_form(order_id, stylesheet_number()), functions.ROLE_SUPERUSER)
+
+
+@app.route('/add-performer-in-order', methods=['POST'])
+def add_performer_in_order() -> Response:
+    """Go to method set performer in current order"""
+
+    return goto_or_redirect(lambda: add_performer_in_order_method(functions.form_to_data(request.form), request.method,
+                                                                  stylesheet_number()), functions.ROLE_SUPERUSER)
 
 
 @app.route('/all-no-closed-orders')

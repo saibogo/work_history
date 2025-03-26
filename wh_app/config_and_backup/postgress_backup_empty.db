@@ -677,7 +677,8 @@ CREATE TABLE public.customer (
     id integer NOT NULL,
     hash_pass text NOT NULL,
     full_name text,
-    description text DEFAULT ''::text
+    description text DEFAULT ''::text,
+    is_active boolean DEFAULT true
 );
 
 
@@ -1010,7 +1011,8 @@ CREATE TABLE public.orders (
     problem text,
     closed_date timestamp without time zone,
     comment text,
-    point_id integer
+    point_id integer,
+    performer_id integer
 );
 
 
@@ -1635,6 +1637,14 @@ ALTER TABLE ONLY public.oborudovanie
 
 ALTER TABLE ONLY public.orders
     ADD CONSTRAINT orders_customer_id_fkey FOREIGN KEY (customer_id) REFERENCES public.customer(id);
+
+
+--
+-- Name: orders orders_performer_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: saibogo
+--
+
+ALTER TABLE ONLY public.orders
+    ADD CONSTRAINT orders_performer_id_fkey FOREIGN KEY (performer_id) REFERENCES public.workers(id);
 
 
 --

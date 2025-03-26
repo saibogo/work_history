@@ -1,0 +1,24 @@
+<h2>Изменение статуса Заказчика</h2>
+<form action="/common-invert-customer-status" method="post">
+    <input type="hidden" name="{{customer_id_name}}" value="{{customer_id}}">
+    {% for elem in description %}
+    <div class="tr_div_login">
+        <div class="faq_quest">{{elem[0]}}</div>
+        <div class="faq_answer">{{elem[1]}}</div>
+    </div>
+    {% endfor %}
+    <div class="tr_div_login">
+        <div class="faq_quest"></div>
+        <div class="faq_answer">Нажимая кнопку Отправить Вы инвертируете статус Заказчика</div>
+    </div>
+    <div class="tr_div_login">
+        <div class="faq_quest">Пароль</div>
+        <div class="faq_answer">
+            <input type="password"  name="{{password}}" placeholder="Обязательно" required>
+        </div>
+    </div>
+    <div class="tr_div_login">
+        <div class="faq_quest">Отправить</div>
+        <div class="faq_answer"><input type="submit" value="Отправить"></div>
+    </div>
+</form>

@@ -65,7 +65,8 @@ workers_const = {"all_workers": "all_workers",
                  "dismissal_date": "dismissal_date",
                  "work_date": "work_date",
                  "workers_schedule": "workers_schedule",
-                 "is_blocked": "is_blocked"
+                 "is_blocked": "is_blocked",
+                 "performer_id": "performer_id"
                  }
 
 works_const = {"works_likes": "works_likes",
@@ -97,6 +98,7 @@ replace_consts = {"cast_open_close": "point_status_to_string(is_work)",
                                          "AND bindings.is_main = true",
                   "worker_status": 'worker_status_to_string(workers.status) AS "case"',
                   "bug_in_work": "bug_status_to_string(status)",
+                  "order_in_work": "bug_status_to_string(orders.status)",
                   "not_find_in_point": "41"
                   }
 

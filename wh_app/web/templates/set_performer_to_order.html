@@ -1,0 +1,52 @@
+<h2>Выбор сотрудника для заявки</h2>
+<form action="/add-performer-in-order" method="post">
+    <input type="hidden" name="{{order_id_name}}" value="{{order_id}}">
+    <div class="container">
+        <div class="tr_div_login">
+            <div class="faq_quest">Внимание:</div>
+            <div class="faq_answer">
+                <div class="text_info">Ранее назначенный сотрудник будет удален!</div>
+            </div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">ID заявки:</div>
+            <div class="faq_answer">
+                <div class="text_info">{{order_id}}</div>
+            </div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Предприятие:</div>
+            <div class="faq_answer">
+                <div class="text_info">{{order_info[1]}}</div>
+            </div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Содержимое заявки:</div>
+            <div class="faq_answer">
+                <div class="text_info">{{order_info[5]}}</div>
+            </div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Возможные исполнители:</div>
+            <div class="faq_answer">
+                <select name="{{performer}}" class="div_select">
+                {% for worker in performers %}
+                    <option value="{{worker[0]}}">{{worker[1]}}</option>
+                {% endfor %}
+            </select>
+            </div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Пароль доступа:</div>
+            <div class="faq_answer">
+                <input type="password" name="{{password}}"  placeholder="Обязательно">
+            </div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Применить изменения:</div>
+            <div class="faq_answer">
+                <input type="submit" value="Добавить">
+            </div>
+        </div>
+    </div>
+</form>

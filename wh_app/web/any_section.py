@@ -26,7 +26,7 @@ def main_web_menu(stylesheet_number: str) -> str:
     """Function create main web-page"""
     name = "Доступные действия"
     menu_items = ['Операции с предприятиями', 'Операции с оборудованием', 'Операции с ремонтами',
-                  'Операции с сотрудниками', 'Баг-трекер системы', 'Работа с заявками',
+                  'Операции с сотрудниками', 'Баг-трекер системы', 'Заявки и Заказчики',
                   'Изменить тему оформления', 'Изменения в системе', 'Вспомогательные сервисы', 'Выйти из системы']
     links_list = ['/points', '/equips', '/works', '/workers', '/bugs', '/orders-and-customers', '/next-themes',
                   '/changelog-page', '/external-services', '/logout']

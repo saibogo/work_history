@@ -92,3 +92,10 @@ def get_all_customers_orders_limit(cursor, user_name: str, page_num: int) -> Lis
 def get_all_customers_orders(cursor, user_name: str) -> List[Tuple]:
     """Function return all customers order using LIMIT"""
     return select_sql.sql_select_orders_from_user(user_name)
+
+
+@list_to_first_str_decorator
+@get_selected_decorator
+def get_order_status(cursor, order_id: int) -> str:
+    """Function return current status to order with id = order_id"""
+    return select_sql.sql_select_order_status(order_id)

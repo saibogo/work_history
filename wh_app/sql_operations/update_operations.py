@@ -102,3 +102,21 @@ def update_meter_reading(cursor, device_id: int, current_date: str, new_reading:
 
     cursor.execute(sql_update_meter_reading(device_id, current_date, new_reading))
 
+
+def update_invert_customer_status(cursor, customer_id: int) -> None:
+    """Invert is_active customer's status in database"""
+
+    cursor.execute(sql_update_invert_customer_status(customer_id))
+
+
+def update_customer_hash_pass(cursor, customer_id: int, new_hash: str) -> None:
+    """Update hash_pass to customer with id = customer_id"""
+
+    cursor.execute(sql_update_customer_password(customer_id, new_hash))
+
+
+def update_performer_in_order(cursor, order_id: int, performer_id: int) -> None:
+    """Set worker with id = performer_in in order with id = order_id"""
+
+    cursor.execute(sql_update_performer_in_order(order_id, performer_id))
+

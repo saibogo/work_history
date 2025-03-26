@@ -42,7 +42,8 @@ def all_customers_table(stylesheet_number: str) -> str:
             customers_ext.append([])
             for elem in customer:
                 customers_ext[-1].append(elem)
-            customers_ext[-1].append('<a href="/change-customer-status/{}" title="Заблокировать/Разблокировать">+/-</a>'.format(customer[0]))
+            customers_ext[-1].append('<a href="/change-customer-status/{0}" title="Заблокировать/Разблокировать">+/-</a> '
+                                     '<a href="/change-customer-password/{0}" title="Сменить пароль">{1}</a>'.format(customer[0], uhtml.EDIT_CHAR))
         table = uhtml.universal_table(table_headers.customers_table_name,
                                       table_headers.customers_table,
                                       customers_ext)
@@ -50,10 +51,87 @@ def all_customers_table(stylesheet_number: str) -> str:
         return web_template.result_page(table, '/orders-and-customers', str(stylesheet_number))
 
 
+def change_customer_password_form(customer_id: int, stylesheet_number: str) -> str:
+    """Create form to change customer's password"""
+    form = render_template('change_customers_password.html', customer_id_name=uhtml.CUSTOMER_ID, customer_id=customer_id,
+                           password_1=uhtml.PASSWORD1, password_2=uhtml.PASSWORD2, password=uhtml.PASSWORD)
+    return web_template.result_page(form, '/all-customers-table', str(stylesheet_number))
+
+
 def change_customer_status_form(customer_id: int, stylesheet_number: str) -> str:
     """Create form to change customer status"""
+    with Database() as base:
+        _, cursor = base
+        customer_info = select_operations.get_full_customer_info(cursor, customer_id)
+        description = [('ID Заказчика', customer_info[0]), ('Псевдоним', customer_info[2]),
+                       ('Полное имя', customer_info[3]), ('Текущий статус', 'Активен' if customer_info[4] == True else 'Заблокирован')]
+        form  = render_template('invert_customer_status.html', customer_id_name=uhtml.CUSTOMER_ID,
+                                customer_id=customer_id, description=description, password=uhtml.PASSWORD)
+        return web_template.result_page(form, '/all-customers-table', str(stylesheet_number))
 
-    return "Страница в разработке"
+
+def change_customer_status_method(data: Dict, method, stylesheet_number: str) -> str:
+    """Invert customer status if password is superusers password"""
+    pre_adr = '/all-customers-table'
+    if method == 'POST':
+        password = data[uhtml.PASSWORD]
+        customer_id = data[uhtml.CUSTOMER_ID]
+        if functions.is_superuser_password(password):
+            with Database() as base:
+                connection, cursor = base
+                update_operations.update_invert_customer_status(cursor, customer_id)
+                connection.commit()
+                page = uhtml.operation_completed()
+        else:
+            page = uhtml.pass_is_not_valid()
+    else:
+        page = '<h2>Method in Change Customer\'s Status not corrected!</h2>'
+    return web_template.result_page(page, pre_adr, stylesheet_number)
+
+
+def change_customer_password_method(data: Dict, method, stylesheet_number: str) -> str:
+    """If all password are correct then change password to current user"""
+    pre_adr = '/all-customers-table'
+    if method == 'POST':
+        password = data[uhtml.PASSWORD]
+        password1 = data[uhtml.PASSWORD1]
+        password2 = data[uhtml.PASSWORD2]
+        customer_id = data[uhtml.CUSTOMER_ID]
+        if functions.is_superuser_password(password) and __new_password_is_correct(customer_id, password1, password2):
+            new_hash = functions.create_hash(password1)
+            with Database() as base:
+                connection, cursor = base
+                update_operations.update_customer_hash_pass(cursor, customer_id, new_hash)
+                connection.commit()
+                page =  uhtml.operation_completed()
+        else:
+            user_role = session[uhtml.SESSION_ROLE]
+            user_name = session[uhtml.LOGIN]
+            if user_role == functions.ROLE_CUSTOMER and functions.is_valid_customer(user_name, password) \
+                    and __new_password_is_correct(customer_id, password1, password2):
+                new_hash = functions.create_hash(password1)
+                with Database() as base:
+                    connection, cursor = base
+                    update_operations.update_customer_hash_pass(cursor, customer_id, new_hash)
+                    connection.commit()
+                    return redirect('/logout')
+            else:
+                page = uhtml.pass_is_not_valid()
+    else:
+        page = '<h2>Method in Change Customer\'s Password not corrected!</h2>'
+    return web_template.result_page(page, pre_adr, stylesheet_number)
+
+
+def __new_password_is_correct(customer_id: int, password1: str, password2: str) -> bool:
+    """True if pass1 == pass2 and new_pass != old_pass"""
+    if password1 == password2:
+        with Database() as base:
+            _, cursor = base
+            old_pass_hash = select_operations.get_full_customer_info(cursor, customer_id)[1]
+            new_pass_hash = functions.create_hash(password1)
+            return old_pass_hash != new_pass_hash
+    else:
+        return False
 
 
 def create_new_customer_form(stylesheet_number: str) -> str:
@@ -180,6 +258,42 @@ def create_order_method(data: Dict, method, stylesheet_number: str) -> str:
     return web_template.result_page(page, pre_adr, str(stylesheet_number))
 
 
+def add_performer_to_order_form(order_id: int, stylesheet_number: str) -> str:
+    """Return form to set performer in order"""
+    with Database() as base:
+        _, cursor = base
+        pre_adr = '/all-no-closed-orders'
+        order_info = select_operations.get_order_from_id(cursor, order_id)
+        order_status = select_operations.get_order_status(cursor, order_id)
+        if order_status == 'closed':
+            page = '<h2>Заявка закрыта. Невозможно изменить исполнителя</h2>'
+        else:
+            performers = select_operations.get_all_workers_real(cursor)
+            page = render_template('set_performer_to_order.html', order_id_name=uhtml.ORDER_ID, order_id=order_id,
+                                   order_info=order_info, performer=uhtml.PERFORMER, performers=performers,
+                                   password=uhtml.PASSWORD)
+    return web_template.result_page(page, pre_adr, stylesheet_number)
+
+
+def add_performer_in_order_method(data: Dict, method, stylesheet_number: str) -> str:
+    """Analyze data and if all correct then set performer in order"""
+    pre_adr = '/all-no-closed-orders'
+    if method == 'POST':
+        if functions.is_superuser_password(data[uhtml.PASSWORD]):
+            performer_id = data[uhtml.PERFORMER]
+            order_id = data[uhtml.ORDER_ID]
+            with Database() as base:
+                connection, cursor = base
+                update_operations.update_performer_in_order(cursor, order_id, performer_id)
+                connection.commit()
+                page = uhtml.operation_completed()
+        else:
+            page = uhtml.pass_is_not_valid()
+    else:
+        page = '<h2>Method in Set Order\'s Performer not corrected!</h2>'
+    return web_template.result_page(page, pre_adr, stylesheet_number)
+
+
 def all_no_closed_orders_table(stylesheet_number: str) -> str:
     """Create no-closed orders table"""
     with Database() as base:
@@ -226,7 +340,9 @@ def _correct_orders_table(orders: List[Tuple]) -> List[List]:
                 correct_orders[-1].append("")
             else:
                 correct_orders[-1].append(order[i])
-        link = '<a href="/edit-order/{0}">{1}</a>'.format(correct_orders[-1][0], uhtml.EDIT_CHAR)
+        link = '<a href="/edit-order/{0}" title="Редактировать">{1}</a><br>' \
+               '<a href="/add-performer-to-order/{0}" title="Добавить исполнителя">{2}</a>'.\
+            format(correct_orders[-1][0], uhtml.EDIT_CHAR, uhtml.PAPERS_CHAR)
         correct_orders[-1].append(link)
     return correct_orders
 

@@ -159,3 +159,27 @@ def sql_update_meter_reading(device_id: int, current_date: str, new_reading: flo
     query = """UPDATE %(meter_readings)s SET %(reading)s = {0} WHERE (%(devices_id)s = {1} AND %(read_date)s = '{2}')""" % sql_consts_dict
 
     return query.format(new_reading, device_id, current_date)
+
+
+@log_decorator
+def sql_update_invert_customer_status(customer_id: int) -> str:
+    """Update is_active customer's status in database"""
+
+    query = """UPDATE %(customer)s SET %(is_active)s = NOT %(is_active)s WHERE %(id)s = {}""" % sql_consts_dict
+    return query.format(customer_id)
+
+
+@log_decorator
+def sql_update_customer_password(customer_id: int, new_password_hash: str) -> str:
+    """Update password to customer with id = customer_id"""
+
+    query = """UPDATE %(customer)s SET %(hash_pass)s = '{1}' WHERE %(id)s = {0}""" % sql_consts_dict
+    return query.format(customer_id, new_password_hash)
+
+
+@log_decorator
+def sql_update_performer_in_order(order_id: int, performer_id: int) -> str:
+    """Update performer in order with id = order_id"""
+
+    query = """UPDATE %(orders)s SET %(performer_id)s = {0} WHERE %(id)s = {1}""" % sql_consts_dict
+    return query.format(performer_id, order_id)

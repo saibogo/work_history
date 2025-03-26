@@ -54,6 +54,8 @@ def order_message(order: List[Any]) -> str:
     msg.append('Текущий статус: {}\n'.format(order[6]))
     if order[7]:
         msg.append('Комментарий: {}\n'.format(order[7]))
-    if len(order) > 8 and order[8]:
-        msg.append('Позиция в очереди: {}\n'.format(order[8]))
+    if order[8]:
+        msg.append('Назначен исполнитель: {}\n'.format(order[8]))
+    if len(order) > 9 and order[9]:
+        msg.append('Позиция в очереди: {}\n'.format(order[9]))
     return ''.join(msg)
