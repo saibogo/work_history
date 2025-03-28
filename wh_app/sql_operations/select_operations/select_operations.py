@@ -22,3 +22,18 @@ def commit(connection: psycopg2.connect) -> None:
 
     connection.commit()
 
+
+@list_to_first_int_decorator
+@get_selected_decorator
+def get_last_id_in_sessions(cursor) -> int:
+    """Return last id from sessions in database"""
+
+    return select_sql.sql_select_last_session_id()
+
+
+@list_to_first_str_decorator
+@get_selected_decorator
+def get_session_hash_from_id(cursor, session_id: int) -> str:
+    """Return session hash if session active. Else exception"""
+
+    return select_sql.sql_select_session_hash_from_id(session_id)

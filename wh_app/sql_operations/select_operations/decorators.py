@@ -1,5 +1,6 @@
 from typing import *
 
+
 def get_selected(cursor, sql: str) -> List:
     """Returns a list of database objects that match the query."""
 

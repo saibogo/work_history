@@ -46,7 +46,9 @@ any_consts = {"id": "id",
               "positive_calc": "positive_calc",
               "calculation_schemes": "calculation_schemes",
               "devices_type": "devices_type",
-              "negative_calc": "negative_calc"
+              "negative_calc": "negative_calc",
+              "sessions_hashs": "sessions_hashs",
+              "hash": "hash"
               }
 
 workers_const = {"all_workers": "all_workers",

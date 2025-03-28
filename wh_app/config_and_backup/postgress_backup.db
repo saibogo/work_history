@@ -18,6 +18,23 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
+-- Name: equips_meta_type; Type: TYPE; Schema: public; Owner: saibogo
+--
+
+CREATE TYPE public.equips_meta_type AS ENUM (
+    'electrical',
+    'thermal',
+    'refrigeration',
+    'mechanical',
+    'furniture',
+    'engineering',
+    'neutral'
+);
+
+
+ALTER TYPE public.equips_meta_type OWNER TO saibogo;
+
+--
 -- Name: meter_type; Type: TYPE; Schema: public; Owner: saibogo
 --
 
@@ -735,6 +752,79 @@ ALTER TABLE public.electric ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
 
 
 --
+-- Name: equip_details; Type: TABLE; Schema: public; Owner: saibogo
+--
+
+CREATE TABLE public.equip_details (
+    id integer NOT NULL,
+    full_type integer,
+    equip_name_detail text DEFAULT ''::text NOT NULL,
+    description text DEFAULT ''::text
+);
+
+
+ALTER TABLE public.equip_details OWNER TO saibogo;
+
+--
+-- Name: equip_details_id_seq; Type: SEQUENCE; Schema: public; Owner: saibogo
+--
+
+CREATE SEQUENCE public.equip_details_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.equip_details_id_seq OWNER TO saibogo;
+
+--
+-- Name: equip_details_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: saibogo
+--
+
+ALTER SEQUENCE public.equip_details_id_seq OWNED BY public.equip_details.id;
+
+
+--
+-- Name: equip_sub_types; Type: TABLE; Schema: public; Owner: saibogo
+--
+
+CREATE TABLE public.equip_sub_types (
+    id integer NOT NULL,
+    super_type public.equips_meta_type NOT NULL,
+    equip_type text NOT NULL,
+    type_folder text NOT NULL,
+    comment text DEFAULT ''::text
+);
+
+
+ALTER TABLE public.equip_sub_types OWNER TO saibogo;
+
+--
+-- Name: equip_sub_types_id_seq; Type: SEQUENCE; Schema: public; Owner: saibogo
+--
+
+CREATE SEQUENCE public.equip_sub_types_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.equip_sub_types_id_seq OWNER TO saibogo;
+
+--
+-- Name: equip_sub_types_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: saibogo
+--
+
+ALTER SEQUENCE public.equip_sub_types_id_seq OWNED BY public.equip_sub_types.id;
+
+
+--
 -- Name: find_patterns; Type: TABLE; Schema: public; Owner: saibogo
 --
 
@@ -1154,6 +1244,41 @@ CREATE VIEW public.seconds_bindings AS
 ALTER VIEW public.seconds_bindings OWNER TO saibogo;
 
 --
+-- Name: sessions_hashs; Type: TABLE; Schema: public; Owner: saibogo
+--
+
+CREATE TABLE public.sessions_hashs (
+    id bigint NOT NULL,
+    hash text NOT NULL,
+    start_time timestamp without time zone DEFAULT now(),
+    is_active boolean DEFAULT true
+);
+
+
+ALTER TABLE public.sessions_hashs OWNER TO saibogo;
+
+--
+-- Name: sessions_hashs_id_seq; Type: SEQUENCE; Schema: public; Owner: saibogo
+--
+
+CREATE SEQUENCE public.sessions_hashs_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.sessions_hashs_id_seq OWNER TO saibogo;
+
+--
+-- Name: sessions_hashs_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: saibogo
+--
+
+ALTER SEQUENCE public.sessions_hashs_id_seq OWNED BY public.sessions_hashs.id;
+
+
+--
 -- Name: sewerage; Type: TABLE; Schema: public; Owner: saibogo
 --
 
@@ -1338,6 +1463,20 @@ ALTER TABLE ONLY public.customer ALTER COLUMN id SET DEFAULT nextval('public.cus
 
 
 --
+-- Name: equip_details id; Type: DEFAULT; Schema: public; Owner: saibogo
+--
+
+ALTER TABLE ONLY public.equip_details ALTER COLUMN id SET DEFAULT nextval('public.equip_details_id_seq'::regclass);
+
+
+--
+-- Name: equip_sub_types id; Type: DEFAULT; Schema: public; Owner: saibogo
+--
+
+ALTER TABLE ONLY public.equip_sub_types ALTER COLUMN id SET DEFAULT nextval('public.equip_sub_types_id_seq'::regclass);
+
+
+--
 -- Name: meter_devices id; Type: DEFAULT; Schema: public; Owner: saibogo
 --
 
@@ -1370,6 +1509,13 @@ ALTER TABLE ONLY public.points_meter_devices ALTER COLUMN id SET DEFAULT nextval
 --
 
 ALTER TABLE ONLY public.points_meter_devices ALTER COLUMN device_id SET DEFAULT nextval('public.points_meter_devices_device_id_seq'::regclass);
+
+
+--
+-- Name: sessions_hashs id; Type: DEFAULT; Schema: public; Owner: saibogo
+--
+
+ALTER TABLE ONLY public.sessions_hashs ALTER COLUMN id SET DEFAULT nextval('public.sessions_hashs_id_seq'::regclass);
 
 
 --
@@ -1592,8 +1738,9 @@ COPY public.bugzilla (id, problem, status, date_start, date_close) FROM stdin;
 140	необходимо реализовать возможность создания нового прибора учета на предприятии а также удаления действующего	t	2025-03-26 20:38:13.616633	\N
 135	Необходимо добавить поле Назначен сотрудник в таблицу просмотра заявок а также возможность добавления сотрудника через интернет портал	f	2025-03-19 12:14:53.565785	2025-03-27 00:46:30.314035
 141	необходимо добавить возможность сотруднику подключиться к заявке через телеграмм бот	t	2025-03-27 00:50:03.958543	\N
-142	необходимо разделить шаблоны html на разделы согласно назначению	t	2025-03-27 02:25:20.435825	\N
 143	необходимо проработать возможность изменения порядка сортировки столбцов в веб-версии по нажатию на заголовок столбца	t	2025-03-28 10:45:35.35815	\N
+142	необходимо разделить шаблоны html на разделы согласно назначению	f	2025-03-27 02:25:20.435825	2025-03-28 11:42:44.218313
+144	необходимо реализовать сверку валидности сессии при проведении операций	f	2025-03-28 11:55:59.962953	2025-03-28 15:06:50.642577
 \.
 
 
@@ -1788,6 +1935,24 @@ COPY public.electric (id, point_id, treaty, resume) FROM stdin;
 22	46	включен в договор аренды	Пу Энергомера модульный. Один ввод.
 23	9	Включен в договор Аренды	НОдин ввод, один ПУ прямого подключения
 14	4	Включен в договор Аренды	Два ввода: в подвале и в общей щитовой. Разрешенная мощность 50 кВТ. Оба ввода с РП-405 1 секция
+\.
+
+
+--
+-- Data for Name: equip_details; Type: TABLE DATA; Schema: public; Owner: saibogo
+--
+
+COPY public.equip_details (id, full_type, equip_name_detail, description) FROM stdin;
+1	1	Amika 8XL.pdf	ПММ Амика 8XL до 2013 г.
+\.
+
+
+--
+-- Data for Name: equip_sub_types; Type: TABLE DATA; Schema: public; Owner: saibogo
+--
+
+COPY public.equip_sub_types (id, super_type, equip_type, type_folder, comment) FROM stdin;
+1	electrical	dishwasher	dishwashers	Посудомоечные машины
 \.
 
 
@@ -4274,6 +4439,7 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 1890	2	Холодильный шкаф  Polair номер 17	not model	not number	1890	f
 1891	5	кассовое оборудование в ассортименте	not model	not number	1891	f
 1892	5	оборудование детского уголка в ассортименте	not model	not number	1892	f
+1893	42	Плита индукционная	IP3500 WOK	72022031501203	1893	f
 \.
 
 
@@ -4408,6 +4574,9 @@ COPY public.orders (id, customer_id, date, status, problem, closed_date, comment
 132	6	2025-03-27 18:53:31.669118	in_work	проверить работу ледогенератора	\N	\N	4	\N
 133	5	2025-03-27 19:04:18.116694	closed	Ремонт замка на железной двери служебного входа.	2025-03-28 08:19:54.365107	необходимо приобрести оригинальные запчасти	11	\N
 134	1	2025-03-28 09:37:20.402132	in_work	необходимо приобрести проволку из нержавеющей стали 3,5 мм жесткую и на пробу заменить несколько прутьев на венчиках варимиксеров	\N	\N	2	1
+135	1	2025-03-28 17:19:19.538644	in_work	необходимо заменить сифон с широкой горловиной и переливом на круглой мойке возле пицце-печи	\N	\N	1	\N
+136	1	2025-03-28 18:51:03.793954	in_work	необходимо разобрать коробки со старыми запчастями и комплектующими	\N	\N	3	9
+137	1	2025-03-28 19:28:11.509064	in_work	необходимо приобрести и заменить потолочные светильники с регулируемым посадочным размером над раздачей(старые ртутные \r\n - демонтировать). Пока - только неисправные 5 штук	\N	\N	1	1
 \.
 
 
@@ -13422,6 +13591,10 @@ COPY public.performers (id, work_id, worker_id) FROM stdin;
 9051	8287	10
 9052	8288	10
 9053	8289	10
+9054	8290	15
+9055	8291	15
+9056	8292	15
+9057	8293	15
 \.
 
 
@@ -13571,6 +13744,25 @@ COPY public.posts (id, post_name) FROM stdin;
 3	мастер по жироуловителям
 4	мастер по холодильному оборудованию
 5	мастер по вентиляционному оборудованию
+\.
+
+
+--
+-- Data for Name: sessions_hashs; Type: TABLE DATA; Schema: public; Owner: saibogo
+--
+
+COPY public.sessions_hashs (id, hash, start_time, is_active) FROM stdin;
+1	123456789	2025-03-28 12:32:27.941057	t
+3	82668224200399249873953539335157130562008308391309278779270335895521277515495	2025-03-28 13:52:14.1098	t
+4	84787286439127949082760821124687221226222867813674397788573865767587865114557	2025-03-28 13:53:01.139592	t
+5	35588568880487203115742583317721227023592330249459102166964498016328771445132	2025-03-28 13:53:39.758394	t
+6	16959724494367234134007864405671259680789832798628828341794303831001245944265	2025-03-28 13:54:51.69337	f
+2	123456789	2025-03-28 13:22:17.486571	f
+7	114499869891634032873723383126518235026558293491178140131211679152000063843423	2025-03-28 14:31:19.2372	f
+8	7776162074647220324651341812199046346280311386417248795082196826174770336410	2025-03-28 14:31:54.271149	f
+9	102627182807051217798119367698397166738242627297330778280112801927286481933523	2025-03-28 14:56:51.120793	f
+10	108537208207810121844188044722461806181033528034527773642213116595515095633937	2025-03-28 14:59:15.549334	f
+11	112921708302557244437544670119935125097740563912127807228824148422060613181065	2025-03-28 15:01:47.624491	t
 \.
 
 
@@ -22337,6 +22529,10 @@ COPY public.works (id, id_obor, date, problem, result) FROM stdin;
 8289	1322	2025-03-26 20:30:00	плановая чистка жироуловителей	вычищен
 8287	1621	2025-03-27 22:15:00	плановая чистка жироуловителей	вычищен
 8286	1619	2025-03-27 22:30:00	плановая чистка жироуловителя	вычищен
+8290	1893	2025-03-28 12:13:24	Лопнул кабель подключения плиты.	Отрезал лопнувшее место.Зачистил,заклепал наконечники,поставил на место. Проверил. Работает.
+8291	131	2025-03-28 17:27:28	Плохо уходит вода.	Забился сифон. Прочистил.
+8292	132	2025-03-28 17:30:56	Плохо уходит вода.	Прочистил
+8293	1247	2025-03-28 17:57:04	Сломалась проволока на венчике.	Раскрутил венчик, убрал сломанную проволоку.Собрал обратно.
 \.
 
 
@@ -22424,7 +22620,7 @@ SELECT pg_catalog.setval('public.bindings_id_seq', 107, true);
 -- Name: bugzilla_id_seq; Type: SEQUENCE SET; Schema: public; Owner: saibogo
 --
 
-SELECT pg_catalog.setval('public.bugzilla_id_seq', 143, true);
+SELECT pg_catalog.setval('public.bugzilla_id_seq', 144, true);
 
 
 --
@@ -22460,6 +22656,20 @@ SELECT pg_catalog.setval('public.customer_id_seq', 6, true);
 --
 
 SELECT pg_catalog.setval('public.electic_id_seq', 23, true);
+
+
+--
+-- Name: equip_details_id_seq; Type: SEQUENCE SET; Schema: public; Owner: saibogo
+--
+
+SELECT pg_catalog.setval('public.equip_details_id_seq', 1, true);
+
+
+--
+-- Name: equip_sub_types_id_seq; Type: SEQUENCE SET; Schema: public; Owner: saibogo
+--
+
+SELECT pg_catalog.setval('public.equip_sub_types_id_seq', 1, true);
 
 
 --
@@ -22501,14 +22711,14 @@ SELECT pg_catalog.setval('public.oborudovanie_id_seq', 1, false);
 -- Name: orders_id_seq; Type: SEQUENCE SET; Schema: public; Owner: saibogo
 --
 
-SELECT pg_catalog.setval('public.orders_id_seq', 134, true);
+SELECT pg_catalog.setval('public.orders_id_seq', 137, true);
 
 
 --
 -- Name: performers_id_seq; Type: SEQUENCE SET; Schema: public; Owner: saibogo
 --
 
-SELECT pg_catalog.setval('public.performers_id_seq', 9053, true);
+SELECT pg_catalog.setval('public.performers_id_seq', 9057, true);
 
 
 --
@@ -22530,6 +22740,13 @@ SELECT pg_catalog.setval('public.points_meter_devices_id_seq', 130, true);
 --
 
 SELECT pg_catalog.setval('public.posts_id_seq', 5, true);
+
+
+--
+-- Name: sessions_hashs_id_seq; Type: SEQUENCE SET; Schema: public; Owner: saibogo
+--
+
+SELECT pg_catalog.setval('public.sessions_hashs_id_seq', 11, true);
 
 
 --
@@ -22606,6 +22823,14 @@ ALTER TABLE ONLY public.customer
 
 ALTER TABLE ONLY public.electric
     ADD CONSTRAINT electic_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: equip_sub_types equip_sub_types_pkey; Type: CONSTRAINT; Schema: public; Owner: saibogo
+--
+
+ALTER TABLE ONLY public.equip_sub_types
+    ADD CONSTRAINT equip_sub_types_pkey PRIMARY KEY (id);
 
 
 --
@@ -22777,6 +23002,14 @@ ALTER TABLE ONLY public.cold_water
 
 ALTER TABLE ONLY public.electric
     ADD CONSTRAINT electric_point FOREIGN KEY (point_id) REFERENCES public.workspoints(point_id);
+
+
+--
+-- Name: equip_details equip_details_full_type_fkey; Type: FK CONSTRAINT; Schema: public; Owner: saibogo
+--
+
+ALTER TABLE ONLY public.equip_details
+    ADD CONSTRAINT equip_details_full_type_fkey FOREIGN KEY (full_type) REFERENCES public.equip_sub_types(id);
 
 
 --

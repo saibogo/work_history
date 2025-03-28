@@ -1,5 +1,5 @@
 """This module implement any web-pages from work to workpoints"""
-from flask import render_template
+from flask import render_template, session
 
 import wh_app.config_and_backup.table_headers
 import wh_app.web.template as web_template

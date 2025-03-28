@@ -55,7 +55,7 @@ def sql_select_hash_from_user(user_name: str) -> str:
 
 @log_decorator
 def sql_select_all_telegram_chats() -> str:
-    """Return SQL-string to select all telegramm chats"""
+    """Return SQL-string to select all telegram chats"""
 
     query = """SELECT ARRAY(SELECT %(chat_id)s FROM %(chats)s WHERE %(is_blocked)s = False)""" % sql_consts_dict
     return query
@@ -77,3 +77,19 @@ def sql_select_telegram_user_is_writer(user_id: int) -> str:
     query = """SELECT {0} IN (SELECT %(chat_id)s FROM %(chats)s WHERE %(acs_write)s = True 
     AND %(is_blocked)s = False)""" % sql_consts_dict
     return query.format(user_id)
+
+
+@log_decorator
+def sql_select_last_session_id() -> str:
+    """Return SELECT string to get last id in sessions_hash"""
+
+    query = """SELECT MAX(%(id)s) FROM %(sessions_hashs)s""" % sql_consts_dict
+    return query
+
+
+@log_decorator
+def sql_select_session_hash_from_id(session_id) -> str:
+    """SELECT string to get session hash with id = session_id if this session active"""
+
+    query = """SELECT %(hash)s FROM %(sessions_hashs)s WHERE (%(id)s = {0} AND %(is_active)s = true)""" % sql_consts_dict
+    return query.format(session_id)

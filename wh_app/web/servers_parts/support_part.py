@@ -53,7 +53,7 @@ def access_is_allowed() -> bool:
     """Function return if user input correct login and password"""
     if (LOGIN_IS_CORRECT in session) and\
             (TIME_LOGIN in session) and\
-            (time.time() - session[TIME_LOGIN] < config.max_session_time()):
+            (time.time() - session[TIME_LOGIN] < config.max_session_time()) and functions.current_session_is_valid():
         session[LOGIN_IS_CORRECT] = session.get(LOGIN_IS_CORRECT)
         session[TIME_LOGIN] = time.time()
     else:

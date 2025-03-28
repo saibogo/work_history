@@ -8,7 +8,8 @@ from wh_app.web.any_section import login_input_page, new_theme_page
 @app.route('/login')
 def login_page() -> str:
     """Redirect to LOGIN-form"""
-
+    session[LOGIN_IS_CORRECT] = False
+    session.modified = True
     return login_input_page()
 
 
@@ -21,6 +22,7 @@ def logout_page() -> str:
     print('Пользователь {} покинул систему'.format(user_name))
     functions.add_record_in_logout_log(user_name, user_ip)
     session[LOGIN_IS_CORRECT] = False
+    functions.close_session()
     session.modified = True
     return result_page(logout_user(), '/login', stylesheet_number())
 
@@ -47,6 +49,7 @@ def login_verification() -> str:
         session[LOGIN_IS_CORRECT] = True
         session[TIME_LOGIN] = time.time()
         session.modified = True
+        functions.add_new_session_in_db()
         result = access_allowed(request.form[LOGIN])
         print('Для пользователя установлена роль: ', functions.get_role_description(session[SESSION_ROLE]))
         functions.add_record_in_login_log(user_name, session[SESSION_ROLE], user_ip)
@@ -57,6 +60,7 @@ def login_verification() -> str:
         session[LOGIN_IS_CORRECT] = True
         session[TIME_LOGIN] = time.time()
         session.modified = True
+        functions.add_new_session_in_db()
         result = access_allowed(request.form[LOGIN])
         print('Для пользователя установлена роль: ', functions.get_role_description(session[SESSION_ROLE]))
         functions.add_record_in_login_log(request.form[LOGIN], session[SESSION_ROLE], user_ip)

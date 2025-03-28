@@ -4,8 +4,6 @@ from wh_app.supporting import functions
 from wh_app.sql.sql_constant import sql_consts_dict, tech_tables
 from wh_app.sql.select_sql.select_sql import log_decorator
 
-functions.info_string(__name__)
-
 
 @log_decorator
 def sql_insert_new_point(point_id: str, name: str, address: str) -> str:
@@ -124,3 +122,11 @@ def sql_add_new_customer(nickname: str, description: str, hash_pass: str) -> str
 
     query = """INSERT INTO %(customer)s (%(hash_pass)s, %(full_name)s, %(description)s) VALUES ('{}', '{}', '{}')""" % sql_consts_dict
     return query.format(hash_pass, nickname, description)
+
+
+@log_decorator
+def sql_insert_new_session_in_sessions(hash: str) -> str:
+    """Return INSERT string to add new session in sessions"""
+
+    query = """INSERT INTO %(sessions_hashs)s (%(hash)s) VALUES ('{0}')""" % sql_consts_dict
+    return query.format(hash)

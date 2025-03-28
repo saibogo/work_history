@@ -2,8 +2,6 @@ import datetime
 
 from wh_app.sql.update_sql import *
 
-functions.info_string(__name__)
-
 
 def update_point_information(cursor, point_id: str, point_name:str, point_address: str) -> None:
     """Update point info in database"""
@@ -119,4 +117,10 @@ def update_performer_in_order(cursor, order_id: int, performer_id: int) -> None:
     """Set worker with id = performer_in in order with id = order_id"""
 
     cursor.execute(sql_update_performer_in_order(order_id, performer_id))
+
+
+def update_set_session_inactive(cursor, session_id: int) -> None:
+    """Set is_active = False to session with session_id"""
+
+    cursor.execute(sql_update_set_session_inactive(session_id))
 

@@ -1,8 +1,6 @@
 from wh_app.sql_operations.select_operations import select_operations
 from wh_app.sql.insert_sql import *
 
-functions.info_string(__name__)
-
 
 def create_new_point(cursor, point_name: str, point_address: str) -> None:
     """Creates a new point in the database"""
@@ -79,5 +77,11 @@ def insert_new_customer_in_database(cursor, nickname: str, description: str, has
     """Add new customer in database"""
 
     cursor.execute(sql_add_new_customer(nickname, description, hash_pass))
+
+
+def insert_new_session_in_sessions(cursor, hash: str) -> None:
+    """Add new session in database"""
+
+    cursor.execute(sql_insert_new_session_in_sessions(hash))
 
 

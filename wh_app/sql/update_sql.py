@@ -5,8 +5,6 @@ from wh_app.supporting import functions
 from wh_app.sql.sql_constant import sql_consts_dict, tech_tables
 from wh_app.sql.select_sql.select_sql import log_decorator
 
-functions.info_string(__name__)
-
 
 @log_decorator
 def sql_update_point(point_id: str, point_name: str, point_address: str) -> str:
@@ -183,3 +181,11 @@ def sql_update_performer_in_order(order_id: int, performer_id: int) -> str:
 
     query = """UPDATE %(orders)s SET %(performer_id)s = {0} WHERE %(id)s = {1}""" % sql_consts_dict
     return query.format(performer_id, order_id)
+
+
+@log_decorator
+def sql_update_set_session_inactive(session_id: int) -> str:
+    """Update sessions_hash -> is_active = False"""
+
+    query = """UPDATE %(sessions_hashs)s SET %(is_active)s = False WHERE %(id)s = {0}""" % sql_consts_dict
+    return query.format(session_id)

@@ -2,13 +2,16 @@
 
 import hashlib
 from datetime import datetime
-from typing import Iterable, Any, List, Tuple
+from typing import Iterable, Any, List, Tuple, Callable
 from flask import session
 
 from wh_app.config_and_backup import config
 from wh_app.postgresql.database import Database
 from wh_app.sql_operations.select_operations.select_operations import get_cold_water_point_info, get_sewerage_point_info,\
-    get_electric_point_info, get_heating_point_info, get_hot_water_point_info, user_in_customers, get_hash_to_customer
+    get_electric_point_info, get_heating_point_info, get_hot_water_point_info, user_in_customers, get_hash_to_customer,\
+    get_last_id_in_sessions, get_session_hash_from_id
+from wh_app.sql_operations.insert_operations import insert_new_session_in_sessions
+from wh_app.sql_operations.update_operations import update_set_session_inactive
 from wh_app.supporting import metadata
 
 
@@ -30,6 +33,55 @@ ROLE_WORKER = 'worker'
 ROLE_CUSTOMER = 'customer'
 NO_ROLE = 'no_role'
 ROLES_IERARH = [ROLE_SUPERUSER, ROLE_WORKER, ROLE_CUSTOMER, NO_ROLE]
+
+SESSION_KEYS_TO_HASH = ['access_is_allowed', 'login', 'role', 'time_login']
+FULL_SESSIONS_KEYS = ['session_id', 'theme_number', 'session_hash']
+
+
+def create_session_hash() -> int:
+    """Create hash-sum to current session"""
+
+    return create_hash(''.join([str(session[elem]) for elem in SESSION_KEYS_TO_HASH]))
+
+
+def add_new_session_in_db() -> None:
+    """Generate session_id, session_hash and insert into database"""
+
+    new_hash = create_session_hash()
+    with Database() as base:
+        connection, cursor = base
+        insert_new_session_in_sessions(cursor, str(new_hash))
+        connection.commit()
+        session_id = get_last_id_in_sessions(cursor)
+        session['session_id'] = session_id
+        session['session_hash'] = new_hash
+        session.modified = True
+
+
+def close_session() -> None:
+    """close session in database and in browser"""
+    with Database() as base:
+        connection, cursor = base
+        session_id = session['session_id']
+        update_set_session_inactive(cursor, session_id)
+        connection.commit()
+        session['session_id'] = 0
+        session['session_hash'] = 0
+        session.modified = True
+
+
+def current_session_is_valid() -> bool:
+    """True if session_hash and hash in database =="""
+
+    with Database() as base:
+        _, cursor = base
+        try:
+            session_id = session['session_id']
+            current_hash = session['session_hash']
+            return str(current_hash) == get_session_hash_from_id(cursor, session_id)
+        except IndexError:
+            print('Session  with ID = {} not valid or closed'.format(session_id))
+            return False
 
 
 def get_role_description(role: str) -> str:
