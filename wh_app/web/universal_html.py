@@ -113,7 +113,7 @@ def list_to_ul(data_list: list) -> str:
 
 def style_custom(stylesheet_number=0) -> str:
     """Function return string contain sections <style>"""
-    return render_template('style_template.html',
+    return render_template('any/style_template.html',
                            ico_addres=config.full_address() + '/favicon.ico',
                            stylesheet_name="/style{0}.css".format(stylesheet_number))
 
@@ -130,20 +130,20 @@ def universal_table(name: str, headers: list, data: list, links: bool = False,
         new_data.append(list())
         for elem in data[i]:
             new_data[-1].append(link_or_str(elem, links, links_list[i] if links else ''))
-    tmp = render_template('universal_table.html', table_name=str(name), headers=headers, data=new_data,
+    tmp = render_template('any/universal_table.html', table_name=str(name), headers=headers, data=new_data,
                           num_columns=num_columns)
     return tmp
 
 
 def add_new_point() -> str:
     """Function return string contain form to add new point"""
-    return render_template('add_new_point.html', point_name=POINT_NAME, point_address=POINT_ADDRESS, password=PASSWORD)
+    return render_template('points/add_new_point.html', point_name=POINT_NAME, point_address=POINT_ADDRESS, password=PASSWORD)
 
 
 def add_new_reading(device_id: int) -> str:
     """Function return string contain form to add new reading to meter device"""
     date_to_browser = functions.date_to_browser()
-    tmp = render_template('add_new_reading.html', device_id_name=DEVICE_ID, device_id=device_id,
+    tmp = render_template('techs/add_new_reading.html', device_id_name=DEVICE_ID, device_id=device_id,
                           reading_name=READING_NAME, work_datetime=WORK_DATETIME, date_to_browser=date_to_browser,
                           password=PASSWORD)
     return tmp
@@ -151,7 +151,7 @@ def add_new_reading(device_id: int) -> str:
 
 def add_new_equip(point_id: str) -> str:
     """Function return string contain form to add new equipment"""
-    return render_template('add_new_equip.html', point_id_name=POINT_ID, point_id=str(point_id),
+    return render_template('equip/add_new_equip.html', point_id_name=POINT_ID, point_id=str(point_id),
                            equip_name=EQUIP_NAME, model=MODEL, serial_num=SERIAL_NUM, pre_id=PRE_ID,
                            password=PASSWORD)
 
@@ -165,7 +165,7 @@ def add_new_work(equip_id: str) -> str:
         _, cursor = base
         performers = select_operations.get_table_current_workers(cursor)
 
-    return render_template('add_new_work.html', equip_id_name=EQUIP_ID, equip_id=str(equip_id), query=QUERY,
+    return render_template('works/add_new_work.html', equip_id_name=EQUIP_ID, equip_id=str(equip_id), query=QUERY,
                            work=WORK, work_datetime=WORK_DATETIME, date_to_browser=date_to_browser,
                            performer_name=PERFORMER, performers=performers, password=PASSWORD)
 
@@ -194,7 +194,7 @@ def navigations_menu(pre_html: str, save_to_pdf: bool=False, current_adr: str=""
     """Function return string contain navigations bar
     save_to_pdf=True create button "Save" in navigation menu
     """
-    return render_template('navigation_template.html', pre_html=pre_html, address=config.full_address(),
+    return render_template('any/navigation_template.html', pre_html=pre_html, address=config.full_address(),
                            request_url=request.url, to_pdf=True if save_to_pdf and current_adr != "" else None,
                            current_adress=current_adr)
 
@@ -202,7 +202,7 @@ def navigations_menu(pre_html: str, save_to_pdf: bool=False, current_adr: str=""
 def find_table() -> str:
     """Function return table to select find-string"""
     date_to_browser = functions.date_to_browser()
-    return render_template('find_template.html', comment=COMMENT, find_request=FIND_REQUEST,
+    return render_template('any/find_template.html', comment=COMMENT, find_request=FIND_REQUEST,
                            find_in_table=FIND_IN_TABLE, works=WORKS, works_ignored_date=WORKS_IGNORED_DATE,
                            works_points=WORKS_POINTS, equips=EQUIPS, work_datetime_start=WORK_DATETIME_START,
                            work_datetime_stop=WORK_DATETIME_STOP, date_to_browser=date_to_browser,
@@ -221,21 +221,21 @@ def add_performer_in_work(work: list) -> str:
     table = [(i + 1, table_headers.works_table[i], re.sub(r"<a href.*a>", '', str(work[0][i])))
              for i in range(len(work[0]))]
 
-    return render_template('add_performer_in_work.html', table=table, string_num=str(len(work[0])),
+    return render_template('workers/add_performer_in_work.html', table=table, string_num=str(len(work[0])),
                            performer=PERFORMER, performers=performers, work_id_name=WORK_ID, work_id=str(work[0][0]),
                            password=PASSWORD)
 
 
 def edit_point_information(point: list) -> str:
     """Return editable table about selected point"""
-    return render_template('edit_point_information.html', point_id=POINT_ID, point=point, point_name=POINT_NAME,
+    return render_template('points/edit_point_information.html', point_id=POINT_ID, point=point, point_name=POINT_NAME,
                            point_address=POINT_ADDRESS, password=PASSWORD)
 
 
 def edit_equip_information(equip: list) -> str:
     """Return editable table about selected point"""
 
-    return render_template('add_equip_information.html', equip_id_name=EQUIP_ID, equip=equip, equip_name=EQUIP_NAME,
+    return render_template('equip/add_equip_information.html', equip_id_name=EQUIP_ID, equip=equip, equip_name=EQUIP_NAME,
                            model=MODEL, serial_num=SERIAL_NUM, pre_id=PRE_ID, password=PASSWORD)
 
 
@@ -246,14 +246,14 @@ def select_point_form(equip: list, point_id: str) -> str:
         _, cursor = base
         new_points  = select_operations.get_all_point_except_id(cursor, str(point_id))
 
-    return render_template('redirect_equip.html', equip_id=EQUIP_ID, equip=equip, point_id_name=POINT_ID,
+    return render_template('equip/redirect_equip.html', equip_id=EQUIP_ID, equip=equip, point_id_name=POINT_ID,
                            point_id=point_id, equip_name=EQUIP_NAME, model=MODEL, serial_num=SERIAL_NUM,
                            pre_id=PRE_ID, new_point_id=NEW_POINT_ID, points=new_points, password=PASSWORD)
 
 
 def on_off_point_table(point: list) -> str:
     """Return table, contain dialog ON/OFF selected point"""
-    return render_template('on_off_point.html', point_id=POINT_ID, point=point, password=PASSWORD)
+    return render_template('points/on_off_point.html', point_id=POINT_ID, point=point, password=PASSWORD)
 
 
 def html_page_not_found() -> str:
@@ -347,12 +347,12 @@ def create_td_in_paging_table(all_elems: list, link: str,
 
 def new_bug_input_table() -> str:
     """Return form to input new bug in bag tracker"""
-    return render_template('bug_input_table.html', description=DESCRIPTION, password=PASSWORD)
+    return render_template('bugs/bug_input_table.html', description=DESCRIPTION, password=PASSWORD)
 
 
 def logpass_table() -> str:
     """Return new form to input login and password"""
-    return render_template('logpass.html', login=LOGIN, password=PASSWORD)
+    return render_template('any/logpass.html', login=LOGIN, password=PASSWORD)
 
 
 def access_denided(name: str) -> str:

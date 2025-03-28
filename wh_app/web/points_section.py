@@ -100,7 +100,7 @@ def create_bindings_form(point_num: str, stylesheet_number: str) -> str:
         workers = select_operations.get_table_current_workers(cursor)
         current_bindings = select_operations.get_all_bindings_to_point(cursor, point_num)
         bindings_to_html = [[elem[0], elem[1] +" - " + ("основная" if elem[2] else "вторичная")] for elem in current_bindings]
-        tmp = render_template('add_or_delete_binding.html', point_id=uhtml.POINT_ID, point_num=point_num,
+        tmp = render_template('points/add_or_delete_binding.html', point_id=uhtml.POINT_ID, point_num=point_num,
                               point=point_info, point_name=uhtml.POINT_NAME, worker_id=uhtml.WORKER_ID, workers=workers,
                               type_binding=uhtml.TYPE_BINDINGS, password=uhtml.PASSWORD, binding_id=uhtml.BINDING_ID,
                               current_bindings=bindings_to_html)
@@ -214,7 +214,7 @@ def point_tech_info(point_num: int, stylesheet_number: str) -> str:
                              list_info[i - 1][3],
                              links[i - 1]])
 
-        tmp = render_template('point_tech_info.html', point_name=point_name, parameters=dogovors,
+        tmp = render_template('points/point_tech_info.html', point_name=point_name, parameters=dogovors,
                               edit_char=uhtml.EDIT_CHAR)
         result = web_template.result_page(tmp,
                                           '/points',
@@ -245,7 +245,7 @@ def edit_tech_section(point_num: int, section: str, stylesheet_number: str) -> s
             parameters = list_info[3][2:]
         else:
             parameters = list_info[4][2:]
-        tmp = render_template('edit_tech_section.html', point_name=point_name, section_name=sections[section],
+        tmp = render_template('points/edit_tech_section.html', point_name=point_name, section_name=sections[section],
                               parameter=parameters, point_num=point_num, section=section, password=uhtml.PASSWORD)
         return web_template.result_page(tmp, '/tech-info/{}'.format(point_num), str(stylesheet_number))
 
@@ -292,7 +292,7 @@ def top_10_points_page(stylesheet_number: str) -> str:
         _, cursor = base
         points = select_operations.get_top_10_points(cursor)
         lst = [['<a href="/equip/{0}">{1}</a>'.format(row[0], elem)  for elem in row] for row in points]
-        page = render_template('universal_table.html', table_name=table_headers.top_10_points_name,
+        page = render_template('any/universal_table.html', table_name=table_headers.top_10_points_name,
                                num_columns=len(table_headers.top_10_points), headers=table_headers.top_10_points,
                                data=lst)
         return web_template.result_page(page, '/points', stylesheet_number, True, 'top10points')

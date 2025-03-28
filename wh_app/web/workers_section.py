@@ -48,7 +48,7 @@ def today_schedule_page(stylesheet_number: str) -> str:
         _, cursor = base
         today_date = datetime.date.today()
         schedule_list = select_operations.get_schedule_to_date(cursor, str(today_date))
-        table = render_template('universal_table.html', table_name=table_headers.schedule_table_name,
+        table = render_template('any/universal_table.html', table_name=table_headers.schedule_table_name,
                                 num_columns=len(table_headers.schedule_table), headers=table_headers.schedule_table,
                                 data=schedule_list)
         return web_template.result_page(table, '/schedule-menu', stylesheet_number, True, 'schedule-td')
@@ -71,7 +71,7 @@ def week_schedule_page(stylesheet_number: str) -> str:
                                                    format(str(today_date), str(worker_id),uhtml.EDIT_CHAR)]
                 result.append(tmp)
             headers_ext = table_headers.schedule_table + ['Действия']
-            table = render_template('universal_table.html', table_name=str(today_date),
+            table = render_template('any/universal_table.html', table_name=str(today_date),
                                     num_columns=len(headers_ext), headers=headers_ext, data=result)
             tables.append(table)
         return web_template.result_page('\n'.join(tables), '/schedule-menu', stylesheet_number, True, 'schedule-wk')
@@ -84,7 +84,7 @@ def create_form_to_edit_schedule(work_date: str, worker_id: int, stylesheet_numb
         worker_info = select_operations.get_info_from_worker(cursor, worker_id)
         worker_name = '{} {}'.format(worker_info[1], worker_info[2])
         all_schedule_type = select_operations.get_all_work_days_types(cursor)
-        table = render_template('edit_schedule_form.html', worker_id_name=uhtml.WORKER_ID, worker_id=worker_id,
+        table = render_template('workers/edit_schedule_form.html', worker_id_name=uhtml.WORKER_ID, worker_id=worker_id,
                             worker_day_name=uhtml.WORK_DATETIME, worker_day=work_date, worker_name=worker_name,
                                 day_status_name=uhtml.WORK_DAY_TYPE, all_status=all_schedule_type,
                                 password=uhtml.PASSWORD)
@@ -149,7 +149,7 @@ def add_info_in_schedule_form(stylesheet_number: str) -> str:
         cd = functions.date_to_browser()
         performers = select_operations.get_all_workers_real(cursor)
         days_types = select_operations.get_all_work_days_types(cursor)
-        table = render_template('add_work_day_in_schedule.html', current_date=cd, performers=performers,
+        table = render_template('workers/add_work_day_in_schedule.html', current_date=cd, performers=performers,
                                 performer_name=uhtml.PERFORMER, days_types=days_types, work_day_type=uhtml.WORK_DAY_TYPE,
                                 password=uhtml.PASSWORD)
         return web_template.result_page(table, '/schedule-menu', stylesheet_number)
@@ -215,7 +215,7 @@ def create_edit_worker_form(worker_id: str, stylesheet_number: str) -> str:
             for key in all_workers_status:
                 if key != worker_info[4]:
                     possible_statuses.append([all_workers_status[key], key])
-            table = render_template('edit_worker.html', worker_info=worker_info, worker_subname=uhtml.WORKER_SUBNAME,
+            table = render_template('workers/edit_worker.html', worker_info=worker_info, worker_subname=uhtml.WORKER_SUBNAME,
                                     worker_name=uhtml.WORKER_NAME, phone_number=uhtml.PHONE_NUMBER,
                                     password=uhtml.PASSWORD, status=uhtml.STATUS,
                                     status_in_sql=all_workers_status[worker_info[4]], all_statuses=possible_statuses,
@@ -402,7 +402,7 @@ def remove_performer_from_work(work_id, pre_adr: str, stylesheet_number: str) ->
         _, cursor = base
         work = select_operations.get_full_information_to_work(cursor, work_id)
         performers = select_operations.get_workers_in_work(cursor, work_id)
-        table =  render_template('remove_performer_from_work.html', work_id_name=uhtml.WORK_ID, work_id=work[0],
+        table =  render_template('workers/remove_performer_from_work.html', work_id_name=uhtml.WORK_ID, work_id=work[0],
                                  point_name=work[1], equip_name=work[2], work_time=work[5], order=work[6],
                                  resume=work[7], performer=uhtml.PERFORMER, performers=performers,
                                  password=uhtml.PASSWORD)
@@ -475,7 +475,7 @@ def create_new_worker_page(stylesheet_number: str) -> str:
     with Database() as base:
         _, cursor = base
         posts = select_operations.get_all_posts(cursor)
-        table = render_template('add_new_worker.html', all_posts=posts, worker_subname=uhtml.WORKER_SUBNAME,
+        table = render_template('workers/add_new_worker.html', all_posts=posts, worker_subname=uhtml.WORKER_SUBNAME,
                                 worker_name=uhtml.WORKER_NAME, phone_number=uhtml.PHONE_NUMBER, post=uhtml.POST,
                                 password=uhtml.PASSWORD)
         return web_template.result_page(table, pre_addr, stylesheet_number)

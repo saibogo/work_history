@@ -185,7 +185,7 @@ def find_equip_to_id_page(stylesheet_number: str) -> str:
     with Database() as base:
         _, cursor = base
         max_equip_id = select_operations.get_count_equips(cursor)
-        return web_template.result_page(render_template('find_equip_to_id.html', max_equip_id=max_equip_id),
+        return web_template.result_page(render_template('equip/find_equip_to_id.html', max_equip_id=max_equip_id),
                                         '/equips',
                                         str(stylesheet_number))
 
@@ -275,7 +275,7 @@ def top_equips_from_maximal_works(stylesheet_number: str) -> str:
         _, cursor = base
         top_equips = select_operations.get_top_10_works(cursor)
         lst = [['<a href="/work/{0}">{1}</a>'.format(row[0], elem) for elem in row] for row in top_equips]
-        page = render_template('universal_table.html', table_name=table_headers.top_10_equips_name,
+        page = render_template('any/universal_table.html', table_name=table_headers.top_10_equips_name,
                                num_columns=len(table_headers.top_10_equips), headers=table_headers.top_10_equips,
                                data=lst)
         return web_template.result_page(page, pre_adr, stylesheet_number, True, 'top10equips')

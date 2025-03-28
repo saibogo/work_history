@@ -36,7 +36,7 @@ def find_work_to_id_page(stylesheet_number: str) -> str:
     with Database() as base:
         _, cursor = base
         max_work_id = select_operations.get_maximal_work_id(cursor)
-        return web_template.result_page(render_template('find_work_to_id.html', max_work_id=max_work_id),
+        return web_template.result_page(render_template('works/find_work_to_id.html', max_work_id=max_work_id),
                                         '/works',
                                         str(stylesheet_number))
 
@@ -47,7 +47,7 @@ def select_new_point_for_work_form(work_id: int, stylesheet_number: str) -> str:
         _, cursor = base
         work = select_operations.get_full_information_to_work(cursor, work_id)
         all_points = select_operations.get_all_points(cursor)
-        return web_template.result_page(render_template("select_point_to_replace.html", work_id_name=uhtml.WORK_ID,
+        return web_template.result_page(render_template("points/select_point_to_replace.html", work_id_name=uhtml.WORK_ID,
                                                     work_id=work_id,
                                                         work_description="{0} --> {1}".format(work[6], work[7]),
                                                         point_id_name=uhtml.POINT_ID, all_points=all_points),
@@ -64,7 +64,7 @@ def select_new_equip_for_work_form(data, method, stylesheet_number: str) -> str:
             _, cursor = base
             work = select_operations.get_full_information_to_work(cursor, work_id)
             equip_in_point = select_operations.get_equip_in_point(cursor, point_id)
-            return web_template.result_page(render_template("select_equip_to_replace.html", work_id_name=uhtml.WORK_ID,
+            return web_template.result_page(render_template("equip/select_equip_to_replace.html", work_id_name=uhtml.WORK_ID,
                                                             work_id=work_id,
                                                             work_description="{0} --> {1}".format(work[6], work[7]),
                                                             point_id_name=uhtml.POINT_ID,
@@ -162,7 +162,7 @@ def create_edit_work_form(work_id: int, stylesheet_number: str) -> str:
         pre_adr = '/works'
         works_info = select_operations.get_full_information_to_work(cursor, str(work_id))
         print(works_info)
-        main_table = render_template('edit_work.html', work_id=work_id, works_info=works_info,
+        main_table = render_template('works/edit_work.html', work_id=work_id, works_info=works_info,
                                      order_info=uhtml.ORDER_INFO, description=uhtml.DESCRIPTION,
                                      password=uhtml.PASSWORD)
     return web_template.result_page(main_table, pre_adr, stylesheet_number)

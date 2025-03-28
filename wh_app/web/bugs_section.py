@@ -133,7 +133,7 @@ def create_invert_bug_status_form(bug_num: str, stylesheet_number: str) -> str:
         bug = select_operations.get_bug_by_id(cursor, bug_num)
         header = table_headers.bugs_table
         description = [(header[i], bug[i]) for i in range(len(bug))]
-        main_table = render_template('invert_bug_status_form.html', description=description,
+        main_table = render_template('bugs/invert_bug_status_form.html', description=description,
                                      bug_id_name= uhtml.BUG_ID, bug_id=bug_num, password=uhtml.PASSWORD)
         return web_template.result_page(main_table, '/bugs', str(stylesheet_number))
 

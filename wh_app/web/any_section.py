@@ -165,7 +165,7 @@ def meter_readings_bar_page(device_id: int,  stylesheet_number: str) -> str:
         data = [(reading[6], reading[2]) for reading in readings]
         max_elem = max([reading[6] for reading in readings])
         data_new = list(map(lambda elem: (elem[0] * 400 / max_elem, '{0}\n{1}'.format(elem[0], elem[1])), data))
-        table = render_template('meter_bar.html', data=data_new)
+        table = render_template('techs/meter_bar.html', data=data_new)
         return web_template.result_page(table, '/get-devices-reading/{}'.format(device_id), str(stylesheet_number))
 
 
@@ -177,7 +177,7 @@ def meter_readings_bar_page_avr(device_id: int,  stylesheet_number: str) -> str:
         data = [(reading[7], reading[2]) for reading in readings]
         max_elem = max([reading[7] for reading in readings])
         data_new = list(map(lambda elem: (elem[0] * 400 / max_elem, '{0}\n{1}'.format(elem[0], elem[1])), data))
-        table = render_template('meter_bar.html', data=data_new)
+        table = render_template('techs/meter_bar.html', data=data_new)
         return web_template.result_page(table, '/get-devices-reading/{}'.format(device_id), str(stylesheet_number))
 
 
@@ -274,7 +274,7 @@ def faq_page(pre_adr: str, stylesheet_number: str) -> str:
         database_size = select_operations.get_size_database(cursor)
         average_works_in_date = "{:.2f}".format(select_operations.get_count_unique_works(cursor) /
                                                select_operations.get_count_unique_dates_in_works(cursor))
-        main_table = render_template('faq.html', hardware=hardware, tecnology=tecnology, multiuser=multiuser,
+        main_table = render_template('any/faq.html', hardware=hardware, tecnology=tecnology, multiuser=multiuser,
                                      update=update, records=records, database_size=database_size,
                                      average_works_in_date=average_works_in_date)
         return web_template.result_page(main_table,
@@ -301,7 +301,7 @@ def system_status_page(preview_page, stylesheet_number: str) -> str:
     """Function create System-Status Web-page"""
     current_status = system_status.SystemStatus.get_status()
     status_to_list = [[key, current_status[key]] for key in current_status]
-    result = render_template('system_status.html', parameters=status_to_list)
+    result = render_template('any/system_status.html', parameters=status_to_list)
     return web_template.result_page(result, preview_page, str(stylesheet_number))
 
 

@@ -68,7 +68,7 @@ def faq_state_machine(section: str) -> str:
 def result_page(main_page: str, preview_adr: str="", stylesheet_number: str="0", to_pdf: bool=False,
                 current_adr: str="") -> str:
     """Return complete HTML page"""
-    tmp = render_template('universal_page.html', style_section=style_custom(stylesheet_number),
+    tmp = render_template('any/universal_page.html', style_section=style_custom(stylesheet_number),
                           scrypt_section=generate_message_shutdown_server(),
                           main_section=main_page,
                           navigation_section=navigations_menu(preview_adr,

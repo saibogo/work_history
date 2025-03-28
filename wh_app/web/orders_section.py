@@ -53,7 +53,7 @@ def all_customers_table(stylesheet_number: str) -> str:
 
 def change_customer_password_form(customer_id: int, stylesheet_number: str) -> str:
     """Create form to change customer's password"""
-    form = render_template('change_customers_password.html', customer_id_name=uhtml.CUSTOMER_ID, customer_id=customer_id,
+    form = render_template('orders/change_customers_password.html', customer_id_name=uhtml.CUSTOMER_ID, customer_id=customer_id,
                            password_1=uhtml.PASSWORD1, password_2=uhtml.PASSWORD2, password=uhtml.PASSWORD)
     return web_template.result_page(form, '/all-customers-table', str(stylesheet_number))
 
@@ -65,7 +65,7 @@ def change_customer_status_form(customer_id: int, stylesheet_number: str) -> str
         customer_info = select_operations.get_full_customer_info(cursor, customer_id)
         description = [('ID Заказчика', customer_info[0]), ('Псевдоним', customer_info[2]),
                        ('Полное имя', customer_info[3]), ('Текущий статус', 'Активен' if customer_info[4] == True else 'Заблокирован')]
-        form  = render_template('invert_customer_status.html', customer_id_name=uhtml.CUSTOMER_ID,
+        form  = render_template('orders/invert_customer_status.html', customer_id_name=uhtml.CUSTOMER_ID,
                                 customer_id=customer_id, description=description, password=uhtml.PASSWORD)
         return web_template.result_page(form, '/all-customers-table', str(stylesheet_number))
 
@@ -137,7 +137,7 @@ def __new_password_is_correct(customer_id: int, password1: str, password2: str) 
 def create_new_customer_form(stylesheet_number: str) -> str:
     """Function create page with form to create new customer"""
     pre_adr = '/orders-and-customers'
-    form = render_template('add_new_customer.html', password=uhtml.PASSWORD, full_name=uhtml.FULL_NAME,
+    form = render_template('orders/add_new_customer.html', password=uhtml.PASSWORD, full_name=uhtml.FULL_NAME,
                            last_name=uhtml.LAST_NAME, first_name=uhtml.FIRST_NAME, password_1=uhtml.PASSWORD1,
                            password_2=uhtml.PASSWORD2)
     return web_template.result_page(form, pre_adr, str(stylesheet_number))
@@ -227,7 +227,7 @@ def create_new_order_form(stylesheet_number: str) -> str:
         pre_addr = '/orders-and-customers'
         all_customer = select_operations.get_all_customers(cursor)
         all_points = select_operations.get_all_works_points(cursor)
-        form = render_template('create_new_order.html', customer_name=uhtml.CUSTOMER_NAME, all_customers=all_customer,
+        form = render_template('orders/create_new_order.html', customer_name=uhtml.CUSTOMER_NAME, all_customers=all_customer,
                                point_name=uhtml.POINT_NAME, all_points=all_points, order_info=uhtml.ORDER_INFO,
                                password=uhtml.PASSWORD, current_customer=current_customer)
 
@@ -269,7 +269,7 @@ def add_performer_to_order_form(order_id: int, stylesheet_number: str) -> str:
             page = '<h2>Заявка закрыта. Невозможно изменить исполнителя</h2>'
         else:
             performers = select_operations.get_all_workers_real(cursor)
-            page = render_template('set_performer_to_order.html', order_id_name=uhtml.ORDER_ID, order_id=order_id,
+            page = render_template('orders/set_performer_to_order.html', order_id_name=uhtml.ORDER_ID, order_id=order_id,
                                    order_info=order_info, performer=uhtml.PERFORMER, performers=performers,
                                    password=uhtml.PASSWORD)
     return web_template.result_page(page, pre_adr, stylesheet_number)
@@ -369,7 +369,7 @@ def create_edit_order_form(order_id: str, stylesheet_number: str) -> str:
         order_info = select_operations.get_order_from_id(cursor, order_id)
         point_name = order_info[1]
         awaliable_statuses = select_operations.get_all_order_status(cursor)
-        form = render_template('edit_order_form.html', point_name=point_name, order_info=order_info[5],
+        form = render_template('orders/edit_order_form.html', point_name=point_name, order_info=order_info[5],
                                customer_name=uhtml.CUSTOMER_NAME, all_customers=all_customer, password=uhtml.PASSWORD,
                                order_status_name=uhtml.ORDER_STATUS_NAME, all_status=awaliable_statuses,
                                comment=uhtml.COMMENT, id=uhtml.ORDER_ID, order_id=order_id, current_customer=current_customer)
@@ -413,7 +413,7 @@ def find_order_from_id_form(stylesheet_number: str) -> str:
     with Database() as base:
         _, cursor = base
         max_id = select_operations.get_maximal_orders_id(cursor)
-        page = render_template('find_order_from_id.html', max_order_id=max_id, order_id_name=uhtml.ORDER_ID)
+        page = render_template('orders/find_order_from_id.html', max_order_id=max_id, order_id_name=uhtml.ORDER_ID)
         pre_adr = '/orders-and-customers'
         return web_template.result_page(page, pre_adr, stylesheet_number)
 
