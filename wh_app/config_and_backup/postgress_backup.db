@@ -1951,6 +1951,16 @@ COPY public.equip_details (id, full_type, equip_name_detail, description) FROM s
 4	1	Apach_c800.pdf	ПММ Apach C800
 5	1	HT11-new с 2011 года..pdf	ПММ DIHR HT11 с 2011 года
 6	1	ПММ Electrolux.pdf	ПММ Electrolux NHT8DD
+7	2	350ms_430pt2_4002f_450a_500t.pdf_Linux-generated_files-job_1879.pdf	Вакумматоры Indocor IVP-350, IVP-430/PT,\nIVP-400/2F, IVP-450A, IVP-500/T
+8	3	мим-300.jpeg	Мясорубки МИМ-300
+9	4	Animo_WKT_10N.pdf	Animo WKT 10N
+10	4	CWB-35.pdf	AirHot CWB-35
+11	4	CWB-30_60.pdf	AirHot CWB-30 и CWB-60
+12	5	MP_450_Ultra.pdf	RobotCoupe MP-450 Ultra
+13	5	MP_450_Ultra_Combi.pdf	RobotCoupe MP-450 Ultra Combi
+14	6	CM61E_vG_400V_RU.pdf	Rational Combi Master 61E
+15	6	CMP101E_vH_400V_RU.pdf	Rational Combi Master 101E
+16	6	rational-scc-201-e-we-61600.pdf	Rational SCC 201
 \.
 
 
@@ -1960,6 +1970,11 @@ COPY public.equip_details (id, full_type, equip_name_detail, description) FROM s
 
 COPY public.equip_sub_types (id, super_type, equip_type, type_folder, comment) FROM stdin;
 1	electrical	dishwasher	dishwashers	Посудомоечные машины
+2	electrical	degasser	degassers	Вакумматоры
+3	electrical	meat_grinder	meat_grinders	Мясорубки электрические
+4	thermal	boiler	boilers	Кипятильники электрические
+5	electrical	homogenizer	homogenizers	Гомогенизаторы
+6	thermal	combi_oven	combi_ovens	Пароконвектоматы
 \.
 
 
@@ -2562,6 +2577,9 @@ COPY public.meter_readings (id, devices_id, read_date, reading) FROM stdin;
 376	91	2025-03-28	883413.500
 377	2	2025-03-29	1070.340
 378	125	2025-03-29	3683.420
+379	24	2025-03-29	25166.840
+380	25	2025-03-29	101583.384
+381	26	2025-03-29	14222.300
 \.
 
 
@@ -2633,12 +2651,12 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 74	2	мойка двухсекционная пекарня	not model	not number	74	f	\N
 221	10	слайсер настольный	not model	not number	221	f	\N
 62	9	пастоварка Tecnoinox	CP35E7	5126369	62	t	\N
-60	9	кипятильник Animo	WKT 10n VA	30140 / 3W 19116	60	t	\N
 32	7	блендер HamiltonBeach	HBB250S-CE	J4611l 00117	32	t	\N
 75	20	система водоснабжения	not model	not number	75	f	\N
 5	8	Wiesheu Minimat	Minimat 64-L	10252361	5	t	\N
 70	1	посудомоечная машина DIHR	HT11 DIHR 2014 ECO	DWI1014108	70	f	5
 47	13	посудомоечная машина Electrolux	NHT8DD	31410001	47	f	6
+60	9	кипятильник Animo	WKT 10n VA	30140 / 3W 19116	60	t	9
 76	2	мойка трехсекционная кремовый цех	not model	not number	76	f	\N
 78	2	вытяжная вентиляция подвал около насоса склад	not model	not number	78	f	\N
 79	1	дверь входная служебная	not model	not number	79	f	\N
@@ -2766,7 +2784,6 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 200	26	коктейльный аппарат Taylor	Taylor 430	not number	200	t	\N
 190	26	кофемашина Franke Evolution	FRANKE Evolution Top	not number	71	t	\N
 178	26	овощечистка fIMAR	PPN5X40050T	120506070	178	t	\N
-187	6	кипятильник Animo	WKT 10n VA	not number	187	t	\N
 169	7	печь конвекционная Wiesheu	Minimat 64-L X1220-A-CBCABA	10222179	169	f	\N
 198	6	пастоварка AMITEK	not model	not number	198	t	\N
 171	25	кофемашина Franke Flair	F 2M HD CE2	not number	171	t	\N
@@ -2774,6 +2791,7 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 214	6	посудомоечная машина SMEG	CWC511D	1 240237 50703 0651 0300	214	t	\N
 222	27	система водоснабжения	not model	not number	222	f	\N
 223	2	куттер RobotCoupe	R 5 A plus	Z136015911	223	f	\N
+187	6	кипятильник Animo	WKT 10n VA	not number	187	t	9
 224	2	фритюрница APACH	APFE-47P	not number	224	f	\N
 225	2	плита индукционная Техно-ТТ 4 комфорки	not model	not number	225	f	\N
 226	2	двери холодный цех	not model	not number	226	f	\N
@@ -2815,10 +2833,8 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 269	6	печь конвекционная MIWE	not model	not number	269	f	\N
 270	6	медные плинтуса зал	not model	not number	270	f	\N
 271	11	индукционная плита INDOKOR	IN-7000D	201406187	271	f	\N
-272	5	кипятильник Animo	WKT 10n VA	2BA19145	272	f	\N
 273	13	система электроснабжения горячий цех/ цех доготовки	not model	not number	273	f	\N
 275	5	столы деревянные с латунной окантовкой	not model	not number	275	f	\N
-276	4	кипятильник Animo	WKT 10n VA	30140 / 2B 14934	276	f	\N
 277	10	система дымоудаления	not model	not number	277	f	\N
 278	10	декор на празднование Хэллоуина	not model	not number	278	f	\N
 279	5	мойка двухсекционная железо(кухня)	not model	not number	279	f	\N
@@ -2826,12 +2842,10 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 282	1	дверь входная гостевая(металл + стекло)	not model	not number	282	f	\N
 283	2	линия освещения подвал	not model	not number	283	f	\N
 284	2	система канализации мясной цех	not model	not number	284	f	\N
-285	8	пароконвектомат Rational	CMP 61	not number	285	f	\N
 286	2	холодильник-стол пекарня	not model	not number	286	f	\N
 266	37	Вводное устройство ХВС	not model	not number	266	f	\N
 265	38	ВРУ комплекса	not model	not number	265	f	\N
 287	2	система электроснабжения серверная	not model	not number	287	f	\N
-288	2	вакумматор INDOKOR	IVP-450A	DJ190411L1-168	288	f	\N
 973	1	СВЧ печь MenuMaster	RCS511TS	1812620010	973	f	\N
 228	1	печь пиццерийная EvroChef	FP2	19282	228	t	\N
 280	1	тепловая завеса Ballu	BHC-M10T06-PS	not number	280	t	\N
@@ -2842,6 +2856,9 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 1763	8	Миксер APACH COOK line	AHM350V300	2219737	1763	f	\N
 252	9	слайсер Liloma	not model	not number	252	t	\N
 245	2	вафельница HURAKAN	HKN-GES4M	HKNGES4M20190119006	245	t	\N
+288	2	вакумматор INDOKOR	IVP-450A	DJ190411L1-168	288	f	7
+276	4	кипятильник Animo	WKT 10n VA	30140 / 2B 14934	276	f	9
+285	8	пароконвектомат Rational	CMP 61	not number	285	f	14
 298	2	печь ротационная MIWE (левая)	RI 1.0608-TL	not number	298	f	\N
 300	2	вспомогательный инвентарь кремовый цех	not model	not number	300	f	\N
 301	2	мойка двухсекционная (цех пасты)	not model	not number	301	f	\N
@@ -2892,8 +2909,6 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 292	2	печь ротационная MIWE (правая)	RI 1.0608-TL	not number	292	f	\N
 289	37	кровля над пристроем	not model	not number	289	f	\N
 321	38	система ГВС	not model	not number	321	f	\N
-296	2	пароконвектомат Rational(левый)	CMP 101	not number	296	f	\N
-336	3	пароконвектомат Rational	CombiMaster Plus CMP 61E	E61MH1102	336	f	\N
 355	13	новогодние гирлянды в ассортименте	not model	not number	355	f	\N
 349	10	дверь служебная обитая деревом	not model	not number	349	f	\N
 320	22	кофемашина Franke Flair	F 2M HD CE2	not number	320	t	\N
@@ -2905,9 +2920,11 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 358	18	плитка настенная кухня	not model	not number	358	f	\N
 359	18	плитка напольная зал	not model	not number	359	f	\N
 360	18	плитка настенная зал	not model	not number	360	f	\N
-304	2	пароконвектомат Rational(правый)	CMP 101	not number	304	t	\N
 305	2	тепловая завеса LG	Pyrox ScreenMaster	not number	305	t	\N
 310	2	тепловая завеса Тропик (экспедиция)	not model	not number	310	t	\N
+336	3	пароконвектомат Rational	CombiMaster Plus CMP 61E	E61MH1102	336	f	14
+296	2	пароконвектомат Rational(левый)	CMP 101	not number	296	f	15
+304	2	пароконвектомат Rational(правый)	CMP 101	not number	304	t	15
 361	5	декор в ассортименте зал	not model	not number	361	f	\N
 363	5	дверь в овощной цех	not model	not number	363	f	\N
 364	5	мебель кабинет менеджеров в ассортименте	not model	not number	364	f	\N
@@ -2923,7 +2940,6 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 379	13	магистральная фильтровальная установка(мойка)	Аквафор Викинг	not number	379	f	\N
 380	13	система распределения фильтрованной воды	not model	not number	380	f	\N
 381	11	конвекционная печь Wiesheu	Minimat 64 L	not number	381	f	\N
-383	25	кипятильник Animo	WKT 10n VA	not number	383	f	\N
 384	2	миксер планетарный напольный (кремовый цех левый)	MX60P	MX60P_2_003	384	f	\N
 386	13	система вентиляции	not model	not number	386	f	\N
 387	7	система электроснабжения раздача	not model	not number	387	f	\N
@@ -2972,6 +2988,7 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 376	2	вафельница AirHot	WE-1S	156201905100477	376	t	\N
 374	2	мясорубка Fimar 3-фазная	not model	not number	374	t	\N
 388	2	тепловая завеса Тропик (охрана)	not model	not number	388	t	\N
+383	25	кипятильник Animo	WKT 10n VA	not number	383	f	9
 428	1	система вентиляции	not model	not number	428	f	\N
 430	25	холодильник  Polair №2	not model	not number	430	f	\N
 431	1	система кондиционирования зал	not model	not number	431	f	\N
@@ -3097,11 +3114,11 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 560	13	потолки кухня	not model	not number	560	f	\N
 561	22	внешняя обшивка	not model	not number	561	f	\N
 562	32	мойка высокого давления	Karcher K5 Premium	not number	562	f	\N
-563	13	кипятильник Animo	WKT 10n VA	not number	563	f	\N
 564	10	диваны дерево+латунь 2 этаж	not model	not number	564	f	\N
 565	10	телевизор LG (зона касс)	not model	not number	565	f	\N
 566	9	аудиосистема	not model	not number	566	f	\N
 535	2	стиральная машина ARISTON	RSM 601 W	90214 4518	535	t	\N
+563	13	кипятильник Animo	WKT 10n VA	not number	563	f	9
 567	11	двери противопожарные служебный вход	not model	not number	567	f	\N
 568	10	декор в ассортименте зал	not model	not number	568	f	\N
 569	2	гомогенизатор малый (кондитерский цех)	RobotCoupe MicroMIX	K6620823101	569	f	\N
@@ -3168,7 +3185,6 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 635	2	вспомогательное санитарное оборудование	not model	not number	635	f	\N
 636	4	акустическая система	not model	not number	636	f	\N
 598	26	кофемашина Franke Flair	not model	not number	598	t	\N
-614	11	кипятильник Animo	WKT 10n VA	not number	614	t	\N
 637	6	вспомогательное санитарное оборудование	not model	not number	637	f	\N
 638	13	печь конвекционная Wiesheu	Minimat 64-L	not number	638	f	\N
 639	5	вводное устройство ГВС	not model	not number	639	f	\N
@@ -3205,7 +3221,6 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 674	5	туалет гостевой (левый)	not model	not number	674	f	\N
 675	21	холодильная витрина "горка"	not model	not number	675	f	\N
 676	10	магистральная фильтровальная установка	not model	not number	676	f	\N
-677	10	кипятильник Animo	WKT 10n VA	not number	677	f	\N
 678	2	потолки кремовый цех	not model	not number	678	f	\N
 679	2	тестомес GASTRO (пельменный цех)	not model	not number	679	f	\N
 680	2	стены, потолки цех пасты	not model	not number	680	f	\N
@@ -3288,7 +3303,6 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 737	7	посудомоечная машина COMENDA	LC700M	not number	737	t	\N
 739	2	открывашка консервов стационарная (холодный цех)	ABRELATAS INDUSTRIAL INOX 00111304	not number	739	f	\N
 767	21	ледогенератор заливной настольный	StarFood	not number	767	f	\N
-768	13	вакумматор INDOKOR	IVP-450A	not number	768	f	\N
 769	21	мойка двухсекционная (железо)	not model	not number	769	f	\N
 770	26	фильтровальная система	not model	not number	770	f	\N
 771	8	магистральная фильтровальная станция АКВАФОР	not model	not number	771	f	\N
@@ -3399,7 +3413,6 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 882	35	вспомогательное оборудование зел	not model	not number	882	f	\N
 883	35	вводное устройство ХВС	not model	not number	883	f	\N
 884	1	лампы подогревающие зона выдачи	not model	not number	884	f	\N
-886	4	кипятильник AIRHOT	CWB-35	20210700324	886	f	\N
 887	8	система канализации кухня	not model	not number	887	f	\N
 889	21	плита индукционная WOK	INDOKOR IN-3500S WOK	052021012001271	889	f	\N
 890	26	система освещения служебные помещения	not model	not number	890	f	\N
@@ -3436,6 +3449,7 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 916	32	кофемашина Franke Flair	P 2M HD CE2	not number	77	t	\N
 897	11	посудомоечная машина Amika	not model	not number	897	t	\N
 903	34	посудомоечная машина Apach	AC800	4364348 ST3800RU	903	f	4
+886	4	кипятильник AIRHOT	CWB-35	20210700324	886	f	10
 923	4	диваны модульные	not model	not number	923	f	\N
 924	28	система отопления	not model	not number	924	f	\N
 925	3	жалюзи входная гостевая группа	not model	not number	925	f	\N
@@ -3471,7 +3485,6 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 956	3	жалюзи фасад Малышева правые	not model	not number	956	f	\N
 957	12	декор зал в ассортименте	not model	not number	957	f	\N
 958	22	система освещения	not model	not number	958	f	\N
-959	2	мясорубка 	МИМ-300	865	959	f	\N
 960	34	витрина для начинок(горка)	not model	not number	960	f	\N
 961	11	система электроснабжения кухня	not model	not number	961	f	\N
 963	11	вспомогательный инвентарь	not model	not number	963	f	\N
@@ -3503,6 +3516,7 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 991	34	плита индукционная WOK	BT-350A2-1	0116/4500014916 20160100246	991	f	\N
 992	34	холодильник среднетемпературный Polair	not model	not number	992	f	\N
 993	4	льдогенератор Brema	CB 184A	not number	993	f	\N
+959	2	мясорубка 	МИМ-300	865	959	f	8
 994	34	шкафы металлические в ассортименте	not model	not number	994	f	\N
 996	1	плита индукционная WOK Bartcher	BT-350A2-1	1213/111646	996	f	\N
 997	25	система вытяжной вентиляции	not model	not number	997	f	\N
@@ -3544,7 +3558,6 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 1030	19	посудомоечная машина SMEG	CWC511D	1 240237 50703 0651 0300	214	f	\N
 978	31	насос канализационный погружной OASIS 	DN 250/10(J)	DNJ-0421006224	978	t	\N
 989	6	ледогенератор кускового льда BREMA	CB184A	2021031046794	989	f	\N
-38	2	гомогенизатор RobotCoupe	MP 450 Combi Ultra	O7600171801	38	f	\N
 1025	4	шкаф расстоечный Wiesheu	0700 A-BJBBA GS2 ED60/40	10222533	1025	f	\N
 984	36	посудомоечная машина Tatra	TW F50+DR+DD	59615	984	f	\N
 998	2	овощечистка Electrolux	not model	not number	998	t	\N
@@ -3571,6 +3584,7 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 1054	22	гриль вертикальный	OXTIRYAKILER 4E/V11.7	8859000E48T16.0263	1054	f	\N
 1038	2	СВЧ-печь DEXP	MS-80	FRK028070479	1038	f	\N
 1031	6	посудомоечная машина Tatra	TW H50+DR+DD	59561	1031	f	3
+38	2	гомогенизатор RobotCoupe	MP 450 Combi Ultra	O7600171801	38	f	13
 1055	36	мойка трехсекционная(фарфор)	not model	not number	1055	f	\N
 1056	11	куттер Hurakan	not model	not number	1056	f	\N
 1057	25	тепловая завеса	М3	07032833210122030500	1057	f	\N
@@ -3584,7 +3598,6 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 1065	36	общие рукомойники гостевой туалет	not model	not number	1065	f	\N
 1066	5	система канализации кухня	not model	not number	1066	f	\N
 1068	17	система отопления	not model	not number	1068	f	\N
-1069	19	кипятильник Animo	WKT 10n VA	not number	614	f	\N
 1071	4	система электроснабжения гостевые туалеты	not model	not number	1071	f	\N
 1072	21	печь конвекционная Wiesheu	minimat 3 IS 500 rechts	239785	1072	f	\N
 1073	9	макароноварка KOGAST	EKT-T40	5344300155	1073	f	\N
@@ -3642,6 +3655,7 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 1126	19	посудомоечная машина Elettobar	Fast 51T	915484	572	f	\N
 1127	26	блендер настольный Hurakan	HKN-BLW2GREY	HKN-BLW2GREY082116	1127	f	\N
 1128	5	Вводное устройство ХВС	not model	not number	1128	f	\N
+1069	19	кипятильник Animo	WKT 10n VA	not number	614	f	9
 759	8	мойка железной посуды двухсекционная	not model	not number	759	t	\N
 549	8	кипятильник	WB-37	0007	549	t	\N
 201	26	аппарат для мягкого мороженного Taylor	Taylor 142	not number	201	t	\N
@@ -3665,7 +3679,6 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 77	12	кофемашина Franke Flair	P 2M HD CE2	not number	77	t	\N
 1032	19	печь Wiesheu Minimat с автономной системой парообразования	not model	not number	1032	t	\N
 19	1	печь конвекционная Wiesheu	Minimat 64-L	10308620	19	t	\N
-429	2	кипятильник Animo(цех питания)	WKT 10n VA	not number	429	t	\N
 603	8	витрины модульные	not model	not number	603	t	\N
 716	7	плита индукционная WOK	BT-350A2-1	0116/4500014916	716	t	\N
 1136	2	мойка односекционная овощной цех	not model	not number	1136	f	\N
@@ -3675,7 +3688,6 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 1140	21	Весы настольные в ассортименте	not model	not number	1140	f	\N
 1141	31	Насос канализационный (возле холодильников)	SANISPEED V45	EN 12050-2	1141	f	\N
 1142	3	потолки подвесные служебные помещения	not model	not number	1142	f	\N
-1143	40	кипятильник настольный Airhot	CWB-60	20211200268	1143	f	\N
 542	31	насос канализационный возле холодильников	GRUNDFOS	not number	542	t	\N
 1146	7	Система вытяжной вентиляции	not model	not number	1146	f	\N
 1145	41	насос канализационный	GRUNDFOS	not number	1144	f	\N
@@ -3689,10 +3701,8 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 1152	26	Система трекового освещения раздачи	not model	not number	1152	f	\N
 1153	6	Плитка половая кухня	not model	not number	1153	f	\N
 1154	9	система канализации кухня	not model	not number	1154	f	\N
-1155	2	вакумматор INDOKOR	IVP-450/A	DJ211202L1-22	1155	f	\N
 1156	30	жалюзи оконные электрические	not model	not number	1156	f	\N
 1157	2	кремоварка PASTOCHEFF 18 RTL	IC9963	847322100	1157	f	\N
-869	10	Кровля	not model	not number	869	f	\N
 1158	12	система освещения зал	not model	not number	1158	f	\N
 921	25	посудомоечная машина DIHR	HT 11 400V 3N	DWH1001178	921	f	\N
 1159	10	Поддон в стюарной	not model	not number	1159	f	\N
@@ -3711,6 +3721,10 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 1171	34	плита индукционная HURAKAN	not model	not number	1171	f	\N
 1172	36	Вспомогательный инвентарь зал	not model	not number	1172	f	\N
 1174	3	Освещение входная группа	not model	not number	1174	f	\N
+1155	2	вакумматор INDOKOR	IVP-450/A	DJ211202L1-22	1155	f	7
+429	2	кипятильник Animo(цех питания)	WKT 10n VA	not number	429	t	9
+869	10	Кровля	not model	not number	869	f	9
+1143	40	кипятильник настольный Airhot	CWB-60	20211200268	1143	f	11
 1175	32	Тиски настольные поворотные	Gigant bv125	not number	1175	f	\N
 1176	31	Диваны модульные	not model	not number	1176	f	\N
 1179	9	Стул деревянный в ассортименте.	not model	not number	1179	f	\N
@@ -3747,13 +3761,10 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 1209	34	Плита индукционная WOK Airhot	IP3500 WOK	072022031501189	1209	f	\N
 1210	41	плита индукционная INDOKOR 2 комфорки	IN-7000D	012017010042	703	f	\N
 703	7	плита индукционная INDOKOR 2 комфорки	IN-7000D	012017010042	703	t	\N
-1211	19	кипятильник Animo	WKT 10n VA	not number	187	f	\N
-1192	2	мясорубка(дубль)	МИМ-300	283	1192	f	\N
 1173	5	слайсер настольный 			1173	f	\N
 1213	41	витрина односекционная охлаждаемая десертная	not model	not number	470	f	\N
 1214	25	Потолок подвесной	not model	not number	1214	f	\N
 1215	2	потолки холодный цех	not model	not number	1215	f	\N
-1216	2	кипятильник Animo(цех питания)	WKT 10n VA	not number	896	f	\N
 896	1	кипятильник Animo(цех питания)	WKT 10n VA	not number	429	t	\N
 1217	13	система освещения кухня	not model	not number	1217	f	\N
 1219	4	Плита индукционная WOK	IN-3500S wok	052017041522	1219	f	\N
@@ -3776,6 +3787,8 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 1234	42	вспмогательное оборудование кухня	not model	not number	1234	f	\N
 1235	4	магистральная фильтровальная установка(кухня)	not model	not number	1235	f	\N
 1212	2	мясорубка KENWOOD	MG470	13103	1212	t	\N
+1192	2	мясорубка(дубль)	МИМ-300	283	1192	f	8
+1211	19	кипятильник Animo	WKT 10n VA	not number	187	f	9
 1236	13	Гриль -сковорода Berner	BGA60	not number	1236	f	\N
 1238	31	Вспомогательное оборудование кухня	not model	not number	1238	f	\N
 1239	10	Главный распределительный щит	not model	not number	1239	f	\N
@@ -3856,8 +3869,6 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 1317	2	дверь филенчатая овощной цех	not model	not number	1317	f	\N
 1318	34	декор кухня в ассортименте	not model	not number	1318	f	\N
 1319	41	пароконвектомат MKN	not model	not number	334	f	\N
-1320	41	кипятильник Animo	WKT 10n VA	1Y 00491	366	f	\N
-366	1	кипятильник Animo	WKT 10n VA	1Y 00491	366	t	\N
 1321	19	печь пиццерийная EvroChef	FP2	19282	228	f	\N
 648	13	печь пиццерийная EvroChef	FP2	19282	1321	f	\N
 1322	40	Мойка для кухонной посуды	not model	not number	1322	f	\N
@@ -3912,6 +3923,8 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 1369	34	Рукомойник зона повора	not model	not number	1369	f	\N
 1370	34	Холодильная установка с баром для заготовок.	not model	not number	1370	f	\N
 1372	34	Мармит BAIN MARIE	ZCK 165B	HLZCK165B22HL2155-014	1372	f	\N
+1320	41	кипятильник Animo	WKT 10n VA	1Y 00491	366	f	9
+366	1	кипятильник Animo	WKT 10n VA	1Y 00491	366	t	9
 1373	40	Плита индукционная двухкомфорочная INDOKOR	IN-700D	112021051303832	1373	f	\N
 1374	3	Кресло кожаное в ассортименте	not model	not number	1374	f	\N
 1375	40	Оборудование летнего кафе	not model	not number	1375	f	\N
@@ -4168,7 +4181,6 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 1629	5	Помещение раздевалки персонала	not model	not number	1629	f	\N
 1630	13	Кресла с металическими ножками в ассортименте	not model	not number	1630	f	\N
 1631	37	Помещение входной группы	not model	not number	1631	f	\N
-1569	2	гомогенизатор RobotCoupe	MP450UVV	6510250001	1569	f	\N
 1632	43	Окно отделикадров	not model	not number	1632	f	\N
 1633	40	Витрина угловая	not model	not number	1633	f	\N
 1634	40	Вентилятор напольный промышленный	Ballu Biff-8BB	2237007012400964411256	1634	f	\N
@@ -4184,6 +4196,7 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 1644	7	Декор в ассортименте	not model	not number	1644	f	\N
 1645	7	Витражи стекло + металлическая решетка	not model	not number	1645	f	\N
 1588	45	посудомоечная машина Tatra	TW H50+DR+DD	78073	1588	f	3
+1569	2	гомогенизатор RobotCoupe	MP450UVV	6510250001	1569	f	12
 1646	13	Стол деревянный с металическай ножкой в ассортименте	not model	not number	1646	f	\N
 1647	12	Блендер	Huracan HKN-BLW2GREY	1222427	1647	f	\N
 1648	5	Пицца печь	not model	not number	1648	f	\N
@@ -4279,7 +4292,6 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 1741	46	Входная группа	not model	not number	1741	f	\N
 1742	46	Система распрндиления очищенной воды	not model	not number	1742	f	\N
 1743	40	Плита индукционная INDOKOR	not model	not number	1743	f	\N
-1744	2	пароконвектомат Rational напольный	SCC WE 201	E21SI20022811875	1744	f	\N
 1745	44	Подсветка на вытяжных зонтах	not model	not number	1745	f	\N
 1746	46	Кипятильник	ECOBOILER T10 EU	0717009828	1746	f	\N
 1747	44	Дверь в кабинет менеджера	not model	not number	1747	f	\N
@@ -4322,6 +4334,7 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 1783	41	слайсер Liloma	not model	not number	252	f	\N
 1784	26	блинница	Roller Grill CDE 350	not number	1784	f	\N
 1785	46	витрина сборная охлаждаемая	not model	not number	1785	f	\N
+1744	2	пароконвектомат Rational напольный	SCC WE 201	E21SI20022811875	1744	f	16
 1786	1	система электроснабжения диваны	not model	not number	1786	f	\N
 1787	41	блендер Hamilton Beach	HBB250S-CE	J4611L	118	f	\N
 118	1	блендер Hamilton Beach	HBB250S-CE	J4611L	118	t	\N
@@ -4342,8 +4355,6 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 1371	12	тепловая завеса Ballu	BHC-L08-T03	not number	1371	t	\N
 962	12	жироуловитель подраковинный (дальняя мойка)	not model	not number	962	t	\N
 995	12	жироуловитель подраковинный (фарфор)	ЖИРОЛОFF «СТАНДАРТ» 0,5/25	not number	995	t	\N
-1804	41	кипятильник Animo	WKT 10n VA	not number	461	f	\N
-461	12	кипятильник Animo	WKT 10n VA	not number	461	t	\N
 1501	12	шкаф расстоечный Wiesheu	X0700-A-BAAFA GS 64-L	10326747	1501	t	\N
 449	12	холодильный стол среднетемпературный №8	not model	not number	449	t	\N
 800	12	холодильный шкаф Polair (левый)	not model	not number	800	t	\N
@@ -4386,6 +4397,8 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 1819	8	Блинница настольная двухнофорочная	not model	not number	1819	t	\N
 1802	47	жироуловитель подраковинный (дальняя мойка)	not model	not number	962	t	\N
 1813	47	мойка двухсекционная(вход на раздачу)	not model	not number	385	t	\N
+1804	41	кипятильник Animo	WKT 10n VA	not number	461	f	9
+461	12	кипятильник Animo	WKT 10n VA	not number	461	t	9
 1832	44	Холодильник на раздаче для фруктов	not model	not number	1832	f	\N
 1833	39	Фасад штукатурка	not model	not number	1833	f	\N
 1834	30	Жалюзи электрические оконные(дальний кабинет)	not model	not number	1834	f	\N
@@ -4433,7 +4446,6 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 1874	41	мясорубка Fimar 3 фазная	TR22RSQ0UX405T	130500615	463	f	\N
 1875	41	мясорубка Fimar 3-фазная	not model	not number	374	f	\N
 1876	41	мясорубка KENWOOD	MG470	13103	1212	f	\N
-1877	19	пароконвектомат Rational(правый)	CMP 101	not number	304	f	\N
 1878	41	стиральная машина ARISTON	RSM 601 W	90214 4518	535	f	\N
 1879	41	тепловая завеса LG	Pyrox ScreenMaster	not number	305	f	\N
 1880	41	тепловая завеса Тропик (охрана)	not model	not number	388	f	\N
@@ -4452,6 +4464,12 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 1886	47	посудомоечная машина Amika	not model	not number	897	f	2
 1889	11	посудомоечная машина Tatra	TW.H50+DR+DD	89396	1889	f	3
 1364	7	посудомоечная машина Tatra	TW H50+DR+DD	66641	1364	f	3
+768	13	вакумматор INDOKOR	IVP-450A	not number	768	f	7
+272	5	кипятильник Animo	WKT 10n VA	2BA19145	272	f	9
+614	11	кипятильник Animo	WKT 10n VA	not number	614	t	9
+677	10	кипятильник Animo	WKT 10n VA	not number	677	f	9
+1216	2	кипятильник Animo(цех питания)	WKT 10n VA	not number	896	f	9
+1877	19	пароконвектомат Rational(правый)	CMP 101	not number	304	f	15
 \.
 
 
@@ -4588,8 +4606,8 @@ COPY public.orders (id, customer_id, date, status, problem, closed_date, comment
 134	1	2025-03-28 09:37:20.402132	in_work	необходимо приобрести проволку из нержавеющей стали 3,5 мм жесткую и на пробу заменить несколько прутьев на венчиках варимиксеров	\N	\N	2	1
 136	1	2025-03-28 18:51:03.793954	in_work	необходимо разобрать коробки со старыми запчастями и комплектующими	\N	\N	3	9
 137	1	2025-03-28 19:28:11.509064	in_work	необходимо приобрести и заменить потолочные светильники с регулируемым посадочным размером над раздачей(старые ртутные \r\n - демонтировать). Пока - только неисправные 5 штук	\N	\N	1	1
-138	7	2025-03-29 11:13:37.443647	in_work	В пекарне сломан душевой кран, бьет ручьем горячая вода 	\N	\N	2	\N
 135	1	2025-03-28 17:19:19.538644	closed	необходимо заменить сифон с широкой горловиной и переливом на круглой мойке возле пицце-печи	2025-03-29 11:39:16.088807		1	\N
+138	7	2025-03-29 11:13:37.443647	closed	В пекарне сломан душевой кран, бьет ручьем горячая вода 	2025-03-29 16:55:57.424095		2	\N
 \.
 
 
@@ -13612,6 +13630,8 @@ COPY public.performers (id, work_id, worker_id) FROM stdin;
 9059	8295	8
 9060	8296	8
 9061	8297	8
+9062	8298	8
+9063	8299	1
 \.
 
 
@@ -22559,6 +22579,8 @@ COPY public.works (id, id_obor, date, problem, result) FROM stdin;
 8295	30	2025-03-29 10:05:00	заклинен двигатель номер 2	состав засора - тряпки и предметы женской гигиены. Вычищено
 8296	9	2025-03-29 11:00:00	замена сифона	Установлен сифон с широким раструбом A-45079 Orio (Строительный Двор)
 8297	119	2025-03-29 11:30:00	замена светильников	Заменен LED 595*595 36W 4000K над зоной гриля
+8298	903	2025-03-29 13:30:00	Выбило вводной автомат ( гр1)	Сдиагностировал. Сгорел тэн на бойлере. Провода откинул. Машину запустил.
+8299	74	2025-03-29 16:54:00	сломана душевая лейка левого смесителя	заменено на универсальные HB40(шланг) + HB06(лейка с регулировкой) Строительный Двор
 \.
 
 
@@ -22688,14 +22710,14 @@ SELECT pg_catalog.setval('public.electic_id_seq', 23, true);
 -- Name: equip_details_id_seq; Type: SEQUENCE SET; Schema: public; Owner: saibogo
 --
 
-SELECT pg_catalog.setval('public.equip_details_id_seq', 6, true);
+SELECT pg_catalog.setval('public.equip_details_id_seq', 16, true);
 
 
 --
 -- Name: equip_sub_types_id_seq; Type: SEQUENCE SET; Schema: public; Owner: saibogo
 --
 
-SELECT pg_catalog.setval('public.equip_sub_types_id_seq', 1, true);
+SELECT pg_catalog.setval('public.equip_sub_types_id_seq', 6, true);
 
 
 --
@@ -22723,7 +22745,7 @@ SELECT pg_catalog.setval('public.meter_devices_id_seq', 129, true);
 -- Name: meter_readings_id_seq; Type: SEQUENCE SET; Schema: public; Owner: saibogo
 --
 
-SELECT pg_catalog.setval('public.meter_readings_id_seq', 378, true);
+SELECT pg_catalog.setval('public.meter_readings_id_seq', 381, true);
 
 
 --
@@ -22744,7 +22766,7 @@ SELECT pg_catalog.setval('public.orders_id_seq', 138, true);
 -- Name: performers_id_seq; Type: SEQUENCE SET; Schema: public; Owner: saibogo
 --
 
-SELECT pg_catalog.setval('public.performers_id_seq', 9061, true);
+SELECT pg_catalog.setval('public.performers_id_seq', 9063, true);
 
 
 --
