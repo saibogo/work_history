@@ -176,3 +176,21 @@ def sql_select_equip_deleted_status(equip_id: str) -> str:
     query = """SELECT %(deleted)s FROM %(oborudovanie)s WHERE %(id)s = {}""" % sql_consts_dict
     return query.format(equip_id)
 
+
+@log_decorator
+def sql_select_found_details(equip_id: int) -> str:
+    """SELECT string to get details from equip"""
+
+    query = """SELECT %(detail_id)s FROM %(oborudovanie)s WHERE %(id)s = {0}""" % sql_consts_dict
+    return query.format(equip_id)
+
+
+@log_decorator
+def sql_select_detail_info(detail_id: int) -> str:
+    """SELECT string to get PDF from details"""
+
+    query = """SELECT %(equip_details)s.%(id)s, '/' || %(super_type)s::TEXT || '/' || %(type_folder)s::TEXT || '/' || 
+    %(equip_name_detail)s  AS path_detail, %(description)s  FROM %(equip_details)s JOIN %(equip_sub_types)s 
+    ON (%(full_type)s = %(equip_sub_types)s.%(id)s AND %(equip_details)s.%(id)s = {0})""" % sql_consts_dict
+    return query.format(detail_id)
+

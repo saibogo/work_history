@@ -1069,7 +1069,8 @@ CREATE TABLE public.oborudovanie (
     model text NOT NULL,
     serial_num text NOT NULL,
     pre_id integer,
-    deleted boolean DEFAULT false
+    deleted boolean DEFAULT false,
+    detail_id integer
 );
 
 
@@ -1567,6 +1568,14 @@ ALTER TABLE ONLY public.electric
 
 
 --
+-- Name: equip_details equip_details_pkey; Type: CONSTRAINT; Schema: public; Owner: saibogo
+--
+
+ALTER TABLE ONLY public.equip_details
+    ADD CONSTRAINT equip_details_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: equip_sub_types equip_sub_types_pkey; Type: CONSTRAINT; Schema: public; Owner: saibogo
 --
 
@@ -1775,6 +1784,14 @@ ALTER TABLE ONLY public.hot_water
 
 ALTER TABLE ONLY public.meter_readings
     ADD CONSTRAINT meter_readings_devices_id_fkey FOREIGN KEY (devices_id) REFERENCES public.meter_devices(id);
+
+
+--
+-- Name: oborudovanie oborudovanie_detail_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: saibogo
+--
+
+ALTER TABLE ONLY public.oborudovanie
+    ADD CONSTRAINT oborudovanie_detail_id_fkey FOREIGN KEY (detail_id) REFERENCES public.equip_details(id);
 
 
 --

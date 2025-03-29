@@ -88,6 +88,13 @@ equip_const = {"oborudovanie": "oborudovanie",
                "pre_id": "pre_id",
                "equips_count": "equips_count",
                "id_obor": "id_obor",
+               "detail_id": "detail_id",
+               "equip_details": "equip_details",
+               "super_type": "super_type",
+               "equip_type": "equip_type",
+               "equip_name_detail": "equip_name_detail",
+               "equip_sub_types": "equip_sub_types",
+               "full_type": "full_type"
                }
 
 #point 41 it's list of decommissioned equipment
@@ -115,7 +122,8 @@ point_consts = {"point_id": "point_id",
                 "treaty": "treaty",
                 "resume": "resume",
                 "deleted": "deleted",
-                "point_status": "point_status"
+                "point_status": "point_status",
+                "type_folder": "type_folder"
                 }
 
 order_conts = {"customer": "customer",

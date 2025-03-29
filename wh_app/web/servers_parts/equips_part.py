@@ -5,7 +5,7 @@ from wh_app.web.servers_parts.support_part import *
 from wh_app.web.equips_section import equip_to_point_limit,\
     select_equip_to_id_page, add_equip_method, equips_menu, edit_equip_method,\
     upgrade_equip_method, select_point_to_equip_method, move_equip_method,\
-    remove_table_page, top_equips_from_maximal_works
+    remove_table_page, top_equips_from_maximal_works, get_details_action
 
 
 @app.route("/equips")
@@ -106,3 +106,10 @@ def remove_table(equip_id: int) -> Response:
 def top_10_equips_from_work() -> Response:
     """Return page with top-10 equip with maximal count of works"""
     return goto_or_redirect(lambda: top_equips_from_maximal_works(stylesheet_number()), functions.NO_ROLE)
+
+
+@app.route('/get-details/<detail_id>')
+def get_details(detail_id: int) -> Response:
+    """Return PDF with detail scheme to equip if exist"""
+
+    return goto_or_redirect_from_roles_list(lambda: get_details_action(detail_id), [functions.ROLE_SUPERUSER, functions.ROLE_WORKER])

@@ -1,7 +1,8 @@
 """This module implement all pages from equip-operations"""
-
+import flask
 from flask import render_template, redirect
 
+from wh_app.config_and_backup import config
 import wh_app.web.template as web_template
 import wh_app.web.universal_html as uhtml
 from wh_app.postgresql.database import Database
@@ -22,7 +23,14 @@ def create_full_edit_links(equip_id: str, removed: bool=False, deleted: bool=Fal
         result.append('<a href="/change-point/{0}" title="Переместить на другой обьект">{1}</a>'.format(equip_id, uhtml.REMOVE_CHAR))
     if removed:
         result.append('<a href="/remove-table/{0}" title="Таблица перемещений">{1}</a>'.format(equip_id, uhtml.TABLE_REMOVE_CHAR))
-
+    with Database() as base:
+        _, cursor = base
+        try:
+            detail_id = select_operations.get_equips_detail_id(cursor, equip_id)[0]
+            if detail_id:
+                result.append('<a href="/get-details/{0}" title="Получить деталировку">{1}</a>'.format(detail_id, uhtml.DOWNLOAD_CHAR))
+        except IndexError:
+            pass
     return uhtml.SPACE_CHAR.join(result)
 
 
@@ -279,3 +287,16 @@ def top_equips_from_maximal_works(stylesheet_number: str) -> str:
                                num_columns=len(table_headers.top_10_equips), headers=table_headers.top_10_equips,
                                data=lst)
         return web_template.result_page(page, pre_adr, stylesheet_number, True, 'top10equips')
+
+
+def get_details_action(detail_id: int) -> str:
+    """Download details if exist"""
+
+    with Database() as base:
+        _, cursor = base
+        try:
+            detail_info = select_operations.get_details_info(cursor, detail_id)
+            detail_path = "equips{}".format(detail_info[1])
+            return flask.send_from_directory(config.static_dir(), detail_path)
+        except IndexError:
+            return "<h2>Деталировка с ID = {} не найдена!</h2>".format(detail_id)

@@ -23,6 +23,7 @@ BINDING_CHAR = '🔨'
 REMOVE_CHAR = 'A&#8646;B'
 TABLE_REMOVE_CHAR = '&#8694'
 SPACE_CHAR = '&nbsp;'
+DOWNLOAD_CHAR = '&#10225;'
 
 PASSWORD = 'password'
 LOGIN = 'login'

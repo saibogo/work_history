@@ -59,3 +59,18 @@ def get_equip_deleted_status(cursor, equip_id: str) -> bool:
 
     return select_sql.sql_select_equip_deleted_status(equip_id)
 
+
+@list_to_first_tuple_decorator
+@get_selected_decorator
+def get_equips_detail_id(cursor, equip_id: int) -> Tuple:
+    """Return details_id or NULL"""
+
+    return select_sql.sql_select_found_details(equip_id)
+
+
+@list_to_first_tuple_decorator
+@get_selected_decorator
+def get_details_info(cursor, detail_id: int) -> Tuple:
+    """Return details info"""
+
+    return select_sql.sql_select_detail_info(detail_id)
