@@ -223,26 +223,26 @@ def power_outages_page(stylesheet_number: str) -> str:
         for phone in eens_list:
             phone[-1] = '<a href="{}">Телефонограмма</a>'.format(phone[-1])
 
-        table1 = render_template('universal_table.html', table_name=table_headers.eens_table_name,
+        table1 = render_template('any/universal_table.html', table_name=table_headers.eens_table_name,
                                  headers=table_headers.eens_table, data=eens_list,
                                  num_columns=len(table_headers.eens_table))
     except EeensException as e:
-        table1 = render_template('universal_table.html', table_name='Данные Екатеринбургэнергосбыт недоступны',
+        table1 = render_template('any/universal_table.html', table_name='Данные Екатеринбургэнергосбыт недоступны',
                                  table_headers=[], date=[])
 
     try:
         eesk_list = [[elem[2], elem[3], elem[4], elem[6]] for elem in get_eesk_data()]
-        table2 = render_template('universal_table.html', table_name=table_headers.eesk_table_name,
+        table2 = render_template('any/universal_table.html', table_name=table_headers.eesk_table_name,
                                  headers=table_headers.eesk_table, data=eesk_list,
                                  num_columns=len(table_headers.eesk_table))
     except EeskException as e:
-        table2 = render_template('universal_table.html', table_name='Данные Екатеринбургской Электросетевой Компании недоступны',
+        table2 = render_template('any/universal_table.html', table_name='Данные Екатеринбургской Электросетевой Компании недоступны',
                                  table_headers=[], date=[])
 
     with Database() as base:
         _, cursor = base
         find_list = select_operations.get_all_find_patterns(cursor)
-        table3 = render_template('universal_table.html', table_name='Список слов для поиска',
+        table3 = render_template('any/universal_table.html', table_name='Список слов для поиска',
                                  headers=['Ищется', " ".join(find_list)], data=[], num_columns=2)
 
     return web_template.result_page(table1 + table2 + table3, "/external-services", str(stylesheet_number), False)
