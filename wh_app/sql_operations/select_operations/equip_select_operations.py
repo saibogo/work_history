@@ -74,3 +74,24 @@ def get_details_info(cursor, detail_id: int) -> Tuple:
     """Return details info"""
 
     return select_sql.sql_select_detail_info(detail_id)
+
+
+@get_selected_decorator
+def get_all_equips_subtypes(cursor) -> List[Tuple]:
+    """Return all equips subtaypes and description"""
+
+    return select_sql.sql_select_all_equip_subtypes()
+
+
+@get_selected_decorator
+def get_all_details_from_subtype_id(cursor, subtype_id: int) -> List[Tuple]:
+    """Return all equip`s detail from current subtype"""
+
+    return select_sql.sql_select_all_details_from_subtype_id(subtype_id)
+
+
+@get_selected_decorator
+def get_all_equips_meta_type(cursor) -> List[Tuple]:
+    """Get all values in equips_meta_type"""
+
+    return select_sql.sql_select_all_equips_meta_type()

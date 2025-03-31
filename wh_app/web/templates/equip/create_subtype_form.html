@@ -1,0 +1,41 @@
+<h2>Создание нового класса оборудования</h2>
+<form action="/create-subtype-common" method = "post">
+    <div class="container">
+        <div class="tr_div_login">
+            <div class="faq_quest">Выберите основной класс:</div>
+            <div class="faq_answer">
+                <select name="{{meta_class_name}}" class="div_select">
+                    {% for meta_class in meta_classes %}
+                    <option value="{{meta_class[0]}}">{{meta_class[0]}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Псевдоним для класса:(Минимум 4 английских символа и знак подчеркивания)</div>
+            <div class="faq_answer">
+                <input name="{{equip_class_name}}" class="tr_area" pattern="[a-zA-Z_]{4,}">
+            </div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Директория внутри основного класса:(Минимум 4 английских символа и знак подчеркивания)</div>
+            <div class="faq_answer">
+                <input name="{{equip_folder_name}}" class="tr_area" pattern="[a-zA-Z_]{4,}">
+            </div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Описание класса на русском языке(минимум 5 букв без спецсимволов)</div>
+            <div class="faq_answer">
+                <input name="{{equip_description_name}}" class="tr_area" pattern="[а-яА-Я\s]{5,}">
+            </div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Пароль доступа:</div>
+            <div class="faq_answer"><input type="password" name="{{password}}"></div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest"></div>
+            <div class="faq_answer"><input type="submit" value="Создать класс"></div>
+        </div>
+    </div>
+</form>

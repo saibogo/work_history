@@ -1,6 +1,7 @@
 """This module implement all pages from equip-operations"""
 import flask
 from flask import render_template, redirect
+from os import makedirs
 
 from wh_app.config_and_backup import config
 import wh_app.web.template as web_template
@@ -37,10 +38,101 @@ def create_full_edit_links(equip_id: str, removed: bool=False, deleted: bool=Fal
 def equips_menu(stylesheet_number) -> str:
     """Method create main EQUIP-page"""
     name = 'Действия с оборудованием'
-    menu = ['Все зарегистрированное оборудование', 'Поиск по ID', 'TOP-10 по ремонтам']
-    links_list = ['/all-equips', '/find-equip-to-id', '/top-10-from-works']
+    menu = ['Все зарегистрированное оборудование', 'Поиск по ID', 'TOP-10 по ремонтам', 'Работа с деталировками']
+    links_list = ['/all-equips', '/find-equip-to-id', '/top-10-from-works', '/details-and-subclasses']
     table = uhtml.universal_table(name, ['№', 'Доступное действие'], functions.list_to_numer_list(menu), True, links_list)
     return web_template.result_page(table, '/', str(stylesheet_number))
+
+
+def details_main_menu(stylesheet_number) -> str:
+    """Create equip`s detail main menu"""
+    name = 'Подклассы оборудования и деталировки'
+    menu = ['Существующие классы и подклассы оборудования', 'Создать подкласс', 'Загрузить деталировку']
+    links_list = ['/current-subclasses', '/create-subclass', '/create-details']
+    table = uhtml.universal_table(name, ['№', 'Доступное действие'], functions.list_to_numer_list(menu), True,
+                                  links_list)
+    return web_template.result_page(table, '/', str(stylesheet_number))
+
+
+def current_subtypes_table(stylesheet_number) -> str:
+    """Create table with all exists equip subtypes"""
+    with Database() as base:
+        _, cursor = base
+        all_sub_types = select_operations.get_all_equips_subtypes(cursor)
+        result_types = []
+        for subtype in all_sub_types:
+            result_types.append([])
+            for elem in subtype:
+                result_types[-1].append('<a href="/all-details-from-type/{0}">{1}</a>'.format(subtype[0], elem))
+        page = render_template('any/universal_table.html', num_columns=len(table_headers.equip_types),
+                               table_name=table_headers.equip_types_name, headers=table_headers.equip_types, data=result_types)
+        return web_template.result_page(page, '/details-and-subclasses', stylesheet_number)
+
+
+def all_exist_details_table(type_id: int, stylesheet_number: str) -> str:
+    """Create table with all details from """
+    with Database() as base:
+        _, cursor = base
+        all_details = select_operations.get_all_details_from_subtype_id(cursor, type_id)
+        result = []
+        for detail in all_details:
+            result.append([])
+            link = '<a href="/get-details/{0}" title="Получить деталировку">{1}</a>'
+            for elem in detail:
+                result[-1].append(link.format(detail[0], elem))
+        page = uhtml.universal_table(table_headers.exist_detail_name, table_headers.exist_detail, result)
+        pre_adr = '/current-subclasses'
+        return web_template.result_page(page, pre_adr, stylesheet_number)
+
+
+def create_equip_subclass_form(stylesheet_number: str) -> str:
+    """Create form to create new equip subclass"""
+
+    with Database() as base:
+        _, cursor = base
+        pre_adr = '/details-and-subclasses'
+        all_meta_classes = select_operations.get_all_equips_meta_type(cursor)
+        page = render_template('equip/create_subtype_form.html', meta_class_name=uhtml.EQUIP_META_CLASS,
+                               meta_classes=all_meta_classes, equip_class_name=uhtml.EQUIP_CLASS,
+                               equip_folder_name=uhtml.EQUIPS_TYPE_DIR, equip_description_name=uhtml.DESCRIPTION,
+                               password=uhtml.PASSWORD)
+        return web_template.result_page(page, pre_adr,stylesheet_number)
+
+
+def create_equip_subtype_method(data, method, stylesheet_number: str) -> str:
+    """Analize data and create new subtype if all correct"""
+    pre_adr = '/details-and-subclasses'
+    if method == 'POST':
+        if functions.is_superuser_password(data[uhtml.PASSWORD]):
+            with Database() as base:
+                connection, cursor = base
+                all_types_exist = select_operations.get_all_equips_subtypes(cursor)
+                new_type = data[uhtml.EQUIP_CLASS]
+                new_folder = data[uhtml.EQUIPS_TYPE_DIR]
+                description = data[uhtml.DESCRIPTION]
+                meta_class = data[uhtml.EQUIP_META_CLASS]
+                not_exist = True
+                for elem in all_types_exist:
+                    not_exist = not_exist and (new_type != elem[2]) and (new_folder != elem[3]) and (description != elem[4])
+                if not_exist:
+                    path = '{}equips/{}/{}'.format(config.static_dir(), meta_class, new_folder)
+                    print(path)
+                    try:
+                        makedirs(path)
+                        insert_operations.insert_new_equip_subclass(cursor, meta_class, new_type, new_folder, description)
+                        connection.commit()
+                        page = uhtml.operation_completed()
+                    except FileExistsError:
+                        page = '<h2>Такая директория уже существует!</h2>'
+                    except PermissionError:
+                        page = '<h2>Недостаточно прав для создания директории!</h2>'
+                else:
+                    page = '<h2>Как минимум один из параметров нового класса уже зарегистрирован в системе! Проверьте данные!</h2>'
+        else:
+            page = uhtml.pass_is_not_valid()
+    else:
+        page = '<h2>Method in Add new equips subtype is not correct!</h2>'
+    return web_template.result_page(page, pre_adr, stylesheet_number)
 
 
 def equip_to_point_limit(point_id, page_num, stylesheet_number: str) -> str:

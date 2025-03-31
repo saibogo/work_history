@@ -194,3 +194,28 @@ def sql_select_detail_info(detail_id: int) -> str:
     ON (%(full_type)s = %(equip_sub_types)s.%(id)s AND %(equip_details)s.%(id)s = {0})""" % sql_consts_dict
     return query.format(detail_id)
 
+
+@log_decorator
+def sql_select_all_equip_subtypes() -> str:
+    """SELECT all info for ALL equip`s subtypes"""
+
+    query = """SELECT * FROM %(equip_sub_types)s ORDER BY %(super_type)s, %(equip_type)s""" % sql_consts_dict
+    return query
+
+
+@log_decorator
+def sql_select_all_details_from_subtype_id(subtype_id: int) -> str:
+    """SELECT all details from current equip subtype"""
+
+    query = """SELECT %(equip_details)s.%(id)s, %(description)s FROM %(equip_details)s
+    JOIN %(equip_sub_types)s ON (%(full_type)s = %(equip_sub_types)s.%(id)s AND %(equip_sub_types)s.%(id)s = {0})""" % sql_consts_dict
+
+    return query.format(subtype_id)
+
+
+@log_decorator
+def sql_select_all_equips_meta_type() -> str:
+    """Get all values from equips_meta_type"""
+    query = """SELECT unnest(enum_range(NULL::%(equips_meta_type)s))""" % sql_consts_dict
+    return query
+

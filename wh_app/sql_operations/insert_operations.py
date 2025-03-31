@@ -85,3 +85,9 @@ def insert_new_session_in_sessions(cursor, hash: str) -> None:
     cursor.execute(sql_insert_new_session_in_sessions(hash))
 
 
+def insert_new_equip_subclass(cursor, meta_class: str, new_class: str, new_dir: str, description: str) -> None:
+    """Add new equip`s class in database"""
+
+    cursor.execute(sql_insert_new_equips_class(meta_class, new_class, new_dir, description))
+
+

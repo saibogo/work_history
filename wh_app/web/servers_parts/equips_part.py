@@ -5,7 +5,8 @@ from wh_app.web.servers_parts.support_part import *
 from wh_app.web.equips_section import equip_to_point_limit,\
     select_equip_to_id_page, add_equip_method, equips_menu, edit_equip_method,\
     upgrade_equip_method, select_point_to_equip_method, move_equip_method,\
-    remove_table_page, top_equips_from_maximal_works, get_details_action
+    remove_table_page, top_equips_from_maximal_works, get_details_action, details_main_menu, current_subtypes_table,\
+    all_exist_details_table, create_equip_subclass_form, create_equip_subtype_method
 
 
 @app.route("/equips")
@@ -113,3 +114,40 @@ def get_details(detail_id: int) -> Response:
     """Return PDF with detail scheme to equip if exist"""
 
     return goto_or_redirect_from_roles_list(lambda: get_details_action(detail_id), [functions.ROLE_SUPERUSER, functions.ROLE_WORKER])
+
+
+@app.route('/details-and-subclasses')
+def details_and_subclasses() -> Response:
+    """Go to main menu to work with details and equip subclasses"""
+
+    return goto_or_redirect(lambda: details_main_menu(stylesheet_number()), functions.ROLE_SUPERUSER)
+
+
+@app.route('/current-subclasses')
+def current_subclasses() -> Response:
+    """Go to table with all exists equips subtypes"""
+
+    return goto_or_redirect(lambda: current_subtypes_table(stylesheet_number()), functions.ROLE_SUPERUSER)
+
+
+@app.route('/all-details-from-type/<type_id>')
+def all_details_from_type(type_id: int) -> Response:
+    """Goto table with all details from this subtype"""
+
+    return goto_or_redirect(lambda: all_exist_details_table(type_id, stylesheet_number()), functions.ROLE_SUPERUSER)
+
+
+@app.route('/create-subclass')
+def create_subclass() -> Response:
+    """Goto form to create new subclass"""
+
+    return goto_or_redirect(lambda: create_equip_subclass_form(stylesheet_number()), functions.ROLE_SUPERUSER)
+
+
+@app.route('/create-subtype-common', methods=['POST'])
+def create_subtype_common() -> Response:
+    """Go to method to analize and create new subtype if all correct"""
+
+    return goto_or_redirect(lambda: create_equip_subtype_method(functions.form_to_data(request.form),
+                                                                request.method, stylesheet_number()),
+                            functions.ROLE_SUPERUSER)
