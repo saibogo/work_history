@@ -139,3 +139,12 @@ def sql_insert_new_equips_class(meta_class: str, new_class: str, new_dir: str, d
     query = """INSERT INTO %(equip_sub_types)s (%(super_type)s, %(equip_type)s, %(type_folder)s, %(comment)s) 
     VALUES ('{}', '{}', '{}', '{}')""" % sql_consts_dict
     return query.format(meta_class, new_class, new_dir, description)
+
+
+@log_decorator
+def sql_insert_new_equip_detail(equip_type: int, filename: str, description: str) -> str:
+    """Return INSERT string to add new equip`s detail in database"""
+
+    query = """INSERT INTO %(equip_details)s (%(full_type)s, %(equip_name_detail)s, %(description)s) 
+    VALUES ({0}, '{1}', '{2}')""" % sql_consts_dict
+    return query.format(equip_type, filename, description)

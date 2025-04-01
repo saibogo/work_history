@@ -1742,9 +1742,9 @@ COPY public.bugzilla (id, problem, status, date_start, date_close) FROM stdin;
 143	необходимо проработать возможность изменения порядка сортировки столбцов в веб-версии по нажатию на заголовок столбца	t	2025-03-28 10:45:35.35815	\N
 142	необходимо разделить шаблоны html на разделы согласно назначению	f	2025-03-27 02:25:20.435825	2025-03-28 11:42:44.218313
 144	необходимо реализовать сверку валидности сессии при проведении операций	f	2025-03-28 11:55:59.962953	2025-03-28 15:06:50.642577
-146	Необходимо разработать возможность загрузки новых деталировок в систему с подключением к существующим подклассам	t	2025-03-30 21:34:05.666552	\N
 147	Необходимо добавить в таблицу просмотра оборудования ссылку на подключение деталировки из числа существующих в системе	t	2025-03-30 21:34:48.354324	\N
 145	необходимо разработать интерфейс для создания подклассов оборудования в таблицах хранения деталировок	f	2025-03-30 21:33:10.80154	2025-03-31 23:49:20.6479
+146	Необходимо разработать возможность загрузки новых деталировок в систему с подключением к существующим подклассам	f	2025-03-30 21:34:05.666552	2025-04-01 20:19:53.069325
 \.
 
 
@@ -1972,6 +1972,9 @@ COPY public.equip_details (id, full_type, equip_name_detail, description) FROM s
 22	9	Анжополо.pdf	ANGELO PO 35 CM
 23	10	SH50-60B-SH500-600-ALLEGATO1-Rev-A (4).pdf	SH 50/60/500/600
 24	11	CP35E7.pdf	Tecnoinox CP35E7
+25	13	Brema CB184.pdf	Brema CB 184
+26	13	BF80 (1).pdf	ледогенераторы BarLine BF80
+27	14	HBB255-CE rev.A_схема дет..pdf	блендеры HamiltonBeach HBB 255
 \.
 
 
@@ -1992,6 +1995,7 @@ COPY public.equip_sub_types (id, super_type, equip_type, type_folder, comment) F
 10	electrical	dough_sheeter	dough_sheeters	Тестораскаточные машины
 11	thermal	pasta_cooker	pasta_cookers	Пастоварки
 13	refrigeration	ice_maker	ice_makers	Ледогенераторы
+14	electrical	blender	blenders	Блендеры
 \.
 
 
@@ -2642,6 +2646,15 @@ COPY public.meter_readings (id, devices_id, read_date, reading) FROM stdin;
 424	116	2025-03-31	20653.827
 425	118	2025-03-31	15454.244
 426	117	2025-03-31	565634.400
+427	41	2025-04-01	485302.390
+428	39	2025-04-01	86580.550
+429	40	2025-04-01	118626.330
+430	42	2025-04-01	339479.300
+431	43	2025-04-01	15026.561
+432	44	2025-04-01	9599.357
+433	35	2025-04-01	376768.220
+434	37	2025-04-01	3615.848
+435	36	2025-04-01	3202.466
 \.
 
 
@@ -3354,7 +3367,6 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 760	25	водостоки фасад Малышева	not model	not number	760	f	\N
 763	8	мармит подогревающий	not model	not number	763	f	\N
 765	5	витрина стеклянная секционная	not model	not number	765	f	\N
-766	1	ледогенератор кускового льда BREMA	CB 184A	2021021045217	766	f	\N
 764	25	кофемашина холдерная La Cimbali	M27 Start	not number	764	f	\N
 905	28	ВРУ	not model	not number	905	f	\N
 712	9	тепловая завеса	Техномаш	not number	712	f	\N
@@ -3376,6 +3388,7 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 761	5	ледогенератор Starfood	HZB-12S	12 01000084	761	t	\N
 755	5	телевизор Samsung 43" LED	not model	not number	755	t	\N
 782	2	плита индукционная Техно-ТТ 4 комфорки горячий цех(левая)	not model	not number	782	f	\N
+766	1	ледогенератор кускового льда BREMA	CB 184A	2021021045217	766	f	25
 783	12	туалет гостевой	not model	not number	783	f	\N
 785	12	система холодного водоснабжения комплекса	not model	not number	785	f	\N
 786	22	вспомогательное оборудование зал	not model	not number	786	f	\N
@@ -3405,7 +3418,6 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 811	1	магистральная фильтровальная станция АКВАФОР	not model	not number	811	f	\N
 812	7	дверь в стюартскую	not model	not number	812	f	\N
 813	7	рукомойник раздача	not model	not number	813	f	\N
-814	10	льдогенератор Brema	CB 184A	2021031046803	814	f	\N
 815	10	дверь среднего гостевого туалета	not model	not number	815	f	\N
 816	21	витрина под выпечку	not model	not number	816	f	\N
 290	2	котел варочный напольный	Abat КПЭМ-160-ОМР	not number	290	f	\N
@@ -3442,6 +3454,7 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 848	6	потолки решетчатые раздача + кухня	not model	not number	848	f	\N
 849	31	мойка фарфоровой посуды двухсекционная	not model	not number	849	f	\N
 850	2	слайсер настольный	not model	not number	850	f	\N
+814	10	льдогенератор Brema	CB 184A	2021031046803	814	f	25
 851	34	кофемашина холдерная	not model	not number	851	f	\N
 852	2	куттер RobotCoupe	CL 52 E	N4530134311	852	f	\N
 853	34	жалюзи электрические	not model	not number	853	f	\N
@@ -3518,7 +3531,6 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 930	3	вспомогательное оборудование кухня	not model	not number	930	f	\N
 931	1	холодильный шкаф Polair №4 среднетемпературный	not model	not number	931	f	\N
 932	25	система вентиляции зал	not model	not number	932	f	\N
-909	8	ледогенератор настольный Brema	CB-184A	2021031047709	909	f	\N
 934	34	декор зал в ассортименте	not model	not number	934	f	\N
 935	9	вспомогательное оборудование кухня	not model	not number	935	f	\N
 937	34	система освещения кухня и подсобные помещения	not model	not number	937	f	\N
@@ -3556,7 +3568,6 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 936	3	посудомоечная машина COMENDA	LC-700M	0063330613	936	f	\N
 970	36	дверь входная Бизнес-Центр	not model	not number	970	f	\N
 971	3	мойка двухсекционная (фарфор)	not model	not number	971	f	\N
-972	5	ледогенератор кускового льда BREMA	CB 184A	2021031046787	972	f	\N
 974	35	оборудование барной стойки	not model	not number	974	f	\N
 975	21	плита индукционная WOK	Bartcher BT-3500A2-1	0716/4500018133	975	f	\N
 976	34	жироуловитель (одинарная мойка)	not model	not number	976	f	\N
@@ -3572,9 +3583,10 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 990	4	система канализации туалеты	not model	not number	990	f	\N
 991	34	плита индукционная WOK	BT-350A2-1	0116/4500014916 20160100246	991	f	\N
 992	34	холодильник среднетемпературный Polair	not model	not number	992	f	\N
-993	4	льдогенератор Brema	CB 184A	not number	993	f	\N
 959	2	мясорубка 	МИМ-300	865	959	f	8
 982	13	фритюрница напольная ANGELOPO	not model	not number	982	f	22
+993	4	льдогенератор Brema	CB 184A	not number	993	f	25
+909	8	ледогенератор настольный Brema	CB-184A	2021031047709	909	f	25
 994	34	шкафы металлические в ассортименте	not model	not number	994	f	\N
 996	1	плита индукционная WOK Bartcher	BT-350A2-1	1213/111646	996	f	\N
 997	25	система вытяжной вентиляции	not model	not number	997	f	\N
@@ -3615,7 +3627,6 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 211	38	система внешней канализации(колодцы, магистраль)	not model	not number	211	f	\N
 1030	19	посудомоечная машина SMEG	CWC511D	1 240237 50703 0651 0300	214	f	\N
 978	31	насос канализационный погружной OASIS 	DN 250/10(J)	DNJ-0421006224	978	t	\N
-989	6	ледогенератор кускового льда BREMA	CB184A	2021031046794	989	f	\N
 1025	4	шкаф расстоечный Wiesheu	0700 A-BJBBA GS2 ED60/40	10222533	1025	f	\N
 984	36	посудомоечная машина Tatra	TW F50+DR+DD	59615	984	f	\N
 998	2	овощечистка Electrolux	not model	not number	998	t	\N
@@ -3643,6 +3654,7 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 1031	6	посудомоечная машина Tatra	TW H50+DR+DD	59561	1031	f	3
 38	2	гомогенизатор RobotCoupe	MP 450 Combi Ultra	O7600171801	38	f	13
 1047	11	индукуионная плита INDOKOR	IN-7000D	05020042001228	1047	f	21
+989	6	ледогенератор кускового льда BREMA	CB184A	2021031046794	989	f	25
 1055	36	мойка трехсекционная(фарфор)	not model	not number	1055	f	\N
 1056	11	куттер Hurakan	not model	not number	1056	f	\N
 1057	25	тепловая завеса	М3	07032833210122030500	1057	f	\N
@@ -4163,7 +4175,6 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 1557	26	Мармит для супов подогреваемый	SB-6000	ROAL-SB-6000-70-030	1557	f	\N
 1558	13	Двери  феленчитые между кухней и залом.	not model	not number	1558	f	\N
 1559	1	крыльцо входная группа мрамор	not model	not number	1559	f	\N
-1560	3	Ледогенератор настольный Brema	CB184A	2021041051699	1560	f	\N
 1561	3	Декор в ассортименте	not model	not number	1561	f	\N
 1562	10	Холодильный стол "горка" холодный цех	not model	not number	1562	f	\N
 1563	44	Оборедование летнего кафе	not model	not number	1563	f	\N
@@ -4185,6 +4196,7 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 1580	45	Двери стеклянные (выход в офисный центр)	not model	not number	1580	f	\N
 1524	5	пастоварка Tecnoinox	CP35E7	71510720	1245	f	24
 1528	41	пастоварка Tecnoinox	CP35E7	71910826	615	f	24
+1560	3	Ледогенератор настольный Brema	CB184A	2021041051699	1560	f	25
 1581	45	СВЧ печь 	TMW-1100ME	L634640223110019	1581	f	\N
 1582	45	Дверь центральный вход (внешняя)	not model	not number	1582	f	\N
 1583	45	Дверь центральный вход (внутренний)	not model	not number	1583	f	\N
@@ -4200,14 +4212,12 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 1594	45	плита индукционная однокомфорочная Hurakan	HKN-ICF18T	HKN23061443	1594	f	\N
 1595	45	Система освещения коридор, кухня	not model	not number	1595	f	\N
 1596	45	миксер планетарный GastroMix	B5	2309043	1596	f	\N
-1597	45	блендер настольный HamiltonBeach	HBB255S-CE	B2622AT 00143	1597	f	\N
 1598	45	мармит супница	HKN-SB57	2023080036	1598	f	\N
 1599	45	кипятильник настольный Hurakan	HKN-HVZ50MBLACK	HVZ50MBLACK230329018	1599	f	\N
 1600	45	мармит подогреваемый Bain Marie	ZCK165B	HLZCK165B23HL2176-108	1600	f	\N
 1601	45	мармит подогреваемый Bain Marie	ZCK165B	HLZCK165B23HL2176-115	1601	f	\N
 1602	45	Вытяжная вентиляционная установка	not model	not number	1602	f	\N
 1603	43	Слулья офисные в ассортименте	not model	not number	1603	f	\N
-1604	7	Ледогенератор BREMA	CB 184 A	2021031046805	1604	f	\N
 1605	30	Стол офисный в ассортименте	not model	not number	1605	f	\N
 1606	6	Витрина сборная десерты	not model	not number	1606	f	\N
 1607	6	Витрина сборная гастрономия	not model	not number	1607	f	\N
@@ -4251,6 +4261,7 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 1645	7	Витражи стекло + металлическая решетка	not model	not number	1645	f	\N
 1588	45	посудомоечная машина Tatra	TW H50+DR+DD	78073	1588	f	3
 1569	2	гомогенизатор RobotCoupe	MP450UVV	6510250001	1569	f	12
+1604	7	Ледогенератор BREMA	CB 184 A	2021031046805	1604	f	25
 1646	13	Стол деревянный с металическай ножкой в ассортименте	not model	not number	1646	f	\N
 1647	12	Блендер	Huracan HKN-BLW2GREY	1222427	1647	f	\N
 1648	5	Пицца печь	not model	not number	1648	f	\N
@@ -4258,7 +4269,6 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 1650	25	Плита индукционная WOK Bartscher	BT-3500A2-1	4500020946	1650	f	\N
 1651	2	двери филенчатые цех питания	not model	not number	1651	f	\N
 1652	3	Витрина для напитков охлаждаемая	not model	not number	1652	f	\N
-1653	11	Ледогенератор BREMA	CB 184A	2021031046832	1653	f	\N
 1654	40	Система электроснабжения кухня	not model	not number	1654	f	\N
 1655	38	Раздвижные ворота	not model	not number	1655	f	\N
 1656	36	Мармит подогревающий для супов	Airhot sb-6000	HL2017250080	1656	f	\N
@@ -4292,7 +4302,6 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 1686	31	Мойка фарфоровой посуды 1 секционная	not model	not number	1686	f	\N
 1687	3	Система освещения раздача	not model	not number	1687	f	\N
 1688	11	Дверь в мойку из зала	not model	not number	1688	f	\N
-1689	42	Блендер Hamilton Beach	HBB255-CE	00084	1689	f	\N
 1690	5	Блендер Hamilton Beach	HBB250S-CE	00042	1690	f	\N
 1691	6	Блендер	Huracan HKN-BLW2GREY	230209176	1691	f	\N
 1692	36	Микроволновая печь Airhot	WP1000-30L	21080196	1692	f	\N
@@ -4320,6 +4329,8 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 1716	46	Посудомойка APACH	AF500	3183598	1716	f	\N
 1698	4	посудомоечная машина Tatra	TW H50+DR+DD	85939	1698	f	3
 1671	2	Овоще чистка FIMAR	PPF18M	240403771	1671	f	19
+1653	11	Ледогенератор BREMA	CB 184A	2021031046832	1653	f	25
+1689	42	Блендер Hamilton Beach	HBB255-CE	00084	1689	f	27
 1717	46	Кипятильник Bain Marie	ZCK165BT	HLZCK165BT23HL2103-009	1717	f	\N
 1718	46	Супница Soup Kettle	SB-5700	2103-018	1718	f	\N
 1720	46	Миксер планетарный \nProfessional Stand Mixer	BSECO	2205145	1720	f	\N
@@ -4327,7 +4338,6 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 1722	46	Плита индукционная wok\nINDOKOR	IN-3500WOK	012023052900052	1722	f	\N
 1723	46	Плита индукционная wok\nINDOKOR	IN-3500WOK	012023052900060	1723	f	\N
 1724	46	Паставарка KOGAST	EKT-T47/V-T	62129000563	1724	f	\N
-1725	46	Блендер Hamilton Beach	HBB255S-CE	00235	1725	f	\N
 1726	46	Плита индукционная\nIndokor	IN2000	152023043004569	1726	f	\N
 1727	46	Плита индукционная\nIndokor	IN2000	122023091604513	1727	f	\N
 1728	46	Слайзер HURACAN	HKN-HM220	220231010-037	1728	f	\N
@@ -4389,6 +4399,7 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 1785	46	витрина сборная охлаждаемая	not model	not number	1785	f	\N
 1744	2	пароконвектомат Rational напольный	SCC WE 201	E21SI20022811875	1744	f	16
 1759	2	овощечистка Abat	МКК-500-01	00530	1759	f	17
+1725	46	Блендер Hamilton Beach	HBB255S-CE	00235	1725	f	27
 1786	1	система электроснабжения диваны	not model	not number	1786	f	\N
 1787	41	блендер Hamilton Beach	HBB250S-CE	J4611L	118	f	\N
 118	1	блендер Hamilton Beach	HBB250S-CE	J4611L	118	t	\N
@@ -4532,6 +4543,8 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 1257	4	плита индукционная двухкомфорочная Indokor	IN-7000D	062022092401015	1257	f	21
 824	9	плита индукционная двухкомфорочная INDOKOR	IN-7000D	072021031502703	824	f	21
 62	9	пастоварка Tecnoinox	CP35E7	5126369	62	t	24
+972	5	ледогенератор кускового льда BREMA	CB 184A	2021031046787	972	f	25
+1597	45	блендер настольный HamiltonBeach	HBB255S-CE	B2622AT 00143	1597	f	27
 \.
 
 
@@ -4663,17 +4676,18 @@ COPY public.orders (id, customer_id, date, status, problem, closed_date, comment
 118	1	2025-03-19 13:54:07.679608	closed	на 26 марта запланировано отключение э/э на первой секции РП. Необходимо заказать генератор 80 кВт и запланировать его подключение	2025-03-26 19:03:54.260727		4	\N
 113	3	2025-03-18 18:11:55.489742	closed	необходимо установить новый абразивный диск на точильный станок	2025-03-20 10:19:11.277974		32	15
 130	1	2025-03-27 12:29:33.060188	in_work	01 или 02 апреля необходимо выполнить повторную протяжку винтов автоматов щита силового оборудования в ВРУ 1 этажа	\N	\N	4	8
-132	6	2025-03-27 18:53:31.669118	in_work	проверить работу ледогенератора	\N	\N	4	\N
 133	5	2025-03-27 19:04:18.116694	closed	Ремонт замка на железной двери служебного входа.	2025-03-28 08:19:54.365107	необходимо приобрести оригинальные запчасти	11	\N
 134	1	2025-03-28 09:37:20.402132	in_work	необходимо приобрести проволку из нержавеющей стали 3,5 мм жесткую и на пробу заменить несколько прутьев на венчиках варимиксеров	\N	\N	2	1
 137	1	2025-03-28 19:28:11.509064	in_work	необходимо приобрести и заменить потолочные светильники с регулируемым посадочным размером над раздачей(старые ртутные \r\n - демонтировать). Пока - только неисправные 5 штук	\N	\N	1	1
 135	1	2025-03-28 17:19:19.538644	closed	необходимо заменить сифон с широкой горловиной и переливом на круглой мойке возле пицце-печи	2025-03-29 11:39:16.088807		1	\N
 138	7	2025-03-29 11:13:37.443647	closed	В пекарне сломан душевой кран, бьет ручьем горячая вода 	2025-03-29 16:55:57.424095		2	\N
+132	6	2025-03-27 18:53:31.669118	in_work	проверить работу ледогенератора	\N	\N	4	9
 140	1	2025-03-30 21:00:36.266378	in_work	необходимо произвести уточнение параметров главного водомера ГВС	\N	\N	38	1
 136	1	2025-03-28 18:51:03.793954	closed	необходимо разобрать коробки со старыми запчастями и комплектующими	2025-03-31 08:55:40.951687		3	9
 139	1	2025-03-30 19:33:09.982525	closed	необходимо приобрести и установить новый замок на входную дверь поста охраны комплекса	2025-03-31 18:37:56.447885		37	1
 141	5	2025-03-31 14:12:12.490642	in_work	02.04.2025 после 22:00, либо 03.04.2025 до 10:00 монтаж двух демосистем (одна в зале и одна на раздаче) и повесить вывеску "зона выдачи" на цепочки над зоной выдачи) 	\N	\N	11	1
 142	1	2025-03-31 18:38:39.387201	in_work	необходимо обварить гайки на новом замке входной служебной двери(с обоих сторон)	\N	\N	2	8
+143	1	2025-04-01 17:14:39.83555	in_work	Необходимо провести повторную диагностику правого двигателя насосной станции	\N	\N	21	1
 \.
 
 
@@ -13708,6 +13722,16 @@ COPY public.performers (id, work_id, worker_id) FROM stdin;
 9071	8307	15
 9072	8308	15
 9073	8309	15
+9074	8310	1
+9075	8311	1
+9076	8312	9
+9077	8313	9
+9078	8314	15
+9079	8315	15
+9080	8316	15
+9081	8317	9
+9082	8318	1
+9083	8319	15
 \.
 
 
@@ -13885,6 +13909,9 @@ COPY public.sessions_hashs (id, hash, start_time, is_active) FROM stdin;
 18	10590939438983115953252296029086149440068269616112428836327686043653521131042	2025-03-31 08:50:08.098073	t
 19	10325363649952117845553671564609967411717747331804051179404837114265520887394	2025-03-31 13:57:32.933751	t
 20	26203628958519829351300739669825551960026129690249282307035818785647620217384	2025-03-31 17:08:32.633032	t
+21	83556654414530651140437730692154389585945607486261249388855573641116257882677	2025-04-01 12:44:33.298543	t
+22	20987460868625710515819688974653134998585421342839001742671507186652778264896	2025-04-01 17:09:02.546866	t
+23	114711544254716591941547102492077724422661888603786199167447746531660006247725	2025-04-01 20:17:47.46286	t
 \.
 
 
@@ -14362,7 +14389,6 @@ COPY public.workers_schedule (work_date, worker_id, day_type) FROM stdin;
 2025-04-01	10	shedule_service
 2025-04-01	5	shedule_service
 2025-04-01	6	shedule_service
-2025-04-02	1	schedule_8_18
 2025-04-02	9	schedule_8_18
 2025-04-02	8	schedule_7_19
 2025-04-02	10	shedule_service
@@ -14383,6 +14409,7 @@ COPY public.workers_schedule (work_date, worker_id, day_type) FROM stdin;
 2025-04-05	15	schedule_7_19
 2025-04-06	9	schedule_8_18
 2025-04-06	8	schedule_7_19
+2025-04-02	1	schedule_special
 \.
 
 
@@ -22692,6 +22719,16 @@ COPY public.works (id, id_obor, date, problem, result) FROM stdin;
 8307	1835	2025-03-31 19:00:00	сломан замок входной двери	Заменен на ЗНС-2 (3 ключа переданы руководителю предприятия) Крепление - сквозные шпильки М6 + шайбы и гайки. Необходимо обварить гайки с обоих сторон. ДЕкоратор замка с наружной стороны изготовлен из листовой стали 1 мм толщиной
 8309	1835	2025-03-31 20:21:00	сломан дверной доводчик	заменен на Armadillo LY4000 85 кг. Крепеление на сквозные болты и шпильки м5 и м6
 8308	1582	2025-03-31 17:00:39	На доводчике отпало колено.	Прикрутил на место.
+8310	1006	2025-04-01 02:03:06	Перекладка сетей канализации	Силами подрядчика пробурено ещё одно отверстие в перекрытии мясного цеха кулинарной фабрики Ду50
+8311	645	2025-04-01 02:05:17	При бурении отверстий из ресторана Баста произошел незапланированный слив воды в коридоре возле ЩРП-1	Отключились группы 4, 5, 6 и 7. Залило розетки весов в мясном цехе. Розетки демонтированы и нуждаются в замене (2 шт по 1 посту). Провода заизолированы. Питание цеха восстановлено
+8312	1389	2025-04-01 10:10:25	Замена щеток	Установил элетроугольные щётки mod 437(A) 4х7х10мм.
+8313	824	2025-04-01 11:56:32	Установка после ремонта	Произведен\n ремонт платы дальней комфорки (замена силовых транзисторов, диодного моста). Замена стекла варочной поверхности\nДля защиты числового табло установленно оргстикло.\nПеределан кабель в вилке.
+8314	1670	2025-04-01 13:04:09	Разболтались ножки у вешалки	Затянул.
+8315	708	2025-04-01 16:22:40	Отпала крышка.	Установили на место.Затянули.
+8316	107	2025-04-01 16:28:30	Отключился автомат (весы,слайдер)	Приехали всё работает.
+8317	110	2025-04-01 16:38:06	Срабатывает аварийная сигнализация.	Не исправен правый насос. Станция переведена в режим работы на 1м насосе
+8318	511	2025-04-01 19:30:00	сломан корпус розетки для подключения расстоечного шкафа Unox	Заменен механизм AquaDesign + рамка 1 пост белый (Электромир)
+8319	1782	2025-04-01 22:00:21	Выпала и сломалась плитка.	Залил дыру наливным полом.
 \.
 
 
@@ -22821,14 +22858,14 @@ SELECT pg_catalog.setval('public.electic_id_seq', 23, true);
 -- Name: equip_details_id_seq; Type: SEQUENCE SET; Schema: public; Owner: saibogo
 --
 
-SELECT pg_catalog.setval('public.equip_details_id_seq', 24, true);
+SELECT pg_catalog.setval('public.equip_details_id_seq', 27, true);
 
 
 --
 -- Name: equip_sub_types_id_seq; Type: SEQUENCE SET; Schema: public; Owner: saibogo
 --
 
-SELECT pg_catalog.setval('public.equip_sub_types_id_seq', 13, true);
+SELECT pg_catalog.setval('public.equip_sub_types_id_seq', 14, true);
 
 
 --
@@ -22856,7 +22893,7 @@ SELECT pg_catalog.setval('public.meter_devices_id_seq', 129, true);
 -- Name: meter_readings_id_seq; Type: SEQUENCE SET; Schema: public; Owner: saibogo
 --
 
-SELECT pg_catalog.setval('public.meter_readings_id_seq', 426, true);
+SELECT pg_catalog.setval('public.meter_readings_id_seq', 435, true);
 
 
 --
@@ -22870,14 +22907,14 @@ SELECT pg_catalog.setval('public.oborudovanie_id_seq', 1, false);
 -- Name: orders_id_seq; Type: SEQUENCE SET; Schema: public; Owner: saibogo
 --
 
-SELECT pg_catalog.setval('public.orders_id_seq', 142, true);
+SELECT pg_catalog.setval('public.orders_id_seq', 143, true);
 
 
 --
 -- Name: performers_id_seq; Type: SEQUENCE SET; Schema: public; Owner: saibogo
 --
 
-SELECT pg_catalog.setval('public.performers_id_seq', 9073, true);
+SELECT pg_catalog.setval('public.performers_id_seq', 9083, true);
 
 
 --
@@ -22905,7 +22942,7 @@ SELECT pg_catalog.setval('public.posts_id_seq', 5, true);
 -- Name: sessions_hashs_id_seq; Type: SEQUENCE SET; Schema: public; Owner: saibogo
 --
 
-SELECT pg_catalog.setval('public.sessions_hashs_id_seq', 20, true);
+SELECT pg_catalog.setval('public.sessions_hashs_id_seq', 23, true);
 
 
 --

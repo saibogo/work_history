@@ -91,3 +91,8 @@ def insert_new_equip_subclass(cursor, meta_class: str, new_class: str, new_dir: 
     cursor.execute(sql_insert_new_equips_class(meta_class, new_class, new_dir, description))
 
 
+def insert_new_equips_detail(cursor, equip_type: int, filename: str, description: str) -> None:
+    """Add new equips detail in database"""
+
+    cursor.execute(sql_insert_new_equip_detail(equip_type, filename, description))
+

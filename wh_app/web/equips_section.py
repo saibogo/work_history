@@ -2,6 +2,7 @@
 import flask
 from flask import render_template, redirect
 from os import makedirs
+from os import path as os_path
 
 from wh_app.config_and_backup import config
 import wh_app.web.template as web_template
@@ -30,6 +31,8 @@ def create_full_edit_links(equip_id: str, removed: bool=False, deleted: bool=Fal
             detail_id = select_operations.get_equips_detail_id(cursor, equip_id)[0]
             if detail_id:
                 result.append('<a href="/get-details/{0}" title="Получить деталировку">{1}</a>'.format(detail_id, uhtml.DOWNLOAD_CHAR))
+            else:
+                result.append('<a href="/attach-detail/{0}" title="Прикрепить деталировку">+</a>'.format(equip_id))
         except IndexError:
             pass
     return uhtml.SPACE_CHAR.join(result)
@@ -47,8 +50,8 @@ def equips_menu(stylesheet_number) -> str:
 def details_main_menu(stylesheet_number) -> str:
     """Create equip`s detail main menu"""
     name = 'Подклассы оборудования и деталировки'
-    menu = ['Существующие классы и подклассы оборудования', 'Создать подкласс', 'Загрузить деталировку']
-    links_list = ['/current-subclasses', '/create-subclass', '/create-details']
+    menu = ['Существующие классы и подклассы оборудования', 'Создать подкласс']
+    links_list = ['/current-subclasses', '/create-subclass']
     table = uhtml.universal_table(name, ['№', 'Доступное действие'], functions.list_to_numer_list(menu), True,
                                   links_list)
     return web_template.result_page(table, '/', str(stylesheet_number))
@@ -64,9 +67,70 @@ def current_subtypes_table(stylesheet_number) -> str:
             result_types.append([])
             for elem in subtype:
                 result_types[-1].append('<a href="/all-details-from-type/{0}">{1}</a>'.format(subtype[0], elem))
+            result_types[-1].append('<a href="/add-detail-file/{0}" title="Добавить деталировку">{1}</a>'.
+                                    format(subtype[0], uhtml.DOWNLOAD_CHAR))
         page = render_template('any/universal_table.html', num_columns=len(table_headers.equip_types),
                                table_name=table_headers.equip_types_name, headers=table_headers.equip_types, data=result_types)
         return web_template.result_page(page, '/details-and-subclasses', stylesheet_number)
+
+
+def attach_detail_form(equip_id: int, stylesheet_number: str) -> str:
+    """Create form to attach equip`s detail"""
+    with Database() as base:
+        _, cursor = base
+        details = select_operations.get_all_details_from_subtype_id(cursor, 0);
+        page = render_template('equip/attach_detail_form.html', equip_name=uhtml.EQUIP_NAME, equip_id=equip_id,
+                               detail_name=uhtml.DETAIL_NAME, details=details, password=uhtml.PASSWORD)
+        return web_template.result_page(page, '/', stylesheet_number)
+
+
+def attach_detail_method(data, method, stylesheet_number: str) -> str:
+    """Attach detail to equip"""
+    if method == 'POST':
+        if functions.is_superuser_password(data[uhtml.PASSWORD]):
+            equip_id = data[uhtml.EQUIP_NAME]
+            detail_id = data[uhtml.DETAIL_NAME]
+            with Database() as base:
+                connection, cursor = base
+                update_operations.update_set_detail_id_to_equip(cursor, equip_id, detail_id)
+                connection.commit()
+                page = uhtml. operation_completed()
+        else:
+            page = uhtml.pass_is_not_valid()
+    else:
+        page = '<h2>Method in Attach detail not corrected</h2>'
+
+    return web_template.result_page(page, '/', stylesheet_number)
+
+
+def add_detail_file_form(type_id : int, stylesheet_number: str) -> str:
+    """Create form to upload details file to server"""
+    page = render_template('equip/upload_detail_form.html', file_name=uhtml.FILE_NAME, equip_class_name=uhtml.EQUIP_CLASS,
+                           equip_class=type_id, password=uhtml.PASSWORD, equip_description_name=uhtml.DESCRIPTION)
+    return web_template.result_page(page, '/current-subclasses', stylesheet_number)
+
+
+def upload_detail_file_method(data, method, file_info, stylesheet_number: str) -> str:
+    """Analize data end then if OK upload file to server"""
+    pre_adr = '/current-subclasses'
+    if method == 'POST':
+        password = data[uhtml.PASSWORD]
+        if functions.is_superuser_password(password):
+            with Database() as base:
+                connection, cursor = base
+                equip_class = data[uhtml.EQUIP_CLASS]
+                description = data[uhtml.DESCRIPTION]
+                sub_dir = select_operations.get_sub_dir_to_equip_class(cursor, equip_class)
+                path = '{}equips{}'.format(config.static_dir(), sub_dir)
+                file_info.save(os_path.join(path ,file_info.filename))
+                insert_operations.insert_new_equips_detail(cursor, equip_class, file_info.filename, description)
+                connection.commit()
+                page = uhtml.operation_completed()
+        else:
+            page = uhtml.pass_is_not_valid()
+    else:
+        page = '<h2>Method in UPLOAD detail`s file not corrected!</h2>'
+    return web_template.result_page(page, pre_adr, stylesheet_number)
 
 
 def all_exist_details_table(type_id: int, stylesheet_number: str) -> str:

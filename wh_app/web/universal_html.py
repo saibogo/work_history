@@ -81,6 +81,8 @@ LAST_NAME = "last_name"
 FIRST_NAME = "first_name"
 PASSWORD1 = "password_1"
 PASSWORD2 = "password_2"
+FILE_NAME = 'filename'
+DETAIL_NAME = 'detail_name'
 
 
 def link_or_str(elem: str, link_type: bool = False, link: str = '') -> str:

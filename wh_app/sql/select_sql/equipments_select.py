@@ -206,9 +206,14 @@ def sql_select_all_equip_subtypes() -> str:
 @log_decorator
 def sql_select_all_details_from_subtype_id(subtype_id: int) -> str:
     """SELECT all details from current equip subtype"""
-
-    query = """SELECT %(equip_details)s.%(id)s, %(description)s FROM %(equip_details)s
-    JOIN %(equip_sub_types)s ON (%(full_type)s = %(equip_sub_types)s.%(id)s AND %(equip_sub_types)s.%(id)s = {0})""" % sql_consts_dict
+    if subtype_id != 0:
+        query = """SELECT %(equip_details)s.%(id)s, %(description)s FROM %(equip_details)s
+        JOIN %(equip_sub_types)s ON (%(full_type)s = %(equip_sub_types)s.%(id)s AND %(equip_sub_types)s.%(id)s = {0})
+        ORDER BY %(description)s""" % sql_consts_dict
+    else:
+        query = """SELECT %(equip_details)s.%(id)s, %(description)s FROM %(equip_details)s
+                JOIN %(equip_sub_types)s ON %(full_type)s = %(equip_sub_types)s.%(id)s ORDER BY %(description)s""" \
+                % sql_consts_dict
 
     return query.format(subtype_id)
 
@@ -219,3 +224,10 @@ def sql_select_all_equips_meta_type() -> str:
     query = """SELECT unnest(enum_range(NULL::%(equips_meta_type)s))""" % sql_consts_dict
     return query
 
+
+@log_decorator
+def sql_select_types_sub_dir(type_id: int) -> str:
+    """SELECT to get sub_dir from this equip`s sub_type"""
+    query = """SELECT '/' || %(super_type)s::TEXT || '/' || %(type_folder)s::TEXT AS sub_dir FROM %(equip_sub_types)s
+     WHERE %(id)s = {0}""" % sql_consts_dict
+    return query.format(type_id)

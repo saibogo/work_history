@@ -124,3 +124,9 @@ def update_set_session_inactive(cursor, session_id: int) -> None:
 
     cursor.execute(sql_update_set_session_inactive(session_id))
 
+
+def update_set_detail_id_to_equip(cursor, equip_id: int, detail_id: int) -> None:
+    """Attach detail_id to equip with equip_id"""
+
+    cursor.execute(sql_update_attach_detail_to_equip(equip_id, detail_id))
+

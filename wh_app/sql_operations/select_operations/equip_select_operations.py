@@ -95,3 +95,11 @@ def get_all_equips_meta_type(cursor) -> List[Tuple]:
     """Get all values in equips_meta_type"""
 
     return select_sql.sql_select_all_equips_meta_type()
+
+
+@list_to_first_str_decorator
+@get_selected_decorator
+def get_sub_dir_to_equip_class(cursor, type_id :int) -> str:
+    """Return sub_dir to equip`s sub_type"""
+
+    return select_sql.sql_select_types_sub_dir(type_id)

@@ -6,7 +6,8 @@ from wh_app.web.equips_section import equip_to_point_limit,\
     select_equip_to_id_page, add_equip_method, equips_menu, edit_equip_method,\
     upgrade_equip_method, select_point_to_equip_method, move_equip_method,\
     remove_table_page, top_equips_from_maximal_works, get_details_action, details_main_menu, current_subtypes_table,\
-    all_exist_details_table, create_equip_subclass_form, create_equip_subtype_method
+    all_exist_details_table, create_equip_subclass_form, create_equip_subtype_method, add_detail_file_form,\
+    upload_detail_file_method, attach_detail_method, attach_detail_form
 
 
 @app.route("/equips")
@@ -151,3 +152,34 @@ def create_subtype_common() -> Response:
     return goto_or_redirect(lambda: create_equip_subtype_method(functions.form_to_data(request.form),
                                                                 request.method, stylesheet_number()),
                             functions.ROLE_SUPERUSER)
+
+
+@app.route('/add-detail-file/<type_id>')
+def add_detail_file(type_id: int) -> Response:
+    """Goto form to upload details file to server"""
+
+    return goto_or_redirect(lambda: add_detail_file_form(type_id, stylesheet_number()), functions.ROLE_SUPERUSER)
+
+
+@app.route('/upload-detail-common', methods=['POST'])
+def upload_detail_common() -> Response:
+    """Goto method upload details file to server"""
+
+    return goto_or_redirect(lambda: upload_detail_file_method(functions.form_to_data(request.form),
+                                                              request.method, request.files['filename'],
+                                                              stylesheet_number()), functions.ROLE_SUPERUSER)
+
+
+@app.route('/attach-detail/<equip_id>')
+def attach_detail(equip_id: int) -> Response:
+    """Goto form select equip detail"""
+
+    return goto_or_redirect(lambda: attach_detail_form(equip_id, stylesheet_number()), functions.ROLE_SUPERUSER)
+
+
+@app.route('/attach-detail-common', methods=['POST'])
+def attach_detail_common() -> Response:
+    """Goto method add detail to equip"""
+
+    return goto_or_redirect(lambda: attach_detail_method(functions.form_to_data(request.form),
+                                                         request.method, stylesheet_number()), functions.ROLE_SUPERUSER)

@@ -189,3 +189,11 @@ def sql_update_set_session_inactive(session_id: int) -> str:
 
     query = """UPDATE %(sessions_hashs)s SET %(is_active)s = False WHERE %(id)s = {0}""" % sql_consts_dict
     return query.format(session_id)
+
+
+@log_decorator
+def sql_update_attach_detail_to_equip(equip_id: int, detail_id: int) -> str:
+    """Set detail_id in equip information"""
+
+    query = """UPDATE %(oborudovanie)s SET %(detail_id)s = {0} WHERE id = {1}""" % sql_consts_dict
+    return query.format(detail_id, equip_id)
