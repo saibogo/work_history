@@ -1742,9 +1742,10 @@ COPY public.bugzilla (id, problem, status, date_start, date_close) FROM stdin;
 143	необходимо проработать возможность изменения порядка сортировки столбцов в веб-версии по нажатию на заголовок столбца	t	2025-03-28 10:45:35.35815	\N
 142	необходимо разделить шаблоны html на разделы согласно назначению	f	2025-03-27 02:25:20.435825	2025-03-28 11:42:44.218313
 144	необходимо реализовать сверку валидности сессии при проведении операций	f	2025-03-28 11:55:59.962953	2025-03-28 15:06:50.642577
-147	Необходимо добавить в таблицу просмотра оборудования ссылку на подключение деталировки из числа существующих в системе	t	2025-03-30 21:34:48.354324	\N
 145	необходимо разработать интерфейс для создания подклассов оборудования в таблицах хранения деталировок	f	2025-03-30 21:33:10.80154	2025-03-31 23:49:20.6479
 146	Необходимо разработать возможность загрузки новых деталировок в систему с подключением к существующим подклассам	f	2025-03-30 21:34:05.666552	2025-04-01 20:19:53.069325
+147	Необходимо добавить в таблицу просмотра оборудования ссылку на подключение деталировки из числа существующих в системе	f	2025-03-30 21:34:48.354324	2025-04-02 01:08:09.017275
+148	необходимо разработать систему хранения и отдачи инструкций для оборудования аналогично системе с деталировками	t	2025-04-02 01:30:21.681352	\N
 \.
 
 
@@ -1975,6 +1976,18 @@ COPY public.equip_details (id, full_type, equip_name_detail, description) FROM s
 25	13	Brema CB184.pdf	Brema CB 184
 26	13	BF80 (1).pdf	ледогенераторы BarLine BF80
 27	14	HBB255-CE rev.A_схема дет..pdf	блендеры HamiltonBeach HBB 255
+28	14	Хуракан схема.pdf	блендер HURAKAN HKN BLW2 
+29	15	СL50 3Ф.pdf	RobotCoupe CL 50 E Ultra
+30	15	CL52D 3ф.pdf	RobotCoupe CL 52 D
+31	4	Схема Hurakan HKN-HVZ35.pdf	кипятильники Hurakan HKN HVZ35
+32	4	Hurakan HKN-HVZ50M.pdf	кипятильники Hurakan HKN HVZ50M
+33	16	xeft-04eu-eldv-0d00-esp-01.pdf	печи UNOX XEFT 04EU ELDV
+34	16	xebc-06eu-e1rm-0d00-esp-01.pdf	печи UNOX XEBC 06EU E1RM
+35	17	xebpc-08eu-b-0d06-esp-01.pdf	расстоечные шкафы UNOX XEBPC 08EU B
+36	14	Hamilton Beach HBB250S-CE.pdf	HamiltonBeach HBB250S CE
+37	18	Инструкция на Roller Grill GES 40.pdf	вафельницы RollerGril GES GED с  10 по 80
+38	19	Инструкция на Roller Grill PSF 600 E 380В .pdf	грили RollerGrill PSF 400 600
+39	20	CRP-PASTOCHEF-18-RTL_pm.pdf	кремоварочная машина PASTOCHEF 18 RTL
 \.
 
 
@@ -1996,6 +2009,12 @@ COPY public.equip_sub_types (id, super_type, equip_type, type_folder, comment) F
 11	thermal	pasta_cooker	pasta_cookers	Пастоварки
 13	refrigeration	ice_maker	ice_makers	Ледогенераторы
 14	electrical	blender	blenders	Блендеры
+15	electrical	cutter	cutters	куттеры
+16	thermal	convection_oven	convection_ovens	конвекционные печи
+17	thermal	proofing_cabinet	proofing_cabinets	расстоечные шкафы
+18	thermal	waffle_iron	waffle_irons	вафельницы электрические
+19	thermal	grill	grills	грили электрические
+20	refrigeration	cream_cooker	cream_cookers	кремоварочные машины
 \.
 
 
@@ -2663,7 +2682,6 @@ COPY public.meter_readings (id, devices_id, read_date, reading) FROM stdin;
 --
 
 COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted, detail_id) FROM stdin;
-1	9	блендер 	Hamilton Beach HBB250S-CE	L0381L 00107	1	f	\N
 2	1	потолки подвесные	Armstrong	not number	2	f	\N
 3	15	ВРУ	not model	not number	3	f	\N
 4	2	мойка двухсекционная горячий цех	not model	not number	4	f	\N
@@ -2677,7 +2695,6 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 13	10	витрина двухсекционная стеклянная (центр)	not model	not number	13	f	\N
 14	10	витрина двухсекционная стеклянная(ближе к пицце)	not model	not number	14	f	\N
 15	2	соковыжималка ZUMOVAL	Minimax	A14391-150522B	15	f	\N
-16	2	куттер RobotCoupe	CL 50 E Ultra	not number	16	f	\N
 17	2	куттер RobotCoupe	R 301 Ultra D	H4660224401	17	f	\N
 18	2	холодильный шкаф PoLAIR №28 кремовый цех	not model	not number	18	f	\N
 20	1	расстоечный шкаф Wiesheu	GS 64-L	10295253	20	f	\N
@@ -2731,6 +2748,8 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 70	1	посудомоечная машина DIHR	HT11 DIHR 2014 ECO	DWI1014108	70	f	5
 47	13	посудомоечная машина Electrolux	NHT8DD	31410001	47	f	6
 60	9	кипятильник Animo	WKT 10n VA	30140 / 3W 19116	60	t	9
+16	2	куттер RobotCoupe	CL 50 E Ultra	not number	16	f	29
+1	9	блендер 	Hamilton Beach HBB250S-CE	L0381L 00107	1	f	36
 76	2	мойка трехсекционная кремовый цех	not model	not number	76	f	\N
 78	2	вытяжная вентиляция подвал около насоса склад	not model	not number	78	f	\N
 79	1	дверь входная служебная	not model	not number	79	f	\N
@@ -3347,7 +3366,6 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 733	8	рекламное оборудование	not model	not number	733	f	\N
 734	6	мойка железной посуды двухсекционная	not model	not number	734	f	\N
 735	6	плита индукционная Bartscher	BT-350A2-1	0416/4500016492	735	f	\N
-736	10	блендер Hamilton Beach	HBB250S-CE	L4161L 00113	736	f	\N
 738	12	дверь входная стеклопакет внешняя	not model	not number	738	f	\N
 740	2	плита индукционная 4 комфорки (кондитерский цех)	ИПП-410134	12.204776	740	f	\N
 741	8	посудомоечная машина Abat	not model	not number	741	f	\N
@@ -3389,6 +3407,7 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 755	5	телевизор Samsung 43" LED	not model	not number	755	t	\N
 782	2	плита индукционная Техно-ТТ 4 комфорки горячий цех(левая)	not model	not number	782	f	\N
 766	1	ледогенератор кускового льда BREMA	CB 184A	2021021045217	766	f	25
+736	10	блендер Hamilton Beach	HBB250S-CE	L4161L 00113	736	f	36
 783	12	туалет гостевой	not model	not number	783	f	\N
 785	12	система холодного водоснабжения комплекса	not model	not number	785	f	\N
 786	22	вспомогательное оборудование зал	not model	not number	786	f	\N
@@ -3403,7 +3422,6 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 795	8	кофемолка настольная	not model	not number	795	f	\N
 796	1	витрина угловая для пасты	not model	not number	796	f	\N
 797	21	ледогенератор Starfood	HZB-12S	12 01000084	761	f	\N
-798	1	печь конвекционная сборная UNOX	XEFT-04EU-ELDV	2020F0040361	798	f	\N
 799	34	кофемолка настольная	not model	not number	799	f	\N
 802	8	куттер RobotCoupe	R301 Ulta D	G4660200101	802	f	\N
 828	4	мойка двухсекционная холодный цех	not model	not number	828	f	\N
@@ -3455,8 +3473,8 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 849	31	мойка фарфоровой посуды двухсекционная	not model	not number	849	f	\N
 850	2	слайсер настольный	not model	not number	850	f	\N
 814	10	льдогенератор Brema	CB 184A	2021031046803	814	f	25
+798	1	печь конвекционная сборная UNOX	XEFT-04EU-ELDV	2020F0040361	798	f	33
 851	34	кофемашина холдерная	not model	not number	851	f	\N
-852	2	куттер RobotCoupe	CL 52 E	N4530134311	852	f	\N
 853	34	жалюзи электрические	not model	not number	853	f	\N
 854	9	вводное устройство ХВС	not model	not number	854	f	\N
 855	9	вводное устройство ГВС	not model	not number	855	f	\N
@@ -3500,7 +3518,6 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 879	10	оборудование минимаркета	not model	not number	879	t	\N
 888	9	оборудование минимаркета	not model	not number	888	t	\N
 885	34	система кондиционирования зала (фанкойлы)	not model	not number	885	f	\N
-856	34	блендер Hamilton Beach	HBB250	L4481L 0059	856	f	\N
 904	1	линия освещения раздача	not model	not number	904	f	\N
 906	1	витрина сборная гастрономия	not model	not number	906	f	\N
 907	13	система освещения зал(шинопровод)	not model	not number	907	f	\N
@@ -3521,6 +3538,8 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 897	11	посудомоечная машина Amika	not model	not number	897	t	\N
 903	34	посудомоечная машина Apach	AC800	4364348 ST3800RU	903	f	4
 886	4	кипятильник AIRHOT	CWB-35	20210700324	886	f	10
+852	2	куттер RobotCoupe	CL 52 E	N4530134311	852	f	30
+856	34	блендер Hamilton Beach	HBB250	L4481L 0059	856	f	36
 923	4	диваны модульные	not model	not number	923	f	\N
 924	28	система отопления	not model	not number	924	f	\N
 925	3	жалюзи входная гостевая группа	not model	not number	925	f	\N
@@ -3679,7 +3698,6 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 1082	40	мойка двухсекционная фарфор	not model	not number	1082	f	\N
 1083	7	барная стойка	not model	not number	1083	f	\N
 1084	25	система ГВС	not model	not number	1084	f	\N
-1086	8	кипятильник HURAKAN	HKN-HVZ50M	РЛТРМЯ50Ь072204	1086	f	\N
 1087	19	кипятильник	WB-37	0007	549	f	\N
 1088	9	ВРУ	not model	not number	1088	f	\N
 1089	4	тепловая завеса TropikLine	M5	07050159413102230800	1089	f	\N
@@ -3722,10 +3740,11 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 1124	21	посудомоечная машина Tatra	TW F50+DR+DO	67792	1124	f	\N
 1125	4	плита индукционная WOK	BT-350A2-1	0116/4500014916	716	f	\N
 1126	19	посудомоечная машина Elettobar	Fast 51T	915484	572	f	\N
-1127	26	блендер настольный Hurakan	HKN-BLW2GREY	HKN-BLW2GREY082116	1127	f	\N
 1128	5	Вводное устройство ХВС	not model	not number	1128	f	\N
 1069	19	кипятильник Animo	WKT 10n VA	not number	614	f	9
 1074	19	пастоварка Tecnoinox	CP35E7	5126369	62	f	24
+1127	26	блендер настольный Hurakan	HKN-BLW2GREY	HKN-BLW2GREY082116	1127	f	28
+1086	8	кипятильник HURAKAN	HKN-HVZ50M	РЛТРМЯ50Ь072204	1086	f	32
 759	8	мойка железной посуды двухсекционная	not model	not number	759	t	\N
 549	8	кипятильник	WB-37	0007	549	t	\N
 201	26	аппарат для мягкого мороженного Taylor	Taylor 142	not number	201	t	\N
@@ -3771,7 +3790,6 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 1153	6	Плитка половая кухня	not model	not number	1153	f	\N
 1154	9	система канализации кухня	not model	not number	1154	f	\N
 1156	30	жалюзи оконные электрические	not model	not number	1156	f	\N
-1157	2	кремоварка PASTOCHEFF 18 RTL	IC9963	847322100	1157	f	\N
 1158	12	система освещения зал	not model	not number	1158	f	\N
 921	25	посудомоечная машина DIHR	HT 11 400V 3N	DWH1001178	921	f	\N
 1159	10	Поддон в стюарной	not model	not number	1159	f	\N
@@ -3794,6 +3812,7 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 1143	40	кипятильник настольный Airhot	CWB-60	20211200268	1143	f	11
 1163	7	Indokor 2	In - 7000D	06202209240104	1163	f	21
 234	9	плита индукционная двухкомфорочная	IN-7000D	0420171001434	234	t	21
+1157	2	кремоварка PASTOCHEFF 18 RTL	IC9963	847322100	1157	f	39
 1175	32	Тиски настольные поворотные	Gigant bv125	not number	1175	f	\N
 1176	31	Диваны модульные	not model	not number	1176	f	\N
 1179	9	Стул деревянный в ассортименте.	not model	not number	1179	f	\N
@@ -3843,7 +3862,6 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 1218	1	Кофемашина La Pavoni	cafe2vn1658eu	2 960444 20905 0005 08 01	1218	t	\N
 1224	41	блинный аппарат 	Sikom robotics РК-2.1.3	42130091	933	f	\N
 1225	6	фильровальная установка	Britta C300	not number	1225	f	\N
-1226	10	блендер Hamilton Beach	HBB250S-CE	L0381L 00122	1226	f	\N
 1227	9	ледогенератор Brema	not model	not number	1227	f	\N
 1228	7	Рукомойник зона пасты	not model	not number	1228	f	\N
 1229	7	Рукомойник раздача	not model	not number	1229	f	\N
@@ -3858,6 +3876,7 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 1192	2	мясорубка(дубль)	МИМ-300	283	1192	f	8
 1211	19	кипятильник Animo	WKT 10n VA	not number	187	f	9
 703	7	плита индукционная INDOKOR 2 комфорки	IN-7000D	012017010042	703	t	21
+1226	10	блендер Hamilton Beach	HBB250S-CE	L0381L 00122	1226	f	36
 1236	13	Гриль -сковорода Berner	BGA60	not number	1236	f	\N
 1238	31	Вспомогательное оборудование кухня	not model	not number	1238	f	\N
 1239	10	Главный распределительный щит	not model	not number	1239	f	\N
@@ -3916,13 +3935,13 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 1293	2	система кондиционирования кремовый цех	not model	not number	1293	f	\N
 1294	41	ледогенератор GASTRORAG	DB-07	not number	784	f	\N
 1296	26	печь пиццерийная	PZ 4302 Z	140606972	1296	f	\N
-1297	36	UNOX печь конвекционная	XEBC-06EU-E1RM	2020F0041470	1297	f	\N
-1298	36	UNOX расстоечный шкаф	XEBPC-08EU-B	2021K0104052	1298	f	\N
 1299	2	двери филенчатые мясной цех(дальние)	not model	not number	1299	f	\N
 1300	2	двери филенчатые мясной цех	not model	not number	1300	f	\N
 1301	3	гомогенизатор RobotCoupe	CMP 250 C	G3730196701	1301	f	\N
 1295	12	ледогенератор HURAKAN настольный	HKN-IMF15	IMF 15.08.2022.009	1295	t	\N
 1245	1	пастоварка Tecnoinox	CP35E7	71510720	1245	t	24
+1297	36	UNOX печь конвекционная	XEBC-06EU-E1RM	2020F0041470	1297	f	34
+1298	36	UNOX расстоечный шкаф	XEBPC-08EU-B	2021K0104052	1298	f	35
 1302	5	Стол летнее кафе	not model	not number	1302	f	\N
 1303	10	Помещение менеджера	not model	not number	1303	f	\N
 1304	41	кофемашина Franke Flair	P 2M HD CE2	not number	88	f	\N
@@ -3968,9 +3987,7 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 1346	41	кипятильник (б/у Мак Пик)	not model	not number	532	f	\N
 1347	31	кипятильник HURAKAN	HKN-HVZ25M	HKNHVZ25M1821035	1070	f	\N
 1070	11	кипятильник HURAKAN	HKN-HVZ25M	HKNHVZ25M1821035	1070	t	\N
-1348	11	кипятильник HURAKAN	HKN-HVZ35	HVZ35221216004	1348	f	\N
 1349	41	гриль WELLS	G13EU	not number	1237	f	\N
-1350	2	гриль настольный RollerGrill	PSF 600 E	230104979	1350	f	\N
 1351	3	Дверь деревянная на мойку посуды	not model	not number	1351	f	\N
 1352	25	пастоварка настольная	not model	not number	1352	f	\N
 1353	9	Мармит	not model	not number	1353	f	\N
@@ -3993,6 +4010,8 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 1372	34	Мармит BAIN MARIE	ZCK 165B	HLZCK165B22HL2155-014	1372	f	\N
 1320	41	кипятильник Animo	WKT 10n VA	1Y 00491	366	f	9
 366	1	кипятильник Animo	WKT 10n VA	1Y 00491	366	t	9
+1348	11	кипятильник HURAKAN	HKN-HVZ35	HVZ35221216004	1348	f	31
+1350	2	гриль настольный RollerGrill	PSF 600 E	230104979	1350	f	38
 1373	40	Плита индукционная двухкомфорочная INDOKOR	IN-700D	112021051303832	1373	f	\N
 1374	3	Кресло кожаное в ассортименте	not model	not number	1374	f	\N
 1375	40	Оборудование летнего кафе	not model	not number	1375	f	\N
@@ -4025,7 +4044,6 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 1403	13	Аудиосистема	not model	not number	1403	f	\N
 1404	37	помещение серверной	not model	not number	1404	f	\N
 1405	7	Супница настольная	SB-6000	HLSB600021HL2048-031	1405	f	\N
-1406	40	Печь конвекционная Unox	XEFT-04EU-ELDV	2020K0072982	1406	f	\N
 1407	5	Аудио система	not model	not number	1407	f	\N
 1408	36	Мармит подогивающий VIATTO	not model	not number	1408	f	\N
 1409	21	система электроснабжения кухня	not model	not number	1409	f	\N
@@ -4063,6 +4081,7 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 1441	2	Стены потолок овощной цех	not model	not number	1441	f	\N
 1442	8	Дверь в служебные помещения	not model	not number	1442	f	\N
 1443	3	камера среднетемпературная	not model	not number	1443	f	\N
+1406	40	Печь конвекционная Unox	XEFT-04EU-ELDV	2020K0072982	1406	f	33
 1444	2	тепловентилятор Delta	D-802/1	not number	1444	f	\N
 1445	5	завеса тепловая Тепломаш	КЭВ-9П3032Е	0222003810	1445	f	\N
 1446	41	тепловая завеса Ballu зал	not model	not number	362	f	\N
@@ -4083,7 +4102,6 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 1460	19	Система освещения в холодильных камерах	not model	not number	1460	f	\N
 1461	2	тепловентилятор Equalion	PF01D-G	3276007056372	1461	f	\N
 1462	31	Система ХВС	not model	not number	1462	f	\N
-1463	7	Блендер Hurakan	HKN-BLW2GREY	HKN-BLW2GREY1222113	1463	f	\N
 1465	4	Декор в ассортименте	not model	not number	1465	f	\N
 1466	4	Планетарный миксер Bear	AR005	5706868	1466	f	\N
 1467	1	Помещение гостевых туалетов	not model	not number	1467	f	\N
@@ -4110,7 +4128,6 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 1489	4	Дверь противопожарная служебный вход	not model	not number	1489	f	\N
 1490	36	стены кухня + раздача	not model	not number	1490	f	\N
 1491	36	система приточной вентиляции	not model	not number	1491	f	\N
-1492	4	Кипятильник настольный Hurakan	HKN-HVZ50MBLACK	HVZ50MBLACK230329020	1492	f	\N
 1493	40	СВЧ-печь Airhot	not model	not number	1493	f	\N
 1494	1	вспомогательное оборудование кухня	not model	not number	1494	f	\N
 1495	42	Кипятильник	WBA 10	202202001157	1495	f	\N
@@ -4131,6 +4148,8 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 1509	34	/система электроснабжения оборудования	not model	not number	1509	f	\N
 1767	45	пол кухня	not model	not number	1767	f	\N
 1473	12	Пушка тепловая Ballu	BHP-P2-9	1002007072200765503264	1473	t	\N
+1463	7	Блендер Hurakan	HKN-BLW2GREY	HKN-BLW2GREY1222113	1463	f	28
+1492	4	Кипятильник настольный Hurakan	HKN-HVZ50MBLACK	HVZ50MBLACK230329020	1492	f	32
 1510	3	Жалюзи фасад Луночарского	not model	not number	1510	f	\N
 1511	5	Рекламная вывеска над стеклянным входом	not model	not number	1511	f	\N
 1512	13	Магистральная фильтровальная установка (зона пекаря)	not model	not number	1512	f	\N
@@ -4144,7 +4163,6 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 1520	44	Тепловая завеса Тепломаш	not model	not number	1520	f	\N
 1521	44	Вводно Распределительный Щит	not model	not number	1521	f	\N
 1522	32	шкафы техслужба Малышева 36	not model	not number	1522	f	\N
-1523	44	Кипятильник HURACAN	HKN-NVZ50Mblack	HKNNVZ50Mblack0822033	1523	f	\N
 1525	1	пастоварка VeroTerm	VT7CPEP05	23107ECPP05036	1525	f	\N
 1526	42	Диваны в ассортименте	not model	not number	1526	f	\N
 1527	44	Кабинет менеджера	not model	not number	1527	f	\N
@@ -4162,7 +4180,6 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 1540	44	Входная группа двери	not model	not number	1540	f	\N
 1541	40	Мармит подогревающий для бизнес ланчей	not model	not number	1541	f	\N
 1542	31	барная стойка	not model	not number	1542	f	\N
-1543	36	Блендер настольный HURAKAN	HKN-BLW2GREY	HKN-BLW2GREY082110	1543	f	\N
 1544	45	печь конвекционная MIWE(печь+под+расстойка)	EC 4 0604	9812328	521	f	\N
 1545	42	магистральная фильтровальная установка	not model	not number	1545	f	\N
 1546	2	система вентиляции кремовый цех	not model	not number	1546	f	\N
@@ -4170,7 +4187,6 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 1551	44	Рукомойник возле мойки для фарфора	not model	not number	1551	f	\N
 1552	44	Витрина угловая	not model	not number	1552	f	\N
 1553	41	картофелечистка Fimar	PPN5X40050T	100700189	112	f	\N
-1555	10	Кипятильник Hurakan	HKN-HVZ50M	HVZ50M231208012	1555	f	\N
 1556	31	Рукомойник на раздаче (возле кофемашины)	not model	not number	1556	f	\N
 1557	26	Мармит для супов подогреваемый	SB-6000	ROAL-SB-6000-70-030	1557	f	\N
 1558	13	Двери  феленчитые между кухней и залом.	not model	not number	1558	f	\N
@@ -4197,6 +4213,8 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 1524	5	пастоварка Tecnoinox	CP35E7	71510720	1245	f	24
 1528	41	пастоварка Tecnoinox	CP35E7	71910826	615	f	24
 1560	3	Ледогенератор настольный Brema	CB184A	2021041051699	1560	f	25
+1523	44	Кипятильник HURACAN	HKN-NVZ50Mblack	HKNNVZ50Mblack0822033	1523	f	32
+1555	10	Кипятильник Hurakan	HKN-HVZ50M	HVZ50M231208012	1555	f	32
 1581	45	СВЧ печь 	TMW-1100ME	L634640223110019	1581	f	\N
 1582	45	Дверь центральный вход (внешняя)	not model	not number	1582	f	\N
 1583	45	Дверь центральный вход (внутренний)	not model	not number	1583	f	\N
@@ -4213,7 +4231,6 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 1595	45	Система освещения коридор, кухня	not model	not number	1595	f	\N
 1596	45	миксер планетарный GastroMix	B5	2309043	1596	f	\N
 1598	45	мармит супница	HKN-SB57	2023080036	1598	f	\N
-1599	45	кипятильник настольный Hurakan	HKN-HVZ50MBLACK	HVZ50MBLACK230329018	1599	f	\N
 1600	45	мармит подогреваемый Bain Marie	ZCK165B	HLZCK165B23HL2176-108	1600	f	\N
 1601	45	мармит подогреваемый Bain Marie	ZCK165B	HLZCK165B23HL2176-115	1601	f	\N
 1602	45	Вытяжная вентиляционная установка	not model	not number	1602	f	\N
@@ -4231,7 +4248,6 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 1615	5	Микроволновая печь	Huracan HKN-WP900	202109263	1615	f	\N
 1570	19	витрина модульная	not model	not number	599	f	\N
 1616	13	Дверь входная пластиковая	not model	not number	1616	f	\N
-1617	2	вафельница RollerGril	GES 40	220507299	1617	f	\N
 1618	45	Мойка односекционная холодный цех	not model	not number	1618	f	\N
 1619	34	Мойка железной посуды двухсекционная	not model	not number	1619	f	\N
 1620	9	Блендер HURACAN	HKN-BLW2RED	BLW2RED221216915	1620	f	\N
@@ -4262,6 +4278,8 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 1588	45	посудомоечная машина Tatra	TW H50+DR+DD	78073	1588	f	3
 1569	2	гомогенизатор RobotCoupe	MP450UVV	6510250001	1569	f	12
 1604	7	Ледогенератор BREMA	CB 184 A	2021031046805	1604	f	25
+1599	45	кипятильник настольный Hurakan	HKN-HVZ50MBLACK	HVZ50MBLACK230329018	1599	f	32
+1617	2	вафельница RollerGril	GES 40	220507299	1617	f	37
 1646	13	Стол деревянный с металическай ножкой в ассортименте	not model	not number	1646	f	\N
 1647	12	Блендер	Huracan HKN-BLW2GREY	1222427	1647	f	\N
 1648	5	Пицца печь	not model	not number	1648	f	\N
@@ -4288,7 +4306,6 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 1672	40	Стеллаж подвижный для грязной посуды	not model	not number	1672	f	\N
 1673	7	Ламинатор BRAUBERG	L460	not number	1673	f	\N
 1674	10	Унитаз средний	not model	not number	1674	f	\N
-1675	4	Блендер Hurakan	HKN-BLW2GREY	BLW2GREY230728002	1675	f	\N
 1676	25	Система распределения фильтрованой воды	not model	not number	1676	f	\N
 1677	12	Система электроснабжения кухня	not model	not number	1677	f	\N
 1678	45	Ввод гвс (служебный туалет)	not model	not number	1678	f	\N
@@ -4302,7 +4319,6 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 1686	31	Мойка фарфоровой посуды 1 секционная	not model	not number	1686	f	\N
 1687	3	Система освещения раздача	not model	not number	1687	f	\N
 1688	11	Дверь в мойку из зала	not model	not number	1688	f	\N
-1690	5	Блендер Hamilton Beach	HBB250S-CE	00042	1690	f	\N
 1691	6	Блендер	Huracan HKN-BLW2GREY	230209176	1691	f	\N
 1692	36	Микроволновая печь Airhot	WP1000-30L	21080196	1692	f	\N
 1693	45	Мойка двухсекционная для железной посуды	not model	not number	1693	f	\N
@@ -4320,17 +4336,18 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 1707	2	двери филенчатые помещение насосной(склад)	not model	not number	1707	f	\N
 1708	2	двери филенчатые насосная(лестница)	not model	not number	1708	f	\N
 1710	41	посудомоечная машина COMENDA	LC 700M	113078	550	f	\N
-1709	9	Кипятильник Huracan	HKN-HVZ50M	HVZ50M231024053	1709	f	\N
 1711	41	кипятильник Animo	WKT 10n VA	30140 / 3W 19116	60	f	\N
 1712	10	Кассы	not model	not number	1712	f	\N
 1713	41	блендер HamiltonBeach	HBB250S-CE	J4611l 00117	32	f	\N
 1715	3	кипятильник настольный AirHot	not model	not number	1715	f	\N
-1714	3	кипятильник настольный Hurakan	HKN-HVZ35	HVZ35230728035	1714	f	\N
 1716	46	Посудомойка APACH	AF500	3183598	1716	f	\N
 1698	4	посудомоечная машина Tatra	TW H50+DR+DD	85939	1698	f	3
 1671	2	Овоще чистка FIMAR	PPF18M	240403771	1671	f	19
 1653	11	Ледогенератор BREMA	CB 184A	2021031046832	1653	f	25
 1689	42	Блендер Hamilton Beach	HBB255-CE	00084	1689	f	27
+1714	3	кипятильник настольный Hurakan	HKN-HVZ35	HVZ35230728035	1714	f	31
+1709	9	Кипятильник Huracan	HKN-HVZ50M	HVZ50M231024053	1709	f	32
+1690	5	Блендер Hamilton Beach	HBB250S-CE	00042	1690	f	36
 1717	46	Кипятильник Bain Marie	ZCK165BT	HLZCK165BT23HL2103-009	1717	f	\N
 1718	46	Супница Soup Kettle	SB-5700	2103-018	1718	f	\N
 1720	46	Миксер планетарный \nProfessional Stand Mixer	BSECO	2205145	1720	f	\N
@@ -4342,8 +4359,6 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 1727	46	Плита индукционная\nIndokor	IN2000	122023091604513	1727	f	\N
 1728	46	Слайзер HURACAN	HKN-HM220	220231010-037	1728	f	\N
 1729	46	Овощетерка Apach	AGR1	2321350	1729	f	\N
-1730	46	Печь конвекционная UNOX	XEBC-06EV-E1RM	0078361	1730	f	\N
-1731	46	Шкаф расстоячный UNOX	XEBPC-08EU-B	0005575	1731	f	\N
 1732	11	Витрина с охлаждением для дисертов	not model	not number	1732	f	\N
 1733	31	Насос канализационный SFA(фарфор)	SANISPEED V45	not number	1733	f	\N
 1734	45	Система электроснабжения кухня, розеточная сеть.	not model	not number	1734	f	\N
@@ -4400,10 +4415,10 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 1744	2	пароконвектомат Rational напольный	SCC WE 201	E21SI20022811875	1744	f	16
 1759	2	овощечистка Abat	МКК-500-01	00530	1759	f	17
 1725	46	Блендер Hamilton Beach	HBB255S-CE	00235	1725	f	27
+1731	46	Шкаф расстоячный UNOX	XEBPC-08EU-B	0005575	1731	f	35
 1786	1	система электроснабжения диваны	not model	not number	1786	f	\N
 1787	41	блендер Hamilton Beach	HBB250S-CE	J4611L	118	f	\N
 118	1	блендер Hamilton Beach	HBB250S-CE	J4611L	118	t	\N
-1788	1	блендер настольный HURAKAN	HKN-BLW2GREY	BLW2GREY240524N018	1788	f	\N
 1789	40	Железные ящики, раздевалка	not model	not number	1789	f	\N
 1790	10	Комод деревянный 2 этаж	not model	not number	1790	f	\N
 1791	1	СВЧ печь Viatto	P90D23SL-YR	2023070461	1791	f	\N
@@ -4436,6 +4451,7 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 1815	10	Пушка тепловая Ballu	BHP-P2-9	1002007072200765503264	1473	f	\N
 1816	34	Дверь на мойку	not model	not number	1816	f	\N
 1817	45	Магистральная фильтровальная установка раздача	not model	not number	1817	f	\N
+1788	1	блендер настольный HURAKAN	HKN-BLW2GREY	BLW2GREY240524N018	1788	f	28
 1818	8	система фильтрованного водоснабжения	not model	not number	1818	f	\N
 1820	9	мебель офисная в ассортименте	not model	not number	1820	f	\N
 1821	1	сейф	not model	not number	1821	f	\N
@@ -4490,7 +4506,6 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 1855	13	Сушилка для рук	M 2750AC	not number	1855	f	\N
 1856	36	Блендер HURACAN б/у(списан в пб упи)	NKN-HBH850	HBH850231024021	1856	f	\N
 1857	31	Тележка	not model	not number	1857	f	\N
-1858	25	Блендер HURACAN	HKN BLW2GREY	BLW2GREY221216044	1858	f	\N
 1859	26	потолок грильятто кухня-раздача	not model	not number	1859	f	\N
 1860	19	мойка двухсекционная кухня	not model	not number	1814	f	\N
 1861	13	Холодильник бара HANSA	not model	not number	1861	f	\N
@@ -4531,6 +4546,7 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 1364	7	посудомоечная машина Tatra	TW H50+DR+DD	66641	1364	f	3
 768	13	вакумматор INDOKOR	IVP-450A	not number	768	f	7
 272	5	кипятильник Animo	WKT 10n VA	2BA19145	272	f	9
+1858	25	Блендер HURACAN	HKN BLW2GREY	BLW2GREY221216044	1858	f	28
 614	11	кипятильник Animo	WKT 10n VA	not number	614	t	9
 677	10	кипятильник Animo	WKT 10n VA	not number	677	f	9
 1216	2	кипятильник Animo(цех питания)	WKT 10n VA	not number	896	f	9
@@ -4545,6 +4561,9 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 62	9	пастоварка Tecnoinox	CP35E7	5126369	62	t	24
 972	5	ледогенератор кускового льда BREMA	CB 184A	2021031046787	972	f	25
 1597	45	блендер настольный HamiltonBeach	HBB255S-CE	B2622AT 00143	1597	f	27
+1675	4	Блендер Hurakan	HKN-BLW2GREY	BLW2GREY230728002	1675	f	28
+1543	36	Блендер настольный HURAKAN	HKN-BLW2GREY	HKN-BLW2GREY082110	1543	f	28
+1730	46	Печь конвекционная UNOX	XEBC-06EV-E1RM	0078361	1730	f	34
 \.
 
 
@@ -4656,7 +4675,6 @@ COPY public.orders (id, customer_id, date, status, problem, closed_date, comment
 129	1	2025-03-26 19:06:09.974922	in_work	необходимо восстановить силовую плату и приклеить новое каленой стекло на индукционную плиту INDOKOR IN-7000D	\N	\N	9	8
 117	1	2025-03-19 13:25:38.802141	in_work	необходимо обновить схему вводного устройства для ПБ МЕГА	\N	\N	6	1
 119	1	2025-03-20 15:25:03.211356	in_work	необходимо добавить потолочный светильник над столом финансового директора	\N	\N	30	8
-107	1	2025-03-17 20:39:27.186398	in_work	После производства предварительного бурения и определения новых канализационных трасс необходимо совместно с подрядной организацией произвести перекладку канализационных труб Ду 100 под потолком подвала Кулинарной Фабрики	\N	\N	28	1
 112	1	2025-03-18 18:10:34.616015	closed	необходимо опробовать паяльный аппарат	2025-03-18 20:01:30.384202		32	\N
 114	3	2025-03-18 19:54:13.556877	closed	необходимо произвести ревизию наличия оборудования на объекте	2025-03-18 20:23:22.032989	Необходима более подробная ревизия	2	\N
 115	1	2025-03-18 20:52:44.746128	in_work	необходимо восстановить работу дверного доводчика на служебном входе	\N	\N	37	\N
@@ -4686,8 +4704,9 @@ COPY public.orders (id, customer_id, date, status, problem, closed_date, comment
 136	1	2025-03-28 18:51:03.793954	closed	необходимо разобрать коробки со старыми запчастями и комплектующими	2025-03-31 08:55:40.951687		3	9
 139	1	2025-03-30 19:33:09.982525	closed	необходимо приобрести и установить новый замок на входную дверь поста охраны комплекса	2025-03-31 18:37:56.447885		37	1
 141	5	2025-03-31 14:12:12.490642	in_work	02.04.2025 после 22:00, либо 03.04.2025 до 10:00 монтаж двух демосистем (одна в зале и одна на раздаче) и повесить вывеску "зона выдачи" на цепочки над зоной выдачи) 	\N	\N	11	1
-142	1	2025-03-31 18:38:39.387201	in_work	необходимо обварить гайки на новом замке входной служебной двери(с обоих сторон)	\N	\N	2	8
 143	1	2025-04-01 17:14:39.83555	in_work	Необходимо провести повторную диагностику правого двигателя насосной станции	\N	\N	21	1
+107	1	2025-03-17 20:39:27.186398	closed	После производства предварительного бурения и определения новых канализационных трасс необходимо совместно с подрядной организацией произвести перекладку канализационных труб Ду 100 под потолком подвала Кулинарной Фабрики	2025-04-02 03:49:36.655397		28	1
+142	1	2025-03-31 18:38:39.387201	closed	необходимо обварить гайки на новом замке входной служебной двери(с обоих сторон)	2025-04-02 12:52:26.25912		2	8
 \.
 
 
@@ -13732,6 +13751,15 @@ COPY public.performers (id, work_id, worker_id) FROM stdin;
 9081	8317	9
 9082	8318	1
 9083	8319	15
+9084	8320	1
+9085	8321	1
+9086	8322	8
+9087	8323	8
+9088	8324	8
+9089	8325	1
+9090	8326	8
+9091	8327	1
+9092	8328	8
 \.
 
 
@@ -13912,6 +13940,7 @@ COPY public.sessions_hashs (id, hash, start_time, is_active) FROM stdin;
 21	83556654414530651140437730692154389585945607486261249388855573641116257882677	2025-04-01 12:44:33.298543	t
 22	20987460868625710515819688974653134998585421342839001742671507186652778264896	2025-04-01 17:09:02.546866	t
 23	114711544254716591941547102492077724422661888603786199167447746531660006247725	2025-04-01 20:17:47.46286	t
+24	51792147599548432986750008247412936339333158064573707509681916782225423281904	2025-04-02 11:53:33.697597	t
 \.
 
 
@@ -22729,6 +22758,15 @@ COPY public.works (id, id_obor, date, problem, result) FROM stdin;
 8317	110	2025-04-01 16:38:06	Срабатывает аварийная сигнализация.	Не исправен правый насос. Станция переведена в режим работы на 1м насосе
 8318	511	2025-04-01 19:30:00	сломан корпус розетки для подключения расстоечного шкафа Unox	Заменен механизм AquaDesign + рамка 1 пост белый (Электромир)
 8319	1782	2025-04-01 22:00:21	Выпала и сломалась плитка.	Залил дыру наливным полом.
+8320	139	2025-04-02 02:35:00	замена розеток	заменены 2 шт один пост + рамка 1 пост AquaDesign (Электромир). группы в ЩРП-1 с 4 по 7
+8321	1006	2025-04-02 03:39:00	перенос сетей канализации	Подрядчиками ресторана(Сергей Тверитин) проложены три участка канализации Ду 50 до существующей магистрали Ду100 под потолком мясного цеха. Пролив протечек не выявил. Необходимо выполнение гидроизоляции отверстий в перекрытиях под новые трассы
+8322	425	2025-04-02 12:02:49	Заварить гайки	Заварил гайки крепления на новом установленном замке
+8323	843	2025-04-02 12:08:58	Бежит вода с сифона	Промазал герметиком, установил на место. Течь воды не наблюдается
+8324	210	2025-04-02 12:12:18	Плохо уходит вода	Прочистил сифон и шланг.вода уходит нормально
+8325	110	2025-04-02 17:59:15	Повторная диагностика	Станция переведена в режим Два двигателя. Оба двигателя включаются с пульта управления. Пролив на срабатывание пневмодатчиков. Проверено 8 циклов попеременного включения по уровню. Внимание: желательно заменить обратные клапаны и пневмодатчики
+8326	141	2025-04-02 19:22:53	Наточить ножи	Наточено ножей в количестве 10 шт
+8327	526	2025-04-02 22:15:53	Монтаж информационного оборудования	Установлены две демо-системы, на цепочках к декорации закреплена табличка Зона выдачи,  на саморезы закреплён план эвакуации
+8328	1289	2025-04-02 22:39:11	Демонтаж светильников, замена лампы	Сдемонтировал подвесные светильники (тарелка) - 3шт.\nЗаменил лампу в трековом прожекторе, GU10 7w 220v 3000K
 \.
 
 
@@ -22816,7 +22854,7 @@ SELECT pg_catalog.setval('public.bindings_id_seq', 107, true);
 -- Name: bugzilla_id_seq; Type: SEQUENCE SET; Schema: public; Owner: saibogo
 --
 
-SELECT pg_catalog.setval('public.bugzilla_id_seq', 147, true);
+SELECT pg_catalog.setval('public.bugzilla_id_seq', 148, true);
 
 
 --
@@ -22858,14 +22896,14 @@ SELECT pg_catalog.setval('public.electic_id_seq', 23, true);
 -- Name: equip_details_id_seq; Type: SEQUENCE SET; Schema: public; Owner: saibogo
 --
 
-SELECT pg_catalog.setval('public.equip_details_id_seq', 27, true);
+SELECT pg_catalog.setval('public.equip_details_id_seq', 39, true);
 
 
 --
 -- Name: equip_sub_types_id_seq; Type: SEQUENCE SET; Schema: public; Owner: saibogo
 --
 
-SELECT pg_catalog.setval('public.equip_sub_types_id_seq', 14, true);
+SELECT pg_catalog.setval('public.equip_sub_types_id_seq', 20, true);
 
 
 --
@@ -22914,7 +22952,7 @@ SELECT pg_catalog.setval('public.orders_id_seq', 143, true);
 -- Name: performers_id_seq; Type: SEQUENCE SET; Schema: public; Owner: saibogo
 --
 
-SELECT pg_catalog.setval('public.performers_id_seq', 9083, true);
+SELECT pg_catalog.setval('public.performers_id_seq', 9092, true);
 
 
 --
@@ -22942,7 +22980,7 @@ SELECT pg_catalog.setval('public.posts_id_seq', 5, true);
 -- Name: sessions_hashs_id_seq; Type: SEQUENCE SET; Schema: public; Owner: saibogo
 --
 
-SELECT pg_catalog.setval('public.sessions_hashs_id_seq', 23, true);
+SELECT pg_catalog.setval('public.sessions_hashs_id_seq', 24, true);
 
 
 --
