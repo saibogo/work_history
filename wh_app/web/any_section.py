@@ -91,8 +91,12 @@ def all_meter_devices_in_point_page(point_id: int, stylesheet_number: str) -> st
         links = ['/get-devices-reading/{}'.format(elem[0]) for elem in devices]
         table = uhtml.universal_table(table_headers.meter_devices_table_name, table_headers.meter_devices_table,
                                       devices, True, links)
+        devices_button = '<div id="navigation_div">''<div class="navigation_elem">' \
+                        '<a href="/add-meter-device-in-point/{0}">Добавить прибор учета</a></div>' \
+                        '<div class="navigation_elem"><a href="/delete-meter-device-from-point/{0}">Удалить прибор учета</a></div>'  \
+                        '</div>'.format(point_id)
         if functions.session['role'] == functions.ROLE_SUPERUSER:
-            table1 = _table_with_schemes(point_id)
+            table1 = _table_with_schemes(point_id) + devices_button
         else:
             table1 = ''
         return web_template.result_page(table + table1, "/meter-devices", str(stylesheet_number))

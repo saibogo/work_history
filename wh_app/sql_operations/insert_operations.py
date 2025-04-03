@@ -1,5 +1,5 @@
 from wh_app.sql_operations.select_operations import select_operations
-from wh_app.sql.insert_sql import *
+from wh_app.sql.insert_sql.insert_sql import *
 
 
 def create_new_point(cursor, point_name: str, point_address: str) -> None:

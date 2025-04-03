@@ -1746,6 +1746,7 @@ COPY public.bugzilla (id, problem, status, date_start, date_close) FROM stdin;
 146	Необходимо разработать возможность загрузки новых деталировок в систему с подключением к существующим подклассам	f	2025-03-30 21:34:05.666552	2025-04-01 20:19:53.069325
 147	Необходимо добавить в таблицу просмотра оборудования ссылку на подключение деталировки из числа существующих в системе	f	2025-03-30 21:34:48.354324	2025-04-02 01:08:09.017275
 148	необходимо разработать систему хранения и отдачи инструкций для оборудования аналогично системе с деталировками	t	2025-04-02 01:30:21.681352	\N
+149	необходимо реализовать пейджинг по страницам в общем перечне приборов учета	t	2025-04-03 19:30:46.256754	\N
 \.
 
 
@@ -1910,6 +1911,7 @@ COPY public.customer (id, hash_pass, full_name, description, is_active) FROM std
 3	98495709153842244150286319051560969464677828123758817845574381821594076045352	testcustomer	Тестовый Заказчик	t
 6	32352661797918373051407716799943771718491154749126928998975577995378021812486	managerarbat	менеджер Арбат	t
 7	69877506489554055205190256616418124430509954619142389119669258172385471899289	managerkf	Фабрика Менеджер	t
+8	43445076144143480636841426406916339486355315606826560755808089446468996549228	polu	Шмаков Антон	t
 \.
 
 
@@ -1988,6 +1990,8 @@ COPY public.equip_details (id, full_type, equip_name_detail, description) FROM s
 37	18	Инструкция на Roller Grill GES 40.pdf	вафельницы RollerGril GES GED с  10 по 80
 38	19	Инструкция на Roller Grill PSF 600 E 380В .pdf	грили RollerGrill PSF 400 600
 39	20	CRP-PASTOCHEF-18-RTL_pm.pdf	кремоварочная машина PASTOCHEF 18 RTL
+40	21	Fimar CRP.pdf	блинницы Fimar CRP CRP2 CRP4 CRP42
+41	6	Rational CD101.pdf	Rational CD 101
 \.
 
 
@@ -2015,6 +2019,7 @@ COPY public.equip_sub_types (id, super_type, equip_type, type_folder, comment) F
 18	thermal	waffle_iron	waffle_irons	вафельницы электрические
 19	thermal	grill	grills	грили электрические
 20	refrigeration	cream_cooker	cream_cookers	кремоварочные машины
+21	thermal	pancake_maker	pancake_makers	блинницы электрические
 \.
 
 
@@ -2674,6 +2679,12 @@ COPY public.meter_readings (id, devices_id, read_date, reading) FROM stdin;
 433	35	2025-04-01	376768.220
 434	37	2025-04-01	3615.848
 435	36	2025-04-01	3202.466
+436	90	2025-04-03	42363.000
+437	83	2025-04-03	2657.500
+438	84	2025-04-03	3770.600
+439	106	2025-04-03	396.011
+440	107	2025-04-03	365.824
+441	105	2025-04-03	62805.000
 \.
 
 
@@ -2870,7 +2881,6 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 213	2	система электроснабжения овощной цех	not model	not number	213	f	\N
 215	9	входная  группа (внешняя дверь)	not model	not number	215	f	\N
 216	9	входная группа (внутренняя дверь)	not model	not number	216	f	\N
-179	26	пароконвектомат Rational	EM CD 101	58376	179	f	\N
 217	9	мойка односекционная зал	not model	not number	217	f	\N
 218	9	мойка двухсекционная инвентарь(возле менеджерской)	not model	not number	218	f	\N
 220	2	миксер планетарный Bear	AR005	5714815	220	f	\N
@@ -2885,6 +2895,7 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 222	27	система водоснабжения	not model	not number	222	f	\N
 223	2	куттер RobotCoupe	R 5 A plus	Z136015911	223	f	\N
 187	6	кипятильник Animo	WKT 10n VA	not number	187	t	9
+179	26	пароконвектомат Rational	EM CD 101	58376	179	f	41
 224	2	фритюрница APACH	APFE-47P	not number	224	f	\N
 225	2	плита индукционная Техно-ТТ 4 комфорки	not model	not number	225	f	\N
 226	2	двери холодный цех	not model	not number	226	f	\N
@@ -4511,7 +4522,6 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 1861	13	Холодильник бара HANSA	not model	not number	1861	f	\N
 1862	45	мойка двухсекционная для фарфора	not model	not number	1862	f	\N
 1863	19	Wiesheu Minimat	Minimat 64-L	10252361	5	f	\N
-1864	26	Блинница настольная двухнофорочная	Fimar CRP2	not number	1819	f	\N
 1865	7	Потолок подвесной. Грильято.	not model	not number	1865	f	\N
 1866	41	жироуловитель подраковинный (дальняя мойка)	not model	not number	1802	f	\N
 1867	19	мойка двухсекционная(вход на раздачу)	not model	not number	1813	f	\N
@@ -4547,6 +4557,7 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 768	13	вакумматор INDOKOR	IVP-450A	not number	768	f	7
 272	5	кипятильник Animo	WKT 10n VA	2BA19145	272	f	9
 1858	25	Блендер HURACAN	HKN BLW2GREY	BLW2GREY221216044	1858	f	28
+1864	26	Блинница настольная двухнофорочная	Fimar CRP2	not number	1819	f	40
 614	11	кипятильник Animo	WKT 10n VA	not number	614	t	9
 677	10	кипятильник Animo	WKT 10n VA	not number	677	f	9
 1216	2	кипятильник Animo(цех питания)	WKT 10n VA	not number	896	f	9
@@ -4564,6 +4575,7 @@ COPY public.oborudovanie (id, point_id, name, model, serial_num, pre_id, deleted
 1675	4	Блендер Hurakan	HKN-BLW2GREY	BLW2GREY230728002	1675	f	28
 1543	36	Блендер настольный HURAKAN	HKN-BLW2GREY	HKN-BLW2GREY082110	1543	f	28
 1730	46	Печь конвекционная UNOX	XEBC-06EV-E1RM	0078361	1730	f	34
+1894	46	Шинопровод над раздачей	not model	not number	1894	f	\N
 \.
 
 
@@ -4703,10 +4715,11 @@ COPY public.orders (id, customer_id, date, status, problem, closed_date, comment
 140	1	2025-03-30 21:00:36.266378	in_work	необходимо произвести уточнение параметров главного водомера ГВС	\N	\N	38	1
 136	1	2025-03-28 18:51:03.793954	closed	необходимо разобрать коробки со старыми запчастями и комплектующими	2025-03-31 08:55:40.951687		3	9
 139	1	2025-03-30 19:33:09.982525	closed	необходимо приобрести и установить новый замок на входную дверь поста охраны комплекса	2025-03-31 18:37:56.447885		37	1
-141	5	2025-03-31 14:12:12.490642	in_work	02.04.2025 после 22:00, либо 03.04.2025 до 10:00 монтаж двух демосистем (одна в зале и одна на раздаче) и повесить вывеску "зона выдачи" на цепочки над зоной выдачи) 	\N	\N	11	1
-143	1	2025-04-01 17:14:39.83555	in_work	Необходимо провести повторную диагностику правого двигателя насосной станции	\N	\N	21	1
 107	1	2025-03-17 20:39:27.186398	closed	После производства предварительного бурения и определения новых канализационных трасс необходимо совместно с подрядной организацией произвести перекладку канализационных труб Ду 100 под потолком подвала Кулинарной Фабрики	2025-04-02 03:49:36.655397		28	1
 142	1	2025-03-31 18:38:39.387201	closed	необходимо обварить гайки на новом замке входной служебной двери(с обоих сторон)	2025-04-02 12:52:26.25912		2	8
+143	1	2025-04-01 17:14:39.83555	closed	Необходимо провести повторную диагностику правого двигателя насосной станции	2025-04-03 08:53:01.541279		21	1
+141	5	2025-03-31 14:12:12.490642	closed	02.04.2025 после 22:00, либо 03.04.2025 до 10:00 монтаж двух демосистем (одна в зале и одна на раздаче) и повесить вывеску "зона выдачи" на цепочки над зоной выдачи) 	2025-04-03 08:53:20.837671		11	1
+144	8	2025-04-03 16:57:21.011815	in_work	Провести диагностику камер на складе,в целях подготовки к летнему режиму.	\N	\N	2	6
 \.
 
 
@@ -13760,6 +13773,21 @@ COPY public.performers (id, work_id, worker_id) FROM stdin;
 9090	8326	8
 9091	8327	1
 9092	8328	8
+9093	8329	8
+9094	8330	8
+9095	8331	9
+9096	8332	9
+9097	8333	9
+9098	8334	8
+9099	8335	10
+9100	8336	10
+9101	8337	10
+9102	8338	10
+9103	8339	9
+9104	8340	9
+9105	8341	9
+9106	8342	9
+9107	8343	8
 \.
 
 
@@ -13941,6 +13969,11 @@ COPY public.sessions_hashs (id, hash, start_time, is_active) FROM stdin;
 22	20987460868625710515819688974653134998585421342839001742671507186652778264896	2025-04-01 17:09:02.546866	t
 23	114711544254716591941547102492077724422661888603786199167447746531660006247725	2025-04-01 20:17:47.46286	t
 24	51792147599548432986750008247412936339333158064573707509681916782225423281904	2025-04-02 11:53:33.697597	t
+25	5518098520302173206348587728611237982644738422101260291094427760490682411150	2025-04-03 08:51:52.30611	t
+26	44867142202530997515514862324230579884987076677417865923379272173120023828153	2025-04-03 16:49:23.478865	f
+27	5286586031698019709264336506490294111105506383190637218279054188957996787119	2025-04-03 16:52:57.119059	f
+28	65994990584377276697112067961237800704390969343390701579452526131946639713538	2025-04-03 17:01:24.356996	f
+29	15014449743943063258646187346045304049789415993916368350151117283708469386681	2025-04-03 17:25:02.558011	t
 \.
 
 
@@ -14439,6 +14472,17 @@ COPY public.workers_schedule (work_date, worker_id, day_type) FROM stdin;
 2025-04-06	9	schedule_8_18
 2025-04-06	8	schedule_7_19
 2025-04-02	1	schedule_special
+2025-04-07	8	schedule_7_19
+2025-04-07	9	schedule_8_18
+2025-04-07	10	shedule_service
+2025-04-07	5	shedule_service
+2025-04-07	6	shedule_service
+2025-04-08	15	schedule_7_19
+2025-04-08	1	schedule_8_18
+2025-04-08	9	schedule_8_18
+2025-04-08	10	shedule_service
+2025-04-08	5	shedule_service
+2025-04-08	6	shedule_service
 \.
 
 
@@ -22767,6 +22811,21 @@ COPY public.works (id, id_obor, date, problem, result) FROM stdin;
 8326	141	2025-04-02 19:22:53	Наточить ножи	Наточено ножей в количестве 10 шт
 8327	526	2025-04-02 22:15:53	Монтаж информационного оборудования	Установлены две демо-системы, на цепочках к декорации закреплена табличка Зона выдачи,  на саморезы закреплён план эвакуации
 8328	1289	2025-04-02 22:39:11	Демонтаж светильников, замена лампы	Сдемонтировал подвесные светильники (тарелка) - 3шт.\nЗаменил лампу в трековом прожекторе, GU10 7w 220v 3000K
+8329	61	2025-04-03 07:39:45	Отпала рейка декора стены	Установил на место, прибил гвоздями
+8330	48	2025-04-03 07:40:54	Установить, снять спинку дивана	Снял следующую спинку дивана с диванного модуля на перетяжку. Установил другую после ремонта на место.
+8331	1699	2025-04-03 13:13:28	Болтаются ножни стула	Отсутствует 1 винт. Остальные не затянуты. Исправленно
+8332	1894	2025-04-03 13:17:26	Не горит светильник	Нет контакта провода в клемнике, исправленно. Заменил  лампу LED 220v 7w GU10
+8333	1704	2025-04-03 13:20:27	Оторвали держатель туалетной бумаги	Исправленно
+8334	87	2025-04-03 13:50:32	Появление воды временнами под мойкой, не постоянно	Осмотр провёл, ни каких протечек воды не обнаружил. Слив воды в жироуловитель, труба d50 находится под анти наклоном. Поднять выше нет возможности
+8335	1537	2025-04-01 19:00:00	плановая чистка жироуловителя	вычищен
+8336	1538	2025-04-01 19:30:00	плановая чистка жироуловителя	вычищен
+8337	1123	2025-04-02 21:00:00	плановая чистка жироуловителей	вычищен
+8338	586	2025-04-02 22:00:00	плановая чистка сборного жироуловителя холодный цех	вычищен
+8339	1839	2025-04-03 18:56:31	Прокладка удленителя	Проложил удлинитель 6м (провод 3х2.5) От розетки в зале (на колонне возле лестницы)
+8340	1839	2025-04-03 19:01:18	Установка доски для объявлений	Закрепил саморезами б/у доску с пробковым покрытием (была установлена в коридоре на кухню)
+8341	293	2025-04-03 11:00:00	Возврат на рабочую схему	Система переведена на гвс от тплюс. Вентеля на водонагреватели перекрыты
+8342	1518	2025-04-03 19:13:49	Установка таблички "зона выдачи"	Подвесил на цепочку
+8343	903	2025-04-03 19:17:53	Вода под машиной	Течь воды с отвода d50 , просела прокладка. Заменил. Нужно заменить переходную муфту 50/25
 \.
 
 
@@ -22836,10 +22895,10 @@ COPY public.workspoints (point_id, point_name, point_address, is_work) FROM stdi
 35	Tarteen by Paul Bakery	ТЦ Гринвич	closed
 1	ПБ Малышева 36	Екатеринбург Малышева 36	in_work
 22	Шеф Донер КОР	Екатеринбург ТК КОР-ДОМ Высоцкого	closed
-47	склад оборудования Пышма	Верхняя Пышма	in_work
 12	ПБ Центральный Гастроном	Екатеринбург Ленина 48	closed
 23	ПБ МЕГА-Парк	Екатеринбург, Металлургов 87, ТЦ МЕГА открытая площадка со стороны Металлургов	closed
 11	ПБ Парк Хаус	Екатеринбург ТЦ Парк Хаус	in_work
+47	склад оборудования Пышма	Верхняя Пышма	closed
 \.
 
 
@@ -22854,7 +22913,7 @@ SELECT pg_catalog.setval('public.bindings_id_seq', 107, true);
 -- Name: bugzilla_id_seq; Type: SEQUENCE SET; Schema: public; Owner: saibogo
 --
 
-SELECT pg_catalog.setval('public.bugzilla_id_seq', 148, true);
+SELECT pg_catalog.setval('public.bugzilla_id_seq', 149, true);
 
 
 --
@@ -22882,7 +22941,7 @@ SELECT pg_catalog.setval('public.cold_water_id_seq', 23, true);
 -- Name: customer_id_seq; Type: SEQUENCE SET; Schema: public; Owner: saibogo
 --
 
-SELECT pg_catalog.setval('public.customer_id_seq', 7, true);
+SELECT pg_catalog.setval('public.customer_id_seq', 8, true);
 
 
 --
@@ -22896,14 +22955,14 @@ SELECT pg_catalog.setval('public.electic_id_seq', 23, true);
 -- Name: equip_details_id_seq; Type: SEQUENCE SET; Schema: public; Owner: saibogo
 --
 
-SELECT pg_catalog.setval('public.equip_details_id_seq', 39, true);
+SELECT pg_catalog.setval('public.equip_details_id_seq', 41, true);
 
 
 --
 -- Name: equip_sub_types_id_seq; Type: SEQUENCE SET; Schema: public; Owner: saibogo
 --
 
-SELECT pg_catalog.setval('public.equip_sub_types_id_seq', 20, true);
+SELECT pg_catalog.setval('public.equip_sub_types_id_seq', 21, true);
 
 
 --
@@ -22931,7 +22990,7 @@ SELECT pg_catalog.setval('public.meter_devices_id_seq', 129, true);
 -- Name: meter_readings_id_seq; Type: SEQUENCE SET; Schema: public; Owner: saibogo
 --
 
-SELECT pg_catalog.setval('public.meter_readings_id_seq', 435, true);
+SELECT pg_catalog.setval('public.meter_readings_id_seq', 441, true);
 
 
 --
@@ -22945,14 +23004,14 @@ SELECT pg_catalog.setval('public.oborudovanie_id_seq', 1, false);
 -- Name: orders_id_seq; Type: SEQUENCE SET; Schema: public; Owner: saibogo
 --
 
-SELECT pg_catalog.setval('public.orders_id_seq', 143, true);
+SELECT pg_catalog.setval('public.orders_id_seq', 144, true);
 
 
 --
 -- Name: performers_id_seq; Type: SEQUENCE SET; Schema: public; Owner: saibogo
 --
 
-SELECT pg_catalog.setval('public.performers_id_seq', 9092, true);
+SELECT pg_catalog.setval('public.performers_id_seq', 9107, true);
 
 
 --
@@ -22980,7 +23039,7 @@ SELECT pg_catalog.setval('public.posts_id_seq', 5, true);
 -- Name: sessions_hashs_id_seq; Type: SEQUENCE SET; Schema: public; Owner: saibogo
 --
 
-SELECT pg_catalog.setval('public.sessions_hashs_id_seq', 24, true);
+SELECT pg_catalog.setval('public.sessions_hashs_id_seq', 29, true);
 
 
 --
