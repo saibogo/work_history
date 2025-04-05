@@ -3,7 +3,7 @@
 import datetime
 
 from wh_app.postgresql.database import Database
-from wh_app.sql_operations.insert_operations import create_new_work
+from wh_app.sql_operations.insert_operation.insert_operations import create_new_work
 
 
 class CreateWorkObject:

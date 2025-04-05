@@ -6,7 +6,7 @@ from wh_app.web.any_section import main_web_menu, faq_page, statistics_page,\
     system_status_page, view_changelog, view_changelog_page, external_services_page, power_outages_page,\
     meter_devices_menu_page, all_meter_devices_page, all_reading_to_device_page, add_reading_method,\
     all_meter_devices_in_point_page, meter_readings_bar_page, meter_readings_bar_page_avr, all_worked_meter_devices,\
-    only_reading_to_device_page
+    only_reading_to_device_page, last_24_monthly_expense_page
 from wh_app.supporting.pdf_operations.pdf import equips_in_point, works_from_equip,\
     works_from_performer, weekly_charts_pdf, move_equip, point_tech_information, find_work_without_date, find_equip,\
     find_point, find_work_with_date, works_from_performer_with_date, top10workers, top10points, top10equips,\
@@ -96,6 +96,12 @@ def to_bar_meter(device_id: int) -> Response:
 def to_bar_meter_avr(device_id: int) -> Response:
     """Goto to simple bar with data from device meter with id = device_id"""
     return goto_or_redirect(lambda: meter_readings_bar_page_avr(device_id, stylesheet_number()), functions.ROLE_WORKER)
+
+
+@app.route('/to-bar-meter-mnth/<device_id>')
+def to_bar_meter_mounths(device_id: int) -> Response:
+    """Goto to simple bar with last_24_monthly_expense from device meter with id = device_id"""
+    return goto_or_redirect(lambda: last_24_monthly_expense_page(device_id, stylesheet_number()), functions.ROLE_SUPERUSER)
 
 
 @app.route('/add-reading', methods=['POST'])

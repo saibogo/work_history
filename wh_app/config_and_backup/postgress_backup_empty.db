@@ -194,6 +194,21 @@ CREATE FUNCTION public.date_to_date_and_day_string(d date) RETURNS text
 ALTER FUNCTION public.date_to_date_and_day_string(d date) OWNER TO saibogo;
 
 --
+-- Name: first_day_of_months(date); Type: FUNCTION; Schema: public; Owner: saibogo
+--
+
+CREATE FUNCTION public.first_day_of_months(dt date) RETURNS date
+    LANGUAGE plpgsql
+    AS $$
+        BEGIN
+	        RETURN DATE_TRUNC('MONTH', dt)::DATE;
+        END;
+        $$;
+
+
+ALTER FUNCTION public.first_day_of_months(dt date) OWNER TO saibogo;
+
+--
 -- Name: full_calc_all_schemes_in_point(integer); Type: FUNCTION; Schema: public; Owner: saibogo
 --
 
@@ -270,6 +285,52 @@ CREATE FUNCTION public.last_month_date() RETURNS date
 
 
 ALTER FUNCTION public.last_month_date() OWNER TO saibogo;
+
+--
+-- Name: last_n_first_dates(integer); Type: FUNCTION; Schema: public; Owner: saibogo
+--
+
+CREATE FUNCTION public.last_n_first_dates(n integer) RETURNS date[]
+    LANGUAGE plpgsql
+    AS $$
+        DECLARE all_dates DATE[]; start_date DATE; crt_date DATE; i INT;
+        BEGIN
+	    start_date = NOW()::DATE;
+	    crt_date = start_date;
+	    FOR i IN 1..N LOOP
+		    all_dates = array_append(all_dates, crt_date);
+		    crt_date = crt_date - INTERVAL '1 MONTH';
+	    END LOOP;
+	    RETURN all_dates;
+        END;
+        $$;
+
+
+ALTER FUNCTION public.last_n_first_dates(n integer) OWNER TO saibogo;
+
+--
+-- Name: last_n_nearest_readings(integer, integer); Type: FUNCTION; Schema: public; Owner: saibogo
+--
+
+CREATE FUNCTION public.last_n_nearest_readings(dev_id integer, n integer) RETURNS integer[]
+    LANGUAGE plpgsql
+    AS $$
+        DECLARE
+	        dates DATE[];
+	        reads_id INTEGER[];
+	        dt DATE;
+        BEGIN
+	        dates = last_N_first_dates(N);
+	        FOREACH dt IN ARRAY dates
+	        LOOP
+		        reads_id  = array_append(reads_id, readings_with_the_nearest_date(dev_id, dt));
+	        END LOOP;
+	    RETURN reads_id;
+        END;
+        $$;
+
+
+ALTER FUNCTION public.last_n_nearest_readings(dev_id integer, n integer) OWNER TO saibogo;
 
 --
 -- Name: last_week_date(); Type: FUNCTION; Schema: public; Owner: saibogo
@@ -351,6 +412,22 @@ CREATE FUNCTION public.point_status_to_string(st public.point_status) RETURNS te
 
 
 ALTER FUNCTION public.point_status_to_string(st public.point_status) OWNER TO postgres;
+
+--
+-- Name: readings_with_the_nearest_date(integer, date); Type: FUNCTION; Schema: public; Owner: saibogo
+--
+
+CREATE FUNCTION public.readings_with_the_nearest_date(dev_id integer, date_1 date) RETURNS integer
+    LANGUAGE plpgsql
+    AS $$
+        BEGIN
+	        RETURN (SELECT id FROM meter_readings WHERE devices_id = dev_id 
+	        ORDER BY ABS(first_day_of_months(date_1::DATE) - read_date) LIMIT 1);
+        END;
+        $$;
+
+
+ALTER FUNCTION public.readings_with_the_nearest_date(dev_id integer, date_1 date) OWNER TO saibogo;
 
 --
 -- Name: sum_pu_in_scheme(integer); Type: FUNCTION; Schema: public; Owner: saibogo

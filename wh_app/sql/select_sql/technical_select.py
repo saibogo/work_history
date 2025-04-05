@@ -224,3 +224,19 @@ def sql_select_full_calc_all_schemes_in_point(point_id: int) -> str:
     """Return array contain all data for all calculating schemes in point"""
 
     return """SELECT full_calc_all_schemes_in_point({})""".format(point_id)
+
+
+@log_decorator
+def sql_select_last_24_monthly_expense(device_id: int) -> str:
+    """Return SELECT string to find last 24 monthly expense for meter device with id = device_id"""
+
+    query = """WITH mounths_readings AS 
+	    (SELECT * FROM %(meter_readings)s WHERE %(id)s = ANY(last_N_nearest_readings({0}, 25)) ORDER BY %(read_date)s)
+        SELECT mounths_readings.%(id)s, LAG(%(read_date)s, 1) OVER (ORDER BY %(read_date)s) AS period_beg,
+         %(read_date)s AS period_end,
+		(%(reading)s - LAG(%(reading)s, 1) OVER (ORDER BY %(read_date)s)) * %(Kt)s AS total
+        FROM mounths_readings
+        JOIN %(meter_devices)s ON  %(meter_devices)s.%(id)s = {0}
+        OFFSET 1;""" % sql_consts_dict
+
+    return query.format(device_id)

@@ -1,7 +1,7 @@
 from wh_app.telegram_bot.support_bot import *
 from wh_app.sql_operations.select_operations.select_operations import get_all_bugz_in_bugzilla, get_bug_by_id
-from wh_app.sql_operations.insert_operations import add_new_bug_in_bugzilla
-from wh_app.sql_operations.update_operations import invert_bug_status_in_bugzilla
+from wh_app.sql_operations.insert_operation.insert_operations import add_new_bug_in_bugzilla
+from wh_app.sql_operations.update_operations.update_operations import invert_bug_status_in_bugzilla
 
 functions.info_string(__name__)
 

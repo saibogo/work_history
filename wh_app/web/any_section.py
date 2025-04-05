@@ -1,16 +1,14 @@
 """This module contain any web-pages"""
-import datetime
 
 from flask import render_template
 from typing import List
-from calendar import monthrange
 
 import wh_app.web.template as web_template
 import wh_app.web.universal_html as uhtml
 from wh_app.config_and_backup import config
 from wh_app.postgresql.database import Database
 from wh_app.sql_operations.select_operations import select_operations
-from wh_app.sql_operations.insert_operations import insert_new_reading_to_meter_device
+from wh_app.sql_operations.insert_operation.insert_operations import insert_new_reading_to_meter_device
 from wh_app.supporting import functions
 from wh_app.supporting import system_status
 from wh_app.config_and_backup import table_headers
@@ -141,6 +139,7 @@ def all_reading_to_device_page(device_id: int, stylesheet_number: str) -> str:
                         '<a href="/to-only-reading/{0}">Только показания</a></div>' \
                         '<div class="navigation_elem"><a href="/to-bar-meter/{0}">График расходов за периоды</a></div>' \
                         '<div class="navigation_elem"><a href="/to-bar-meter-avr/{0}">График средних расходов</a></div>' \
+                        '<div class="navigation_elem"><a href="/to-bar-meter-mnth/{0}">График месячных расходов</a></div>' \
                         '</div>'.format(device_id)
         table_new = uhtml.add_new_reading(device_id)
         return web_template.result_page(table + to_bar_button + table_new, "/all-meter-devices", str(stylesheet_number))
@@ -165,11 +164,14 @@ def meter_readings_bar_page(device_id: int,  stylesheet_number: str) -> str:
     """Create simple bar with data from device meter"""
     with Database() as base:
         _, cursor = base
-        readings = select_operations.get_all_reading_from_device(cursor, device_id)
-        data = [(reading[6], reading[2]) for reading in readings]
-        max_elem = max([reading[6] for reading in readings])
-        data_new = list(map(lambda elem: (elem[0] * 400 / max_elem, '{0}\n{1}'.format(elem[0], elem[1])), data))
-        table = render_template('techs/meter_bar.html', data=data_new)
+        try:
+            readings = select_operations.get_all_reading_from_device(cursor, device_id)
+            data = [(reading[6], reading[2]) for reading in readings]
+            max_elem = max([reading[6] for reading in readings])
+            data_new = list(map(lambda elem: (elem[0] * 400 / max_elem, '{0}\n{1}'.format(elem[0], elem[1])), data))
+            table = render_template('techs/meter_bar.html', data=data_new)
+        except:
+            table = render_template('techs/error_meter_bar.html')
         return web_template.result_page(table, '/get-devices-reading/{}'.format(device_id), str(stylesheet_number))
 
 
@@ -177,12 +179,35 @@ def meter_readings_bar_page_avr(device_id: int,  stylesheet_number: str) -> str:
     """Create simple bar with data from device meter"""
     with Database() as base:
         _, cursor = base
-        readings = select_operations.get_all_reading_from_device(cursor, device_id)
-        data = [(reading[7], reading[2]) for reading in readings]
-        max_elem = max([reading[7] for reading in readings])
-        data_new = list(map(lambda elem: (elem[0] * 400 / max_elem, '{0}\n{1}'.format(elem[0], elem[1])), data))
-        table = render_template('techs/meter_bar.html', data=data_new)
+        try:
+            readings = select_operations.get_all_reading_from_device(cursor, device_id)
+            data = [(reading[7], reading[2]) for reading in readings]
+            max_elem = max([reading[7] for reading in readings])
+            data_new = list(map(lambda elem: (elem[0] * 400 / max_elem, '{0}\n{1}'.format(elem[0], elem[1])), data))
+            table = render_template('techs/meter_bar.html', data=data_new)
+        except ValueError:
+            table = render_template('techs/error_meter_bar.html')
         return web_template.result_page(table, '/get-devices-reading/{}'.format(device_id), str(stylesheet_number))
+
+
+def last_24_monthly_expense_page(device_id: int, stylesheet_number: str) -> str:
+    """Create simple bar with last_24_monthly_expense from device meter"""
+    with Database() as base:
+        _, cursor = base
+        try:
+            data = select_operations.get_last_24_monthly_expense(cursor, device_id)
+            max_elem = max([reading[3] for reading in data])
+            data_new = []
+            # data_new liked [[id, date_begin, date_end, total, to_bar_total]]
+            for row in data:
+                data_new.append([])
+                for elem in row:
+                    data_new[-1].append(elem)
+                data_new[-1].append(row[3] * 400 / max_elem)
+            page = render_template('techs/meter_bar_extended.html', data=data_new)
+        except ValueError:
+            page = render_template('techs/error_meter_bar.html')
+        return web_template.result_page(page, '/get-devices-reading/{}'.format(device_id), str(stylesheet_number))
 
 
 def add_reading_method(data, method, stylesheet_number: str) -> str:

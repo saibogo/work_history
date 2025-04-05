@@ -1,12 +1,11 @@
-import asyncio
 from typing import Tuple
 import datetime
 
 from wh_app.telegram_bot.support_bot import *
 from wh_app.sql_operations.select_operations.select_operations import get_point, get_all_worked_meter_in_point,\
     get_last24_date_and_readings_from_device, get_full_info_from_meter_device
-from wh_app.sql_operations.insert_operations import insert_new_reading_to_meter_device
-from wh_app.sql_operations.update_operations import update_meter_reading
+from wh_app.sql_operations.insert_operation.insert_operations import insert_new_reading_to_meter_device
+from wh_app.sql_operations.update_operations.update_operations import update_meter_reading
 from wh_app.config_and_backup.table_headers import meter_devices_table, small_readings_table, small_readings_table_name
 
 

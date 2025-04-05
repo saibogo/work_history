@@ -168,7 +168,14 @@ def get_calculation_in_scheme(cursor, scheme_id: int) -> Tuple:
 @list_to_first_tuple_decorator
 @list_to_first_tuple_decorator
 @get_selected_decorator
-def get_all_full_calc_schemes_in_point(cursor, point_id: int):
+def get_all_full_calc_schemes_in_point(cursor, point_id: int) -> Tuple:
     """Return all calculated data for all schemes in point"""
 
     return select_sql.sql_select_full_calc_all_schemes_in_point(point_id)
+
+
+@get_selected_decorator
+def get_last_24_monthly_expense(cursor, device_id: int) -> List[Tuple]:
+    """Return last 24 or less monthly expense to meter device with id = device_id"""
+
+    return select_sql.sql_select_last_24_monthly_expense(device_id)

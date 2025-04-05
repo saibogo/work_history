@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        .bar {
+            width: 50px;
+            height: 100%;
+            display: inline-block;
+            background-color: lightblue;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    {% for elem in data %}
+        <div class="bar" style="height: {{elem[4]}}px;" title="{{elem[3]}}({{elem[1]}} ... {{elem[2]}})"></div>
+    {% endfor %}
+</body>
+</html>

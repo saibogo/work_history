@@ -2,7 +2,7 @@
 
 import hashlib
 from datetime import datetime
-from typing import Iterable, Any, List, Tuple, Callable
+from typing import Iterable, Any, List, Tuple
 from flask import session
 
 from wh_app.config_and_backup import config
@@ -10,8 +10,8 @@ from wh_app.postgresql.database import Database
 from wh_app.sql_operations.select_operations.select_operations import get_cold_water_point_info, get_sewerage_point_info,\
     get_electric_point_info, get_heating_point_info, get_hot_water_point_info, user_in_customers, get_hash_to_customer,\
     get_last_id_in_sessions, get_session_hash_from_id
-from wh_app.sql_operations.insert_operations import insert_new_session_in_sessions
-from wh_app.sql_operations.update_operations import update_set_session_inactive
+from wh_app.sql_operations.insert_operation.insert_operations import insert_new_session_in_sessions
+from wh_app.sql_operations.update_operations.update_operations import update_set_session_inactive
 from wh_app.supporting import metadata
 
 

@@ -1,7 +1,6 @@
 """This module contain functions to create all orders-pages"""
 import datetime
 
-import flask
 from flask import render_template, session, redirect
 from typing import List, Tuple, Dict
 
@@ -10,7 +9,8 @@ import wh_app.web.universal_html as uhtml
 from wh_app.config_and_backup.config import max_records_in_page
 from wh_app.postgresql.database import Database
 from wh_app.sql_operations.select_operations import select_operations
-from wh_app.sql_operations import insert_operations, update_operations
+from wh_app.sql_operations.update_operations import update_operations
+from wh_app.sql_operations.insert_operation import insert_operations
 from wh_app.supporting import functions
 from wh_app.config_and_backup import table_headers
 from wh_app.telegram_bot.bot_init import add_new_order_in_loop

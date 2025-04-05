@@ -3,8 +3,8 @@ import flask
 
 from wh_app.web.servers_parts.support_part import *
 from wh_app.web.workers_section import workers_menu, all_workers_table,\
-    works_days_page, works_from_performers_table, add_performer_to_work,\
-    add_performer_result_method, weekly_chart_page, create_edit_worker_form, update_worker_information,\
+    works_from_performers_table, add_performer_to_work,\
+    add_performer_result_method, create_edit_worker_form, update_worker_information,\
     current_workers_table,  remove_performer_from_work,\
     remove_performer_result_method, top_workers_page, create_new_worker_page, add_new_worker_method, schedule_menu_page,\
     today_schedule_page, week_schedule_page, add_info_in_schedule_form, insert_new_schedule_in_db,\
@@ -48,19 +48,6 @@ def update_worker_to_id(worker_id: str) -> Response:
     else:
         page = flask.abort(code=404)
     return page
-
-
-@app.route("/weekly-chart")
-def weekly_chart() -> Response:
-    """Return page, contain all works-days to all workers"""
-
-    return flask.make_response(weekly_chart_page(stylesheet_number()))
-
-
-@app.route("/works-days")
-def works_days() -> Response:
-    """Return page current SHEDULE"""
-    return flask.make_response(works_days_page(stylesheet_number()))
 
 
 @app.route("/performer/<performer_id>", methods=['GET'])

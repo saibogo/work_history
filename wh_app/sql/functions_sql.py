@@ -263,3 +263,60 @@ def full_calc_all_schemes_in_point() -> str:
 	    RETURN all_data;
     END;
     $$ LANGUAGE plpgsql;"""
+
+
+def first_day_of_month() -> str:
+    """Create or replace function to find first day of ANY month"""
+
+    return """CREATE OR REPLACE FUNCTION first_day_of_months(dt DATE) RETURNS DATE AS $$
+        BEGIN
+	        RETURN DATE_TRUNC('MONTH', dt)::DATE;
+        END;
+        $$ LANGUAGE plpgsql;"""
+
+
+def readings_with_the_nearest_date() -> str:
+    """Create or replace function to find records ID with date and device_id nearst readings date"""
+
+    return """CREATE OR REPLACE FUNCTION readings_with_the_nearest_date(dev_id int, date_1 DATE) RETURNS int AS $$
+        BEGIN
+	        RETURN (SELECT id FROM meter_readings WHERE devices_id = dev_id 
+	        ORDER BY ABS(first_day_of_months(date_1::DATE) - read_date) LIMIT 1);
+        END;
+        $$ LANGUAGE plpgsql;"""
+
+
+def last_N_first_dates() -> str:
+    """Create or replace to get ARRAY with last N months"""
+
+    return """CREATE OR REPLACE FUNCTION last_N_first_dates(N int) RETURNS DATE[] AS $$
+        DECLARE all_dates DATE[]; start_date DATE; crt_date DATE; i INT;
+        BEGIN
+	    start_date = NOW()::DATE;
+	    crt_date = start_date;
+	    FOR i IN 1..N LOOP
+		    all_dates = array_append(all_dates, crt_date);
+		    crt_date = crt_date - INTERVAL '1 MONTH';
+	    END LOOP;
+	    RETURN all_dates;
+        END;
+        $$ LANGUAGE plpgsql;"""
+
+
+def last_N_nearest_readings() -> str:
+    """Create or replace function to get last N reading to device_id = dev_id"""
+
+    return """CREATE OR REPLACE FUNCTION last_N_nearest_readings(dev_id int, N int) RETURNS INTEGER[] AS $$
+        DECLARE
+	        dates DATE[];
+	        reads_id INTEGER[];
+	        dt DATE;
+        BEGIN
+	        dates = last_N_first_dates(N);
+	        FOREACH dt IN ARRAY dates
+	        LOOP
+		        reads_id  = array_append(reads_id, readings_with_the_nearest_date(dev_id, dt));
+	        END LOOP;
+	    RETURN reads_id;
+        END;
+        $$ LANGUAGE plpgsql;"""

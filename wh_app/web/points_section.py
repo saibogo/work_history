@@ -1,13 +1,13 @@
 """This module implement any web-pages from work to workpoints"""
-from flask import render_template, session
+from flask import render_template
 
 import wh_app.config_and_backup.table_headers
 import wh_app.web.template as web_template
 import wh_app.web.universal_html as uhtml
 from wh_app.postgresql.database import Database
-from wh_app.sql_operations import insert_operations
+from wh_app.sql_operations.insert_operation import insert_operations
 from wh_app.sql_operations.select_operations import select_operations
-from wh_app.sql_operations import update_operations
+from wh_app.sql_operations.update_operations import update_operations
 from wh_app.supporting import functions
 from wh_app.config_and_backup import table_headers, config
 
@@ -17,9 +17,8 @@ functions.info_string(__name__)
 def create_edit_links(point_id: str) -> str:
     """Create EDIT and ON-OFF links"""
     return '<a href="/edit-point/{0}" title="Редактировать сведения">{1}</a>' \
-           ' <a href="/on-off-point/{0}" title="Изменить статус">{2}</a>' \
-           ' <a href="/edit-bindings/{0}" title="Редактировать привязки сотрудников">{3}</a>'. \
-        format(point_id, uhtml.EDIT_CHAR, uhtml.ON_OFF_CHAR, uhtml.BINDING_CHAR)
+           ' <a href="/on-off-point/{0}" title="Изменить статус">{2}</a>'\
+        .format(point_id, uhtml.EDIT_CHAR, uhtml.ON_OFF_CHAR)
 
 
 def create_tech_links(point_id: str) -> str:
@@ -90,21 +89,6 @@ def add_point_method(data, method, stylesheet_number: str) -> str:
         page = "Method in add Point not corrected!"
 
     return web_template.result_page(page, pre_adr, str(stylesheet_number))
-
-
-def create_bindings_form(point_num: str, stylesheet_number: str) -> str:
-    """Create form to add or delete bindings in point"""
-    with Database() as base:
-        _, cursor = base
-        point_info = select_operations.get_full_point_information(cursor, point_num)
-        workers = select_operations.get_table_current_workers(cursor)
-        current_bindings = select_operations.get_all_bindings_to_point(cursor, point_num)
-        bindings_to_html = [[elem[0], elem[1] +" - " + ("основная" if elem[2] else "вторичная")] for elem in current_bindings]
-        tmp = render_template('points/add_or_delete_binding.html', point_id=uhtml.POINT_ID, point_num=point_num,
-                              point=point_info, point_name=uhtml.POINT_NAME, worker_id=uhtml.WORKER_ID, workers=workers,
-                              type_binding=uhtml.TYPE_BINDINGS, password=uhtml.PASSWORD, binding_id=uhtml.BINDING_ID,
-                              current_bindings=bindings_to_html)
-    return web_template.result_page(tmp, "/points", stylesheet_number)
 
 
 def all_works_points_table(stylesheet_number: str) -> str:

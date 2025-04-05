@@ -6,9 +6,9 @@ from flask import render_template
 import wh_app.web.template as web_template
 import wh_app.web.universal_html as uhtml
 from wh_app.postgresql.database import Database
-from wh_app.sql_operations import insert_operations
+from wh_app.sql_operations.insert_operation import insert_operations
 from wh_app.sql_operations.select_operations import select_operations
-from wh_app.sql_operations import update_operations
+from wh_app.sql_operations.update_operations import update_operations
 from wh_app.sql_operations import delete_operations
 from wh_app.supporting import functions
 from wh_app.config_and_backup import table_headers
@@ -25,10 +25,9 @@ def create_edit_link_to_worker(worker_id: str) -> str:
 def workers_menu(stylesheet_number: str) -> str:
     """Return main page from WORKERS section"""
     name = 'Действия с сотрудниками'
-    menu = ['Все зарегистрированные сотрудники', 'Только работающие',  'Привязки по предприятиям',
-            'Рабочие дни', 'TOP-10 по зарегистрированным работам', "Добавить сотрудника", "Сотрудники на смене"]
-    links_list = ['/all-workers', '/not-fired-workers', '/works-days', '/weekly-chart', '/top-10-workers',
-                  '/add-worker', '/schedule-menu']
+    menu = ['Все зарегистрированные сотрудники', 'Только работающие', 'TOP-10 по зарегистрированным работам',
+            "Добавить сотрудника", "Сотрудники на смене"]
+    links_list = ['/all-workers', '/not-fired-workers', '/top-10-workers', '/add-worker', '/schedule-menu']
     table = uhtml.universal_table(name, ['№', 'Доступное действие'], functions.list_to_numer_list(menu), True, links_list)
     return web_template.result_page(table, '/', str(stylesheet_number))
 
@@ -262,93 +261,6 @@ def update_worker_information(worker_id: str, data, method, stylesheet_number: s
     else:
         return web_template.result_page('Method in Add New Bug not corrected!',
                                         '/bugs',
-                                        str(stylesheet_number))
-
-
-def create_new_binding_method(data, method, stylesheet_number: str) -> str:
-    """Examine data and add new binding if data correct"""
-    if method == 'POST':
-        pre_adr = '/works-points'
-        point_id = data[uhtml.POINT_ID]
-        worker_id = data[uhtml.WORKER_ID]
-        is_main = data[uhtml.TYPE_BINDINGS]
-        password = data[uhtml.PASSWORD]
-        if functions.is_superuser_password(password):
-            with Database() as base:
-                connection, cursor = base
-                insert_operations.insert_new_binding(cursor, point_id, worker_id, is_main)
-                connection.commit()
-                return web_template.result_page(uhtml.operation_completed(),
-                                                pre_adr,
-                                                str(stylesheet_number))
-        else:
-            return web_template.result_page(uhtml.pass_is_not_valid(),
-                                            pre_adr,
-                                            str(stylesheet_number))
-    else:
-        return web_template.result_page('Method in Add New Bug not corrected!',
-                                        '/works-points',
-                                        str(stylesheet_number))
-
-
-def delete_binding_method(data, method, stylesheet_number: str) -> str:
-    """Examine data and if OK delete selected binding in database"""
-    if method == 'POST':
-        pre_adr = '/works-points'
-        password = data[uhtml.PASSWORD]
-        binding_id = data[uhtml.BINDING_ID]
-        if functions.is_superuser_password(password):
-            with Database() as base:
-                connection, cursor = base
-                delete_operations.delete_binding(cursor, binding_id)
-                connection.commit()
-                return web_template.result_page(uhtml.operation_completed(),
-                                                pre_adr,
-                                                str(stylesheet_number))
-        else:
-            return web_template.result_page(uhtml.pass_is_not_valid(),
-                                            pre_adr,
-                                            str(stylesheet_number))
-    else:
-        return web_template.result_page('Method in Add New Bug not corrected!',
-                                        '/works-points',
-                                        str(stylesheet_number))
-
-
-def weekly_chart_page(stylesheet_number: str) -> str:
-    """Return page, contain all works days from all workers"""
-    with Database() as base:
-        _, cursor = base
-        days = select_operations.get_weekly_chart(cursor)
-        days_human_view = list()
-        for human in days:
-            days_human_view.append(list())
-            days_human_view[-1].append(human[0])
-            for i in range(1, len(human)):
-                days_human_view[-1].append("Работает" if human[i] else "Выходной")
-        table = uhtml.universal_table(table_headers.workers_days_table_name,
-                                      table_headers.workers_days_table,
-                                      days_human_view)
-        return web_template.result_page(table,
-                                        '/workers',
-                                        str(stylesheet_number),
-                                        True, "weekly=all")
-
-
-def works_days_page(stylesheet_number: str) -> str:
-    """Return page, contain current shedulle"""
-    with Database() as base:
-        _, cursor = base
-        works_days_list = select_operations.get_works_days_table(cursor)
-        alter_works_days = select_operations.get_alter_works_days_table(cursor)
-        table = uhtml.universal_table(table_headers.works_days_table_name,
-                                      table_headers.works_days_table,
-                                      works_days_list)
-        table2 = uhtml.universal_table(table_headers.alter_works_days_table_name,
-                                       table_headers.alter_works_days_table,
-                                       alter_works_days)
-        return web_template.result_page(table + uhtml.info_from_alter_works() + table2,
-                                        '/workers',
                                         str(stylesheet_number))
 
 

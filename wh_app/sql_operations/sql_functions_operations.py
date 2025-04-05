@@ -104,6 +104,26 @@ def create_or_replace_full_calc_all_schemes_in_point(cursor) -> None:
     create_function(cursor, functions_sql.full_calc_all_schemes_in_point())
 
 
+def create_or_replace_first_day_of_month(cursor) -> None:
+    """Create or replace SQL function return first months day of ANY date"""
+    create_function(cursor, functions_sql.first_day_of_month())
+
+
+def create_or_replace_readings_with_the_nearest_date(cursor) -> None:
+    """Create or replace SQL function to find records ID with date and device_id nearst readings date"""
+    create_function(cursor, functions_sql.readings_with_the_nearest_date())
+
+
+def create_or_replace_last_N_first_dates(cursor) -> None:
+    """Create or replace SQL function to get ARRAY with last N months"""
+    create_function(cursor, functions_sql.last_N_first_dates())
+
+
+def create_or_replace_last_N_nearest_readings(cursor) -> None:
+    """Create or replace function to get last N reading to device_id = dev_id on 01 day of all monts"""
+    create_function(cursor, functions_sql.last_N_nearest_readings())
+
+
 def all_sql_functions_list() -> list:
     """Return list contain all function to create virtual tables"""
 
@@ -123,4 +143,8 @@ def all_sql_functions_list() -> list:
             create_or_replace_average_from_last_readings,
             create_or_replace_analytics_in_scheme,
             create_or_replace_full_calculation_scheme,
-            create_or_replace_full_calc_all_schemes_in_point]
+            create_or_replace_full_calc_all_schemes_in_point,
+            create_or_replace_first_day_of_month,
+            create_or_replace_readings_with_the_nearest_date,
+            create_or_replace_last_N_first_dates,
+            create_or_replace_last_N_nearest_readings]
