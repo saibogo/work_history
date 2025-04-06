@@ -46,14 +46,30 @@ def all_points_table(stylesheet_number: str) -> str:
     with Database() as base:
         _, cursor = base
         all_points = select_operations.get_all_points(cursor)
-        links_list = ['/equip/' + str(elem[0]) for elem in all_points]
-        rows = [[point[i] for i in range(1, len(point))] for point in all_points]
+        all_point_corrected = []
+        for point in all_points:
+            all_point_corrected.append([])
+            if point[4] is None:
+                # This is MAIN point
+                all_point_corrected[-1].append(point[0])
+                all_point_corrected[-1].append(point[1])
+                all_point_corrected[-1].append('')
+                for i in range(2, len(point) - 1):
+                    all_point_corrected[-1].append(point[i])
+            else:
+                # This is SLAVE point
+                all_point_corrected[-1].append(point[0])
+                all_point_corrected[-1].append('')
+                for i in range(1, len(point) - 1):
+                    all_point_corrected[-1].append(point[i])
+        links_list = ['/equip/' + str(elem[0]) for elem in all_point_corrected]
+        rows = [[point[i] for i in range(1, len(point))] for point in all_point_corrected]
         for row_num, row in enumerate(rows):
             rows[row_num].append(create_edit_links(all_points[row_num][0]))
             rows[row_num].append(create_tech_links(all_points[row_num][0]))
 
         table1 =  uhtml.universal_table(table_headers.points_table_name,
-                                        table_headers.points_table,
+                                        table_headers.points_table_ext,
                                         rows,
                                         True, links_list)
         table2 = uhtml.add_new_point()
@@ -73,13 +89,14 @@ def add_point_method(data, method, stylesheet_number: str) -> str:
         point_name = data[uhtml.POINT_NAME]
         point_adr = data[uhtml.POINT_ADDRESS]
         password = data[uhtml.PASSWORD]
+        main_point_id = data[uhtml.MAIN_POINT_NAME]
         if functions.is_valid_password(password):
             if point_name.replace(" ", '') == '' or point_adr.replace(" ", '') == '':
                 page = uhtml.data_is_not_valid()
             else:
                 with Database() as base:
                     connection, cursor = base
-                    insert_operations.create_new_point(cursor, point_name, point_adr)
+                    insert_operations.create_new_point(cursor, point_name, point_adr, main_point_id)
                     connection.commit()
                     page = uhtml.operation_completed()
         else:
@@ -97,13 +114,30 @@ def all_works_points_table(stylesheet_number: str) -> str:
     with Database() as base:
         _, cursor = base
         all_points = select_operations.get_all_works_points(cursor)
-        links_list = ['/equip/' + str(elem[0]) for elem in all_points]
-        rows = [[point[i] for i in range(1, len(point))] for point in all_points]
+        all_point_corrected = []
+        for point in all_points:
+            all_point_corrected.append([])
+            if point[4] is None:
+                # This is MAIN point
+                all_point_corrected[-1].append(point[0])
+                all_point_corrected[-1].append(point[1])
+                all_point_corrected[-1].append('')
+                for i in range(2, len(point) - 1):
+                    all_point_corrected[-1].append(point[i])
+            else:
+                # This is SLAVE point
+                all_point_corrected[-1].append(point[0])
+                all_point_corrected[-1].append('')
+                for i in range(1, len(point) - 1):
+                    all_point_corrected[-1].append(point[i])
+
+        links_list = ['/equip/' + str(elem[0]) for elem in all_point_corrected]
+        rows = [[point[i] for i in range(1, len(point))] for point in all_point_corrected]
         for row_num, row in enumerate(rows):
             rows[row_num].append(create_edit_links(all_points[row_num][0]))
             rows[row_num].append(create_tech_links(all_points[row_num][0]))
         table1 =  uhtml.universal_table(table_headers.points_table_name,
-                                        table_headers.points_table,
+                                        table_headers.points_table_ext,
                                         rows,
                                         True, links_list)
         table2 = uhtml.add_new_point()

@@ -320,3 +320,43 @@ def last_N_nearest_readings() -> str:
 	    RETURN reads_id;
         END;
         $$ LANGUAGE plpgsql;"""
+
+
+def complexes_and_points_not_closed() -> str:
+    """Create or replace function to SELECT points not closed ORDER complex and sub_points"""
+
+    return """CREATE OR REPLACE FUNCTION complexes_and_points_not_closed() RETURNS INTEGER[] AS $$
+    DECLARE 
+	    result INTEGER[];
+	    point INTEGER;
+	    sub_point INTEGER;
+    BEGIN
+	    FOR point IN SELECT point_id FROM workspoints WHERE (is_work != 'closed' AND main_point_id ISNULL) ORDER BY point_name LOOP
+		    result = array_append(result, point);
+		    FOR sub_point IN SELECT point_id FROM workspoints WHERE main_point_id = point ORDER BY point_name LOOP
+			    result = array_append(result, sub_point);
+		    END LOOP;
+	    END LOOP;
+	    RETURN result;
+    END;
+    $$ LANGUAGE plpgsql;"""
+
+
+def complexes_and_points_all() -> str:
+    """Create or replace function to SELECT points not closed ORDER complex and sub_points"""
+
+    return """CREATE OR REPLACE FUNCTION complexes_and_points_all() RETURNS INTEGER[] AS $$
+    DECLARE 
+	    result INTEGER[];
+	    point INTEGER;
+	    sub_point INTEGER;
+    BEGIN
+	    FOR point IN SELECT point_id FROM workspoints WHERE main_point_id ISNULL ORDER BY point_name LOOP
+		    result = array_append(result, point);
+		    FOR sub_point IN SELECT point_id FROM workspoints WHERE main_point_id = point ORDER BY point_name LOOP
+			    result = array_append(result, sub_point);
+		    END LOOP;
+	    END LOOP;
+	    RETURN result;
+    END;
+    $$ LANGUAGE plpgsql;"""

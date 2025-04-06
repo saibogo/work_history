@@ -6,7 +6,8 @@ from wh_app.web.orders_section import all_customers_table, orders_main_menu,\
     create_edit_order_form, edit_order_status_method, all_registered_orders_table_page, all_no_closed_orders_table_page,\
     find_order_from_id_form, order_with_id_table, create_new_customer_form, create_new_customer_method, my_orders_table,\
     my_orders_table_page, change_customer_status_form, change_customer_status_method, change_customer_password_form,\
-    change_customer_password_method, add_performer_to_order_form, add_performer_in_order_method
+    change_customer_password_method, add_performer_to_order_form, add_performer_in_order_method,\
+    all_registered_orders_table_from_customer, all_registered_orders_table_from_customer_page
 
 
 @app.route('/orders-and-customers')
@@ -73,6 +74,22 @@ def all_registred_orders() -> Response:
 def all_registred_orders_page(page_num: int) -> Response:
     """Return ALL ORDERS page"""
     return goto_or_redirect(lambda: all_registered_orders_table_page(page_num, stylesheet_number()), functions.ROLE_CUSTOMER)
+
+
+@app.route('/orders-from-customer/<customer_id>')
+def orders_from_customer(customer_id: int) -> Response:
+    """Return ALL orders from customer"""
+
+    return goto_or_redirect(lambda: all_registered_orders_table_from_customer(customer_id, stylesheet_number()),
+                            functions.ROLE_CUSTOMER)
+
+
+@app.route('/orders-from-customer/<customer_id>/page/<page_num>')
+def orders_from_customer_page(customer_id: int, page_num :int) -> Response:
+    """Return ALL orders from customer"""
+
+    return goto_or_redirect(lambda: all_registered_orders_table_from_customer_page(customer_id, page_num,stylesheet_number()),
+                            functions.ROLE_CUSTOMER)
 
 
 @app.route('/add-order')

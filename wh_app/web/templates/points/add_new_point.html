@@ -4,6 +4,12 @@
         <div class="tr_div_new_point">
                 <input name="{{point_name}}" placeholder="Служебное название" class="tr_area">
                 <input name="{{point_address}}" placeholder="Адрес" class="tr_area">
+                <select name="{{main_point_name}}" class="tr_area">
+                    <option value="0" selected>Отдельное предприятие</option>
+                    {% for point in points %}
+                        <option value="{{point[0]}}">{{point[1]}}</option>
+                    {% endfor %}
+                </select>
                 <input type="password" name="{{password}}" class="tr_password" placeholder="Обязательно">
                 <input type="submit" value="Отправить">
 

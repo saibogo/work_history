@@ -124,6 +124,16 @@ def create_or_replace_last_N_nearest_readings(cursor) -> None:
     create_function(cursor, functions_sql.last_N_nearest_readings())
 
 
+def create_or_replace_complexes_and_points_not_closed(cursor) -> None:
+    """Create or replace function to SELECT points not closed ORDER complex and sub_points"""
+    create_function(cursor, functions_sql.complexes_and_points_not_closed())
+
+
+def create_or_replace_complexes_and_points_all(cursor) -> None:
+    """Create or replace function to SELECT points not closed ORDER complex and sub_points"""
+    create_function(cursor, functions_sql.complexes_and_points_all())
+
+
 def all_sql_functions_list() -> list:
     """Return list contain all function to create virtual tables"""
 
@@ -147,4 +157,6 @@ def all_sql_functions_list() -> list:
             create_or_replace_first_day_of_month,
             create_or_replace_readings_with_the_nearest_date,
             create_or_replace_last_N_first_dates,
-            create_or_replace_last_N_nearest_readings]
+            create_or_replace_last_N_nearest_readings,
+            create_or_replace_complexes_and_points_not_closed,
+            create_or_replace_complexes_and_points_all]

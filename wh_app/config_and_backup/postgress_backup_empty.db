@@ -179,6 +179,56 @@ CREATE FUNCTION public.bug_status_to_string(st public.order_status) RETURNS text
 ALTER FUNCTION public.bug_status_to_string(st public.order_status) OWNER TO saibogo;
 
 --
+-- Name: complexes_and_points_all(); Type: FUNCTION; Schema: public; Owner: saibogo
+--
+
+CREATE FUNCTION public.complexes_and_points_all() RETURNS integer[]
+    LANGUAGE plpgsql
+    AS $$
+    DECLARE 
+	    result INTEGER[];
+	    point INTEGER;
+	    sub_point INTEGER;
+    BEGIN
+	    FOR point IN SELECT point_id FROM workspoints WHERE main_point_id ISNULL ORDER BY point_name LOOP
+		    result = array_append(result, point);
+		    FOR sub_point IN SELECT point_id FROM workspoints WHERE main_point_id = point ORDER BY point_name LOOP
+			    result = array_append(result, sub_point);
+		    END LOOP;
+	    END LOOP;
+	    RETURN result;
+    END;
+    $$;
+
+
+ALTER FUNCTION public.complexes_and_points_all() OWNER TO saibogo;
+
+--
+-- Name: complexes_and_points_not_closed(); Type: FUNCTION; Schema: public; Owner: saibogo
+--
+
+CREATE FUNCTION public.complexes_and_points_not_closed() RETURNS integer[]
+    LANGUAGE plpgsql
+    AS $$
+    DECLARE 
+	    result INTEGER[];
+	    point INTEGER;
+	    sub_point INTEGER;
+    BEGIN
+	    FOR point IN SELECT point_id FROM workspoints WHERE (is_work != 'closed' AND main_point_id ISNULL) ORDER BY point_name LOOP
+		    result = array_append(result, point);
+		    FOR sub_point IN SELECT point_id FROM workspoints WHERE main_point_id = point ORDER BY point_name LOOP
+			    result = array_append(result, sub_point);
+		    END LOOP;
+	    END LOOP;
+	    RETURN result;
+    END;
+    $$;
+
+
+ALTER FUNCTION public.complexes_and_points_not_closed() OWNER TO saibogo;
+
+--
 -- Name: date_to_date_and_day_string(date); Type: FUNCTION; Schema: public; Owner: saibogo
 --
 
@@ -938,7 +988,8 @@ CREATE TABLE public.workspoints (
     point_id integer NOT NULL,
     point_name text NOT NULL,
     point_address text NOT NULL,
-    is_work public.point_status DEFAULT 'in_work'::public.point_status
+    is_work public.point_status DEFAULT 'in_work'::public.point_status,
+    main_point_id integer
 );
 
 

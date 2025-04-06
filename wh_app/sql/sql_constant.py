@@ -124,7 +124,8 @@ point_consts = {"point_id": "point_id",
                 "resume": "resume",
                 "deleted": "deleted",
                 "point_status": "point_status",
-                "type_folder": "type_folder"
+                "type_folder": "type_folder",
+                "main_point_id": "main_point_id"
                 }
 
 order_conts = {"customer": "customer",

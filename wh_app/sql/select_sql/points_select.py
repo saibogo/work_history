@@ -37,12 +37,18 @@ def sql_select_point(id_point: str) -> str:
      THEN 'Open' ELSE 'Closed' END
      FROM workspoints WHERE point_id = 13 ORDER BY point_name"""
 
-    formatter = ("WHERE %(point_id)s = " % sql_consts_dict + str(id_point))\
-        if (str(id_point) != '' and str(id_point) != '0') else ""
+    #formatter = ("WHERE %(point_id)s = " % sql_consts_dict + str(id_point))\
+     #   if (str(id_point) != '' and str(id_point) != '0') else ""
 
-    query = """SELECT %(point_id)s, %(point_name)s, %(point_address)s,
-     %(cast_open_close)s 
-     FROM %(workspoints)s {0} ORDER BY %(point_name)s""" % sql_consts_dict
+    formatter = str(id_point) if (str(id_point) != '' and str(id_point) != '0') else 'elem'
+    #query = """SELECT %(point_id)s, %(point_name)s, %(point_address)s,
+     #%(cast_open_close)s
+     #FROM %(workspoints)s {0} ORDER BY %(point_name)s""" % sql_consts_dict
+
+    query = """WITH tmp AS (SELECT idx, elem FROM unnest(complexes_and_points_all()) WITH ORDINALITY AS t(elem, idx))
+    SELECT elem, %(point_name)s, %(point_address)s, %(cast_open_close)s, %(main_point_id)s
+    FROM tmp
+    JOIN %(workspoints)s ON %(point_id)s = {} ORDER BY idx""" % sql_consts_dict
     return query.format(formatter)
 
 
@@ -54,9 +60,10 @@ def sql_select_all_works_points() -> str:
     CASE WHEN is_work = true THEN 'Работает' ELSE 'Закрыто' END
     FROM workspoints WHERE is_work = true ORDER BY point_name"""
 
-    return ("""SELECT %(point_id)s, %(point_name)s, %(point_address)s, """ +
-            """%(cast_open_close)s FROM %(workspoints)s""" +
-            """ WHERE %(point_working)s ORDER BY %(point_name)s""") % sql_consts_dict
+    return """WITH tmp AS (SELECT idx, elem FROM unnest(complexes_and_points_not_closed()) WITH ORDINALITY AS t(elem, idx))
+    SELECT elem, %(point_name)s, %(point_address)s, %(cast_open_close)s, %(main_point_id)s
+    FROM tmp
+    JOIN %(workspoints)s ON %(point_id)s = elem ORDER BY idx""" % sql_consts_dict
 
 
 @log_decorator
@@ -185,4 +192,13 @@ def sql_select_all_point_except_id(point_id: str) -> str:
              """ WHERE %(point_id)s != {0} and %(point_working)s ORDER BY %(point_name)s""") % sql_consts_dict
 
     return query.format(point_id)
+
+
+@log_decorator
+def sql_select_all_not_slave_worked_point() -> str:
+    """Return all point where main_point_id IS NULL"""
+
+    query = """SELECT * FROM %(workspoints)s WHERE (%(main_point_id)s ISNULL AND %(is_work)s != 'closed')
+     ORDER BY %(point_name)s""" % sql_consts_dict
+    return query
 

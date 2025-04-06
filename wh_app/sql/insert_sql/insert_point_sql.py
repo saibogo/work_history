@@ -3,14 +3,20 @@ from wh_app.sql.select_sql.select_sql import log_decorator
 
 
 @log_decorator
-def sql_insert_new_point(point_id: str, name: str, address: str) -> str:
+def sql_insert_new_point(point_id: str, name: str, address: str, main_point_id: int) -> str:
     """Returns the query string to add a new point"""
-    query = ("""INSERT INTO %(workspoints)s (%(point_id)s, %(point_name)s, %(point_address)s) """ +
-             """VALUES ('{0}', '{1}', '{2}')""") % sql_consts_dict
+    if main_point_id == 0 or main_point_id == '0':
+        query = ("""INSERT INTO %(workspoints)s (%(point_id)s, %(point_name)s, %(point_address)s) """ +
+                 """VALUES ('{0}', '{1}', '{2}')""") % sql_consts_dict
 
-    return query.format(point_id,
-                        name,
-                        address)
+        return query.format(point_id,
+                            name,
+                            address)
+    else:
+        query = ("""INSERT INTO %(workspoints)s (%(point_id)s, %(point_name)s, %(point_address)s, %(main_point_id)s) """ +
+                 """VALUES ('{0}', '{1}', '{2}', {3})""") % sql_consts_dict
+
+        return query.format(point_id, name, address, main_point_id)
 
 
 @log_decorator

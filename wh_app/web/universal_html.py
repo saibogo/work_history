@@ -29,6 +29,7 @@ PASSWORD = 'password'
 LOGIN = 'login'
 SESSION_ROLE = 'role'
 POINT_NAME = 'point_name'
+MAIN_POINT_NAME = 'main_point'
 POINT_ADDRESS = 'point_address'
 POINT_ID = 'point_id'
 NEW_POINT_ID = 'new_point_id'
@@ -143,7 +144,11 @@ def universal_table(name: str, headers: list, data: list, links: bool = False,
 
 def add_new_point() -> str:
     """Function return string contain form to add new point"""
-    return render_template('points/add_new_point.html', point_name=POINT_NAME, point_address=POINT_ADDRESS, password=PASSWORD)
+    with Database() as base:
+        _, cursor = base
+        all_master_points = select_operations.get_all_not_slave_points(cursor)
+        return render_template('points/add_new_point.html', point_name=POINT_NAME, point_address=POINT_ADDRESS,
+                               password=PASSWORD, points=all_master_points, main_point_name=MAIN_POINT_NAME)
 
 
 def add_new_reading(device_id: int) -> str:

@@ -29,6 +29,19 @@ def sql_select_all_orders_limit(page_num: int) -> str:
 
 
 @log_decorator
+def sql_select_all_orders_from_customer_limit(customer_id: int, page_num: int) -> str:
+    """Returns the query string to select all repairs corresponding to the orders use LIMIT"""
+
+    query = """SELECT orders.%(id)s, %(point_name)s, %(customer)s.%(description)s, %(orders)s.%(date)s, %(orders)s.%(closed_date)s,
+     %(problem)s, (%(order_in_work)s), %(orders)s.comment, %(workers)s.%(sub_name)s FROM %(orders)s JOIN %(customer)s ON
+      (%(customer_id)s = {0} AND %(customer)s.%(id)s = %(customer_id)s) JOIN %(workspoints)s ON %(workspoints)s.%(point_id)s = %(orders)s.%(point_id)s
+       LEFT JOIN %(workers)s ON %(workers)s.%(id)s = %(orders)s.%(performer_id)s
+       ORDER BY %(id)s """ % sql_consts_dict + limit_and_offset(page_num)
+
+    return query.format(customer_id)
+
+
+@log_decorator
 def sql_select_all_orders() -> str:
     """Return all records in table orders"""
 
@@ -39,6 +52,19 @@ def sql_select_all_orders() -> str:
               LEFT JOIN %(workers)s ON %(workers)s.%(id)s = %(orders)s.%(performer_id)s ORDER BY %(id)s""") % sql_consts_dict
 
     return query
+
+
+@log_decorator
+def sql_select_all_orders_from_customer_id(customer_id: int) -> str:
+    """Return SELECT string to get all orders from customer with id = customer_id"""
+
+    query = ("""SELECT orders.%(id)s, %(point_name)s, %(customer)s.%(description)s, %(orders)s.%(date)s,
+     %(orders)s.%(closed_date)s, %(problem)s, (%(order_in_work)s), %(orders)s.comment, %(workers)s.%(sub_name)s FROM %(orders)s JOIN %(customer)s 
+     ON (%(customer_id)s = {0} AND %(customer)s.%(id)s = %(customer_id)s) 
+     JOIN %(workspoints)s ON %(workspoints)s.%(point_id)s = %(orders)s.%(point_id)s 
+     LEFT JOIN %(workers)s ON %(workers)s.%(id)s = %(orders)s.%(performer_id)s ORDER BY %(id)s""") % sql_consts_dict
+
+    return query.format(customer_id)
 
 
 @log_decorator

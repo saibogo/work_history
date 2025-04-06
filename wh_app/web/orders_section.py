@@ -38,6 +38,7 @@ def all_customers_table(stylesheet_number: str) -> str:
         _, cursor = base
         customers = select_operations.get_all_customers(cursor)
         customers_ext = []
+        links_list = ['orders-from-customer/{}'.format(customer[0]) for customer in customers]
         for customer in customers:
             customers_ext.append([])
             for elem in customer:
@@ -46,7 +47,7 @@ def all_customers_table(stylesheet_number: str) -> str:
                                      '<a href="/change-customer-password/{0}" title="Сменить пароль">{1}</a>'.format(customer[0], uhtml.EDIT_CHAR))
         table = uhtml.universal_table(table_headers.customers_table_name,
                                       table_headers.customers_table,
-                                      customers_ext)
+                                      customers_ext, True, links_list)
 
         return web_template.result_page(table, '/orders-and-customers', str(stylesheet_number))
 
@@ -187,6 +188,37 @@ def all_registered_orders_table(stylesheet_number: str) -> str:
                                       table_headers.orders_table,
                                       correct_orders)
         return web_template.result_page(table, '/orders-and-customers', str(stylesheet_number), True, 'all-orders=0')
+
+
+def all_registered_orders_table_from_customer(customer_id: int, stylesheet_number: str) -> str:
+    """Function create page, contain list of all registered orders"""
+    with Database() as base:
+        _, cursor = base
+        all_orders = select_operations.get_all_orders_from_customer_id(cursor, customer_id)
+        if len(all_orders) > max_records_in_page():
+            return all_registered_orders_table_from_customer_page(customer_id, page_num=1, stylesheet_number=stylesheet_number)
+        correct_orders = _correct_orders_table(all_orders)
+        table = uhtml.universal_table(table_headers.orders_table_name,
+                                      table_headers.orders_table,
+                                      correct_orders)
+        return web_template.result_page(table, '/orders-and-customers', str(stylesheet_number))
+
+
+def all_registered_orders_table_from_customer_page(customer_id:int, page_num: int, stylesheet_number: str) -> str:
+    """Function create page, contain list of all registered orders with paging"""
+    with Database() as base:
+        _, cursor = base
+        pre_adr = '/orders-and-customers'
+        page_orders = select_operations.get_all_orders_from_customer_limit(cursor, customer_id, page_num)
+        correct_orders = _correct_orders_table(page_orders)
+        table = uhtml.universal_table(table_headers.orders_table_name,
+                                      table_headers.orders_table,
+                                      correct_orders)
+        table_paging = uhtml.paging_table("/orders-from-customer/{}/page".format(customer_id),
+                                          functions.
+                                          list_of_pages(select_operations.get_all_orders_from_customer_id(cursor, customer_id)),
+                                          int(page_num))
+        return web_template.result_page(table + table_paging, pre_adr, stylesheet_number)
 
 
 def all_registered_orders_table_page(page_num: int, stylesheet_number: str) -> str:

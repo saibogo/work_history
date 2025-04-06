@@ -29,11 +29,26 @@ def get_all_orders(cursor) -> list:
 
 
 @get_selected_decorator
+def get_all_orders_from_customer_id(cursor, customer_id: int) -> List[Tuple]:
+    """Function return list contain all orders from customer"""
+
+    return select_sql.sql_select_all_orders_from_customer_id(customer_id)
+
+
+@get_selected_decorator
 def get_all_orders_limit(cursor, page_num: int) -> List[Tuple]:
     """Returns a list object containing all jobs for a given piece of equipment use LIMIT and OFFSET
     See also get_works_from_equip_id"""
 
     return select_sql.sql_select_all_orders_limit(page_num)
+
+
+@get_selected_decorator
+def get_all_orders_from_customer_limit(cursor, customer_id:int, page_num: int) -> List[Tuple]:
+    """Returns a list object containing all jobs for a given piece of equipment use LIMIT and OFFSET
+    See also get_works_from_equip_id"""
+
+    return select_sql.sql_select_all_orders_from_customer_limit(customer_id, page_num)
 
 
 @get_selected_decorator

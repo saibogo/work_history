@@ -75,3 +75,10 @@ def get_count_works_points(cursor) -> str:
     """Return string number of maximal id in table workspoints"""
 
     return select_sql.sql_select_count_works_point()
+
+
+@get_selected_decorator
+def get_all_not_slave_points(cursor) -> List[Tuple]:
+    """Return list of all points where is not slave and point not closed"""
+
+    return select_sql.sql_select_all_not_slave_worked_point()
