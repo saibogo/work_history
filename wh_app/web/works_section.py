@@ -121,7 +121,7 @@ def select_work_to_id_method(data, method, stylesheet_number: str) -> str:
                                         str(stylesheet_number))
 
 
-def work_to_equip_paging(equip_id, page_id, stylesheet_number: str) -> str:
+def work_to_equip_paging(equip_id, page_id, stylesheet_number: str, ord_column=1) -> str:
     """Return page, contain works from current equip"""
     with Database() as base:
         _, cursor = base
@@ -130,12 +130,15 @@ def work_to_equip_paging(equip_id, page_id, stylesheet_number: str) -> str:
                        get_point_id_from_equip_id(cursor, equip_id))) \
             if str(equip_id) != '0' \
             else '/works'
-        full_works = select_operations.get_works_from_equip_id_limit(cursor, equip_id, page_id)
+        full_works = select_operations.get_works_from_equip_id_limit(cursor, equip_id, page_id, ord_column)
         full_works = functions.works_table_add_new_performer(full_works)
         for work in full_works:
             work.append(create_work_edit_link(work[0]))
+        headers = []
+        for elem in table_headers.works_table_ext:
+            headers.append(elem.format('/work/{0}/page/{1}'.format(equip_id, page_id)))
         table1 = uhtml.universal_table(table_headers.works_table_name,
-                                       table_headers.works_table,
+                                       headers,
                                        full_works)
         if str(equip_id) != '0' and not select_operations.get_equip_deleted_status(cursor, equip_id):
                 table2 = uhtml.add_new_work(equip_id)
@@ -147,7 +150,7 @@ def work_to_equip_paging(equip_id, page_id, stylesheet_number: str) -> str:
                                           list_of_pages(select_operations.
                                                         get_works_from_equip_id(cursor,
                                                                                 equip_id)),
-                                          int(page_id))
+                                          int(page_id), True, ord_column)
         return web_template.result_page(table1 + table_paging + table2,
                                         pre_adr,
                                         str(stylesheet_number),

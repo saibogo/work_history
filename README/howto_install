@@ -26,11 +26,13 @@
 22. exit to normal terminal
 23. psql workhistory < /path/to/your/dump.db
 24. python3 /path/to/main.py --help
+25. cd to static dir in your project
+26. gzip -dr equips   This command unpack all details files
 Well Done!
-25. edit config.xml in your favorite editor (patches and ip)
-26. python3 /path/to/main.py --help
-27. python3 /path/to/main.py --allstart
-28. in your browser go to to http://your_ip:5000
+27. edit config.xml in your favorite editor (patches and ip)
+28. python3 /path/to/main.py --help
+29. python3 /path/to/main.py --allstart
+30. in your browser go to to http://your_ip:5000
 Well Done!
 
 29. To add user in telegramm-bot add records in read_bot_access.py and write_bot_access.py

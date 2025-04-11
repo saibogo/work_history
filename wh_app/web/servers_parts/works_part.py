@@ -36,6 +36,17 @@ def work_equip_id_page_page_id(equip_id: int, page_id: int) -> Response:
     return page
 
 
+@app.route("/work/<equip_id>/page/<page_id>/<ord_column>")
+def work_equip_id_page_page_id_ord_select(equip_id: int, page_id: int, ord_column: int) -> Response:
+    """Return page=page_id in ALL work from current EQUIP"""
+    if is_integer(equip_id) and is_integer(page_id):
+        page = goto_or_redirect(lambda: work_to_equip_paging(equip_id, page_id, stylesheet_number(), ord_column),
+                                functions.NO_ROLE)
+    else:
+        page = flask.abort(code=404)
+    return page
+
+
 @app.route("/work-edit/<work_id>")
 def work_edit(work_id: int) -> Response:
     """Return form to EDIT some work"""

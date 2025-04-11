@@ -115,3 +115,9 @@ def get_table_current_workers(cursor) -> List[Tuple[int, str, str, bool, str, in
 def get_workers_in_work(cursor, work_id: str) -> list:
     """Return info from current database"""
     return select_sql.sql_select_all_workers_in_work(work_id)
+
+
+@get_selected_decorator
+def get_schedule_from_date(cursor, date: str) -> List[Tuple]:
+    """Return list liked [(date, worker full_name1, workers_schedule_type1), ...]"""
+    return select_sql.sql_select_schedule_from_date(date)

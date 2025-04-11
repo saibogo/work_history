@@ -13,13 +13,13 @@ def get_equip_in_point(cursor, point_id: str) -> List[Tuple]:
 
 
 @get_selected_decorator
-def get_equip_in_point_limit(cursor, point_id: str, page_num: int) -> List[Tuple]:
+def get_equip_in_point_limit(cursor, point_id: str, page_num: int, ord_column=1) -> List[Tuple]:
     """Returns all equipment for this point use LIMIT and OFFSET
     Return value see get_equip_in_point"""
 
-    return select_sql.sql_select_all_equipment_limit(page_num) \
+    return select_sql.sql_select_all_equipment_limit(page_num, ord_column) \
         if point_id == '' or point_id == '0' \
-        else select_sql.sql_select_equipment_in_point_limit(point_id, page_num)
+        else select_sql.sql_select_equipment_in_point_limit(point_id, page_num, ord_column)
 
 
 @list_to_list_decorator

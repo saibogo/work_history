@@ -5,8 +5,11 @@ from wh_app.sql.sql_constant import sql_consts_dict
 from wh_app.sql.select_sql.points_select import log_decorator, limit_and_offset
 
 
+__equip_columns = {1: 'id', 2: 'point_name', 3: 'name', 4: 'model', 5: 'serial_num', 6: 'pre_id'}
+
+
 @log_decorator
-def sql_select_equipment_in_point(point: str) -> str:
+def sql_select_equipment_in_point(point: str, ord_column=1) -> str:
     """Returns the query string for selecting all equipment items at a given point
     Example:
         SELECT oborudovanie.id, workspoints.point_name, oborudovanie.name,
@@ -18,22 +21,28 @@ def sql_select_equipment_in_point(point: str) -> str:
     formatter = ("WHERE %(oborudovanie)s.%(point_id)s = " % sql_consts_dict + str(point))\
         if (str(point) != '' and str(point) != '0') else ''
 
+    try:
+        formatter1 = __equip_columns[int(ord_column)]
+    except:
+        formatter1 = __equip_columns[1]
+        ord_column = 1
+
     query = ("""SELECT %(oborudovanie)s.%(id)s, %(workspoints)s.%(point_name)s,""" +
              """ %(oborudovanie)s.%(name)s, %(oborudovanie)s.%(model)s,""" +
              """ %(oborudovanie)s.%(serial_num)s, %(oborudovanie)s.%(pre_id)s""" +
              """ FROM %(oborudovanie)s JOIN %(workspoints)s ON """ +
              """%(workspoints)s.%(point_id)s = %(oborudovanie)s.%(point_id)s {0}""" +
              """ AND %(oborudovanie)s.%(deleted)s = false""" +
-             """ ORDER BY %(oborudovanie)s.%(name)s""") % sql_consts_dict
+             """ ORDER BY {1}""") % sql_consts_dict
 
-    return query.format(formatter)
+    return query.format(formatter, ord_column)
 
 
 sql_select_all_equipment = sql_select_equipment_in_point('')
 
 
 @log_decorator
-def sql_select_equipment_in_point_limit(point: str, page_num: int) -> str:
+def sql_select_equipment_in_point_limit(point: str, page_num: int, ord_column=1) -> str:
     """Returns the query string for selecting all equipment items at a given point use LIMIT
     Example:
         SELECT oborudovanie.id, workspoints.point_name, oborudovanie.name, oborudovanie.model,
@@ -41,6 +50,12 @@ def sql_select_equipment_in_point_limit(point: str, page_num: int) -> str:
         JOIN workspoints ON workspoints.point_id =oborudovanie.point_id
         WHERE oborudovanie.point_id = 7 ORDER BY oborudovanie.name LIMIT 5 OFFSET 15
         """
+
+    try:
+        formatter1 = __equip_columns[int(ord_column)]
+    except:
+        formatter1 = __equip_columns[1]
+        ord_column = 1
 
     formatter = ("WHERE %(oborudovanie)s.%(point_id)s = " % sql_consts_dict + str(point))\
         if (str(point) != '' and str(point) != '0') else ''
@@ -50,15 +65,14 @@ def sql_select_equipment_in_point_limit(point: str, page_num: int) -> str:
              """FROM %(oborudovanie)s JOIN %(workspoints)s """ +
              """ON %(workspoints)s.%(point_id)s = %(oborudovanie)s.%(point_id)s {0}""" +
              """ AND %(oborudovanie)s.%(deleted)s = false""" +
-             """ ORDER BY %(oborudovanie)s.%(name)s""") % sql_consts_dict
-
-    return  query.format(formatter) + limit_and_offset(page_num)
+             """ ORDER BY {1}""") % sql_consts_dict
+    return  query.format(formatter, ord_column) + limit_and_offset(page_num)
 
 
 @log_decorator
-def sql_select_all_equipment_limit(page_num: int) -> str:
+def sql_select_all_equipment_limit(page_num: int, ord_column=1) -> str:
     """Create SELECT to ALL equipment use Limit records in page"""
-    return sql_select_equipment_in_point_limit('', page_num)
+    return sql_select_equipment_in_point_limit('', page_num, ord_column)
 
 
 @log_decorator

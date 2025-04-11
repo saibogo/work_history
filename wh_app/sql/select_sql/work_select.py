@@ -6,6 +6,10 @@ from wh_app.config_and_backup import config
 from wh_app.sql.select_sql.points_select import log_decorator, limit_and_offset
 
 
+__works_columns = {1: 'id', 2: 'point_name', 3: 'name', 4: 'model', 5: 'serial_num', 6: 'date', 7: 'problem',
+               8: 'result', 9: 'all_workers'}
+
+
 @log_decorator
 def sql_select_work_to_equipment_id(id_equip: str) -> str:
     """Returns the query string to select all repairs corresponding
@@ -40,7 +44,7 @@ def sql_select_last_work_to_equipment_id(id_equip: str) -> str:
 
 
 @log_decorator
-def sql_select_work_from_equip_id_limit(id_equip: str, page_num: int) -> str:
+def sql_select_work_from_equip_id_limit(id_equip: str, page_num: int, ord_column=1) -> str:
     """Return the query string to select limited all repairs corresponding
      to the equips with the given number
     Example:
@@ -49,11 +53,14 @@ def sql_select_work_from_equip_id_limit(id_equip: str, page_num: int) -> str:
         ORDER BY date
         LIMIT 5 OFFSET 25
         """
+    try:
+        formatter = __works_columns[int(ord_column)]
+    except:
+        formatter = __works_columns[1]
     query = ("""SELECT * FROM %(works_likes)s WHERE %(id)s IN """ +
              """(SELECT * FROM all_works_from_equip({0}))""" +
-             """ ORDER BY %(date)s """) % sql_consts_dict + limit_and_offset(page_num)
-
-    return query.format(id_equip)
+             """ ORDER BY {1} """) % sql_consts_dict + limit_and_offset(page_num)
+    return query.format(id_equip, formatter)
 
 
 @log_decorator
@@ -64,11 +71,15 @@ def sql_select_all_works() -> str:
 
 
 @log_decorator
-def sql_select_all_works_limit(page_num: int) -> str:
+def sql_select_all_works_limit(page_num: int, ord_column=1 ) -> str:
     """Returns the query string to select all repairs corresponding to the equipments use LIMIT"""
 
-    query = """SELECT * FROM %(works_likes)s ORDER BY %(date)s""" % sql_consts_dict + limit_and_offset(page_num)
-    return query
+    try:
+        formatter = __works_columns[int(ord_column)]
+    except:
+        formatter = __works_columns[1]
+    query = """SELECT * FROM %(works_likes)s ORDER BY {0}""" % sql_consts_dict + limit_and_offset(page_num)
+    return query.format(formatter)
 
 
 @log_decorator

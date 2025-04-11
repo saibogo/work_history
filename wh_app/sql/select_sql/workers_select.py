@@ -115,3 +115,14 @@ def sql_select_worker_id_from_schedule(date: str, worker_name: str, worker_subna
     WHERE %(work_date)s = '{}'::DATE AND %(name)s = '{}' AND %(sub_name)s = '{}'""" % sql_consts_dict
 
     return query.format(date, worker_name, worker_subname)
+
+
+@log_decorator
+def sql_select_schedule_from_date(date: str) -> str:
+    """Return SELECT string to find all workers who are works to date"""
+
+    query = """SELECT %(work_date)s, %(workers)s.%(name)s, %(workers)s.%(sub_name)s,  %(post_name)s, %(workers)s.%(phone_number)s,
+     work_day_type_to_string(%(day_type)s) FROM %(workers_schedule)s JOIN %(workers)s ON %(worker_id)s = %(workers)s.%(id)s
+    JOIN %(posts)s ON %(workers)s.%(post_id)s = %(posts)s.%(id)s WHERE work_date = '{0}'""" % sql_consts_dict
+
+    return query.format(date)

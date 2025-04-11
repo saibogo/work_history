@@ -199,18 +199,21 @@ def create_equip_subtype_method(data, method, stylesheet_number: str) -> str:
     return web_template.result_page(page, pre_adr, stylesheet_number)
 
 
-def equip_to_point_limit(point_id, page_num, stylesheet_number: str) -> str:
+def equip_to_point_limit(point_id, page_num, stylesheet_number: str, ord_column=1) -> str:
     """Method create table contain equips. Use limit view on page"""
     with Database() as base:
         _, cursor = base
-        all_equips = select_operations.get_equip_in_point_limit(cursor, point_id, page_num)
+        all_equips = select_operations.get_equip_in_point_limit(cursor, point_id, page_num, ord_column)
         links_list = ['/work/{}'.format(equip[0]) for equip in all_equips]
         data = [[equip[i] for i in range(0, len(equip))] for equip in all_equips]
         for i, row in enumerate(data):
             extended_links = [create_full_edit_links(row[0], row[0] != row[5])]
             data[i] = row[1:] + extended_links
+        headers = []
+        for elem in table_headers.equips_table_ext:
+            headers.append(elem.format('/equip/{0}/page/{1}'.format(point_id, page_num)))
         table1 = uhtml.universal_table(table_headers.equips_table_name,
-                                       table_headers.equips_table,
+                                       headers,
                                        data,
                                        True, links_list)
         pages = uhtml.paging_table("/equip/{0}/page".format(point_id),
@@ -218,7 +221,7 @@ def equip_to_point_limit(point_id, page_num, stylesheet_number: str) -> str:
                                    list_of_pages(select_operations.
                                                  get_equip_in_point(cursor,
                                                                     str(point_id))),
-                                   int(page_num))
+                                   int(page_num), True, ord_column)
         table2 = uhtml.add_new_equip(point_id) if point_id != '0' else ""
         return web_template.result_page(table1 + pages + table2,
                                         '/all-points',

@@ -35,10 +35,34 @@ def workers_menu(stylesheet_number: str) -> str:
 def schedule_menu_page(stylesheet_number: str) -> str:
     """Return submenu with all current shedulle section"""
     name = 'Текущие графики'
-    menu = ['График на сегодня', 'График на неделю', 'Добавить рабочую смену']
-    links_list = ['/today-schedule', '/week-schedule', '/add-info-in-schedule']
+    menu = ['График на сегодня', 'График на неделю', 'Добавить рабочую смену', 'Архив расписания по дате']
+    links_list = ['/today-schedule', '/week-schedule', '/add-info-in-schedule', '/schedule-from-date']
     table = uhtml.universal_table(name, ['№', 'Период'], functions.list_to_numer_list(menu), True, links_list)
     return web_template.result_page(table, '/workers-menu', str(stylesheet_number))
+
+
+def select_schedule_date_form(stylesheet_number: str) -> str:
+    """return simple form to select date"""
+    page = render_template('workers/select_shchedule_day_form.html', current_date=functions.date_to_browser())
+    return web_template.result_page(page, '/schedule-menu', stylesheet_number)
+
+
+def select_schedule_date_method(data, method, stylesheet_number: str) -> str:
+    """Return table with all workers who are work from date"""
+    if method == 'POST':
+        try:
+            date = data['day_datetime'].split('T')[0]
+            with Database() as base:
+                _, cursor = base
+                schedules = select_operations.get_schedule_to_date(cursor, date)
+                page = render_template('any/universal_table.html', table_name=table_headers.schedule_table_name,
+                                       num_columns=len(table_headers.schedule_table), headers=table_headers.schedule_table,
+                                       data=schedules)
+        except:
+            page = uhtml.data_is_not_valid()
+    else:
+        page = '<h2>Method in SELECT Schedule From date is not corrected!</h2>'
+    return web_template.result_page(page, '/schedule-from-date', stylesheet_number)
 
 
 def today_schedule_page(stylesheet_number: str) -> str:

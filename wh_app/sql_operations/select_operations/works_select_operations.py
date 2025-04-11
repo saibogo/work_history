@@ -27,13 +27,13 @@ def get_last_works_from_equip_id(cursor, id: str) -> List[Tuple]:
 
 
 @get_selected_decorator
-def get_works_from_equip_id_limit(cursor, id: str, page_num: int) -> List[Tuple]:
+def get_works_from_equip_id_limit(cursor, id: str, page_num: int, ord_column=1) -> List[Tuple]:
     """Returns a list object containing all jobs for a given piece of equipment use LIMIT and OFFSET
     See also get_works_from_equip_id"""
 
-    return select_sql.sql_select_all_works_limit(page_num) \
+    return select_sql.sql_select_all_works_limit(page_num, ord_column) \
         if id == '' or id == '0' \
-        else select_sql.sql_select_work_from_equip_id_limit(id, page_num)
+        else select_sql.sql_select_work_from_equip_id_limit(id, page_num, ord_column)
 
 
 def get_works_from_point_and_equip(cursor, point_id: str, equip_id: str) -> List[Tuple]:

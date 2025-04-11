@@ -42,6 +42,17 @@ def equip_point_id_page(point_id: int, page_num: int):
     return page
 
 
+@app.route("/equip/<point_id>/page/<page_num>/<ord_column>")
+def equip_point_id_page_order(point_id: int, page_num: int, ord_column: int):
+    """Return page №page_num in ALL EQUIP in current point"""
+    if is_integer(point_id) and is_integer(page_num):
+        page = goto_or_redirect(lambda: equip_to_point_limit(point_id, page_num, stylesheet_number(), ord_column),
+                                functions.ROLE_CUSTOMER)
+    else:
+        page = flask.abort(code=404)
+    return page
+
+
 @app.route("/edit-equip/<equip_id>")
 def edit_equip_page(equip_id: str) -> Response:
     """Return page to EDIT current EQUIP"""

@@ -8,7 +8,8 @@ from wh_app.web.workers_section import workers_menu, all_workers_table,\
     current_workers_table,  remove_performer_from_work,\
     remove_performer_result_method, top_workers_page, create_new_worker_page, add_new_worker_method, schedule_menu_page,\
     today_schedule_page, week_schedule_page, add_info_in_schedule_form, insert_new_schedule_in_db,\
-    create_form_to_edit_schedule, change_schedule_day_type, delete_schedule_day
+    create_form_to_edit_schedule, change_schedule_day_type, delete_schedule_day, select_schedule_date_form,\
+    select_schedule_date_method
 
 
 @app.route("/workers")
@@ -193,3 +194,17 @@ def insert_info_in_schedule() -> Response:
     return goto_or_redirect(lambda: insert_new_schedule_in_db(functions.form_to_data(request.form),
                                                               request.method,
                                                               stylesheet_number()), functions.ROLE_SUPERUSER)
+
+
+@app.route('/schedule-from-date')
+def schedule_from_date() -> Response:
+    """Return page to select schedules date"""
+    return goto_or_redirect(lambda: select_schedule_date_form(stylesheet_number()), functions.ROLE_CUSTOMER)
+
+
+@app.route('/find-schedule-day', methods=['POST'])
+def find_schedule_day() -> Response:
+    """Redirect to method will find all workers who are works from date"""
+    return goto_or_redirect(lambda: select_schedule_date_method(functions.form_to_data(request.form),
+                                                                request.method, stylesheet_number()),
+                            functions.ROLE_CUSTOMER)

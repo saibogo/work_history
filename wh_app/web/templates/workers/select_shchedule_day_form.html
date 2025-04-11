@@ -1,0 +1,15 @@
+<h2>Поиск архива расписания по дате</h2>
+<form action="/find-schedule-day" method="post">
+    <div class="container">
+        <div class="tr_div_login">
+            <div class="faq_quest">Выберите дату</div>
+            <div class="faq_answer">
+                <input type="datetime-local" name="day_datetime" value="{{current_date}}">
+            </div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest"></div>
+            <div class="faq_answer"><input type="submit" value="Искать в архиве"></div>
+        </div>
+    </div>
+</form>
