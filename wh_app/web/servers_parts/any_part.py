@@ -6,7 +6,8 @@ from wh_app.web.any_section import main_web_menu, faq_page, statistics_page,\
     system_status_page, view_changelog, view_changelog_page, external_services_page, power_outages_page,\
     meter_devices_menu_page, all_meter_devices_page, all_reading_to_device_page, add_reading_method,\
     all_meter_devices_in_point_page, meter_readings_bar_page, meter_readings_bar_page_avr, all_worked_meter_devices,\
-    only_reading_to_device_page, last_24_monthly_expense_page
+    only_reading_to_device_page, last_24_monthly_expense_page, all_meter_devices_with_paging,\
+    all_worked_meter_devices_with_paging
 from wh_app.supporting.pdf_operations.pdf import equips_in_point, works_from_equip,\
     works_from_performer, weekly_charts_pdf, move_equip, point_tech_information, find_work_without_date, find_equip,\
     find_point, find_work_with_date, works_from_performer_with_date, top10workers, top10points, top10equips,\
@@ -60,11 +61,34 @@ def all_meter_devices() -> Response:
     return goto_or_redirect(lambda: all_meter_devices_page(stylesheet_number()), functions.ROLE_WORKER)
 
 
+@app.route("/all-meter-devices/page/<page_num>")
+def all_meter_devices_paging(page_num: int) -> Response:
+    """Goto to page with all meter devices in database"""
+
+    return goto_or_redirect(lambda: all_meter_devices_with_paging(page_num, stylesheet_number()), functions.ROLE_WORKER)
+
+
+@app.route("/all-meter-devices/page/<page_num>/<ord_column>")
+def all_meter_devices_paging_ord(page_num: int, ord_column: int) -> Response:
+    """Goto to page with all meter devices in database"""
+
+    return goto_or_redirect(lambda: all_meter_devices_with_paging(page_num, stylesheet_number(), ord_column),
+                            functions.ROLE_WORKER)
+
+
 @app.route("/worked-meter-devices")
 def all_worked_devices() -> Response:
     """Goto to page with all meter devices in database"""
 
     return goto_or_redirect(lambda: all_worked_meter_devices(stylesheet_number()), functions.ROLE_WORKER)
+
+
+@app.route("/worked-meter-devices/page/<page_num>/<ord_column>")
+def all_worked_devices_paging(page_num: int, ord_column: int) -> Response:
+    """Goto to page with all meter devices in database"""
+
+    return goto_or_redirect(lambda: all_worked_meter_devices_with_paging(page_num, stylesheet_number(), ord_column),
+                            functions.ROLE_WORKER)
 
 
 @app.route('/get-devices-reading/<device_id>')

@@ -1873,9 +1873,9 @@ COPY public.bugzilla (id, problem, status, date_start, date_close) FROM stdin;
 146	Необходимо разработать возможность загрузки новых деталировок в систему с подключением к существующим подклассам	f	2025-03-30 21:34:05.666552	2025-04-01 20:19:53.069325
 147	Необходимо добавить в таблицу просмотра оборудования ссылку на подключение деталировки из числа существующих в системе	f	2025-03-30 21:34:48.354324	2025-04-02 01:08:09.017275
 148	необходимо разработать систему хранения и отдачи инструкций для оборудования аналогично системе с деталировками	t	2025-04-02 01:30:21.681352	\N
-149	необходимо реализовать пейджинг по страницам в общем перечне приборов учета	t	2025-04-03 19:30:46.256754	\N
 95	необходимо разделить SQL запросы на подразделы предприятие, оборудование и тд...	f	2024-11-30 16:30:26.029259	2025-04-04 17:52:27.030989
 150	в меню Список Заказчиков необходимо при нажатии на строку с заказчиком реализовать переход на список заявок от данного пользователя	f	2025-04-04 12:57:43.640627	2025-04-06 23:02:09.240128
+149	необходимо реализовать пейджинг по страницам в общем перечне приборов учета	f	2025-04-03 19:30:46.256754	2025-04-12 12:52:57.299746
 \.
 
 
@@ -2839,6 +2839,8 @@ COPY public.meter_readings (id, devices_id, read_date, reading) FROM stdin;
 458	101	2025-04-11	448.680
 459	104	2025-04-11	82.292
 460	103	2025-04-11	26.484
+461	75	2025-04-12	1318.500
+462	76	2025-04-12	3488.290
 \.
 
 
@@ -14026,6 +14028,7 @@ COPY public.performers (id, work_id, worker_id) FROM stdin;
 9169	8402	10
 9170	8403	1
 9171	8404	1
+9172	8405	15
 \.
 
 
@@ -14230,6 +14233,7 @@ COPY public.sessions_hashs (id, hash, start_time, is_active) FROM stdin;
 44	58556195824318131254390709088910375442771792391578305867173389829586405461933	2025-04-10 17:19:21.641625	t
 45	98499479531496773596969901997298317931490578285267164557660284060534755532464	2025-04-11 08:52:54.586879	t
 47	37272601739764319214224332260647566338936995301393930969646572239661358726370	2025-04-11 17:16:17.934478	t
+48	74849787894621318212198153624161851477088624781069589012909536488619522780845	2025-04-12 10:31:26.210816	t
 \.
 
 
@@ -14760,6 +14764,29 @@ COPY public.workers_schedule (work_date, worker_id, day_type) FROM stdin;
 2025-04-12	15	schedule_7_19
 2025-04-13	15	schedule_7_19
 2025-04-13	9	schedule_8_18
+2025-04-14	9	schedule_8_18
+2025-04-14	8	schedule_7_19
+2025-04-14	10	shedule_service
+2025-04-14	5	shedule_service
+2025-04-14	6	shedule_service
+2025-04-15	1	schedule_8_18
+2025-04-15	9	schedule_8_18
+2025-04-15	8	schedule_7_19
+2025-04-15	10	shedule_service
+2025-04-15	5	shedule_service
+2025-04-15	6	shedule_service
+2025-04-16	1	schedule_8_18
+2025-04-16	9	schedule_8_18
+2025-04-16	15	schedule_7_19
+2025-04-16	10	shedule_service
+2025-04-16	5	shedule_service
+2025-04-16	6	shedule_service
+2025-04-17	1	schedule_8_18
+2025-04-17	9	schedule_8_18
+2025-04-17	15	schedule_7_19
+2025-04-17	10	shedule_service
+2025-04-17	5	shedule_service
+2025-04-17	6	shedule_service
 \.
 
 
@@ -23164,6 +23191,7 @@ COPY public.works (id, id_obor, date, problem, result) FROM stdin;
 8402	317	2025-04-11 20:46:00	чистка жироуловителей	вычищен
 8403	10	2025-04-11 21:03:19	Замена ламп	Заменено 2 шт Led E27 груша А60 12 Вт 3000К (электромир)
 8404	774	2025-04-11 21:59:00	установка картины в зоне гостевой группы	Установлено полотно 800*800 на верхнюю деревянную панель слева от входной группы. Крепление на монтажный прозрачный скотч участками по периметру
+8405	48	2025-04-12 07:23:10	Установить сиденье.	Прикрутил крайнее сиденье  правое.
 \.
 
 
@@ -23331,7 +23359,7 @@ SELECT pg_catalog.setval('public.meter_devices_id_seq', 129, true);
 -- Name: meter_readings_id_seq; Type: SEQUENCE SET; Schema: public; Owner: saibogo
 --
 
-SELECT pg_catalog.setval('public.meter_readings_id_seq', 460, true);
+SELECT pg_catalog.setval('public.meter_readings_id_seq', 462, true);
 
 
 --
@@ -23352,7 +23380,7 @@ SELECT pg_catalog.setval('public.orders_id_seq', 155, true);
 -- Name: performers_id_seq; Type: SEQUENCE SET; Schema: public; Owner: saibogo
 --
 
-SELECT pg_catalog.setval('public.performers_id_seq', 9171, true);
+SELECT pg_catalog.setval('public.performers_id_seq', 9172, true);
 
 
 --
@@ -23380,7 +23408,7 @@ SELECT pg_catalog.setval('public.posts_id_seq', 5, true);
 -- Name: sessions_hashs_id_seq; Type: SEQUENCE SET; Schema: public; Owner: saibogo
 --
 
-SELECT pg_catalog.setval('public.sessions_hashs_id_seq', 47, true);
+SELECT pg_catalog.setval('public.sessions_hashs_id_seq', 48, true);
 
 
 --

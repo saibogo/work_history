@@ -2,7 +2,11 @@
 
 from wh_app.sql.sql_constant import sql_consts_dict
 
-from wh_app.sql.select_sql.points_select import log_decorator
+from wh_app.sql.select_sql.points_select import log_decorator, limit_and_offset
+
+
+__meter_devices_columns = {1: 'device_id', 2: 'point_name', 3: 'inner_type', 4: 'is_work_type', 5: 'mtdt',
+                           6: 'model', 7: 'serial_num', 8: 'start_date', 9: 'stopdt', 10: 'verdt', 11: 'comment'}
 
 
 @log_decorator
@@ -51,11 +55,11 @@ def sql_select_all_meter_devices(status="ALL") -> str:
     Status ALL return ALL devices, status WORKED return only is_active = true"""
 
     query = """SELECT %(device_id)s, %(point_name)s,
-    CASE WHEN %(is_inner)s = true THEN 'Внутренний' ELSE 'Коммерческий' END,
-    CASE WHEN %(is_active)s = true THEN 'Работает' ELSE 'Демонтирован' END,
-    meter_type_to_string(%(device_type)s), %(model)s, %(serial_num)s, %(start_date)s,
-    CASE WHEN %(stop_date)s IS NULL THEN ''::text ELSE %(stop_date)s::text END,
-    CASE WHEN %(verification_date)s IS NULL THEN 'Дата поверки неизвестна' ELSE %(verification_date)s::text END,
+    CASE WHEN %(is_inner)s = true THEN 'Внутренний' ELSE 'Коммерческий' END AS inner_type,
+    CASE WHEN %(is_active)s = true THEN 'Работает' ELSE 'Демонтирован' END AS is_work_type,
+    meter_type_to_string(%(device_type)s) AS mtdt, %(model)s, %(serial_num)s, %(start_date)s,
+    CASE WHEN %(stop_date)s IS NULL THEN ''::text ELSE %(stop_date)s::text END AS stopdt,
+    CASE WHEN %(verification_date)s IS NULL THEN 'Дата поверки неизвестна' ELSE %(verification_date)s::text END AS verdt,
     %(comment)s
     FROM %(points_meter_devices)s
     JOIN %(workspoints)s ON %(point_id)s = %(point)s
@@ -63,6 +67,32 @@ def sql_select_all_meter_devices(status="ALL") -> str:
     """ % sql_consts_dict
 
     return query.format(" AND is_active = true" if status == "WORKED" else "")
+
+
+@log_decorator
+def sql_select_all_meter_devices_limit(page_num: int, ord=False, ord_column=1, status="ALL") -> str:
+    """Return SELECT-string for get all information from all meter devoces
+    Status ALL return ALL devices, status WORKED return only is_active = true"""
+    if ord:
+        try:
+            formatter = __meter_devices_columns[int(ord_column)]
+        except:
+            formatter = __meter_devices_columns[1]
+    else:
+        formatter = """%(point_name)s, %(device_type)s""" % sql_consts_dict
+
+    query = """SELECT %(device_id)s, %(point_name)s,
+    CASE WHEN %(is_inner)s = true THEN 'Внутренний' ELSE 'Коммерческий' END AS inner_type,
+    CASE WHEN %(is_active)s = true THEN 'Работает' ELSE 'Демонтирован' END AS is_work_type,
+    meter_type_to_string(%(device_type)s) AS mtdt, %(model)s, %(serial_num)s, %(start_date)s,
+    CASE WHEN %(stop_date)s IS NULL THEN ''::text ELSE %(stop_date)s::text END AS stopdt,
+    CASE WHEN %(verification_date)s IS NULL THEN 'Дата поверки неизвестна' ELSE %(verification_date)s::text END AS verdt,
+    %(comment)s
+    FROM %(points_meter_devices)s
+    JOIN %(workspoints)s ON %(point_id)s = %(point)s
+    JOIN %(meter_devices)s ON (%(device_id)s = %(meter_devices)s.%(id)s  {0}) ORDER BY {1}""" % sql_consts_dict
+
+    return query.format(" AND is_active = true" if status == "WORKED" else "", formatter) + limit_and_offset(page_num)
 
 
 @log_decorator

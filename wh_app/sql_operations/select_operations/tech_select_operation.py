@@ -40,10 +40,24 @@ def get_all_meter_devices(cursor) -> List[Tuple]:
 
 
 @get_selected_decorator
+def get_all_meter_devices_limit(cursor, page_num: int, ord: False, ord_column=1) -> List[Tuple]:
+    """Return all meter devices in database"""
+
+    return select_sql.sql_select_all_meter_devices_limit(page_num, ord, ord_column)
+
+
+@get_selected_decorator
 def get_all_worked_meter_devices(cursor) -> List[Tuple]:
     """Return all meter devices in database"""
 
     return select_sql.sql_select_all_meter_devices("WORKED")
+
+
+@get_selected_decorator
+def get_all_worked_meter_devices_limit(cursor, page_num: int, ord=False, ord_column=1) -> List[Tuple]:
+    """Return all meter devices in database"""
+
+    return select_sql.sql_select_all_meter_devices_limit(page_num, ord, ord_column, "WORKED")
 
 
 @get_selected_decorator

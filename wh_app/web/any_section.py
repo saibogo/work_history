@@ -1,5 +1,5 @@
 """This module contain any web-pages"""
-
+import flask
 from flask import render_template
 from typing import List
 
@@ -61,11 +61,30 @@ def all_meter_devices_page(stylesheet_number: str) -> str:
     with Database() as base:
         _, cursor = base
         devices = select_operations.get_all_meter_devices(cursor)
+        if len(devices) > config.max_records_in_page():
+            return flask.redirect('/all-meter-devices/page/1')
         links = ['/get-devices-reading/{}'.format(elem[0]) for elem in devices]
         table = uhtml.universal_table(table_headers.meter_devices_table_name, table_headers.meter_devices_table,
                                       devices, True, links)
 
         return web_template.result_page(table, "/meter-devices", str(stylesheet_number))
+
+
+def all_meter_devices_with_paging(page_num: int, stylesheet_number: str, ord_column=1) -> str:
+    """Function create page with all meter devices in database"""
+
+    with Database() as base:
+        _, cursor = base
+        devices = select_operations.get_all_meter_devices_limit(cursor, page_num, True, ord_column)
+        links = ['/get-devices-reading/{}'.format(elem[0]) for elem in devices]
+        headers = []
+        for elem in table_headers.meter_devices_table_ext:
+            headers.append(elem.format('/all-meter-devices/page/{0}'.format(page_num)))
+        table = uhtml.universal_table(table_headers.meter_devices_table_name, headers, devices, True, links)
+        link = '/all-meter-devices/page'
+        all_elems = functions.list_of_pages(select_operations.get_all_meter_devices(cursor))
+        pages = uhtml.paging_table(link, all_elems, page_num, True, ord_column)
+        return web_template.result_page(table + pages, "/meter-devices", str(stylesheet_number))
 
 
 def all_worked_meter_devices(stylesheet_number: str) -> str:
@@ -74,11 +93,31 @@ def all_worked_meter_devices(stylesheet_number: str) -> str:
     with Database() as base:
         _, cursor = base
         devices = select_operations.get_all_worked_meter_devices(cursor)
+        if len(devices) > config.max_records_in_page():
+            return flask.redirect("/worked-meter-devices/page/1/1")
         links = ['/get-devices-reading/{}'.format(elem[0]) for elem in devices]
         table = uhtml.universal_table(table_headers.meter_devices_table_name, table_headers.meter_devices_table,
                                       devices, True, links)
 
         return web_template.result_page(table, "/meter-devices", str(stylesheet_number))
+
+
+def all_worked_meter_devices_with_paging(page_num: int, stylesheet_number: str, ord_column=1) -> str:
+    """Function create page with all meter devices in database"""
+
+    with Database() as base:
+        _, cursor = base
+        devices = select_operations.get_all_worked_meter_devices_limit(cursor, page_num, True, ord_column)
+        links = ['/get-devices-reading/{}'.format(elem[0]) for elem in devices]
+        link = '/worked-meter-devices/page'
+        all_elems = functions.list_of_pages(select_operations.get_all_worked_meter_devices(cursor))
+        pages = uhtml.paging_table(link, all_elems, page_num, True, ord_column)
+        headers = []
+        for elem in table_headers.meter_devices_table_ext:
+            headers.append(elem.format('/worked-meter-devices/page/{0}'.format(page_num)))
+        table = uhtml.universal_table(table_headers.meter_devices_table_name, headers, devices, True, links)
+
+        return web_template.result_page(table + pages, "/meter-devices", str(stylesheet_number))
 
 
 def all_meter_devices_in_point_page(point_id: int, stylesheet_number: str) -> str:
