@@ -221,20 +221,21 @@ def all_registered_orders_table_from_customer_page(customer_id:int, page_num: in
         return web_template.result_page(table + table_paging, pre_adr, stylesheet_number)
 
 
-def all_registered_orders_table_page(page_num: int, stylesheet_number: str) -> str:
+def all_registered_orders_table_page(page_num: int, stylesheet_number: str, ord_column=1) -> str:
     """Function create page, contain list of all registered orders with paging"""
     with Database() as base:
         _, cursor = base
         pre_adr = '/orders-and-customers'
-        page_orders = select_operations.get_all_orders_limit(cursor, page_num)
+        page_orders = select_operations.get_all_orders_limit_ord(cursor, page_num, True, ord_column)
         correct_orders = _correct_orders_table(page_orders)
-        table = uhtml.universal_table(table_headers.orders_table_name,
-                                      table_headers.orders_table,
-                                      correct_orders)
+        headers = []
+        for elem in table_headers.orders_table_ext:
+            headers.append(elem.format('/all-registred-orders/page/{0}'.format(page_num)))
+        table = uhtml.universal_table(table_headers.orders_table_name, headers, correct_orders)
         table_paging = uhtml.paging_table("/all-registred-orders/page",
                                           functions.
-                                          list_of_pages(select_operations.get_all_orders(cursor)),
-                                          int(page_num))
+                                          list_of_pages(select_operations.get_all_orders(cursor, True, ord_column)),
+                                          int(page_num), True, ord_column)
         return web_template.result_page(table + table_paging, pre_adr, stylesheet_number,
                                         True, 'all-orders={}'.format(page_num))
 
@@ -341,20 +342,21 @@ def all_no_closed_orders_table(stylesheet_number: str) -> str:
         return web_template.result_page(table, pre_addr, str(stylesheet_number), True, 'no-closed-orders=0')
 
 
-def all_no_closed_orders_table_page(page_num: int, stylesheet_number: str) -> str:
+def all_no_closed_orders_table_page(page_num: int, stylesheet_number: str, ord_column=1) -> str:
     """Create no-closed orders table with paging"""
     with Database() as base:
         _, cursor = base
         pre_addr = '/orders-and-customers'
-        orders = select_operations.get_all_no_closed_orders_limit(cursor, page_num)
+        orders = select_operations.get_all_no_closed_orders_limit(cursor, page_num, True, ord_column)
         correct_orders = _correct_orders_table(orders)
-        table = uhtml.universal_table(table_headers.orders_table_name,
-                                      table_headers.orders_table_no_closed,
-                                      correct_orders)
+        headers = []
+        for elem in table_headers.orders_table_no_closed_ext:
+            headers.append(elem.format('/all-no-closed-orders/page/{0}'.format(page_num)))
+        table = uhtml.universal_table(table_headers.orders_table_name, headers, correct_orders)
         table_paging = uhtml.paging_table("/all-no-closed-orders/page",
                                           functions.
-                                          list_of_pages(select_operations.get_all_no_closed_orders(cursor)),
-                                          int(page_num))
+                                          list_of_pages(select_operations.get_all_no_closed_orders(cursor, ord, ord_column)),
+                                          int(page_num), True, ord_column)
 
         return web_template.result_page(table + table_paging, pre_addr, str(stylesheet_number), True,
                                         'no-closed-orders={}'.format(page_num))

@@ -127,9 +127,10 @@ def get_count_all_works_from_worker_id(cursor, worker_id: str) -> int:
 
 
 @get_selected_decorator
-def get_works_from_performer_and_date(cursor, worker_id: str, date_start: str, date_stop: str, page_num: str = 0) -> List[Tuple]:
+def get_works_from_performer_and_date(cursor, worker_id: str, date_start: str, date_stop: str, page_num: str = 0,
+                                      ord=False, ord_column=1) -> List[Tuple]:
     """Return list with all works where worker = worker_id in dateinterval [date_satrt, date_stop]
     if page_num == 0 then ot use limit for record in page"""
 
-    return select_sql.sql_select_works_from_performer_and_date(worker_id, date_start, date_stop, page_num)
+    return select_sql.sql_select_works_from_performer_and_date(worker_id, date_start, date_stop, page_num, ord, ord_column)
 

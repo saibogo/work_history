@@ -5,11 +5,11 @@ from wh_app.sql.select_sql import select_sql
 
 
 @get_selected_decorator
-def get_statistic(cursor) -> List[Tuple[int, str, int, int, datetime.datetime]]:
+def get_statistic(cursor, ord=False, ord_column=1) -> List[Tuple[int, str, int, int, datetime.datetime]]:
     """Function return list contain stat info from all points
     Return value [elem1, elem2, ..., elem_n] while elem = (point_id, point_name, equips_num,
      works_num, last_works_date)"""
-    return select_sql.sql_select_statistic()
+    return select_sql.sql_select_statistic(ord, ord_column)
 
 
 @list_to_first_str_decorator

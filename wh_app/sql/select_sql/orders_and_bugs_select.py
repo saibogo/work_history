@@ -5,6 +5,10 @@ from wh_app.sql.sql_constant import sql_consts_dict
 from wh_app.sql.select_sql.points_select import log_decorator, limit_and_offset
 
 
+__orders_columns = {1: 'orders.id', 2: 'point_name', 3: 'customer.description', 4: 'orders.date',
+                        5: 'orders.closed_date', 6: 'problem', 7: 'ord_stat', 8: 'orders.comment', 9: 'workers.sub_name'}
+
+
 @log_decorator
 def sql_select_all_orders_type() -> str:
     """Return all orders type and descriptions"""
@@ -16,16 +20,22 @@ def sql_select_all_orders_type() -> str:
 
 
 @log_decorator
-def sql_select_all_orders_limit(page_num: int) -> str:
+def sql_select_all_orders_limit_ord(page_num: int, ord=False, ord_column=1) -> str:
     """Returns the query string to select all repairs corresponding to the orders use LIMIT"""
-
+    if ord:
+        try:
+            formatter = __orders_columns[int(ord_column)]
+        except:
+            formatter = __orders_columns[1]
+    else:
+        formatter = __orders_columns[1]
     query = """SELECT orders.%(id)s, %(point_name)s, %(customer)s.%(description)s, %(orders)s.%(date)s, %(orders)s.%(closed_date)s,
-     %(problem)s, (%(order_in_work)s), %(orders)s.comment, %(workers)s.%(sub_name)s FROM %(orders)s JOIN %(customer)s ON
+     %(problem)s, (%(order_in_work)s) AS ord_stat, %(orders)s.comment, %(workers)s.%(sub_name)s FROM %(orders)s JOIN %(customer)s ON
       %(customer_id)s = %(customer)s.%(id)s JOIN %(workspoints)s ON %(workspoints)s.%(point_id)s = %(orders)s.%(point_id)s
        LEFT JOIN %(workers)s ON %(workers)s.%(id)s = %(orders)s.%(performer_id)s
-       ORDER BY %(id)s """ % sql_consts_dict + limit_and_offset(page_num)
+       ORDER BY {0} """ % sql_consts_dict + limit_and_offset(page_num)
 
-    return query
+    return query.format(formatter)
 
 
 @log_decorator
@@ -33,7 +43,7 @@ def sql_select_all_orders_from_customer_limit(customer_id: int, page_num: int) -
     """Returns the query string to select all repairs corresponding to the orders use LIMIT"""
 
     query = """SELECT orders.%(id)s, %(point_name)s, %(customer)s.%(description)s, %(orders)s.%(date)s, %(orders)s.%(closed_date)s,
-     %(problem)s, (%(order_in_work)s), %(orders)s.comment, %(workers)s.%(sub_name)s FROM %(orders)s JOIN %(customer)s ON
+     %(problem)s, (%(order_in_work)s) AS ord_stat, %(orders)s.comment, %(workers)s.%(sub_name)s FROM %(orders)s JOIN %(customer)s ON
       (%(customer_id)s = {0} AND %(customer)s.%(id)s = %(customer_id)s) JOIN %(workspoints)s ON %(workspoints)s.%(point_id)s = %(orders)s.%(point_id)s
        LEFT JOIN %(workers)s ON %(workers)s.%(id)s = %(orders)s.%(performer_id)s
        ORDER BY %(id)s """ % sql_consts_dict + limit_and_offset(page_num)
@@ -42,16 +52,24 @@ def sql_select_all_orders_from_customer_limit(customer_id: int, page_num: int) -
 
 
 @log_decorator
-def sql_select_all_orders() -> str:
+def sql_select_all_orders(ord=False, ord_column=1) -> str:
     """Return all records in table orders"""
+
+    if ord:
+        try:
+            formatter = __orders_columns[int(ord_column)]
+        except:
+            formatter = __orders_columns[1]
+    else:
+        formatter = __orders_columns[1]
 
     query = ("""SELECT orders.%(id)s, %(point_name)s, %(customer)s.%(description)s, %(orders)s.%(date)s, %(orders)s.%(closed_date)s, %(problem)s, """ +
              """(%(order_in_work)s), %(orders)s.comment, %(workers)s.%(sub_name)s FROM %(orders)s JOIN %(customer)s 
              ON %(customer_id)s = %(customer)s.%(id)s
               JOIN %(workspoints)s ON %(workspoints)s.%(point_id)s = %(orders)s.%(point_id)s 
-              LEFT JOIN %(workers)s ON %(workers)s.%(id)s = %(orders)s.%(performer_id)s ORDER BY %(id)s""") % sql_consts_dict
+              LEFT JOIN %(workers)s ON %(workers)s.%(id)s = %(orders)s.%(performer_id)s ORDER BY {0}""") % sql_consts_dict
 
-    return query
+    return query.format(formatter)
 
 
 @log_decorator
@@ -68,33 +86,49 @@ def sql_select_all_orders_from_customer_id(customer_id: int) -> str:
 
 
 @log_decorator
-def sql_select_no_closed_orders() -> str:
+def sql_select_no_closed_orders(ord=False, ord_column=1) -> str:
     """Return all records in table orders"""
 
+    if ord:
+        try:
+            formatter = __orders_columns[int(ord_column)]
+        except:
+            formatter = __orders_columns[1]
+    else:
+        formatter = __orders_columns[1]
+
     query = ("""SELECT orders.%(id)s, %(point_name)s, %(customer)s.%(description)s, %(orders)s.%(date)s,
-     %(orders)s.%(closed_date)s, %(problem)s, (%(order_in_work)s), %(orders)s.comment,
+     %(orders)s.%(closed_date)s, %(problem)s, (%(order_in_work)s) AS ord_stat, %(orders)s.comment,
       %(workers)s.%(sub_name)s, row_number() OVER (ORDER BY orders.id) FROM %(orders)s
        JOIN %(customer)s ON %(customer_id)s = %(customer)s.%(id)s 
        JOIN %(workspoints)s ON %(workspoints)s.%(point_id)s = %(orders)s.%(point_id)s 
        LEFT JOIN %(workers)s ON %(workers)s.%(id)s = %(orders)s.%(performer_id)s 
-       WHERE %(orders)s.%(status)s = 'in_work' ORDER BY %(id)s""") % sql_consts_dict
+       WHERE %(orders)s.%(status)s = 'in_work' ORDER BY {0}""") % sql_consts_dict
 
-    return query
+    return query.format(formatter)
 
 
 @log_decorator
-def sql_select_no_closed_orders_limit(page_num: int) -> str:
+def sql_select_no_closed_orders_limit(page_num: int, ord=False, ord_column=1) -> str:
     """Return all records in table orders with LIMIT"""
 
+    if ord:
+        try:
+            formatter = __orders_columns[int(ord_column)]
+        except:
+            formatter = __orders_columns[1]
+    else:
+        formatter = __orders_columns[1]
+
     query = ("""SELECT orders.%(id)s, %(point_name)s, %(customer)s.%(description)s, %(orders)s.%(date)s,
-          %(orders)s.%(closed_date)s, %(problem)s, (%(order_in_work)s), %(orders)s.comment,
+          %(orders)s.%(closed_date)s, %(problem)s, (%(order_in_work)s) AS ord_stat, %(orders)s.comment,
            %(workers)s.%(sub_name)s, row_number() OVER (ORDER BY orders.id) FROM %(orders)s
             JOIN %(customer)s ON %(customer_id)s = %(customer)s.%(id)s 
             JOIN %(workspoints)s ON %(workspoints)s.%(point_id)s = %(orders)s.%(point_id)s 
             LEFT JOIN %(workers)s ON %(workers)s.%(id)s = %(orders)s.%(performer_id)s 
-            WHERE %(orders)s.%(status)s = 'in_work' ORDER BY %(id)s""") % sql_consts_dict + limit_and_offset(page_num)
+            WHERE %(orders)s.%(status)s = 'in_work' ORDER BY {0}""") % sql_consts_dict + limit_and_offset(page_num)
 
-    return query
+    return query.format(formatter)
 
 
 @log_decorator

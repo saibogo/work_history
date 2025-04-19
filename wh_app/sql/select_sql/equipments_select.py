@@ -76,7 +76,7 @@ def sql_select_all_equipment_limit(page_num: int, ord_column=1) -> str:
 
 
 @log_decorator
-def sql_select_equip_from_like_str(pattern: str) -> str:
+def sql_select_equip_from_like_str(pattern: str, ord=False, ord_column=2) -> str:
     """Return the query string select equips from like-string
     Example:
         SELECT id, workspoints.point_name, name, model, serial_num, pre_id
@@ -87,6 +87,14 @@ def sql_select_equip_from_like_str(pattern: str) -> str:
         ORDER BY name
         """
 
+    if ord:
+        try:
+            formatter = __equip_columns[int(ord_column)]
+        except:
+            formatter = __equip_columns[2]
+    else:
+        formatter = __equip_columns[2]
+
     if pattern != '*':
         words = '%' + pattern.replace(' ', '%') + '%'
         query = ("""SELECT %(id)s, %(workspoints)s.%(point_name)s, """ +
@@ -94,20 +102,20 @@ def sql_select_equip_from_like_str(pattern: str) -> str:
                  """ JOIN %(workspoints)s ON %(oborudovanie)s.%(point_id)s = """ +
                  """ %(workspoints)s.%(point_id)s WHERE LOWER(%(name)s)""" +
                  """ LIKE LOWER('{0}') OR LOWER(%(model)s) LIKE LOWER('{0}')""" +
-                 """ OR LOWER(%(serial_num)s) LIKE LOWER('{0}') ORDER BY %(name)s""") % sql_consts_dict
-        result = query.format(words)
+                 """ OR LOWER(%(serial_num)s) LIKE LOWER('{0}') ORDER BY {1}""") % sql_consts_dict
+        result = query.format(words, formatter)
     else:
         query = ("""SELECT %(id)s, %(workspoints)s.%(point_name)s, """ +
                  """%(name)s, %(model)s, %(serial_num)s, %(pre_id)s FROM """ +
                  """ %(oborudovanie)s  JOIN %(workspoints)s ON """ +
                  """%(oborudovanie)s.%(point_id)s = %(workspoints)s.%(point_id)s """ +
-                 """ORDER BY %(name)s""") % sql_consts_dict
-        result = query
+                 """ORDER BY {0}""") % sql_consts_dict
+        result = query.format(formatter)
     return result
 
 
 @log_decorator
-def sql_select_equip_from_like_str_limit(pattern: str, page_num: str) -> str:
+def sql_select_equip_from_like_str_limit(pattern: str, page_num: str, ord=False, ord_column=2) -> str:
     """Return the query string select equips from like-string use LIMIT and OFFSET
     Example:
         SELECT id, workspoints.point_name, name, model, serial_num, pre_id
@@ -119,6 +127,14 @@ def sql_select_equip_from_like_str_limit(pattern: str, page_num: str) -> str:
         ORDER BY name LIMIT 10 OFFSET 30
         """
 
+    if ord:
+        try:
+            formatter = __equip_columns[int(ord_column)]
+        except:
+            formatter = __equip_columns[2]
+    else:
+        formatter = __equip_columns[2]
+
     if pattern != '*':
         words = '%' + pattern.replace(' ', '%') + '%'
         query = ("""SELECT %(id)s, %(workspoints)s.%(point_name)s, %(name)s,""" +
@@ -126,14 +142,14 @@ def sql_select_equip_from_like_str_limit(pattern: str, page_num: str) -> str:
                  """JOIN %(workspoints)s ON %(oborudovanie)s.%(point_id)s =""" +
                  """ %(workspoints)s.%(point_id)s WHERE LOWER(%(name)s)""" +
                  """ LIKE LOWER('{0}') OR LOWER(%(model)s) LIKE LOWER('{0}') """ +
-                 """OR LOWER(%(serial_num)s) LIKE LOWER('{0}')  ORDER BY %(name)s """) % sql_consts_dict + limit_and_offset(page_num)
-        result = query.format(words)
+                 """OR LOWER(%(serial_num)s) LIKE LOWER('{0}')  ORDER BY {1} """) % sql_consts_dict + limit_and_offset(int(page_num))
+        result = query.format(words, formatter)
     else:
         query = ("""SELECT %(id)s, %(workspoints)s.%(point_name)s, %(name)s,""" +
                  """ %(model)s, %(serial_num)s, %(pre_id)s FROM %(oborudovanie)s""" +
                  """ JOIN %(workspoints)s ON %(oborudovanie)s.%(point_id)s = """ +
-                 """ %(workspoints)s.%(point_id)s ORDER BY %(name)s""") % sql_consts_dict + limit_and_offset(page_num)
-        result = query
+                 """ %(workspoints)s.%(point_id)s ORDER BY {0}""") % sql_consts_dict + limit_and_offset(int(page_num))
+        result = query.format(formatter)
     return result
 
 

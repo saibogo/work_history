@@ -6,10 +6,19 @@ from wh_app.sql.select_sql.points_select import log_decorator
 
 
 @log_decorator
-def sql_select_statistic() -> str:
+def sql_select_statistic(ord=False, ord_column=1) -> str:
     """Return SQL-string contain query to statistic from database records"""
+    __stat_columns = {1: 'point_id', 2: 'point_name', 3: 'all_equips', 4: 'sum', 5: 'max'}
 
-    return """SELECT * FROM %(statistic)s""" % sql_consts_dict
+    if ord:
+        try:
+            formatter = __stat_columns[int(ord_column)]
+        except:
+            formatter = __stat_columns[1]
+    else:
+        formatter = __stat_columns[2]
+
+    return ("""SELECT * FROM %(statistic)s ORDER BY {0} {1}""" % sql_consts_dict).format(formatter, 'DESC' if ord and int(ord_column) not in [1, 2] else '')
 
 
 @log_decorator

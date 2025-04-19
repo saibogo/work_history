@@ -217,3 +217,9 @@ div.grid_table_10 > div.grid_table_elem:nth-child(10n + 9) {
     border-top-left-radius: 10px;
     margin: 1px;
     text-align: center;
+
+
+.header-link {
+    color: #6b0914;
+    font-weight: 700;
+}

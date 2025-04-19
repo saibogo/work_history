@@ -95,7 +95,7 @@ def sql_select_work_from_id(id_work: str) -> str:
 
 
 @log_decorator
-def sql_select_all_works_from_like_str(pattern: str) -> str:
+def sql_select_all_works_from_like_str(pattern: str, ord=False, ord_column=1) -> str:
     """Function return string contain sql-query from table works like all records to s-string
     Example:
         SELECT * FROM works_likes
@@ -103,22 +103,29 @@ def sql_select_all_works_from_like_str(pattern: str) -> str:
         LIKE LOWER('nOt Working')) OR (LOWER(result) LIKE LOWER('nOt Working'))
         ORDER BY date, name
         """
+    if ord:
+        try:
+            formatter = __works_columns[int(ord_column)]
+        except:
+            formatter = __works_columns[1]
+    else:
+        formatter = __works_columns[1]
+
     if pattern != '*':
         like_string = '%' + pattern.replace(' ', '%') + '%'
         query = ("""SELECT * FROM %(works_likes)s WHERE (LOWER (%(problem)s)""" +
                  """ LIKE LOWER('{0}')) OR (LOWER(%(result)s) LIKE LOWER('{0}'))""" +
-                 """ ORDER BY %(date)s, %(name)s""") % sql_consts_dict
+                 """ ORDER BY {1}""") % sql_consts_dict
 
-        result = query.format(like_string)
+        result = query.format(like_string, formatter)
     else:
-        query = ("""SELECT * FROM %(works_likes)s ORDER BY %(date)s, %(name)s""") \
-                % sql_consts_dict
-        result = query
+        query = """SELECT * FROM %(works_likes)s ORDER BY {0}""" % sql_consts_dict
+        result = query.format(formatter)
     return result
 
 
 @log_decorator
-def sql_select_all_works_from_like_str_limit(pattern: str, page_num: str) -> str:
+def sql_select_all_works_from_like_str_limit(pattern: str, page_num: str, ord=False, ord_column=1) -> str:
     """Function return string contain sql-query from table works like all records
      to pattern-string
     Example:
@@ -128,17 +135,26 @@ def sql_select_all_works_from_like_str_limit(pattern: str, page_num: str) -> str
         ORDER BY date, name LIMIT 13 OFFSET 39
         """
 
+    if ord:
+        try:
+            formatter = __works_columns[int(ord_column)]
+        except:
+            formatter = __works_columns[1]
+    else:
+        formatter = __works_columns[1]
+
     if pattern != '*':
         like_string = '%' + pattern.replace(' ', '%') + '%'
         query = ("""SELECT * FROM %(works_likes)s WHERE (LOWER (%(problem)s)""" +
                  """ LIKE LOWER('{0}')) OR (LOWER(%(result)s) LIKE LOWER('{0}'))""" +
-                 """ ORDER BY %(date)s, %(name)s """) % sql_consts_dict + limit_and_offset(page_num)
+                 """ ORDER BY {1} """) % sql_consts_dict + limit_and_offset(int(page_num))
 
-        result = query.format(like_string)
+        result = query.format(like_string, formatter)
     else:
         query = ("""SELECT * FROM %(works_likes)s ORDER BY""" +
-                 """ %(date)s, %(name)s """) % sql_consts_dict + limit_and_offset(page_num)
-        result = query
+                 """ {0} """) % sql_consts_dict + limit_and_offset(int(page_num))
+        result = query.format(formatter)
+
     return result
 
 
@@ -254,13 +270,21 @@ def sql_select_works_from_worker_limit(id_worker: str, page_num: int) -> str:
 
 
 @log_decorator
-def sql_select_works_from_performer_and_date(id_worker: str, date_start: str, date_stop: str, page_num: int) -> str:
+def sql_select_works_from_performer_and_date(id_worker: str, date_start: str, date_stop: str, page_num: int,
+                                             ord=False, ord_column=1) -> str:
     """See also sql_select_works_from_worker_limit. Only use date interval. If page_num == 0 then not use limits"""
+    if ord:
+        try:
+            formatter = __works_columns[int(ord_column)]
+        except:
+            formatter = __works_columns[1]
+    else:
+        formatter = __works_columns[6]
     query = ("""SELECT DISTINCT %(works_from_worker)s.%(id)s, %(point_name)s, %(name)s, """ +
              """%(model)s, %(serial_num)s, %(date)s, %(problem)s, %(result)s, %(all_workers)s """ +
              """FROM %(works_from_worker)s JOIN %(performers)s """ +
              """ON %(performers)s.%(worker_id)s = {0} AND %(works_from_worker)s.%(id)s = %(performers)s.%(work_id)s """ +
              """WHERE %(date)s >= '{1}' and %(date)s <= '{2}' """ +
-             """ORDER BY %(date)s """) % sql_consts_dict
+             """ORDER BY {3} """) % sql_consts_dict
     query = query + limit_and_offset(page_num) if page_num != 0 else query
-    return query.format(id_worker, date_start, date_stop)
+    return query.format(id_worker, date_start, date_stop, formatter)

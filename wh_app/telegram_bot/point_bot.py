@@ -60,7 +60,7 @@ async def point_info(message: types.Message):
             point = get_point(cursor, point_id)[0]
             msg = []
             msg += point_message(point)
-            equips = get_equip_in_point(cursor, point_id)
+            equips = get_equip_in_point(cursor, point_id, True, 3)
             msg.append('Перечень оборудования {} ед.:'.format(len(equips)))
             for equip in equips:
                 msg += equip_message(equip)

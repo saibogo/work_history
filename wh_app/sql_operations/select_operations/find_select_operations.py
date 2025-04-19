@@ -5,19 +5,19 @@ from wh_app.sql.select_sql import select_sql
 
 
 @get_selected_decorator
-def get_all_equips_list_from_like_str(cursor, s: str) -> List[Tuple]:
+def get_all_equips_list_from_like_str(cursor, s: str, ord=False, ord_column=2) -> List[Tuple]:
     """Return all equips names contain s-string
     [elem1, elem2, ..., elem_n] while elem = (equip_ID, point_name, model, serial, pre_ID)"""
 
-    return select_sql.sql_select_equip_from_like_str(s)
+    return select_sql.sql_select_equip_from_like_str(s, ord, ord_column)
 
 
 @get_selected_decorator
-def get_all_equips_list_from_like_str_limit(cursor, s: str, page_num: int) -> List[Tuple]:
+def get_all_equips_list_from_like_str_limit(cursor, s: str, page_num: int, ord=False, ord_column=2) -> List[Tuple]:
     """Return all equips names contain s-string use LIMIT and OFFSET
     See also get_all_equips_list_from_like_str"""
 
-    return select_sql.sql_select_equip_from_like_str_limit(s, str(page_num))
+    return select_sql.sql_select_equip_from_like_str_limit(s, str(page_num), ord, ord_column)
 
 
 @get_selected_decorator
@@ -37,13 +37,13 @@ def get_all_points_list_from_like_str_limit(cursor, s:str, page_num: int) -> Lis
 
 
 @get_selected_decorator
-def get_all_works_like_word(cursor, word: str) -> List[Tuple[int, str, str, str, str,
-                                                             datetime.datetime, str, str, str]]:
+def get_all_works_like_word(cursor, word: str, ord=False, ord_column=1) -> List[
+    Tuple[int, str, str, str, str,datetime.datetime, str, str, str]]:
     """Function return list contain ID work likes word
     Return value [elem1, elem2, ..., elem_n] while elem = (work_ID, point_name, equip_name, model, serial,
     datetime, problem, result, performers_names)"""
 
-    return select_sql.sql_select_all_works_from_like_str(word)
+    return select_sql.sql_select_all_works_from_like_str(word, ord, ord_column)
 
 
 @list_tuples_to_list_decorator
@@ -55,12 +55,12 @@ def get_all_find_patterns(cursor) -> List[str]:
 
 
 @get_selected_decorator
-def get_all_works_like_word_limit(cursor, word: str, page_num: int) -> List[Tuple[int, str, str, str, str,
-                                                             datetime.datetime, str, str, str]]:
+def get_all_works_like_word_limit(cursor, word: str, page_num: int, ord=False, ord_column=1) -> List[
+    Tuple[int, str, str, str, str, datetime.datetime, str, str, str]]:
     """Function return list contain ID work likes word
     See also get_all_works_like_word"""
 
-    return select_sql.sql_select_all_works_from_like_str_limit(word, str(page_num))
+    return select_sql.sql_select_all_works_from_like_str_limit(word, str(page_num), ord, ord_column)
 
 
 @get_selected_decorator

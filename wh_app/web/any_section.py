@@ -350,14 +350,18 @@ def faq_page(pre_adr: str, stylesheet_number: str) -> str:
                                         str(stylesheet_number))
 
 
-def statistics_page(preview_page, stylesheet_number: str) -> str:
+def statistics_page(preview_page, stylesheet_number: str, ord_column=1) -> str:
     """Function create STATISTIC web-page"""
     with Database() as base:
         _, cursor = base
-        statistics = select_operations.get_statistic(cursor)
+        statistics = select_operations.get_statistic(cursor, True, ord_column)
         links_list = ['/equip/' + str(elem[0]) for elem in statistics]
+        headers = []
+        for elem in table_headers.statistics_table_ext:
+            headers.append(elem.format('/statistics'))
+
         result = uhtml.universal_table(table_headers.statistics_table_name,
-                                       table_headers.statistics_table,
+                                       headers,
                                        [[elem[i] for i in range(1, len(elem))]
                                         for elem in statistics],
                                        True,

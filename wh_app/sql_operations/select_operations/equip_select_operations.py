@@ -3,13 +3,13 @@ from wh_app.sql.select_sql import select_sql
 
 
 @get_selected_decorator
-def get_equip_in_point(cursor, point_id: str) -> List[Tuple]:
+def get_equip_in_point(cursor, point_id: str, ord=False, ord_column=1) -> List[Tuple]:
     """Returns all equipment for this point
     Return value [elem, elem1, ..., elem_n] while elem = (equip_id, point_name, equip_name, model, serial, pre_id)"""
 
     return select_sql.sql_select_all_equipment \
         if point_id == '' or point_id == '0' \
-        else select_sql.sql_select_equipment_in_point(point_id)
+        else select_sql.sql_select_equipment_in_point(point_id, ord_column)
 
 
 @get_selected_decorator

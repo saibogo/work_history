@@ -73,3 +73,8 @@ div.bottom_navigation {
     margin: 2px;
     text-align: center;
 }
+
+.header-link {
+    color: #44bd26f9;
+    font-weight: 700;
+}

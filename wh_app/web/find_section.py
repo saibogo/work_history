@@ -61,21 +61,24 @@ def find_method(data, method, stylesheet_number: str) -> str:
     return page
 
 
-def find_work_paging(find_string: str, page_num: str, stylesheet_number: str) -> str:
+def find_work_paging(find_string: str, page_num: str, stylesheet_number: str, ord_column=1) -> str:
     """Create table contain result find from only works"""
     with Database() as base:
         _, cursor = base
-        works = select_operations.get_all_works_like_word_limit(cursor, find_string, int(page_num))
+        works = select_operations.get_all_works_like_word_limit(cursor, find_string, int(page_num), True, ord_column)
         works = functions.works_table_add_new_performer(works)
         works = functions.works_table_add_edit(works)
         pages_list = functions.list_of_pages(select_operations.
-                                             get_all_works_like_word(cursor, find_string))
+                                             get_all_works_like_word(cursor, find_string, True, ord_column))
+        headers = []
+        for elem in table_headers.works_table_ext:
+            headers.append(elem.format('/find/work/{0}/page/{1}'.format(find_string, page_num)))
         result = uhtml.universal_table(table_headers.works_table_name,
-                                       table_headers.works_table,
+                                       headers,
                                        [list(work)  for work in works])
         pages_table = uhtml.paging_table('/find/work/{0}/page'.format(find_string),
                                          pages_list,
-                                         int(page_num))
+                                         int(page_num), True, ord_column)
         return web_template.result_page(result + pages_table, '/find', str(stylesheet_number), True,
                                         'find-work-not-date={}={}'.format(find_string, page_num))
 
@@ -114,7 +117,7 @@ def find_work_like_date_paging(find_string: str, data_start: str,
 
 
 def find_work_like_performer_and_date_paging(performer_id: str, data_start: str,
-                                             data_stop: str, page_num: str, stylesheet_number: str) -> str:
+                                             data_stop: str, page_num: str, stylesheet_number: str, ord_column=1) -> str:
     """Create table contain result find from works and data"""
 
     with Database() as base:
@@ -125,21 +128,26 @@ def find_work_like_performer_and_date_paging(performer_id: str, data_start: str,
                                              get_works_from_performer_and_date(cursor,
                                                                               performer_id,
                                                                               date_start_correct,
-                                                                              date_stop_correct))
+                                                                              date_stop_correct, 0, True, ord_column))
         works = select_operations.get_works_from_performer_and_date(cursor, performer_id,
                                                                     date_start_correct,
                                                                     date_stop_correct,
-                                                                    int(page_num))
+                                                                    int(page_num), True, ord_column)
         works = functions.works_table_add_new_performer(works)
         works = functions.works_table_add_edit(works)
+        headers = []
+        for elem in table_headers.works_table_ext:
+            headers.append(elem.format('/find/performer/{0}/{1}/{2}/page/{3}'.format(performer_id, date_start_correct,
+                                                                                     date_stop_correct, page_num)))
+
         result = uhtml.universal_table(table_headers.works_table_name,
-                                       table_headers.works_table,
+                                       headers,
                                        [list(work) for work in works])
         pages_table = uhtml.paging_table('/find/performer/{0}/{1}/{2}/page'.format(performer_id,
                                                                                    date_start_correct,
                                                                                    date_stop_correct),
                                          pages_list,
-                                         int(page_num))
+                                         int(page_num), True, ord_column)
         return web_template.result_page(result + pages_table, '/find', str(stylesheet_number),
                                         True, 'performer-with-date={}={}={}={}'.format(performer_id, date_start_correct,
                                                                                        date_stop_correct, page_num))
@@ -169,24 +177,27 @@ def find_point_page(find_string: str, page_num: str, stylesheet_number: str) -> 
                                         str(stylesheet_number), True, 'point={}={}'.format(find_string, page_num))
 
 
-def find_equip_page(find_string: str, page_num: str, stylesheet_number: str) -> str:
+def find_equip_page(find_string: str, page_num: str, stylesheet_number: str, ord_column=2) -> str:
     """Create table contains result find from equips only"""
     with Database() as base:
         _, cursor = base
         equips = select_operations.get_all_equips_list_from_like_str_limit(cursor,
                                                                            find_string,
-                                                                           int(page_num))
+                                                                           int(page_num), True, ord_column)
         pages_list = functions.list_of_pages(select_operations.
-                                             get_all_equips_list_from_like_str(cursor, find_string))
+                                             get_all_equips_list_from_like_str(cursor, find_string, True, ord_column))
         links_list = ['/work/' + str(equip[0]) for equip in equips]
+        headers = []
+        for elem in table_headers.equips_table_ext[: len(table_headers.equips_table) - 1]:
+            headers.append(elem.format('/find/equip/{0}/page/{1}'.format(find_string, page_num)))
         result = uhtml.universal_table(table_headers.equips_table_name,
-                                       table_headers.equips_table[: len(table_headers.equips_table) - 1],
+                                       headers,
                                        [[equip[i] for i in range(1, len(equip))]
                                         for equip in equips],
                                        True,
                                        links_list)
         pages_table = uhtml.paging_table('/find/equip/{0}/page'.format(find_string),
                                          pages_list,
-                                         int(page_num))
+                                         int(page_num), True, ord_column)
         return web_template.result_page(result + pages_table, '/find', str(stylesheet_number), True,
                                         'find-equip={}={}'.format(find_string, page_num))

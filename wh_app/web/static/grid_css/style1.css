@@ -350,3 +350,9 @@ div.grid_table_11 > div.grid_table_elem:nth-child(11n + 11) {
     margin: 1px;
     text-align: center;
 }
+
+
+.header-link {
+    color: #2b55bd;
+    font-weight: 700;
+}

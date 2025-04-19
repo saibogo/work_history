@@ -23,7 +23,7 @@ def get_hash_to_customer(cursor, user_name: str) -> str:
 
 
 @get_selected_decorator
-def get_all_orders(cursor) -> list:
+def get_all_orders(cursor, ord=False, ord_column=1) -> list:
     """Function return list contains all records in table orders"""
     return select_sql.sql_select_all_orders()
 
@@ -36,11 +36,11 @@ def get_all_orders_from_customer_id(cursor, customer_id: int) -> List[Tuple]:
 
 
 @get_selected_decorator
-def get_all_orders_limit(cursor, page_num: int) -> List[Tuple]:
+def get_all_orders_limit_ord(cursor, page_num: int, ord=False, ord_column=1) -> List[Tuple]:
     """Returns a list object containing all jobs for a given piece of equipment use LIMIT and OFFSET
     See also get_works_from_equip_id"""
 
-    return select_sql.sql_select_all_orders_limit(page_num)
+    return select_sql.sql_select_all_orders_limit_ord(page_num, ord, ord_column)
 
 
 @get_selected_decorator
@@ -52,15 +52,15 @@ def get_all_orders_from_customer_limit(cursor, customer_id:int, page_num: int) -
 
 
 @get_selected_decorator
-def get_all_no_closed_orders(cursor) -> list:
+def get_all_no_closed_orders(cursor, ord=False, ord_column=1) -> list:
     """Function return list contains all records in table orders"""
-    return select_sql.sql_select_no_closed_orders()
+    return select_sql.sql_select_no_closed_orders(ord, ord_column)
 
 
 @get_selected_decorator
-def get_all_no_closed_orders_limit(cursor, page_num: int) -> list:
+def get_all_no_closed_orders_limit(cursor, page_num: int, ord=False, ord_column=1) -> list:
     """Function return list contains all records in table orders"""
-    return select_sql.sql_select_no_closed_orders_limit(page_num)
+    return select_sql.sql_select_no_closed_orders_limit(page_num, ord, ord_column)
 
 
 @list_to_first_int_decorator

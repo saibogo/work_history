@@ -70,10 +70,10 @@ def all_registred_orders() -> Response:
     return goto_or_redirect(lambda: all_registered_orders_table(stylesheet_number()), functions.ROLE_CUSTOMER)
 
 
-@app.route('/all-registred-orders/page/<page_num>')
-def all_registred_orders_page(page_num: int) -> Response:
+@app.route('/all-registred-orders/page/<page_num>/<ord_column>')
+def all_registred_orders_page(page_num: int, ord_column: int) -> Response:
     """Return ALL ORDERS page"""
-    return goto_or_redirect(lambda: all_registered_orders_table_page(page_num, stylesheet_number()), functions.ROLE_CUSTOMER)
+    return goto_or_redirect(lambda: all_registered_orders_table_page(page_num, stylesheet_number(), ord_column), functions.ROLE_CUSTOMER)
 
 
 @app.route('/orders-from-customer/<customer_id>')
@@ -143,10 +143,11 @@ def all_no_closed_orders() -> Response:
     return goto_or_redirect(lambda: all_no_closed_orders_table(stylesheet_number()), functions.ROLE_CUSTOMER)
 
 
-@app.route('/all-no-closed-orders/page/<page_num>')
-def all_no_closed_orders_page(page_num: int) -> Response:
+@app.route('/all-no-closed-orders/page/<page_num>/<ord_column>')
+def all_no_closed_orders_page(page_num: int, ord_column: int) -> Response:
     """Return ALL ORDERS page with paging"""
-    return goto_or_redirect(lambda: all_no_closed_orders_table_page(page_num, stylesheet_number()), functions.ROLE_CUSTOMER)
+    return goto_or_redirect(lambda: all_no_closed_orders_table_page(page_num, stylesheet_number(), ord_column),
+                            functions.ROLE_CUSTOMER)
 
 
 @app.route('/order-from-id')

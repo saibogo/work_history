@@ -135,13 +135,13 @@ def add_reading() -> Response:
                                                        stylesheet_number()), functions.ROLE_WORKER)
 
 
-@app.route('/statistics', methods=['GET'])
-def statistics() -> Response:
+@app.route('/statistics/<ord_column>', methods=['GET'])
+def statistics(ord_column: int) -> Response:
     """Return STATISTIC-page"""
     return goto_or_redirect(lambda: statistics_page(request.args.get('page',
                                                                      default=config.full_address(),
                                                                      type=str),
-                                                    stylesheet_number()), functions.NO_ROLE)
+                                                    stylesheet_number(), ord_column), functions.NO_ROLE)
 
 
 @app.route('/system-status', methods=['GET'])
