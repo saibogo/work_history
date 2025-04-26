@@ -3,6 +3,8 @@
 from wh_app.web.servers_parts.support_part import *
 from wh_app.web.universal_html import LOGIN, PASSWORD, access_denided, access_allowed, logout_user
 from wh_app.web.any_section import login_input_page, new_theme_page
+from wh_app.postgresql.database import Database
+from wh_app.sql_operations.call_operations import delete_all_closed_session_records, set_all_old_session_that_closed
 
 
 @app.route('/login')
@@ -24,6 +26,11 @@ def logout_page() -> str:
     session[LOGIN_IS_CORRECT] = False
     functions.close_session()
     session.modified = True
+    print("Выполняется поиск устаревших сессий")
+    with Database() as base:
+        connection, cursor = base
+        set_all_old_session_that_closed(cursor)
+        connection.commit()
     return result_page(logout_user(), '/login', stylesheet_number())
 
 
@@ -31,6 +38,7 @@ def logout_page() -> str:
 def login_verification() -> str:
     """Function compare pair login-password with data in system and redirect to new page"""
     user_ip = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
+    need_clean_session = True
 
     if functions.is_login_and_password_correct(request.form[LOGIN], request.form[PASSWORD]):
         user_name = request.form[LOGIN]
@@ -66,7 +74,15 @@ def login_verification() -> str:
         functions.add_record_in_login_log(request.form[LOGIN], session[SESSION_ROLE], user_ip)
     else:
         print("Неудачная попытка входа пользователя ", request.form[LOGIN])
+        need_clean_session = False
         result = access_denided(request.form[LOGIN])
+
+    if need_clean_session:
+        print("Производится очистка неактивных сессий")
+        with Database() as base:
+            connection, cursor = base
+            delete_all_closed_session_records(cursor)
+            connection.commit()
     return result_page(result, '/')
 
 

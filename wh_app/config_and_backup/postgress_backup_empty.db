@@ -244,6 +244,19 @@ CREATE FUNCTION public.date_to_date_and_day_string(d date) RETURNS text
 ALTER FUNCTION public.date_to_date_and_day_string(d date) OWNER TO saibogo;
 
 --
+-- Name: delete_not_active_sessions(); Type: PROCEDURE; Schema: public; Owner: saibogo
+--
+
+CREATE PROCEDURE public.delete_not_active_sessions()
+    LANGUAGE sql
+    AS $$
+        DELETE FROM sessions_hashs WHERE is_active = false;
+    $$;
+
+
+ALTER PROCEDURE public.delete_not_active_sessions() OWNER TO saibogo;
+
+--
 -- Name: first_day_of_months(date); Type: FUNCTION; Schema: public; Owner: saibogo
 --
 
@@ -565,6 +578,49 @@ CREATE FUNCTION public.units_of_measure_string(m public.meter_type) RETURNS text
 
 
 ALTER FUNCTION public.units_of_measure_string(m public.meter_type) OWNER TO saibogo;
+
+--
+-- Name: update_old_sessions(); Type: PROCEDURE; Schema: public; Owner: saibogo
+--
+
+CREATE PROCEDURE public.update_old_sessions()
+    LANGUAGE sql
+    AS $$
+            UPDATE sessions_hashs SET is_active = false WHERE NOW() -  start_time > INTERVAL '2 days';
+        $$;
+
+
+ALTER PROCEDURE public.update_old_sessions() OWNER TO saibogo;
+
+--
+-- Name: vacuum_tables(); Type: PROCEDURE; Schema: public; Owner: saibogo
+--
+
+CREATE PROCEDURE public.vacuum_tables()
+    LANGUAGE plpgsql
+    AS $$
+    DECLARE 
+	tbl RECORD; 
+	need_vacuum BOOLEAN;
+	msg TEXT;
+	BEGIN
+	need_vacuum = False;
+	RAISE INFO 'Поиск и таблиц с мертвыми строками...';
+	FOR tbl in SELECT schemaname || '.' || relname AS tablename FROM pg_stat_all_tables WHERE (schemaname = 'public' AND n_dead_tup > 0)
+	LOOP
+		RAISE INFO 'Необходима очистка таблицы %', tbl.tablename;
+		need_vacuum = True;
+	END LOOP;
+    CASE need_vacuum
+		WHEN True THEN msg := 'Рекомендуется выполнить vacuumdb your_database_name или VACUUM для каждой таблицы';
+		ELSE msg := 'Очистка не требуется';
+	END CASE;
+	RAISE INFO '%', msg;
+	END;
+	$$;
+
+
+ALTER PROCEDURE public.vacuum_tables() OWNER TO saibogo;
 
 --
 -- Name: work_day_type_to_string(public.work_day_type); Type: FUNCTION; Schema: public; Owner: saibogo

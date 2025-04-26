@@ -2,9 +2,10 @@
 
 import sys
 
-from wh_app.sql_operations import view_operation, sql_functions_operations
+from wh_app.sql_operations import view_operation, sql_functions_operations, sql_procedures_operations
 from wh_app.sql_operations.select_operations.select_operations import get_database_version as dbversion
 from wh_app.postgresql.database import Database
+from wh_app.sql_operations.call_operations import find_all_table_to_vacuum
 from wh_app.supporting.cli import COMMANDS, COMMANDS_EXT
 
 with Database() as base:
@@ -18,7 +19,17 @@ with Database() as base:
     for sql_funct in SQL_FUNCTIONS_LIST:
         sql_funct(CURSOR)
 
+    SQL_PROCEDURES_LIST = sql_procedures_operations.all_sql_procedures_list()
+    for sql_proc in SQL_PROCEDURES_LIST:
+        sql_proc(CURSOR)
+
     CONNECTION.commit()
+
+    with Database() as base:
+        connection, cursor = base
+        find_all_table_to_vacuum(cursor)
+        for elem in connection.notices:
+            print(elem)
 
 
 if len(sys.argv) > 1:
