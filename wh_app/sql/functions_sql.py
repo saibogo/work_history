@@ -20,13 +20,32 @@ def worker_status_to_text() -> str:
 
 
 @log_decorator
-def bug_status_to_text() -> str:
+def order_status_to_text() -> str:
     """Create or replace SQL function mapping bug_status to text"""
     return """
     CREATE OR REPLACE FUNCTION bug_status_to_string(st order_status) RETURNS text AS $$ 
     BEGIN 
+    /*
+    Функция возвращает текстовое представление для обращения в базе заявок
+    */
     IF st = 'in_work' THEN RETURN 'В обработке'::text;
     ELSIF st = 'canceled' THEN RETURN 'Отменена'::text; 
+    ELSE RETURN 'Решено'::text; 
+    END IF; 
+    END; 
+    $$ LANGUAGE plpgsql;"""
+
+
+@log_decorator
+def bug_status_to_text() -> str:
+    """Create or replace SQL function mapping bug_status to text"""
+    return """
+    CREATE OR REPLACE FUNCTION bug_status_to_string(st boolean) RETURNS text AS $$ 
+    BEGIN 
+    /*
+    Функция возвращает текстовое представление для обращения в базе ошибок
+    */
+    IF st = True THEN RETURN 'В обработке'::text; 
     ELSE RETURN 'Решено'::text; 
     END IF; 
     END; 
@@ -49,6 +68,9 @@ def point_status_to_text() -> str:
 def all_works_from_equip_id_funct() -> str:
     """Create or replace SQL function return SELECT all works from equip_id to text"""
     return """CREATE OR REPLACE FUNCTION all_works_from_equip(eid integer) RETURNS Table(id integer) AS $$ 
+    /*
+    Функция возвращает перечень works_id работ, произведенных на оборудовании с номером eid
+    */
     SELECT id FROM works where id_obor = eid; 
     $$ LANGUAGE sql;"""
 
@@ -58,7 +80,10 @@ def last_day_funct() -> str:
     """Create or replace SQL function SELECT current day - 1"""
     return """CREATE OR REPLACE FUNCTION last_day_date() RETURNS DATE as $$ 
     BEGIN 
-    RETURN NOW()::DATE - 1; END $$ LANGUAGE plpgsql;"""
+    /*
+    Функция возвращает дату предыдущего дня
+    */
+    RETURN (NOW() - INTERVAL '1 days')::DATE; END $$ LANGUAGE plpgsql;"""
 
 
 @log_decorator
@@ -66,7 +91,10 @@ def last_week_funct() -> str:
     """Create or replace SQL function SELECT current day - 7"""
     return """CREATE OR REPLACE FUNCTION last_week_date() RETURNS DATE as $$ 
     BEGIN 
-    RETURN NOW()::DATE - 7; END $$ LANGUAGE plpgsql;"""
+    /*
+    Функция возвращает дату, приходящуюся на неделю ранее
+    */
+    RETURN (NOW() - INTERVAL '7 days'); END $$ LANGUAGE plpgsql;"""
 
 
 @log_decorator
@@ -74,7 +102,10 @@ def last_month_funct() -> str:
     """Create or replace SQL function SELECT current day - 7"""
     return """CREATE OR REPLACE FUNCTION last_month_date() RETURNS DATE as $$ 
     BEGIN 
-    RETURN NOW()::DATE - 30; END $$ LANGUAGE plpgsql;"""
+    /*
+    Функция возвращает дату, соответствующую дню, ровно месяц назад
+    */
+    RETURN (NOW() - INTERVAL '1 month')::DATE; END $$ LANGUAGE plpgsql;"""
 
 
 @log_decorator
@@ -82,7 +113,10 @@ def last_year_funct() -> str:
     """Create or replace SQL function SELECT current day - 7"""
     return """CREATE OR REPLACE FUNCTION last_year_date() RETURNS DATE as $$ 
     BEGIN 
-    RETURN NOW()::DATE - 365; END $$ LANGUAGE plpgsql;"""
+    /*
+    Функция возвращает дату соотвествующую дню ровно год назад
+    */
+    RETURN (NOW() - INTERVAL '1 year')::DATE; END $$ LANGUAGE plpgsql;"""
 
 
 @log_decorator
@@ -106,6 +140,10 @@ def date_to_date_and_day_of_week() -> str:
 
     return """CREATE OR REPLACE FUNCTION date_to_date_and_day_string(d DATE) RETURNS text AS $$
     BEGIN
+    /*
+    Функция возвращает комбинированное строчное представление для даты
+    Дата(День недели)
+    */
     RETURN d || '(' || To_Char(d, 'TMDAY') || ')' :: text;
     END;
     $$ LANGUAGE plpgsql;"""
@@ -117,6 +155,9 @@ def meter_type_to_string() -> str:
 
     return """CREATE OR REPLACE FUNCTION meter_type_to_string(m meter_type) RETURNS text AS $$
     BEGIN 
+    /*
+    Функция возвращает текстовое наименование типа прибора учета
+    */
     IF m = 'electricity'::meter_type THEN RETURN 'электроэнергия':: text;
     ELSIF m ='cold_water'::meter_type THEN RETURN 'ХВС'::text;
     ELSIF m = 'hot_water'::meter_type THEN RETURN 'ГВС'::text;
@@ -133,6 +174,9 @@ def units_of_measure() -> str:
 
     return """CREATE OR REPLACE FUNCTION units_of_measure_string(m meter_type) RETURNS text AS $$
         BEGIN 
+        /*
+        Функция возвращает текстовое обозначение единицы измерения для прибора учета
+        */
         IF m = 'electricity'::meter_type THEN RETURN 'кВт*час':: text;
         ELSIF m ='cold_water'::meter_type THEN RETURN 'м.куб.'::text;
         ELSIF m = 'hot_water'::meter_type THEN RETURN 'м.куб.'::text;
@@ -171,11 +215,17 @@ def average_from_last_readings() -> str:
     """Create or replace function to calculate average from two last reading to meter device"""
 
     return """CREATE OR REPLACE FUNCTION average_from_last_readings(integer) RETURNS NUMERIC(13,3) AS $$
-    DECLARE dev_id ALIAS FOR $1; d1 DATE; d2 DATE; r1 NUMERIC; r2 NUMERIC;
+    DECLARE dev_id ALIAS FOR $1;
+        d1 DATE; d2 DATE;
+        r1 NUMERIC; r2 NUMERIC;
 	    delta NUMERIC;
 	    K INTEGER;
 	    days INTEGER;
     BEGIN
+    /*
+    Функция возвращает среднесуточный расход по последним двум показаниям для прибора учета с заданным id
+    Либо 0 если показаний не существует
+    */
 	    d1 = (SELECT read_date FROM meter_readings WHERE devices_id = dev_id ORDER BY read_date DESC LIMIT 1);
 	    d2 = (SELECT read_date FROM meter_readings WHERE (devices_id = dev_id AND read_date < d1) ORDER BY read_date DESC LIMIT 1);
 	    r1 = (SELECT reading FROM meter_readings WHERE (devices_id = dev_id AND read_date = d1));
@@ -229,6 +279,19 @@ def full_calculation_in_scheme() -> str:
     return """CREATE OR REPLACE FUNCTION full_calc_to_scheme(integer) RETURNS text[] AS $$
     DECLARE schm ALIAS FOR $1; all_data text[]; pos_arr INTEGER[]; neg_arr  INTEGER[]; averages NUMERIC[];
     BEGIN
+    /*
+    Функция возвращает тестовый массив, содержащий расчеты по заданному номеру схемы
+    Массив содержит по порядку:
+    -Номер схемы расчета
+    -тип схемы расчета
+    -Массив номеров приборов учета с положительным влиянием
+    -Массив номеров вычитаемых приборов учета
+    -описание схемы
+    -единицу измерения
+    -среднесуточный расход по двум последним показаниям
+    -Расчетное потребление в текущем месяце исходя из среднесуточного потребления
+    -Расход за последний месяц исходя из показаний приборов учета
+    */
         all_data = ARRAY[schm];
 	    all_data = array_append(all_data, (SELECT meter_type_to_string(devices_type) FROM calculation_schemes WHERE id = schm));
 	    pos_arr = (SELECT positive_calc FROM calculation_schemes WHERE id = schm);
@@ -255,6 +318,19 @@ def full_calc_all_schemes_in_point() -> str:
     DECLARE
 	    p_id ALIAS FOR $1; all_data TEXT ARRAY; schm INTEGER; schemes INTEGER[];
     BEGIN
+    /*
+    Функция возвращает тестовый массив, содержащий расчеты по всем схемам в заданной точке
+    Массив последовательно содержит:
+    -Номер схемы расчета
+    -тип схемы расчета
+    -Массив номеров приборов учета с положительным влиянием
+    -Массив номеров вычитаемых приборов учета
+    -описание схемы
+    -единицу измерения
+    -среднесуточный расход по двум последним показаниям
+    -Расчетное потребление в текущем месяце исходя из среднесуточного потребления
+    -Расход за последний месяц исходя из показаний приборов учета
+    */
 	    schemes = (SELECT ARRAY_AGG(t.id) FROM calculation_schemes AS t WHERE point_id = p_id);
 	    IF schemes ISNULL THEN schemes = '{}'::INTEGER[]; END IF;
 	    FOREACH schm IN ARRAY schemes LOOP
@@ -270,6 +346,9 @@ def first_day_of_month() -> str:
 
     return """CREATE OR REPLACE FUNCTION first_day_of_months(dt DATE) RETURNS DATE AS $$
         BEGIN
+        /*
+        Функция возвращает первый день месяца, где месяц определен датой во входных параметрах
+        */
 	        RETURN DATE_TRUNC('MONTH', dt)::DATE;
         END;
         $$ LANGUAGE plpgsql;"""
@@ -280,6 +359,11 @@ def readings_with_the_nearest_date() -> str:
 
     return """CREATE OR REPLACE FUNCTION readings_with_the_nearest_date(dev_id int, date_1 DATE) RETURNS int AS $$
         BEGIN
+        /*
+        Функция возвращает номер записи с показаниями для заданного прибора учета,
+        соответствующей ближайшей дате к началу месяца, заданного датой date_1
+        Показания могут быть как до так и после заданной даты
+        */
 	        RETURN (SELECT id FROM meter_readings WHERE devices_id = dev_id 
 	        ORDER BY ABS(first_day_of_months(date_1::DATE) - read_date) LIMIT 1);
         END;
@@ -292,6 +376,10 @@ def last_N_first_dates() -> str:
     return """CREATE OR REPLACE FUNCTION last_N_first_dates(N int) RETURNS DATE[] AS $$
         DECLARE all_dates DATE[]; start_date DATE; crt_date DATE; i INT;
         BEGIN
+        /*
+        Функция возвращает массив из N предыдущих дат,
+        каждая из которых отсоит от предыдущих ровно на месяц
+        */
 	    start_date = NOW()::DATE;
 	    crt_date = start_date;
 	    FOR i IN 1..N LOOP
@@ -331,6 +419,11 @@ def complexes_and_points_not_closed() -> str:
 	    point INTEGER;
 	    sub_point INTEGER;
     BEGIN
+    /*
+    Функция возвращает массив НЕ ЗАКРЫТЫХ номеров предприятий, сгруппированных по комплексам
+    {Комплекс_1, Предпр_в компл_1, Предпр_в_копл_2,... Комплекс_N, Предпр_в_компл1, Предпр_в_копл_2,
+     Далее предприятия без комплекса}
+    */
 	    FOR point IN SELECT point_id FROM workspoints WHERE (is_work != 'closed' AND main_point_id ISNULL) ORDER BY point_name LOOP
 		    result = array_append(result, point);
 		    FOR sub_point IN SELECT point_id FROM workspoints WHERE main_point_id = point ORDER BY point_name LOOP
@@ -351,6 +444,11 @@ def complexes_and_points_all() -> str:
 	    point INTEGER;
 	    sub_point INTEGER;
     BEGIN
+    /*
+    Функция возвращает массив ВСЕХ номеров предприятий, сгруппированных по комплексам
+    {Комплекс_1, Предпр_в компл_1, Предпр_в_копл_2,... Комплекс_N, Предпр_в_компл1, Предпр_в_копл_2,
+     Далее предприятия без комплекса}
+    */
 	    FOR point IN SELECT point_id FROM workspoints WHERE main_point_id ISNULL ORDER BY point_name LOOP
 		    result = array_append(result, point);
 		    FOR sub_point IN SELECT point_id FROM workspoints WHERE main_point_id = point ORDER BY point_name LOOP

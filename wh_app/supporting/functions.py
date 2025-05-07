@@ -165,6 +165,7 @@ def add_record_in_login_log(user: str, role: str, ip: str) -> None:
     """Save datetime, username and role for login in system"""
 
     log_file = open(config.path_to_login_log(), mode='a')
+    log_file.write('{}\n'.format('=' * 10))
     log_file.write('Login user {0} with user role = {1} in {2} from IP = {3}\n'.format(user, role, datetime.now().isoformat(), ip))
     log_file.close()
 
@@ -172,6 +173,7 @@ def add_record_in_login_log(user: str, role: str, ip: str) -> None:
 def add_record_in_logout_log(user: str, ip: str) -> None:
     """Save datetime and username for logout system"""
     log_file = open(config.path_to_login_log(), mode='a')
+    log_file.write('{}\n'.format('=' * 10))
     log_file.write('Logout user {0} in {1} from IP = {2}\n'.format(user, datetime.now().isoformat(), ip))
     log_file.close()
 

@@ -28,6 +28,11 @@ def create_or_replace_bug_status_to_text(cursor) -> None:
     create_function(cursor, functions_sql.bug_status_to_text())
 
 
+def create_or_replace_order_status_to_text(cursor) -> None:
+    """Add or replace in database function order_status to text"""
+    create_function(cursor, functions_sql.order_status_to_text())
+
+
 def create_or_replace_point_status_to_text(cursor) -> None:
     """Add or replace in database function bug_status to text"""
     create_function(cursor, functions_sql.point_status_to_text())
@@ -139,6 +144,7 @@ def all_sql_functions_list() -> list:
 
     return [create_or_replace_status_to_text,
             create_or_replace_bug_status_to_text,
+            create_or_replace_order_status_to_text,
             create_or_replace_point_status_to_text,
             create_or_replace_all_works_from_equip,
             create_or_replace_last_day_funct,
