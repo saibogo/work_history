@@ -8,33 +8,35 @@
 7. apt install pip
 8. apt install python3-psycopg2
 9. apt install python3-flask
+10. apt install python3-requests
 10. apt install python3-psutil
+10. apt install python3-pandas
 11. pip3 install fpdf
-12. DEPRECATED:   apt install python3-pyqt5
-12.1. pip3 install aiogram
-12.2. create bot. get token and create file 'telegram_token.txt'
-12.3. edit config.xml section path_to_telegram_token
-13. apt install postgresql
-14. su  (And insert your superuser password)
+12. pip3 install aiogram==2.25.1 --break-system-packages 
+13 create bot. get token and create file 'telegram_token.txt'
+14 edit config.xml section path_to_telegram_token
+15. apt install postgresql
+16. su  (And insert your superuser password)
 15. su - postgres
-16. psql -Upostgres
-17. =# CREATE USER saibogo WITH PASSWORD 'myPassword';
-18. =# CREATE DATABASE workhistory;
-19. =# GRANT ALL PRIVILEGES ON DATABASE "workhistory" to saibogo;
-20. =# \c workhistory
-21. workhistory=# GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO "saibogo";
-22. exit to normal terminal
-23. psql workhistory < /path/to/your/dump.db
-24. python3 /path/to/main.py --help
-25. cd to static dir in your project
-26. gzip -dr equips   This command unpack all details files
+17. psql -Upostgres
+18. =# CREATE USER saibogo WITH PASSWORD 'myPassword';
+19. =# CREATE DATABASE workhistory;
+20. =# GRANT ALL PRIVILEGES ON DATABASE "workhistory" to saibogo;
+21. =# \c workhistory
+22. workhistory=# GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO "saibogo";
+23. exit to normal terminal
+    ALL owner in backup.db must be saibogo
+24. psql  --username=saibogo --dbname=workhistory --host=localhost -v ON_ERROR_STOP=1 --file=/path/to/file/postgress_backup.db
+25. python3 /path/to/main.py --help
+26. cd to static dir in your project
+27. gzip -dr equips   This command unpack all details files
 Well Done!
-27. edit config.xml in your favorite editor (patches and ip)
-28. python3 /path/to/main.py --help
-29. python3 /path/to/main.py --allstart
-30. in your browser go to to http://your_ip:5000
+28. edit config.xml in your favorite editor (patches and ip)
+29. python3 /path/to/main.py --help
+30. python3 /path/to/main.py --allstart
+31. in your browser go to to http://your_ip:5000
 Well Done!
 
-29. To add user in telegramm-bot add records in read_bot_access.py and write_bot_access.py
-30. Server use HTTPS. Certificate and privateKey in folder wh_app/cert. Generated with using openssl
+32. To add user in telegramm-bot add records in read_bot_access.py and write_bot_access.py
+33. Server use HTTPS. Certificate and privateKey in folder wh_app/cert. Generated with using openssl
 

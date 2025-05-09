@@ -2,7 +2,7 @@
 import subprocess
 
 from wh_app.supporting import functions
-from wh_app.config_and_backup.config import path_to_dump, path_to_structure_dump
+from wh_app.config_and_backup.config import path_to_dump, path_to_structure_dump, database_name, user_name
 
 functions.info_string(__name__)
 
@@ -12,8 +12,9 @@ def create_dump(path_to_file: str = path_to_dump()) -> None:
 
     try:
         print("Path: {0}".format(path_to_file))
-        print("Command1: pg_dump workhistory > {0}".format(path_to_file))
-        _ = subprocess.call("pg_dump workhistory > {0}".format(path_to_file), shell=True)
+        command_backup = "pg_dump --dbname={0} --username={1} > {2}".format(database_name(),  user_name(), path_to_file)
+        print("Command1: {0}".format(command_backup))
+        _ = subprocess.call(command_backup, shell=True)
         print('Дамп базы данных записан в {0}'.format(path_to_file))
         print('Path: {0}'.format(path_to_file + '.tar.gz'))
         print("Command2: {0} {1} {2}".format("tar -cvzf", path_to_file + '.tar.gz', path_to_file))
@@ -32,8 +33,9 @@ def create_empty(path_to_file: str = path_to_structure_dump()) -> None:
 
     try:
         print("Path: {0}".format(path_to_file))
-        print("Command1: pg_dump empty workhistory > {0}".format(path_to_file))
-        _ = subprocess.call("pg_dump --schema-only workhistory > {0}".format(path_to_file), shell=True)
+        command_backup = "pg_dump --schema-only --dbname={0} --username={1} > {2}".format(database_name(), user_name(), path_to_file)
+        print(command_backup)
+        _ = subprocess.call(command_backup, shell=True)
         print('Дамп структуры базы данных записан в {0}'.format(path_to_file))
         print('Path: {0}'.format(path_to_file + '.tar.gz'))
         print("Command2: {0} {1} {2}".format("tar -cvzf", path_to_file + '.tar.gz', path_to_file))
