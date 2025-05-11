@@ -12,7 +12,7 @@ def create_dump(path_to_file: str = path_to_dump()) -> None:
 
     try:
         print("Path: {0}".format(path_to_file))
-        command_backup = "pg_dump --dbname={0} --username={1} > {2}".format(database_name(),  user_name(), path_to_file)
+        command_backup = "pg_dump  --dbname={0} > {1}".format(database_name(),  path_to_file)
         print("Command1: {0}".format(command_backup))
         _ = subprocess.call(command_backup, shell=True)
         print('Дамп базы данных записан в {0}'.format(path_to_file))
@@ -33,7 +33,7 @@ def create_empty(path_to_file: str = path_to_structure_dump()) -> None:
 
     try:
         print("Path: {0}".format(path_to_file))
-        command_backup = "pg_dump --schema-only --dbname={0} --username={1} > {2}".format(database_name(), user_name(), path_to_file)
+        command_backup = "pg_dump --schema-only --dbname={0}  > {1}".format(database_name() , path_to_file)
         print(command_backup)
         _ = subprocess.call(command_backup, shell=True)
         print('Дамп структуры базы данных записан в {0}'.format(path_to_file))

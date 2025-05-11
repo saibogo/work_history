@@ -64,7 +64,7 @@ CREATE TYPE public.order_status AS ENUM (
 ALTER TYPE public.order_status OWNER TO saibogo;
 
 --
--- Name: point_status; Type: TYPE; Schema: public; Owner: postgres
+-- Name: point_status; Type: TYPE; Schema: public; Owner: saibogo
 --
 
 CREATE TYPE public.point_status AS ENUM (
@@ -74,7 +74,7 @@ CREATE TYPE public.point_status AS ENUM (
 );
 
 
-ALTER TYPE public.point_status OWNER TO postgres;
+ALTER TYPE public.point_status OWNER TO saibogo;
 
 --
 -- Name: work_day_type; Type: TYPE; Schema: public; Owner: saibogo
@@ -536,7 +536,7 @@ CREATE FUNCTION public.point_status_to_string(st boolean) RETURNS text
 ALTER FUNCTION public.point_status_to_string(st boolean) OWNER TO saibogo;
 
 --
--- Name: point_status_to_string(public.point_status); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: point_status_to_string(public.point_status); Type: FUNCTION; Schema: public; Owner: saibogo
 --
 
 CREATE FUNCTION public.point_status_to_string(st public.point_status) RETURNS text
@@ -551,7 +551,7 @@ CREATE FUNCTION public.point_status_to_string(st public.point_status) RETURNS te
     $$;
 
 
-ALTER FUNCTION public.point_status_to_string(st public.point_status) OWNER TO postgres;
+ALTER FUNCTION public.point_status_to_string(st public.point_status) OWNER TO saibogo;
 
 --
 -- Name: readings_with_the_nearest_date(integer, date); Type: FUNCTION; Schema: public; Owner: saibogo
