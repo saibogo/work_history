@@ -6,7 +6,7 @@ from wh_app.sql_operations import view_operation, sql_functions_operations, sql_
 from wh_app.sql_operations.select_operations.select_operations import get_database_version as dbversion
 from wh_app.postgresql.database import Database
 from wh_app.sql_operations.call_operations import find_all_table_to_vacuum
-from wh_app.supporting.cli import COMMANDS, COMMANDS_EXT
+from wh_app.supporting.cli import COMMANDS, COMMANDS_EXT, print_help
 
 with Database() as base:
     CONNECTION, CURSOR = base
@@ -42,5 +42,6 @@ if len(sys.argv) > 1:
         print('Error command. Use --help for more information')
 
 else:
-    print('Error command. Use --help for more information')
+    print('Not corrected start argument!')
+    print_help()
 

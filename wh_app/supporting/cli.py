@@ -26,7 +26,7 @@ def print_help() -> None:
     print("--adduser: Create new user if not exist")
     print("--updatepassword username : Update password from user if username exist")
     print("--saystop message: Send message all user 'Server ready to shutdown'")
-    print('if not arguments - start GUI')
+    print('if not arguments - Break Program and print HELP section')
 
 
 COMMANDS = {'--startserver': stop_start_web.start_server,
