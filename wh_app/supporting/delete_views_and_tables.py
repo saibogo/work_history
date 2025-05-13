@@ -45,7 +45,7 @@ def drop_all_data() -> None:
 
     if answer in ['Y', 'y']:
         password = getpass.getpass("Требуется пароль администратора системы:")
-        if functions.is_superuser_password(password):
+        if functions.is_superuser_password_cli(password):
             print('Выполняется очистка текущей базы данных!')
             answer = input("Создать дамп текущей базы данных?(Y/y - Создать)")
             if answer in ['Y', 'y']:

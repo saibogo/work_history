@@ -226,6 +226,16 @@ def is_superuser_password(password: str) -> bool:
            and get_user_role(username) == ROLE_SUPERUSER
 
 
+def is_superuser_password_cli(password: str) -> bool:
+    """Function compare password and superuser password hash (ONLY command string )"""
+    all_users = read_all_users()
+    print(all_users)
+    for user in all_users.keys():
+        if user == config.user_name() and create_hash(password) == all_users[user]:
+            return True
+    return False
+
+
 def is_login_and_password_correct(login: str, password: str) -> bool:
     """Function examine login and password pair"""
 
