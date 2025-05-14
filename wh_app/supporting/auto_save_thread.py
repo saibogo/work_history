@@ -3,7 +3,7 @@
 import threading
 import datetime
 import time
-from wh_app.supporting.backup_operations import create_dump, create_empty
+from wh_app.supporting.backup_operations import create_dump, create_empty, delete_old_backups
 from wh_app.config_and_backup import config
 from wh_app.supporting import functions
 
@@ -49,6 +49,7 @@ class AutoSaveThread(threading.Thread):
                 if self.start_time < current_time < self.stop_time:
                     create_dump(config.path_to_dump())
                     create_empty(config.path_to_structure_dump())
+                    delete_old_backups()
                     self.database_saved = True
             else:
                 if current_time < self.start_time:

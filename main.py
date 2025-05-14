@@ -7,6 +7,7 @@ from wh_app.sql_operations.select_operations.select_operations import get_databa
 from wh_app.postgresql.database import Database
 from wh_app.sql_operations.call_operations import find_all_table_to_vacuum
 from wh_app.supporting.cli import COMMANDS, COMMANDS_EXT, print_help
+from wh_app.supporting.backup_operations import delete_old_backups
 
 with Database() as base:
     CONNECTION, CURSOR = base

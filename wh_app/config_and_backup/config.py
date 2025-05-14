@@ -57,8 +57,8 @@ def load_config():
         globals()['path_to_telegram_token_var'] = tree.find('pathes/path_to_telegram_token').text
         globals()['static_dir_var'] = path_to_project() + 'wh_app/web/static/'
         globals()['template_folder_var'] = path_to_project() + 'wh_app/web/templates'
-        globals()['path_to_dump_var'] = path_to_project() + 'wh_app/config_and_backup/postgress_backup.db'
-        globals()['path_to_structure_dump_var'] = path_to_project() + 'wh_app/config_and_backup/postgress_backup_empty.db'
+        globals()['path_to_dump_var'] = path_to_project() + 'wh_app/config_and_backup/backups/postgress_backup.{}.db'
+        globals()['path_to_structure_dump_var'] = path_to_project() + 'wh_app/config_and_backup/backups/postgress_backup_empty.{}.db'
 
         globals()['path_to_passwords_var'] = path_to_project() + 'wh_app/config_and_backup/.users_pass'
         globals()['path_to_messages_var'] = path_to_project() + 'wh_app/config_and_backup/.message_to_shutdown_server'
