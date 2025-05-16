@@ -67,7 +67,7 @@ def bug_message(bug: List[Any]) -> str:
     msg.append('Описание: {}\n'.format(bug[1]))
     msg.append('Статус: {}\n'.format(bug[2]))
     msg.append('Дата регистрации: {}\n'.format(bug[3]))
-    if bug[4]:
+    if len(bug) > 4 and bug[4]:
         msg.append('Дата закрытия: {}\n'.format(bug[4]))
     return ''.join(msg)
 

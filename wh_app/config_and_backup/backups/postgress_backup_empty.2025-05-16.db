@@ -2,13 +2,12 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 17.5 (Debian 17.5-1.pgdg120+1)
--- Dumped by pg_dump version 17.5 (Debian 17.5-1.pgdg120+1)
+-- Dumped from database version 15.12 (Debian 15.12-0+deb12u2)
+-- Dumped by pg_dump version 15.12 (Debian 15.12-0+deb12u2)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
-SET transaction_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SELECT pg_catalog.set_config('search_path', '', false);
@@ -797,7 +796,7 @@ CREATE VIEW public.all_workers AS
   ORDER BY workers.sub_name, workers.name;
 
 
-ALTER VIEW public.all_workers OWNER TO saibogo;
+ALTER TABLE public.all_workers OWNER TO saibogo;
 
 --
 -- Name: bindings; Type: TABLE; Schema: public; Owner: saibogo
@@ -885,7 +884,7 @@ CREATE SEQUENCE public.calculation_schemes_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.calculation_schemes_id_seq OWNER TO saibogo;
+ALTER TABLE public.calculation_schemes_id_seq OWNER TO saibogo;
 
 --
 -- Name: calculation_schemes_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: saibogo
@@ -982,7 +981,7 @@ CREATE SEQUENCE public.customer_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.customer_id_seq OWNER TO saibogo;
+ALTER TABLE public.customer_id_seq OWNER TO saibogo;
 
 --
 -- Name: customer_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: saibogo
@@ -1046,7 +1045,7 @@ CREATE SEQUENCE public.equip_details_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.equip_details_id_seq OWNER TO saibogo;
+ALTER TABLE public.equip_details_id_seq OWNER TO saibogo;
 
 --
 -- Name: equip_details_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: saibogo
@@ -1054,6 +1053,20 @@ ALTER SEQUENCE public.equip_details_id_seq OWNER TO saibogo;
 
 ALTER SEQUENCE public.equip_details_id_seq OWNED BY public.equip_details.id;
 
+
+--
+-- Name: equip_manuals; Type: TABLE; Schema: public; Owner: saibogo
+--
+
+CREATE TABLE public.equip_manuals (
+    id integer NOT NULL,
+    full_type integer,
+    equip_name_detail text NOT NULL,
+    description text
+);
+
+
+ALTER TABLE public.equip_manuals OWNER TO saibogo;
 
 --
 -- Name: equip_sub_types; Type: TABLE; Schema: public; Owner: saibogo
@@ -1083,7 +1096,7 @@ CREATE SEQUENCE public.equip_sub_types_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.equip_sub_types_id_seq OWNER TO saibogo;
+ALTER TABLE public.equip_sub_types_id_seq OWNER TO saibogo;
 
 --
 -- Name: equip_sub_types_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: saibogo
@@ -1190,7 +1203,7 @@ CREATE VIEW public.firsts_bindings AS
   ORDER BY workspoints.point_name;
 
 
-ALTER VIEW public.firsts_bindings OWNER TO saibogo;
+ALTER TABLE public.firsts_bindings OWNER TO saibogo;
 
 --
 -- Name: heating; Type: TABLE; Schema: public; Owner: saibogo
@@ -1282,7 +1295,7 @@ CREATE SEQUENCE public.meter_devices_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.meter_devices_id_seq OWNER TO saibogo;
+ALTER TABLE public.meter_devices_id_seq OWNER TO saibogo;
 
 --
 -- Name: meter_devices_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: saibogo
@@ -1318,7 +1331,7 @@ CREATE SEQUENCE public.meter_readings_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.meter_readings_id_seq OWNER TO saibogo;
+ALTER TABLE public.meter_readings_id_seq OWNER TO saibogo;
 
 --
 -- Name: meter_readings_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: saibogo
@@ -1391,7 +1404,7 @@ CREATE SEQUENCE public.orders_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.orders_id_seq OWNER TO saibogo;
+ALTER TABLE public.orders_id_seq OWNER TO saibogo;
 
 --
 -- Name: orders_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: saibogo
@@ -1453,7 +1466,7 @@ CREATE SEQUENCE public.points_meter_devices_device_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.points_meter_devices_device_id_seq OWNER TO saibogo;
+ALTER TABLE public.points_meter_devices_device_id_seq OWNER TO saibogo;
 
 --
 -- Name: points_meter_devices_device_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: saibogo
@@ -1475,7 +1488,7 @@ CREATE SEQUENCE public.points_meter_devices_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.points_meter_devices_id_seq OWNER TO saibogo;
+ALTER TABLE public.points_meter_devices_id_seq OWNER TO saibogo;
 
 --
 -- Name: points_meter_devices_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: saibogo
@@ -1511,7 +1524,7 @@ CREATE VIEW public.seconds_bindings AS
   GROUP BY workspoints.point_name;
 
 
-ALTER VIEW public.seconds_bindings OWNER TO saibogo;
+ALTER TABLE public.seconds_bindings OWNER TO saibogo;
 
 --
 -- Name: sessions_hashs; Type: TABLE; Schema: public; Owner: saibogo
@@ -1539,7 +1552,7 @@ CREATE SEQUENCE public.sessions_hashs_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.sessions_hashs_id_seq OWNER TO saibogo;
+ALTER TABLE public.sessions_hashs_id_seq OWNER TO saibogo;
 
 --
 -- Name: sessions_hashs_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: saibogo
@@ -1589,7 +1602,7 @@ SELECT
     NULL::timestamp without time zone AS max;
 
 
-ALTER VIEW public.statistic OWNER TO saibogo;
+ALTER TABLE public.statistic OWNER TO saibogo;
 
 --
 -- Name: workers_id_seq; Type: SEQUENCE; Schema: public; Owner: saibogo
@@ -1660,7 +1673,7 @@ CREATE VIEW public.works_from_worker AS
           GROUP BY works_1.id) tmp ON ((tmp.work_id = works.id)));
 
 
-ALTER VIEW public.works_from_worker OWNER TO saibogo;
+ALTER TABLE public.works_from_worker OWNER TO saibogo;
 
 --
 -- Name: works_id_seq; Type: SEQUENCE; Schema: public; Owner: saibogo
@@ -1702,7 +1715,7 @@ CREATE VIEW public.works_likes AS
           GROUP BY works_1.id) tmp ON ((tmp.work_id = works.id)));
 
 
-ALTER VIEW public.works_likes OWNER TO saibogo;
+ALTER TABLE public.works_likes OWNER TO saibogo;
 
 --
 -- Name: workspoints_point_id_seq; Type: SEQUENCE; Schema: public; Owner: saibogo
@@ -2179,7 +2192,7 @@ ALTER TABLE ONLY public.works
 -- Name: SCHEMA public; Type: ACL; Schema: -; Owner: pg_database_owner
 --
 
-GRANT CREATE ON SCHEMA public TO saibogo;
+GRANT ALL ON SCHEMA public TO saibogo;
 
 
 --
@@ -2253,6 +2266,7 @@ GRANT ALL ON FUNCTION public.worker_status_to_string(st public.worker_status) TO
 REVOKE ALL ON TABLE public.posts FROM saibogo;
 GRANT ALL ON TABLE public.posts TO saibogo WITH GRANT OPTION;
 GRANT ALL ON TABLE public.posts TO PUBLIC;
+GRANT ALL ON TABLE public.posts TO admin55;
 
 
 --
@@ -2262,6 +2276,7 @@ GRANT ALL ON TABLE public.posts TO PUBLIC;
 REVOKE ALL ON TABLE public.workers FROM saibogo;
 GRANT ALL ON TABLE public.workers TO saibogo WITH GRANT OPTION;
 GRANT ALL ON TABLE public.workers TO PUBLIC;
+GRANT ALL ON TABLE public.workers TO admin55;
 
 
 --
@@ -2271,6 +2286,7 @@ GRANT ALL ON TABLE public.workers TO PUBLIC;
 REVOKE ALL ON TABLE public.all_workers FROM saibogo;
 GRANT ALL ON TABLE public.all_workers TO saibogo WITH GRANT OPTION;
 GRANT ALL ON TABLE public.all_workers TO PUBLIC;
+GRANT ALL ON TABLE public.all_workers TO admin55;
 
 
 --
@@ -2280,6 +2296,7 @@ GRANT ALL ON TABLE public.all_workers TO PUBLIC;
 REVOKE ALL ON TABLE public.bindings FROM saibogo;
 GRANT ALL ON TABLE public.bindings TO saibogo WITH GRANT OPTION;
 GRANT ALL ON TABLE public.bindings TO PUBLIC;
+GRANT ALL ON TABLE public.bindings TO admin55;
 
 
 --
@@ -2289,6 +2306,7 @@ GRANT ALL ON TABLE public.bindings TO PUBLIC;
 REVOKE ALL ON SEQUENCE public.bindings_id_seq FROM saibogo;
 GRANT ALL ON SEQUENCE public.bindings_id_seq TO saibogo WITH GRANT OPTION;
 GRANT ALL ON SEQUENCE public.bindings_id_seq TO PUBLIC;
+GRANT ALL ON SEQUENCE public.bindings_id_seq TO admin55;
 
 
 --
@@ -2298,6 +2316,7 @@ GRANT ALL ON SEQUENCE public.bindings_id_seq TO PUBLIC;
 REVOKE ALL ON TABLE public.bugzilla FROM saibogo;
 GRANT ALL ON TABLE public.bugzilla TO saibogo WITH GRANT OPTION;
 GRANT ALL ON TABLE public.bugzilla TO PUBLIC;
+GRANT ALL ON TABLE public.bugzilla TO admin55;
 
 
 --
@@ -2307,6 +2326,21 @@ GRANT ALL ON TABLE public.bugzilla TO PUBLIC;
 REVOKE ALL ON SEQUENCE public.bugzilla_id_seq FROM saibogo;
 GRANT ALL ON SEQUENCE public.bugzilla_id_seq TO saibogo WITH GRANT OPTION;
 GRANT ALL ON SEQUENCE public.bugzilla_id_seq TO PUBLIC;
+GRANT ALL ON SEQUENCE public.bugzilla_id_seq TO admin55;
+
+
+--
+-- Name: TABLE calculation_schemes; Type: ACL; Schema: public; Owner: saibogo
+--
+
+GRANT ALL ON TABLE public.calculation_schemes TO admin55;
+
+
+--
+-- Name: SEQUENCE calculation_schemes_id_seq; Type: ACL; Schema: public; Owner: saibogo
+--
+
+GRANT ALL ON SEQUENCE public.calculation_schemes_id_seq TO admin55;
 
 
 --
@@ -2316,6 +2350,7 @@ GRANT ALL ON SEQUENCE public.bugzilla_id_seq TO PUBLIC;
 REVOKE ALL ON TABLE public.chats FROM saibogo;
 GRANT ALL ON TABLE public.chats TO saibogo WITH GRANT OPTION;
 GRANT ALL ON TABLE public.chats TO PUBLIC;
+GRANT ALL ON TABLE public.chats TO admin55;
 
 
 --
@@ -2325,6 +2360,7 @@ GRANT ALL ON TABLE public.chats TO PUBLIC;
 REVOKE ALL ON SEQUENCE public.chats_id_seq FROM saibogo;
 GRANT ALL ON SEQUENCE public.chats_id_seq TO saibogo WITH GRANT OPTION;
 GRANT ALL ON SEQUENCE public.chats_id_seq TO PUBLIC;
+GRANT ALL ON SEQUENCE public.chats_id_seq TO admin55;
 
 
 --
@@ -2334,6 +2370,7 @@ GRANT ALL ON SEQUENCE public.chats_id_seq TO PUBLIC;
 REVOKE ALL ON TABLE public.cold_water FROM saibogo;
 GRANT ALL ON TABLE public.cold_water TO saibogo WITH GRANT OPTION;
 GRANT ALL ON TABLE public.cold_water TO PUBLIC;
+GRANT ALL ON TABLE public.cold_water TO admin55;
 
 
 --
@@ -2343,6 +2380,7 @@ GRANT ALL ON TABLE public.cold_water TO PUBLIC;
 REVOKE ALL ON SEQUENCE public.cold_water_id_seq FROM saibogo;
 GRANT ALL ON SEQUENCE public.cold_water_id_seq TO saibogo WITH GRANT OPTION;
 GRANT ALL ON SEQUENCE public.cold_water_id_seq TO PUBLIC;
+GRANT ALL ON SEQUENCE public.cold_water_id_seq TO admin55;
 
 
 --
@@ -2352,6 +2390,7 @@ GRANT ALL ON SEQUENCE public.cold_water_id_seq TO PUBLIC;
 REVOKE ALL ON TABLE public.customer FROM saibogo;
 GRANT ALL ON TABLE public.customer TO saibogo WITH GRANT OPTION;
 GRANT ALL ON TABLE public.customer TO PUBLIC;
+GRANT ALL ON TABLE public.customer TO admin55;
 
 
 --
@@ -2361,6 +2400,7 @@ GRANT ALL ON TABLE public.customer TO PUBLIC;
 REVOKE ALL ON SEQUENCE public.customer_id_seq FROM saibogo;
 GRANT ALL ON SEQUENCE public.customer_id_seq TO saibogo WITH GRANT OPTION;
 GRANT ALL ON SEQUENCE public.customer_id_seq TO PUBLIC;
+GRANT ALL ON SEQUENCE public.customer_id_seq TO admin55;
 
 
 --
@@ -2370,6 +2410,7 @@ GRANT ALL ON SEQUENCE public.customer_id_seq TO PUBLIC;
 REVOKE ALL ON TABLE public.electric FROM saibogo;
 GRANT ALL ON TABLE public.electric TO saibogo WITH GRANT OPTION;
 GRANT ALL ON TABLE public.electric TO PUBLIC;
+GRANT ALL ON TABLE public.electric TO admin55;
 
 
 --
@@ -2379,6 +2420,49 @@ GRANT ALL ON TABLE public.electric TO PUBLIC;
 REVOKE ALL ON SEQUENCE public.electic_id_seq FROM saibogo;
 GRANT ALL ON SEQUENCE public.electic_id_seq TO saibogo WITH GRANT OPTION;
 GRANT ALL ON SEQUENCE public.electic_id_seq TO PUBLIC;
+GRANT ALL ON SEQUENCE public.electic_id_seq TO admin55;
+
+
+--
+-- Name: TABLE equip_details; Type: ACL; Schema: public; Owner: saibogo
+--
+
+GRANT ALL ON TABLE public.equip_details TO admin55;
+
+
+--
+-- Name: SEQUENCE equip_details_id_seq; Type: ACL; Schema: public; Owner: saibogo
+--
+
+GRANT ALL ON SEQUENCE public.equip_details_id_seq TO admin55;
+
+
+--
+-- Name: TABLE equip_manuals; Type: ACL; Schema: public; Owner: saibogo
+--
+
+GRANT ALL ON TABLE public.equip_manuals TO admin55;
+
+
+--
+-- Name: TABLE equip_sub_types; Type: ACL; Schema: public; Owner: saibogo
+--
+
+GRANT ALL ON TABLE public.equip_sub_types TO admin55;
+
+
+--
+-- Name: SEQUENCE equip_sub_types_id_seq; Type: ACL; Schema: public; Owner: saibogo
+--
+
+GRANT ALL ON SEQUENCE public.equip_sub_types_id_seq TO admin55;
+
+
+--
+-- Name: TABLE find_patterns; Type: ACL; Schema: public; Owner: saibogo
+--
+
+GRANT ALL ON TABLE public.find_patterns TO admin55;
 
 
 --
@@ -2388,6 +2472,7 @@ GRANT ALL ON SEQUENCE public.electic_id_seq TO PUBLIC;
 REVOKE ALL ON TABLE public.works_days FROM saibogo;
 GRANT ALL ON TABLE public.works_days TO saibogo WITH GRANT OPTION;
 GRANT ALL ON TABLE public.works_days TO PUBLIC;
+GRANT ALL ON TABLE public.works_days TO admin55;
 
 
 --
@@ -2397,6 +2482,14 @@ GRANT ALL ON TABLE public.works_days TO PUBLIC;
 REVOKE ALL ON TABLE public.workspoints FROM saibogo;
 GRANT ALL ON TABLE public.workspoints TO saibogo WITH GRANT OPTION;
 GRANT ALL ON TABLE public.workspoints TO PUBLIC;
+GRANT ALL ON TABLE public.workspoints TO admin55;
+
+
+--
+-- Name: TABLE firsts_bindings; Type: ACL; Schema: public; Owner: saibogo
+--
+
+GRANT ALL ON TABLE public.firsts_bindings TO admin55;
 
 
 --
@@ -2406,6 +2499,7 @@ GRANT ALL ON TABLE public.workspoints TO PUBLIC;
 REVOKE ALL ON TABLE public.heating FROM saibogo;
 GRANT ALL ON TABLE public.heating TO saibogo WITH GRANT OPTION;
 GRANT ALL ON TABLE public.heating TO PUBLIC;
+GRANT ALL ON TABLE public.heating TO admin55;
 
 
 --
@@ -2415,6 +2509,7 @@ GRANT ALL ON TABLE public.heating TO PUBLIC;
 REVOKE ALL ON SEQUENCE public.heating_id_seq FROM saibogo;
 GRANT ALL ON SEQUENCE public.heating_id_seq TO saibogo WITH GRANT OPTION;
 GRANT ALL ON SEQUENCE public.heating_id_seq TO PUBLIC;
+GRANT ALL ON SEQUENCE public.heating_id_seq TO admin55;
 
 
 --
@@ -2424,6 +2519,7 @@ GRANT ALL ON SEQUENCE public.heating_id_seq TO PUBLIC;
 REVOKE ALL ON TABLE public.hot_water FROM saibogo;
 GRANT ALL ON TABLE public.hot_water TO saibogo WITH GRANT OPTION;
 GRANT ALL ON TABLE public.hot_water TO PUBLIC;
+GRANT ALL ON TABLE public.hot_water TO admin55;
 
 
 --
@@ -2433,6 +2529,35 @@ GRANT ALL ON TABLE public.hot_water TO PUBLIC;
 REVOKE ALL ON SEQUENCE public.hot_water_id_seq FROM saibogo;
 GRANT ALL ON SEQUENCE public.hot_water_id_seq TO saibogo WITH GRANT OPTION;
 GRANT ALL ON SEQUENCE public.hot_water_id_seq TO PUBLIC;
+GRANT ALL ON SEQUENCE public.hot_water_id_seq TO admin55;
+
+
+--
+-- Name: TABLE meter_devices; Type: ACL; Schema: public; Owner: saibogo
+--
+
+GRANT ALL ON TABLE public.meter_devices TO admin55;
+
+
+--
+-- Name: SEQUENCE meter_devices_id_seq; Type: ACL; Schema: public; Owner: saibogo
+--
+
+GRANT ALL ON SEQUENCE public.meter_devices_id_seq TO admin55;
+
+
+--
+-- Name: TABLE meter_readings; Type: ACL; Schema: public; Owner: saibogo
+--
+
+GRANT ALL ON TABLE public.meter_readings TO admin55;
+
+
+--
+-- Name: SEQUENCE meter_readings_id_seq; Type: ACL; Schema: public; Owner: saibogo
+--
+
+GRANT ALL ON SEQUENCE public.meter_readings_id_seq TO admin55;
 
 
 --
@@ -2442,6 +2567,7 @@ GRANT ALL ON SEQUENCE public.hot_water_id_seq TO PUBLIC;
 REVOKE ALL ON TABLE public.oborudovanie FROM saibogo;
 GRANT ALL ON TABLE public.oborudovanie TO saibogo WITH GRANT OPTION;
 GRANT ALL ON TABLE public.oborudovanie TO PUBLIC;
+GRANT ALL ON TABLE public.oborudovanie TO admin55;
 
 
 --
@@ -2451,6 +2577,7 @@ GRANT ALL ON TABLE public.oborudovanie TO PUBLIC;
 REVOKE ALL ON SEQUENCE public.oborudovanie_id_seq FROM saibogo;
 GRANT ALL ON SEQUENCE public.oborudovanie_id_seq TO saibogo WITH GRANT OPTION;
 GRANT ALL ON SEQUENCE public.oborudovanie_id_seq TO PUBLIC;
+GRANT ALL ON SEQUENCE public.oborudovanie_id_seq TO admin55;
 
 
 --
@@ -2460,6 +2587,7 @@ GRANT ALL ON SEQUENCE public.oborudovanie_id_seq TO PUBLIC;
 REVOKE ALL ON TABLE public.orders FROM saibogo;
 GRANT ALL ON TABLE public.orders TO saibogo WITH GRANT OPTION;
 GRANT ALL ON TABLE public.orders TO PUBLIC;
+GRANT ALL ON TABLE public.orders TO admin55;
 
 
 --
@@ -2469,6 +2597,7 @@ GRANT ALL ON TABLE public.orders TO PUBLIC;
 REVOKE ALL ON SEQUENCE public.orders_id_seq FROM saibogo;
 GRANT ALL ON SEQUENCE public.orders_id_seq TO saibogo WITH GRANT OPTION;
 GRANT ALL ON SEQUENCE public.orders_id_seq TO PUBLIC;
+GRANT ALL ON SEQUENCE public.orders_id_seq TO admin55;
 
 
 --
@@ -2478,6 +2607,7 @@ GRANT ALL ON SEQUENCE public.orders_id_seq TO PUBLIC;
 REVOKE ALL ON TABLE public.performers FROM saibogo;
 GRANT ALL ON TABLE public.performers TO saibogo WITH GRANT OPTION;
 GRANT ALL ON TABLE public.performers TO PUBLIC;
+GRANT ALL ON TABLE public.performers TO admin55;
 
 
 --
@@ -2487,6 +2617,28 @@ GRANT ALL ON TABLE public.performers TO PUBLIC;
 REVOKE ALL ON SEQUENCE public.performers_id_seq FROM saibogo;
 GRANT ALL ON SEQUENCE public.performers_id_seq TO saibogo WITH GRANT OPTION;
 GRANT ALL ON SEQUENCE public.performers_id_seq TO PUBLIC;
+GRANT ALL ON SEQUENCE public.performers_id_seq TO admin55;
+
+
+--
+-- Name: TABLE points_meter_devices; Type: ACL; Schema: public; Owner: saibogo
+--
+
+GRANT ALL ON TABLE public.points_meter_devices TO admin55;
+
+
+--
+-- Name: SEQUENCE points_meter_devices_device_id_seq; Type: ACL; Schema: public; Owner: saibogo
+--
+
+GRANT ALL ON SEQUENCE public.points_meter_devices_device_id_seq TO admin55;
+
+
+--
+-- Name: SEQUENCE points_meter_devices_id_seq; Type: ACL; Schema: public; Owner: saibogo
+--
+
+GRANT ALL ON SEQUENCE public.points_meter_devices_id_seq TO admin55;
 
 
 --
@@ -2496,6 +2648,28 @@ GRANT ALL ON SEQUENCE public.performers_id_seq TO PUBLIC;
 REVOKE ALL ON SEQUENCE public.posts_id_seq FROM saibogo;
 GRANT ALL ON SEQUENCE public.posts_id_seq TO saibogo WITH GRANT OPTION;
 GRANT ALL ON SEQUENCE public.posts_id_seq TO PUBLIC;
+GRANT ALL ON SEQUENCE public.posts_id_seq TO admin55;
+
+
+--
+-- Name: TABLE seconds_bindings; Type: ACL; Schema: public; Owner: saibogo
+--
+
+GRANT ALL ON TABLE public.seconds_bindings TO admin55;
+
+
+--
+-- Name: TABLE sessions_hashs; Type: ACL; Schema: public; Owner: saibogo
+--
+
+GRANT ALL ON TABLE public.sessions_hashs TO admin55;
+
+
+--
+-- Name: SEQUENCE sessions_hashs_id_seq; Type: ACL; Schema: public; Owner: saibogo
+--
+
+GRANT ALL ON SEQUENCE public.sessions_hashs_id_seq TO admin55;
 
 
 --
@@ -2505,6 +2679,7 @@ GRANT ALL ON SEQUENCE public.posts_id_seq TO PUBLIC;
 REVOKE ALL ON TABLE public.sewerage FROM saibogo;
 GRANT ALL ON TABLE public.sewerage TO saibogo WITH GRANT OPTION;
 GRANT ALL ON TABLE public.sewerage TO PUBLIC;
+GRANT ALL ON TABLE public.sewerage TO admin55;
 
 
 --
@@ -2514,6 +2689,7 @@ GRANT ALL ON TABLE public.sewerage TO PUBLIC;
 REVOKE ALL ON SEQUENCE public.sewerage_id_seq FROM saibogo;
 GRANT ALL ON SEQUENCE public.sewerage_id_seq TO saibogo WITH GRANT OPTION;
 GRANT ALL ON SEQUENCE public.sewerage_id_seq TO PUBLIC;
+GRANT ALL ON SEQUENCE public.sewerage_id_seq TO admin55;
 
 
 --
@@ -2523,6 +2699,7 @@ GRANT ALL ON SEQUENCE public.sewerage_id_seq TO PUBLIC;
 REVOKE ALL ON TABLE public.statistic FROM saibogo;
 GRANT ALL ON TABLE public.statistic TO saibogo WITH GRANT OPTION;
 GRANT ALL ON TABLE public.statistic TO PUBLIC;
+GRANT ALL ON TABLE public.statistic TO admin55;
 
 
 --
@@ -2532,6 +2709,14 @@ GRANT ALL ON TABLE public.statistic TO PUBLIC;
 REVOKE ALL ON SEQUENCE public.workers_id_seq FROM saibogo;
 GRANT ALL ON SEQUENCE public.workers_id_seq TO saibogo WITH GRANT OPTION;
 GRANT ALL ON SEQUENCE public.workers_id_seq TO PUBLIC;
+GRANT ALL ON SEQUENCE public.workers_id_seq TO admin55;
+
+
+--
+-- Name: TABLE workers_schedule; Type: ACL; Schema: public; Owner: saibogo
+--
+
+GRANT ALL ON TABLE public.workers_schedule TO admin55;
 
 
 --
@@ -2541,6 +2726,7 @@ GRANT ALL ON SEQUENCE public.workers_id_seq TO PUBLIC;
 REVOKE ALL ON TABLE public.works FROM saibogo;
 GRANT ALL ON TABLE public.works TO saibogo WITH GRANT OPTION;
 GRANT ALL ON TABLE public.works TO PUBLIC;
+GRANT ALL ON TABLE public.works TO admin55;
 
 
 --
@@ -2550,6 +2736,7 @@ GRANT ALL ON TABLE public.works TO PUBLIC;
 REVOKE ALL ON TABLE public.works_from_worker FROM saibogo;
 GRANT ALL ON TABLE public.works_from_worker TO saibogo WITH GRANT OPTION;
 GRANT ALL ON TABLE public.works_from_worker TO PUBLIC;
+GRANT ALL ON TABLE public.works_from_worker TO admin55;
 
 
 --
@@ -2559,6 +2746,7 @@ GRANT ALL ON TABLE public.works_from_worker TO PUBLIC;
 REVOKE ALL ON SEQUENCE public.works_id_seq FROM saibogo;
 GRANT ALL ON SEQUENCE public.works_id_seq TO saibogo WITH GRANT OPTION;
 GRANT ALL ON SEQUENCE public.works_id_seq TO PUBLIC;
+GRANT ALL ON SEQUENCE public.works_id_seq TO admin55;
 
 
 --
@@ -2568,6 +2756,7 @@ GRANT ALL ON SEQUENCE public.works_id_seq TO PUBLIC;
 REVOKE ALL ON TABLE public.works_likes FROM saibogo;
 GRANT ALL ON TABLE public.works_likes TO saibogo WITH GRANT OPTION;
 GRANT ALL ON TABLE public.works_likes TO PUBLIC;
+GRANT ALL ON TABLE public.works_likes TO admin55;
 
 
 --
@@ -2577,6 +2766,7 @@ GRANT ALL ON TABLE public.works_likes TO PUBLIC;
 REVOKE ALL ON SEQUENCE public.workspoints_point_id_seq FROM saibogo;
 GRANT ALL ON SEQUENCE public.workspoints_point_id_seq TO saibogo WITH GRANT OPTION;
 GRANT ALL ON SEQUENCE public.workspoints_point_id_seq TO PUBLIC;
+GRANT ALL ON SEQUENCE public.workspoints_point_id_seq TO admin55;
 
 
 --
