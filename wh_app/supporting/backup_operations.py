@@ -5,7 +5,7 @@ import subprocess
 from datetime import datetime
 
 from wh_app.supporting import functions
-from wh_app.config_and_backup.config import path_to_dump, path_to_structure_dump, database_name, user_name
+from wh_app.config_and_backup.config import path_to_dump, path_to_structure_dump, database_name
 
 functions.info_string(__name__)
 

@@ -40,11 +40,16 @@ if len(sys.argv) > 1:
     if COMMAND in no_sql_commands():
         no_sql_commands()[COMMAND]()
     else:
-        from wh_app.supporting.cli import commands_with_sql
-        cws = commands_with_sql()
-        if COMMAND in cws:
-            __start()
-            cws[COMMAND]()
+        from wh_app.supporting.cli import db_commands
+        dbcmd = db_commands()
+        if COMMAND in dbcmd:
+            dbcmd[COMMAND]()
+        else:
+            from wh_app.supporting.cli import commands_with_sql
+            cws = commands_with_sql()
+            if COMMAND in cws:
+                __start()
+                cws[COMMAND]()
 elif len(sys.argv) > 2:
     COMMAND = sys.argv[1]
     from wh_app.supporting.cli import commands_ext

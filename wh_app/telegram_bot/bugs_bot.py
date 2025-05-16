@@ -1,5 +1,6 @@
 from wh_app.telegram_bot.support_bot import *
-from wh_app.sql_operations.select_operations.select_operations import get_all_bugz_in_bugzilla, get_bug_by_id
+from wh_app.sql_operations.select_operations.select_operations import get_all_bugz_in_bugzilla, get_bug_by_id,\
+    get_all_bugz_in_work_in_bugzilla
 from wh_app.sql_operations.insert_operation.insert_operations import add_new_bug_in_bugzilla
 from wh_app.sql_operations.update_operations.update_operations import invert_bug_status_in_bugzilla
 
@@ -12,6 +13,32 @@ async def all_bugs(message: types.Message):
     with Database() as base:
         _, cursor = base
         bugs = get_all_bugz_in_bugzilla(cursor)
+        msg = list()
+        for bug in bugs:
+            msg.append(bug_message(bug))
+        try:
+            msg_del = await message.answer('\n'.join(msg))
+            standart_delete_message(msg_del)
+        except (MessageIsTooLong, BadRequest) as e:
+            tmp = '\n'.join(msg)
+            msg_dels = list()
+            for i in range(0, len(tmp), MAX_CHAR_IN_MSG):
+                msg_dels.append(await message.answer(tmp[i: i + MAX_CHAR_IN_MSG]))
+                standart_delete_message(msg_dels[-1])
+        kb = [
+            [InlineKeyboardButton(text='Новая проблема'),
+             InlineKeyboardButton(text='Отмена')]
+        ]
+        msg_del1 = await message.answer('Зарегистрировать новую проблему?', reply_markup=standart_keyboard(kb))
+        standart_delete_message(msg_del1)
+
+
+@not_reader_decorator
+async def all_no_closed_bugs(message: types.Message):
+    """Return to telegram-bot all bugs"""
+    with Database() as base:
+        _, cursor = base
+        bugs = get_all_bugz_in_work_in_bugzilla(cursor)
         msg = list()
         for bug in bugs:
             msg.append(bug_message(bug))

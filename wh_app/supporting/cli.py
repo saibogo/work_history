@@ -31,20 +31,26 @@ def no_sql_commands() -> dict:
     return {'--help': print_help, '-h': print_help, '-v': print_version, '--version': print_version}
 
 
+def db_commands() -> dict:
+    """Return all commands to work with PosgreSQL"""
+    from wh_app.supporting import delete_views_and_tables as cleardb
+    from wh_app.supporting import backup_operations
+
+    return {'--cleardb': cleardb.drop_all_data,
+            '--createdump': backup_operations.create_dump,
+            '--createscheme' : backup_operations.create_empty,}
+
+
 def commands_with_sql() -> dict:
     """Return all single commands with using SQL"""
     from wh_app.supporting import stop_start_web
-    from wh_app.supporting import delete_views_and_tables as cleardb
     from wh_app.supporting import users_operation
-    from wh_app.supporting import backup_operations
+
     return {'--startserver': stop_start_web.start_server,
             '--stopserver': stop_start_web.stop_server,
             '--statusserver': lambda: print("Веб-сервер работает" if stop_start_web.status_server()
                                             else "Веб-сервер не запущен"),
-            '--cleardb': cleardb.drop_all_data,
             '--adduser': users_operation.create_new_user,
-            '--createdump': backup_operations.create_dump,
-            '--createscheme' : backup_operations.create_empty,
             '--allstart': stop_start_web.all_start}
 
 
@@ -53,6 +59,7 @@ def commands_ext() -> dict:
     from wh_app.supporting import stop_start_web
     from wh_app.supporting import backup_operations as bcp_oper
     from wh_app.supporting import users_operation
+
     return {'--savedb': bcp_oper.create_dump,
             '--updatepassword': users_operation.update_password,
             '--saystop': stop_start_web.say_stop}

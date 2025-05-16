@@ -15,7 +15,7 @@ from wh_app.telegram_bot.equip_bot import equip_info, start_add_new_equip, save_
 from wh_app.telegram_bot.any_bot import send_welcome, send_help, send_status, send_command_not_found, send_changelog, \
     send_top10, power_outages
 from wh_app.telegram_bot.bugs_bot import all_bugs, start_create_new_bug, new_bug_repler, bug_from_bug_id, \
-    invert_bug_status_from_bot
+    invert_bug_status_from_bot, all_no_closed_bugs
 from wh_app.telegram_bot.work_bot import start_create_record
 from wh_app.telegram_bot.work_bot import problem_repler, work_repler, get_work_record
 from wh_app.telegram_bot.support_bot import standart_delete_message
@@ -147,6 +147,12 @@ async def get_tech_command(message: types.Message):
 async def bugs_command(message: types.Message):
     """Return to telegram-bot all bugs"""
     await all_bugs(message)
+
+
+@dp.message_handler(filters.Command(commands=['no_closed_bugs'], ignore_case=True))
+async def bugs_command(message: types.Message):
+    """Return to telegram-bot all bugs"""
+    await all_no_closed_bugs(message)
 
 
 @dp.message_handler(filters.Command(commands=['orders'], ignore_case=True))
