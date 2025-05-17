@@ -24,3 +24,9 @@ def update_set_detail_id_to_equip(cursor, equip_id: int, detail_id: int) -> None
     """Attach detail_id to equip with equip_id"""
 
     cursor.execute(sql_update_attach_detail_to_equip(equip_id, detail_id))
+
+
+def update_set_manual_id_to_equip(cursor, equip_id: int, manual_id: int) -> None:
+    """Attach manual_id to equip with equip_id"""
+
+    cursor.execute(sql_update_attach_manual_to_equip(equip_id, manual_id))

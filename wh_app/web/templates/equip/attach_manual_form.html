@@ -1,0 +1,24 @@
+<h2>Привязка инструкции к оборудованию</h2>
+<form action="/attach-manual-common"  method = "post">
+    <input type="hidden" name="{{equip_name}}" value="{{equip_id}}">
+    <div class="container">
+        <div class="tr_div_login">
+            <div class="faq_quest">Выберите инструкцию:</div>
+            <div class="faq_answer">
+                <select name="{{detail_name}}" class="div_select">
+                    {% for detail in details %}
+                    <option value="{{detail[0]}}">{{detail[1]}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Пароль доступа:</div>
+            <div class="faq_answer"><input type="password" name="{{password}}"></div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest"></div>
+            <div class="faq_answer"><input type="submit" value="Прикрепить инструкцию"></div>
+        </div>
+    </div>
+</form>

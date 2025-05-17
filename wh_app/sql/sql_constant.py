@@ -95,7 +95,9 @@ equip_const = {"oborudovanie": "oborudovanie",
                "equip_name_detail": "equip_name_detail",
                "equip_sub_types": "equip_sub_types",
                "full_type": "full_type",
-               "equips_meta_type": "equips_meta_type"
+               "equips_meta_type": "equips_meta_type",
+               "equip_manuals": "equip_manuals",
+               "manual_id": "manual_id"
                }
 
 #point 41 it's list of decommissioned equipment

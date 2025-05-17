@@ -70,10 +70,26 @@ def get_equips_detail_id(cursor, equip_id: int) -> Tuple:
 
 @list_to_first_tuple_decorator
 @get_selected_decorator
+def get_equips_manual_id(cursor, equip_id: int) -> Tuple:
+    """Return details_id or NULL"""
+
+    return select_sql.sql_select_found_manual(equip_id)
+
+
+@list_to_first_tuple_decorator
+@get_selected_decorator
 def get_details_info(cursor, detail_id: int) -> Tuple:
     """Return details info"""
 
     return select_sql.sql_select_detail_info(detail_id)
+
+
+@list_to_first_tuple_decorator
+@get_selected_decorator
+def get_manuals_info(cursor, manual_id: int) -> Tuple:
+    """Return details info"""
+
+    return select_sql.sql_select_manual_info(manual_id)
 
 
 @get_selected_decorator
@@ -88,6 +104,13 @@ def get_all_details_from_subtype_id(cursor, subtype_id: int) -> List[Tuple]:
     """Return all equip`s detail from current subtype"""
 
     return select_sql.sql_select_all_details_from_subtype_id(subtype_id)
+
+
+@get_selected_decorator
+def get_all_manuals_from_subtype_id(cursor, subtype_id: int) -> List[Tuple]:
+    """Return all equip`s detail from current subtype"""
+
+    return select_sql.sql_select_all_manuals_from_subtype_id(subtype_id)
 
 
 @get_selected_decorator

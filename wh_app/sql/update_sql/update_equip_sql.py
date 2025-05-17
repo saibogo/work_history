@@ -39,3 +39,11 @@ def sql_update_attach_detail_to_equip(equip_id: int, detail_id: int) -> str:
 
     query = """UPDATE %(oborudovanie)s SET %(detail_id)s = {0} WHERE id = {1}""" % sql_consts_dict
     return query.format(detail_id, equip_id)
+
+
+@log_decorator
+def sql_update_attach_manual_to_equip(equip_id: int, manual_id: int) -> str:
+    """Set detail_id in equip information"""
+
+    query = """UPDATE %(oborudovanie)s SET %(manual_id)s = {0} WHERE id = {1}""" % sql_consts_dict
+    return query.format(manual_id, equip_id)

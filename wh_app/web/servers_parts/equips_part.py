@@ -7,7 +7,8 @@ from wh_app.web.equips_section import equip_to_point_limit,\
     upgrade_equip_method, select_point_to_equip_method, move_equip_method,\
     remove_table_page, top_equips_from_maximal_works, get_details_action, details_main_menu, current_subtypes_table,\
     all_exist_details_table, create_equip_subclass_form, create_equip_subtype_method, add_detail_file_form,\
-    upload_detail_file_method, attach_detail_method, attach_detail_form
+    upload_detail_file_method, attach_detail_method, attach_detail_form, add_manual_file_form, upload_manual_file_method,\
+    get_manuals_action, attach_manual_form, attach_manual_method
 
 
 @app.route("/equips")
@@ -128,6 +129,13 @@ def get_details(detail_id: int) -> Response:
     return goto_or_redirect_from_roles_list(lambda: get_details_action(detail_id), [functions.ROLE_SUPERUSER, functions.ROLE_WORKER])
 
 
+@app.route('/get-manuals/<manual_id>')
+def get_manuals(manual_id: int) -> Response:
+    """Return PDF with detail scheme to equip if exist"""
+
+    return goto_or_redirect_from_roles_list(lambda: get_manuals_action(manual_id), [functions.ROLE_SUPERUSER, functions.ROLE_WORKER])
+
+
 @app.route('/details-and-subclasses')
 def details_and_subclasses() -> Response:
     """Go to main menu to work with details and equip subclasses"""
@@ -172,11 +180,27 @@ def add_detail_file(type_id: int) -> Response:
     return goto_or_redirect(lambda: add_detail_file_form(type_id, stylesheet_number()), functions.ROLE_SUPERUSER)
 
 
+@app.route('/add-manual-file/<type_id>')
+def add_manual_file(type_id: int) -> Response:
+    """Goto form to upload details file to server"""
+
+    return goto_or_redirect(lambda: add_manual_file_form(type_id, stylesheet_number()), functions.ROLE_SUPERUSER)
+
+
 @app.route('/upload-detail-common', methods=['POST'])
 def upload_detail_common() -> Response:
     """Goto method upload details file to server"""
 
     return goto_or_redirect(lambda: upload_detail_file_method(functions.form_to_data(request.form),
+                                                              request.method, request.files['filename'],
+                                                              stylesheet_number()), functions.ROLE_SUPERUSER)
+
+
+@app.route('/upload-manual-common', methods=['POST'])
+def upload_manual_common() -> Response:
+    """Goto's method upload manual file on server"""
+
+    return goto_or_redirect(lambda: upload_manual_file_method(functions.form_to_data(request.form),
                                                               request.method, request.files['filename'],
                                                               stylesheet_number()), functions.ROLE_SUPERUSER)
 
@@ -188,9 +212,23 @@ def attach_detail(equip_id: int) -> Response:
     return goto_or_redirect(lambda: attach_detail_form(equip_id, stylesheet_number()), functions.ROLE_SUPERUSER)
 
 
+@app.route('/attach-manual/<equip_id>')
+def attach_manual(equip_id: int) -> Response:
+    """Goto form select equip detail"""
+
+    return goto_or_redirect(lambda: attach_manual_form(equip_id, stylesheet_number()), functions.ROLE_SUPERUSER)
+
+
 @app.route('/attach-detail-common', methods=['POST'])
 def attach_detail_common() -> Response:
-    """Goto method add detail to equip"""
+    """Goto's method add detail to equip"""
 
     return goto_or_redirect(lambda: attach_detail_method(functions.form_to_data(request.form),
+                                                         request.method, stylesheet_number()), functions.ROLE_SUPERUSER)
+
+@app.route('/attach-manual-common', methods=['POST'])
+def attach_manual_common() -> Response:
+    """Goto's method add detail to equip"""
+
+    return goto_or_redirect(lambda: attach_manual_method(functions.form_to_data(request.form),
                                                          request.method, stylesheet_number()), functions.ROLE_SUPERUSER)

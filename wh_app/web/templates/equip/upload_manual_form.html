@@ -1,0 +1,26 @@
+<h2>Подготовка к загрузке новой инструкции</h2>
+<form action="/upload-manual-common" method = "post" enctype="multipart/form-data">
+    <div class="container">
+        <div class="tr_div_login">
+            <div class="faq_quest">Выберите файл для загрузки:</div>
+            <div class="faq_answer">
+                <input type="file" name="{{file_name}}">
+            </div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Применяемые типы оборудования(минимум 5 букв и цифр без спецсимволов)</div>
+            <div class="faq_answer">
+                <input type="text" name="{{equip_description_name}}" class="tr_area" pattern="[а-яА-Яa-zA-Z\d\s]{5,}">
+            </div>
+        </div>
+        <input type="hidden" name="{{equip_class_name}}" value="{{equip_class}}">
+        <div class="tr_div_login">
+            <div class="faq_quest">Пароль доступа:</div>
+            <div class="faq_answer"><input type="password" name="{{password}}"></div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest"></div>
+            <div class="faq_answer"><input type="submit" value="Загрузить на сервер"></div>
+        </div>
+    </div>
+</form>

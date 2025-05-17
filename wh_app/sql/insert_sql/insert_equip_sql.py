@@ -35,3 +35,12 @@ def sql_insert_new_equip_detail(equip_type: int, filename: str, description: str
     query = """INSERT INTO %(equip_details)s (%(full_type)s, %(equip_name_detail)s, %(description)s) 
     VALUES ({0}, '{1}', '{2}')""" % sql_consts_dict
     return query.format(equip_type, filename, description)
+
+
+@log_decorator
+def sql_insert_new_equip_manual(equip_type: int, filename: str, description: str) -> str:
+    """Return INSERT string to add new equip`s detail in database"""
+
+    query = """INSERT INTO %(equip_manuals)s (%(full_type)s, %(equip_name_detail)s, %(description)s) 
+    VALUES ({0}, '{1}', '{2}')""" % sql_consts_dict
+    return query.format(equip_type, filename, description)

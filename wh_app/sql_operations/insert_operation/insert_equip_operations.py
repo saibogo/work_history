@@ -21,3 +21,10 @@ def insert_new_equips_detail(cursor, equip_type: int, filename: str, description
     """Add new equips detail in database"""
 
     cursor.execute(sql_insert_new_equip_detail(equip_type, filename, description))
+
+
+def insert_new_equips_manual(cursor, equip_type: int, filename: str, description: str) -> None:
+    """Add new equips detail in database"""
+
+    cursor.execute(sql_insert_new_equip_manual(equip_type, filename, description))
+
