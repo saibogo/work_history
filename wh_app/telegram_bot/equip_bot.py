@@ -4,7 +4,7 @@ from wh_app.config_and_backup.config import static_dir
 from wh_app.telegram_bot.support_bot import *
 from wh_app.sql_operations.select_operations.select_operations import get_full_equip_information, get_last_works_from_equip_id,\
     get_works_from_equip_id, get_point, get_count_equips, get_equip_deleted_status, get_last_equip_id, get_equips_detail_id,\
-    get_details_info
+    get_details_info, get_equips_manual_id, get_manuals_info
 from wh_app.telegram_bot.create_equip_object import CreateEquipObject
 
 functions.info_string(__name__)
@@ -22,17 +22,13 @@ async def equip_info(message: types.Message):
             full_command = message.text.split()
             equip_id = full_command[1]
             detail_id = get_equips_detail_id(cursor, equip_id)[0]
+            manual_id = get_equips_manual_id(cursor, equip_id)[0]
+            kb = [[InlineKeyboardButton(text='Регистрация (ID={})'.format(equip_id))]]
             if detail_id:
-                kb = [
-                    [InlineKeyboardButton(text='Регистрация (ID={})'.format(equip_id)),
-                     InlineKeyboardButton(text='Деталировка (ID={})'.format(detail_id)),
-                     InlineKeyboardButton(text='Отмена')]
-                ]
-            else:
-                kb = [
-                    [InlineKeyboardButton(text='Регистрация (ID={})'.format(equip_id)),
-                     InlineKeyboardButton(text='Отмена')]
-                ]
+                kb[0].append(InlineKeyboardButton(text='Деталировка (ID={})'.format(detail_id)))
+            if manual_id:
+                kb[0].append(InlineKeyboardButton(text='Инструкция (ID={})'.format(manual_id)))
+            kb[0].append(InlineKeyboardButton(text='Отмена'))
             only_last_works = True if len(full_command) < 3 else False
             if equip_id == '0':
                 raise IndexError
@@ -77,6 +73,24 @@ async def start_download_detail(message: types.Message):
             msg_del = await message.reply_document(doc, reply_markup=ReplyKeyboardRemove())
         except IndexError:
             msg_del = await message.answer("Деталировка с ID = {} не найдена!".format(detail_id), reply_markup=ReplyKeyboardRemove())
+    standart_delete_message(msg_del)
+
+
+@not_reader_decorator
+async def start_download_manual(message: types.Message):
+    """Return file if detail exist else ERROR message"""
+    first_num = message.text.index('=')
+    last_num = message.text.index(')')
+    manual_id = message.text[first_num + 1: last_num]
+    with Database() as base:
+        _, cursor = base
+        try:
+            manual_info = get_manuals_info(cursor, manual_id)
+            manual_path = "{0}equips{1}".format(static_dir() ,manual_info[1])
+            doc = open(manual_path, 'rb')
+            msg_del = await message.reply_document(doc, reply_markup=ReplyKeyboardRemove())
+        except IndexError:
+            msg_del = await message.answer("Инструкция с ID = {} не найдена!".format(manual_id), reply_markup=ReplyKeyboardRemove())
     standart_delete_message(msg_del)
 
 

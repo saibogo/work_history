@@ -133,7 +133,7 @@ def get_details(detail_id: int) -> Response:
 def get_manuals(manual_id: int) -> Response:
     """Return PDF with detail scheme to equip if exist"""
 
-    return goto_or_redirect_from_roles_list(lambda: get_manuals_action(manual_id), [functions.ROLE_SUPERUSER, functions.ROLE_WORKER])
+    return goto_or_redirect_from_roles_list(lambda: get_manuals_action(manual_id), [functions.ROLE_SUPERUSER, functions.ROLE_CUSTOMER])
 
 
 @app.route('/details-and-subclasses')

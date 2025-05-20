@@ -11,7 +11,8 @@ from wh_app.telegram_bot.bot_state_machine import BotStateMachine
 from wh_app.config_and_backup.config import path_to_telegram_token, path_to_messages
 from wh_app.telegram_bot.point_bot import all_points, send_statistic, point_info, not_create_record, get_svu, \
     get_tech_info
-from wh_app.telegram_bot.equip_bot import equip_info, start_add_new_equip, save_new_equip, equip_repler, start_download_detail
+from wh_app.telegram_bot.equip_bot import equip_info, start_add_new_equip, save_new_equip, equip_repler, start_download_detail,\
+    start_download_manual
 from wh_app.telegram_bot.any_bot import send_welcome, send_help, send_status, send_command_not_found, send_changelog, \
     send_top10, power_outages
 from wh_app.telegram_bot.bugs_bot import all_bugs, start_create_new_bug, new_bug_repler, bug_from_bug_id, \
@@ -274,6 +275,13 @@ async def new_work_command(message: types.Message):
 async def get_detail_command(message: types.Message):
     """Go to download detail if exist"""
     await start_download_detail(message)
+
+
+@dp.message_handler(lambda message: message.text and 'Инструкция' in message.text)
+async def get_manual_command(message: types.Message):
+    """Go to download detail if exist"""
+    pass
+    await start_download_manual(message)
 
 
 @dp.message_handler(lambda message: message.reply_to_message and '/problem' in message.reply_to_message.text)
