@@ -24,7 +24,7 @@ from wh_app.telegram_bot.find_bot import main_find_menu, find_menu, find_repler,
 from wh_app.telegram_bot.workers_bot import send_workers_message, today_schedule_message, week_schedule_message
 from wh_app.telegram_bot.orders_bot import all_noclosed_orders, order_from_id, order_message
 from wh_app.telegram_bot.meter_devices_bot import start_view_meter_devices, start_view_reading_meter_device,\
-    start_create_readings_record, new_reading_repler
+    start_create_readings_record, new_reading_repler, get_profile_file_start
 
 functions.info_string(__name__)
 
@@ -258,6 +258,12 @@ async def not_create_command(message: types.Message):
 async def new_reading_command(message: types.Message):
     """Start registration new readind to meter device"""
     await start_create_readings_record(message)
+
+
+@dp.message_handler(lambda message: message.text and 'Профиль мощности' in message.text)
+async def get_profile_command(message: types.Message):
+    """Start registration new readind to meter device"""
+    await get_profile_file_start(message)
 
 
 @dp.message_handler(lambda message: message.reply_to_message and '/new_reading_id' in message.reply_to_message.text)

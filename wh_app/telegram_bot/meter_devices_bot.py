@@ -63,6 +63,7 @@ async def start_view_reading_meter_device(message: types.Message):
                     msg.append(separator)
                 kb = [
                     [InlineKeyboardButton(text='Внести показания (ID={})'.format(device_id)),
+                     InlineKeyboardButton(text='Профиль мощности (ID={})'.format(device_id)),
                      InlineKeyboardButton(text='Отмена')]
                 ]
         except IndexError:
@@ -100,6 +101,32 @@ async def start_create_readings_record(message: types.Message):
                 msg_del1 = await message.answer('/new_reading_id_{}\nНовые показания'.format(device_id))
                 standart_delete_message(msg_del1)
         standart_delete_message(msg_del)
+
+
+@not_writer_decorator
+async def get_profile_file_start(message: types.Message):
+    """If profile exist then get file to user"""
+    index1 = message.text.find('ID=')
+    if index1 == -1:
+        msg_del = await  message.answer('Некорректный запрос профиля мощности!',
+                                        reply_markup=ReplyKeyboardRemove())
+    else:
+        index2 = message.text.find(')', index1 + 3)
+        if index2 == -1:
+            msg_del = await  message.answer('Некорректный запрос профиля мощности!',
+                                            reply_markup=ReplyKeyboardRemove())
+        else:
+            device_id = message.text[index1 + 3:index2]
+            try:
+                doc = open('{}wh_app/web/static/power_profiles/{}_pp.pdf'.format(path_to_project(), device_id), 'rb')
+                msg_del = await message.reply_document(doc)
+                standart_delete_message(msg_del)
+            except FileNotFoundError:
+                msg_del = await message.answer(
+                    'Действующий профиль мощности для прибора учета с  ID = {} не найден'.format(device_id),
+                    reply_markup=ReplyKeyboardRemove())
+                standart_delete_message(msg_del)
+    standart_delete_message(msg_del)
 
 
 @not_writer_decorator

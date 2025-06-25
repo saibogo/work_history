@@ -1,6 +1,6 @@
 """This module contain any web-pages"""
 import flask
-from flask import render_template
+from flask import render_template, Response, abort
 from typing import List
 
 import wh_app.web.template as web_template
@@ -128,7 +128,7 @@ def all_meter_devices_in_point_page(point_id: int, stylesheet_number: str) -> st
         links = ['/get-devices-reading/{}'.format(elem[0]) for elem in devices]
         table = uhtml.universal_table(table_headers.meter_devices_table_name, table_headers.meter_devices_table,
                                       devices, True, links)
-        devices_button = '<div id="navigation_div">''<div class="navigation_elem">' \
+        devices_button = '<div id="navigation_div"><div class="navigation_elem">' \
                         '<a href="/add-meter-device-in-point/{0}">Добавить прибор учета</a></div>' \
                         '<div class="navigation_elem"><a href="/delete-meter-device-from-point/{0}">Удалить прибор учета</a></div>'  \
                         '</div>'.format(point_id)
@@ -174,11 +174,22 @@ def all_reading_to_device_page(device_id: int, stylesheet_number: str) -> str:
         readings = select_operations.get_all_reading_from_device(cursor, device_id)
         table = uhtml.universal_table(table_headers.readings_device_table_name, table_headers.readings_device_table,
                                       readings, False)
-        to_bar_button = '<div id="navigation_div">''<div class="navigation_elem">' \
-                        '<a href="/to-only-reading/{0}">Только показания</a></div>' \
-                        '<div class="navigation_elem"><a href="/to-bar-meter/{0}">График расходов за периоды</a></div>' \
-                        '<div class="navigation_elem"><a href="/to-bar-meter-avr/{0}">График средних расходов</a></div>' \
-                        '<div class="navigation_elem"><a href="/to-bar-meter-mnth/{0}">График месячных расходов</a></div>' \
+        to_bar_button = '<div id="navigation_div">' \
+                        '<div class="navigation_elem">' \
+                        '<a href="/to-only-reading/{0}">Только показания</a>' \
+                        '</div>' \
+                        '<div class="navigation_elem">' \
+                        '<a href="/to-bar-meter/{0}">График расходов за периоды</a>' \
+                        '</div>' \
+                        '<div class="navigation_elem">' \
+                        '<a href="/to-bar-meter-avr/{0}">График средних расходов</a>' \
+                        '</div>' \
+                        '<div class="navigation_elem">' \
+                        '<a href="/to-bar-meter-mnth/{0}">График месячных расходов</a>' \
+                        '</div>'\
+                        '<div class="navigation_elem">'\
+                        '<a href="/get-power-profile/{0}">Профиль мощности</a>'\
+                        '</div>'\
                         '</div>'.format(device_id)
         table_new = uhtml.add_new_reading(device_id)
         return web_template.result_page(table + to_bar_button + table_new, "/all-meter-devices", str(stylesheet_number))
@@ -197,6 +208,14 @@ def only_reading_to_device_page(device_id: int, stylesheet_number: str) -> str:
                                                                         device_info[0][9], device_info[0][1])
             table = uhtml.universal_table(table_name, table_headers.small_readings_table, readings)
     return web_template.result_page(table, '/get-devices-reading/{}'.format(device_id), stylesheet_number)
+
+
+def power_profile_common(device_id: int,  stylesheet_number: str) -> Response:
+    """If pdf exist then return current power profile"""
+    try:
+        return flask.send_from_directory(config.static_dir(), 'power_profiles/{0}_pp.pdf'.format(device_id))
+    except:
+        return abort(404)
 
 
 def meter_readings_bar_page(device_id: int,  stylesheet_number: str) -> str:

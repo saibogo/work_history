@@ -7,6 +7,7 @@ path_to_project = lambda: str(globals()['path_to_project_var'])
 path_to_pdf = lambda: str(globals()['path_to_pdf_var'])
 path_to_telegram_token = lambda: str(globals()['path_to_telegram_token_var'])
 static_dir = lambda: str(globals()['static_dir_var'])
+power_profiles = lambda: str(globals()['power_profiles_var'])
 template_folder = lambda: str(globals()['template_folder_var'])
 path_to_dump = lambda: str(globals()['path_to_dump_var'])
 path_to_structure_dump = lambda: str(globals()['path_to_structure_dump_var'])
@@ -56,6 +57,7 @@ def load_config():
         globals()['path_to_pdf_var'] = tree.find('pathes/path_to_pdf').text
         globals()['path_to_telegram_token_var'] = tree.find('pathes/path_to_telegram_token').text
         globals()['static_dir_var'] = path_to_project() + 'wh_app/web/static/'
+        globals()['power_profiles_var'] = path_to_project() + 'wh_app/web/static/power_profiles'
         globals()['template_folder_var'] = path_to_project() + 'wh_app/web/templates'
         globals()['path_to_dump_var'] = path_to_project() + 'wh_app/config_and_backup/backups/postgress_backup.{}.db'
         globals()['path_to_structure_dump_var'] = path_to_project() + 'wh_app/config_and_backup/backups/postgress_backup_empty.{}.db'

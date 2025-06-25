@@ -1,11 +1,11 @@
 <?xml version="1.0"?>
 <vars>
     <pathes>
-        <path_to_project>/home/saibogo/PycharmProjects/work_history/</path_to_project>
-        <path_to_pdf>/home/saibogo/Документы/report.pdf</path_to_pdf>
-        <path_to_telegram_token>/home/saibogo/telegram_token.txt</path_to_telegram_token>
-        <path_to_sql_log>/home/saibogo/Документы/WHS_logs/workhistory_sql.log</path_to_sql_log>
-        <path_to_login_log>/home/saibogo/Документы/WHS_logs/workhistory_logins.log</path_to_login_log>
+        <path_to_project>/home/admin55/work_history/</path_to_project>
+        <path_to_pdf>/home/admin55/report.pdf</path_to_pdf>
+        <path_to_telegram_token>/home/admin55/telegram_token.txt</path_to_telegram_token>
+        <path_to_sql_log>/home/admin55/WHS_logs/workhistory_sql.log</path_to_sql_log>
+        <path_to_login_log>/home/admin55/WHS_logs/workhistory_logins.log</path_to_login_log>
     </pathes>
     <database>
         <database_name>workhistory</database_name>
@@ -15,7 +15,7 @@
         <database_port>5432</database_port>
     </database>
     <web>
-        <ip_address>192.168.6.242</ip_address>
+        <ip_address>192.168.2.55</ip_address>
         <port>5000</port>
     </web>
     <web-interface>
