@@ -240,8 +240,31 @@ def sql_select_orders_from_user(user_name: str) -> str:
 
 
 @log_decorator
+def sql_select_orders_in_work_from_point_id(point_id: int) -> str:
+    """Return all orders with status 'worked' from current point"""
+    query = """SELECT %(orders)s.%(id)s, %(point_name)s, %(customer)s.%(description)s, %(orders)s.%(date)s,
+          %(orders)s.%(closed_date)s, %(problem)s, (%(order_in_work)s) AS ord_stat, %(orders)s.comment,
+           %(workers)s.%(sub_name)s, row_number() OVER (ORDER BY orders.id) FROM %(orders)s
+            JOIN %(customer)s ON %(customer_id)s = %(customer)s.%(id)s 
+            JOIN %(workspoints)s ON %(workspoints)s.%(point_id)s = %(orders)s.%(point_id)s
+            AND %(workspoints)s.%(point_id)s = {0}  
+            LEFT JOIN %(workers)s ON %(workers)s.%(id)s = %(orders)s.%(performer_id)s 
+            WHERE %(orders)s.%(status)s = 'in_work' ORDER BY %(orders)s.%(id)s""" % sql_consts_dict
+    return query.format(point_id)
+
+
+@log_decorator
 def sql_select_order_status(order_id: str) -> str:
     """Return status to order with id = order_id"""
 
     query = """SELECT %(status)s FROM %(orders)s WHERE %(id)s = {}""" % sql_consts_dict
     return query.format(order_id)
+
+
+@log_decorator
+def sql_select_all_equal_worked_problem(problem: str, point_id) -> str:
+    """Return SELECT to find all equal problem with status in_work in orders table"""
+
+    query = """SELECT * FROM %(orders)s WHERE %(point_id)s = {1} AND %(status)s = 'in_work' and LOWER(%(problem)s) =
+     LOWER('{0}')""" % sql_consts_dict
+    return query.format(problem, point_id)

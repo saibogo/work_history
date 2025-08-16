@@ -17,8 +17,9 @@ functions.info_string(__name__)
 def create_edit_links(point_id: str) -> str:
     """Create EDIT and ON-OFF links"""
     return '<a href="/edit-point/{0}" title="Редактировать сведения">{1}</a>' \
-           ' <a href="/on-off-point/{0}" title="Изменить статус">{2}</a>'\
-        .format(point_id, uhtml.EDIT_CHAR, uhtml.ON_OFF_CHAR)
+           ' <a href="/on-off-point/{0}" title="Изменить статус">{2}</a><a href="/worked-orders-from-point/{0}" ' \
+           'title="Незакрытые заявки">{3}</a>'\
+        .format(point_id, uhtml.EDIT_CHAR, uhtml.ON_OFF_CHAR, uhtml.ORDERS_CHAR)
 
 
 def create_tech_links(point_id: str) -> str:

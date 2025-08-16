@@ -114,3 +114,17 @@ def get_all_customers_orders(cursor, user_name: str) -> List[Tuple]:
 def get_order_status(cursor, order_id: int) -> str:
     """Function return current status to order with id = order_id"""
     return select_sql.sql_select_order_status(order_id)
+
+
+@get_selected_decorator
+def get_worked_orders_from_point(cursor, point_id: int) -> List:
+    """Function return all oders with status = in_work from current point"""
+
+    return select_sql.sql_select_orders_in_work_from_point_id(point_id)
+
+
+@get_selected_decorator
+def get_all_worked_orders_with_equal_problem(cursor, problem: str, point_id: int) -> List:
+    """Function return all orders with equal problem and status in_work"""
+
+    return select_sql.sql_select_all_equal_worked_problem(problem, point_id)

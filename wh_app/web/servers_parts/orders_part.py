@@ -7,7 +7,8 @@ from wh_app.web.orders_section import all_customers_table, orders_main_menu,\
     find_order_from_id_form, order_with_id_table, create_new_customer_form, create_new_customer_method, my_orders_table,\
     my_orders_table_page, change_customer_status_form, change_customer_status_method, change_customer_password_form,\
     change_customer_password_method, add_performer_to_order_form, add_performer_in_order_method,\
-    all_registered_orders_table_from_customer, all_registered_orders_table_from_customer_page
+    all_registered_orders_table_from_customer, all_registered_orders_table_from_customer_page,\
+    no_closed_order_in_point_table
 
 
 @app.route('/orders-and-customers')
@@ -177,3 +178,11 @@ def select_order_from_id() -> Response:
 
     return goto_or_redirect(lambda: order_with_id_table(functions.form_to_data(request.form), request.method,
                                                         stylesheet_number()), functions.ROLE_CUSTOMER)
+
+
+@app.route('/worked-orders-from-point/<point_id>')
+def get_no_closed_order_from_point(point_id: int) -> Response:
+    """Go to create order form"""
+
+    return goto_or_redirect(lambda: no_closed_order_in_point_table(int(point_id), stylesheet_number()),
+                            functions.ROLE_CUSTOMER)

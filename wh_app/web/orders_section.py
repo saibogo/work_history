@@ -279,11 +279,15 @@ def create_order_method(data: Dict, method, stylesheet_number: str) -> str:
             connection, cursor = base
             customer_info = select_operations.get_full_customer_info(cursor, customer_id)
             if functions.is_valid_customers_password(password, customer_info[1]):
-                insert_operations.insert_new_order(cursor, customer_id, point_id, order_info)
-                connection.commit()
-                page = uhtml.operation_completed()
-                new_order_id = select_operations.get_last_order_id_in_work(cursor)
-                add_new_order_in_loop(new_order_id)
+                equal_orders_list = select_operations.get_all_worked_orders_with_equal_problem(cursor, order_info, point_id)
+                if len(equal_orders_list) ==0:
+                    insert_operations.insert_new_order(cursor, customer_id, point_id, order_info)
+                    connection.commit()
+                    page = uhtml.operation_completed()
+                    new_order_id = select_operations.get_last_order_id_in_work(cursor)
+                    add_new_order_in_loop(new_order_id)
+                else:
+                    page = 'Такая заявка уже существует!'
             else:
                 page = uhtml.pass_is_not_valid()
     else:
@@ -484,6 +488,19 @@ def my_orders_table(stylesheet_number: str) -> str:
         return my_orders_table_page(stylesheet_number, 1)
     else:
         return uhtml.access_denided(session[uhtml.LOGIN])
+
+
+def no_closed_order_in_point_table(point_id: int, stylesheet_number: str) -> str:
+    """Return Table with all orders wit status == in_work from current table"""
+    with Database() as base:
+        _, cursor = base
+        pre_adr = '/works-points'
+        orders = select_operations.get_worked_orders_from_point(cursor, int(point_id))
+        correct_orders = _correct_orders_table(orders)
+        table = uhtml.universal_table(table_headers.orders_table_name, table_headers.orders_table_no_closed,
+                                      correct_orders)
+        return web_template.result_page(table, pre_adr,str(stylesheet_number))
+    
 
 
 def my_orders_table_page(stylesheet_number: str, page_num=1) -> str:

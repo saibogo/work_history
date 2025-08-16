@@ -71,6 +71,7 @@ async def point_info(message: types.Message):
             kb = [
                 [InlineKeyboardButton(text='Новое оборудование (Point_ID={})'.format(point_id)),
                  InlineKeyboardButton(text='Приборы учета (Devices_ID={})'.format(point_id)),
+                 InlineKeyboardButton(text='Незакрытые заявки (Point_ID={})'.format(point_id)),
                  InlineKeyboardButton(text='Отмена')]
             ]
         try:

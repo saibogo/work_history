@@ -1,5 +1,6 @@
 from wh_app.telegram_bot.support_bot import *
-from wh_app.sql_operations.select_operations.select_operations import get_all_no_closed_orders, get_order_from_id
+from wh_app.sql_operations.select_operations.select_operations import get_all_no_closed_orders, get_order_from_id,\
+    get_worked_orders_from_point
 
 functions.info_string(__name__)
 
@@ -38,6 +39,34 @@ async def order_from_id(message: types.Message):
         except IndexError:
             msg_del = await message.answer('Заявка с данным ID не найдена')
             standart_delete_message(msg_del)
+
+
+@not_reader_decorator
+async def all_worked_orders_in_point(message: types.Message):
+    """Return to telegram-bot all oredr in_work from current point"""
+    index1 = message.text.find('ID=')
+    if index1 == -1:
+        msg_del = await  message.answer('Некорректный номер предприятия!',
+                                        reply_markup=ReplyKeyboardRemove())
+    else:
+        index2 = message.text.find(')', index1 + 3)
+        if index2 == -1:
+            msg_del = await  message.answer('Некорректный номер предприятия!',
+                                            reply_markup=ReplyKeyboardRemove())
+        else:
+            point_id = message.text[index1 + 3:index2]
+            with Database() as base:
+                _, cursor = base
+                orders = get_worked_orders_from_point(cursor, int(point_id))
+                if len(orders) == 0:
+                    msg_del = await message.answer('Незакрытые заявки отсутствуют!', reply_markup=ReplyKeyboardRemove())
+                else:
+                    msg = list()
+                    for order in orders:
+                        msg.append(order_message(order))
+                    msg_del = await message.answer('\n'.join(msg))
+
+    standart_delete_message(msg_del)
 
 
 def order_message(order: List[Any]) -> str:

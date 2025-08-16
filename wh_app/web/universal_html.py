@@ -24,6 +24,7 @@ REMOVE_CHAR = 'A&#8646;B'
 TABLE_REMOVE_CHAR = '&#8694'
 SPACE_CHAR = '&nbsp;'
 DOWNLOAD_CHAR = '&#10225;'
+ORDERS_CHAR = '⚠'
 
 PASSWORD = 'password'
 LOGIN = 'login'

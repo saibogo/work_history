@@ -22,7 +22,7 @@ from wh_app.telegram_bot.work_bot import problem_repler, work_repler, get_work_r
 from wh_app.telegram_bot.support_bot import standart_delete_message
 from wh_app.telegram_bot.find_bot import main_find_menu, find_menu, find_repler, last_day_message
 from wh_app.telegram_bot.workers_bot import send_workers_message, today_schedule_message, week_schedule_message
-from wh_app.telegram_bot.orders_bot import all_noclosed_orders, order_from_id, order_message
+from wh_app.telegram_bot.orders_bot import all_noclosed_orders, order_from_id, order_message, all_worked_orders_in_point
 from wh_app.telegram_bot.meter_devices_bot import start_view_meter_devices, start_view_reading_meter_device,\
     start_create_readings_record, new_reading_repler, get_profile_file_start
 
@@ -210,6 +210,11 @@ async def create_new_equip_command(message: types.Message):
 @dp.message_handler(lambda message: message.text and 'Приборы учета' in message.text)
 async def view_meter_devices(message: types.Message):
     await start_view_meter_devices(message)
+
+
+@dp.message_handler(lambda message: message.text and 'Незакрытые заявки' in message.text)
+async def view_orders_from_point(message: types.Message):
+    await all_worked_orders_in_point(message)
 
 
 @dp.message_handler(regexp='/[pP][uU]\s+[0-9]{1,}') # /pu N
