@@ -499,8 +499,9 @@ def no_closed_order_in_point_table(point_id: int, stylesheet_number: str) -> str
         correct_orders = _correct_orders_table(orders)
         table = uhtml.universal_table(table_headers.orders_table_name, table_headers.orders_table_no_closed,
                                       correct_orders)
-        return web_template.result_page(table, pre_adr,str(stylesheet_number))
-    
+        return web_template.result_page(table, pre_adr,str(stylesheet_number), True,
+                                        'order-to-pdf-in-point={}'.format(point_id))
+
 
 
 def my_orders_table_page(stylesheet_number: str, page_num=1) -> str:

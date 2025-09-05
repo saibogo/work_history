@@ -174,6 +174,15 @@ def sql_select_count_worked_meter_devices() -> str:
 
 
 @log_decorator
+def sql_select_all_counts_worked_devices() -> str:
+    """Return SQL-string to get list with pairs {device_type, count worked devices}"""
+
+    query = """SELECT meter_type_to_string(%(device_type)s) AS tmp, COUNT(%(id)s) FROM %(meter_devices)s WHERE %(is_active)s = true 
+    GROUP BY %(device_type)s ORDER BY tmp""" % sql_consts_dict
+    return query
+
+
+@log_decorator
 def sql_select_all_awaliable_schemes_for_type_and_point(point_id: int, devices_type: str) -> str:
     """Return SQL-string to get all awaliable calculation schemes"""
 

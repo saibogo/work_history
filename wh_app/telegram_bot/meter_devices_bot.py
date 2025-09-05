@@ -1,7 +1,9 @@
 from typing import Tuple
 import datetime
+import os.path
 
 from wh_app.telegram_bot.support_bot import *
+from wh_app.config_and_backup import config
 from wh_app.sql_operations.select_operations.select_operations import get_point, get_all_worked_meter_in_point,\
     get_last24_date_and_readings_from_device, get_full_info_from_meter_device
 from wh_app.sql_operations.insert_operation.insert_operations import insert_new_reading_to_meter_device
@@ -61,11 +63,13 @@ async def start_view_reading_meter_device(message: types.Message):
                     for i in range(len(small_readings_table)):
                         msg.append('{}: {}'.format(small_readings_table[i], reading[i]))
                     msg.append(separator)
-                kb = [
-                    [InlineKeyboardButton(text='Внести показания (ID={})'.format(device_id)),
-                     InlineKeyboardButton(text='Профиль мощности (ID={})'.format(device_id)),
-                     InlineKeyboardButton(text='Отмена')]
-                ]
+
+                pp_filename = '{}power_profiles/{}_pp.pdf'.format(config.static_dir(), device_id)
+                pp_exist = os.path.exists(pp_filename) and os.path.isfile(pp_filename)
+                kb = [[InlineKeyboardButton(text='Внести показания (ID={})'.format(device_id))]]
+                if pp_exist:
+                    kb[0].append(InlineKeyboardButton(text='Профиль мощности (ID={})'.format(device_id)))
+                kb[0].append(InlineKeyboardButton(text='Отмена'))
         except IndexError:
             msg = ['Неверный формат команды /pu <device_id>']
             found_error = True

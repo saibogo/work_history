@@ -244,6 +244,18 @@ def order_to_pdf(order_id: int) -> FPDF:
         return pdf
 
 
+def order_to_pdf_in_point(point_id: int) -> FPDF:
+    """Create PDF table with all no-closed orders from current point"""
+    with Database() as base:
+        _, cursor = base
+        pdf = create_document('Landscape')
+        orders_info = select_operations.get_worked_orders_from_point(cursor, point_id)
+        correct_orders = _correct_orders_table(orders_info)
+        orders = [elem[: len(elem) - 2] for elem in correct_orders]
+        html = make_html_table(orders, table_headers.orders_table[:len(table_headers.orders_table) - 1])
+        pdf.write_html(html, table_line_separators=True)
+        return pdf
+
 def no_closed_orders(page_num: int) -> FPDF:
     """Create PDF table contain all noclosed orders table with paging. Page = 0 -> all noclosed orders"""
     with Database() as base:

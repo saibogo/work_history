@@ -154,6 +154,13 @@ def get_count_worked_meter_devices(cursor) -> str:
     return select_sql.sql_select_count_worked_meter_devices()
 
 
+@get_selected_decorator
+def get_all_counts_from_device_type(cursor) -> List[Tuple]:
+    """Return List like [(device_type, count worked devices)]"""
+
+    return select_sql.sql_select_all_counts_worked_devices()
+
+
 @list_to_first_decimal_decorator
 @get_selected_decorator
 def get_last_month_consumption_from_device(cursor, device_id: int) -> float:

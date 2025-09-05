@@ -1,5 +1,6 @@
 """This module contain any web-pages"""
 import flask
+import os.path
 from flask import render_template, Response, abort
 from typing import List
 
@@ -174,7 +175,11 @@ def all_reading_to_device_page(device_id: int, stylesheet_number: str) -> str:
         readings = select_operations.get_all_reading_from_device(cursor, device_id)
         table = uhtml.universal_table(table_headers.readings_device_table_name, table_headers.readings_device_table,
                                       readings, False)
-        to_bar_button = '<div id="navigation_div">' \
+
+        pp_filename = '{}power_profiles/{}_pp.pdf'.format(config.static_dir() ,device_id)
+        pp_exist = os.path.exists(pp_filename) and os.path.isfile(pp_filename)
+
+        bar_part_1 = '<div id="navigation_div">' \
                         '<div class="navigation_elem">' \
                         '<a href="/to-only-reading/{0}">Только показания</a>' \
                         '</div>' \
@@ -186,11 +191,16 @@ def all_reading_to_device_page(device_id: int, stylesheet_number: str) -> str:
                         '</div>' \
                         '<div class="navigation_elem">' \
                         '<a href="/to-bar-meter-mnth/{0}">График месячных расходов</a>' \
-                        '</div>'\
-                        '<div class="navigation_elem">'\
-                        '<a href="/get-power-profile/{0}">Профиль мощности</a>'\
-                        '</div>'\
                         '</div>'.format(device_id)
+        if pp_exist:
+            bar_part_2 = '<div class="navigation_elem">'\
+                            '<a href="/get-power-profile/{0}">Профиль мощности</a>'\
+                            '</div>'\
+                            '</div>'.format(device_id)
+        else:
+            bar_part_2 = '</div>'
+        to_bar_button = '{}{}'.format(bar_part_1, bar_part_2)
+
         table_new = uhtml.add_new_reading(device_id)
         return web_template.result_page(table + to_bar_button + table_new, "/all-meter-devices", str(stylesheet_number))
 
@@ -350,6 +360,7 @@ def faq_page(pre_adr: str, stylesheet_number: str) -> str:
         tecnology = web_template.faq_state_machine('tecnology')
         multiuser = web_template.faq_state_machine('multiuser')
         update = web_template.faq_state_machine('update')
+        all_counts = select_operations.get_all_counts_from_device_type(cursor)
         records = ['Единиц или групп оборудования на предприятиях: <a href="{0}/all-equips">{1}</a>'.
                    format(config.full_address(), count_equip),
                    'Предприятий всего: <a href="{0}/all-points">{1}</a>'.format(config.full_address(), max_point_id),
@@ -357,7 +368,10 @@ def faq_page(pre_adr: str, stylesheet_number: str) -> str:
                                                                                         count_works_points),
                    'Произведенных работ: <a href="{0}/all-works">{1}</a>'.format(config.full_address(), count_works),
                    'Приборов учета зарегистрировано: <a href="/all-meter-devices">{0}</a>'.format(all_meter_devices),
-                   '(Из них работающих на данный момент:<a href="/worked-meter-devices">{0}</a>)'.format(worked_meter_devices)]
+                   'Из них работающих на данный момент:<a href="/worked-meter-devices">{0}</a>'.format(worked_meter_devices),
+                   ]
+        for elem in all_counts:
+            records.append('Тип учета {}: {} шт.'.format(elem[0], elem[1]))
         database_size = select_operations.get_size_database(cursor)
         average_works_in_date = "{:.2f}".format(select_operations.get_count_unique_works(cursor) /
                                                select_operations.get_count_unique_dates_in_works(cursor))
