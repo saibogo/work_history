@@ -16,3 +16,13 @@ def sql_insert_new_session_in_sessions(hash: str) -> str:
 
     query = """INSERT INTO %(sessions_hashs)s (%(hash)s) VALUES ('{0}')""" % sql_consts_dict
     return query.format(hash)
+
+
+@log_decorator
+def sql_insert_new_meter_device(dev_type: str, model: str, serial: str, is_active: bool, start_date: str, verif_date: str, Kt: int, is_inner: bool, comment: str) -> str:
+    """Return INSERT string to add new meter device in database and RETURNING last id"""
+
+    query = """INSERT INTO %(meter_devices)s (%(device_type)s, %(model)s, %(serial_num)s, %(is_active)s, 
+    %(start_date)s, %(verification_date)s, %(Kt)s, %(is_inner)s, %(comment)s) 
+    VALUES ('{}', '{}', '{}', {}, '{}', '{}', {}, {}, '{}')""" % sql_consts_dict
+    return query.format(dev_type, model, serial, is_active, start_date, verif_date, Kt, is_inner, comment)

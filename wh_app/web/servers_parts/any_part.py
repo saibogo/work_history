@@ -7,7 +7,7 @@ from wh_app.web.any_section import main_web_menu, faq_page, statistics_page,\
     meter_devices_menu_page, all_meter_devices_page, all_reading_to_device_page, add_reading_method,\
     all_meter_devices_in_point_page, meter_readings_bar_page, meter_readings_bar_page_avr, all_worked_meter_devices,\
     only_reading_to_device_page, last_24_monthly_expense_page, all_meter_devices_with_paging,\
-    all_worked_meter_devices_with_paging, power_profile_common
+    all_worked_meter_devices_with_paging, power_profile_common, add_meter_device_form, add_meter_device_method
 from wh_app.supporting.pdf_operations.pdf import equips_in_point, works_from_equip,\
     works_from_performer, weekly_charts_pdf, move_equip, point_tech_information, find_work_without_date, find_equip,\
     find_point, find_work_with_date, works_from_performer_with_date, top10workers, top10points, top10equips,\
@@ -96,6 +96,20 @@ def get_devices_reading(device_id: int) -> Response:
     """Goto to page with all records from current meter device"""
 
     return goto_or_redirect(lambda: all_reading_to_device_page(int(device_id), stylesheet_number()), functions.ROLE_WORKER)
+
+
+@app.route('/add-meter-device-in-point/<point_num>')
+def add_meter_device_in_form(point_num: int) -> Response:
+    """Goto to form addiction new meter device"""
+
+    return goto_or_redirect(lambda: add_meter_device_form(int(point_num), stylesheet_number()), functions.ROLE_SUPERUSER)
+
+
+@app.route('/add-new-meter-device', methods=['POST'])
+def add_new_meter_device_common() -> Response:
+    """Go to analyze and create new meter device"""
+    return goto_or_redirect(lambda: add_meter_device_method(functions.form_to_data(request.form), request.method,
+                                                       stylesheet_number()), functions.ROLE_SUPERUSER)
 
 
 @app.route('/meters-in-point/<point_id>')

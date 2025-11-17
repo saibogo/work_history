@@ -3,13 +3,14 @@ import flask
 import os.path
 from flask import render_template, Response, abort
 from typing import List
+from datetime import datetime
 
 import wh_app.web.template as web_template
 import wh_app.web.universal_html as uhtml
 from wh_app.config_and_backup import config
 from wh_app.postgresql.database import Database
 from wh_app.sql_operations.select_operations import select_operations
-from wh_app.sql_operations.insert_operation.insert_operations import insert_new_reading_to_meter_device
+from wh_app.sql_operations.insert_operation.insert_operations import insert_new_reading_to_meter_device, insert_new_meter_device
 from wh_app.supporting import functions
 from wh_app.supporting import system_status
 from wh_app.config_and_backup import table_headers
@@ -308,6 +309,47 @@ def add_reading_method(data, method, stylesheet_number: str) -> str:
         return web_template.result_page("Method in Move Work not corrected!",
                                         "/all-meter-devices",
                                         str(stylesheet_number))
+
+
+def add_meter_device_form(point_num: int, stylesheet_number: str) -> str:
+    """Create form to add information to new meter device"""
+    with Database() as base:
+        _, cursor = base
+        all_device_types = select_operations.get_all_meter_types(cursor)
+        types_and_description = []
+        for elem in all_device_types:
+            if elem[0] != 'warm':
+                types_and_description.append([elem[0], select_operations.get_russian_devices_type(cursor, elem[0])])
+        table = render_template('techs/add_new_meter_device.html', point_id_name=uhtml.POINT_ID,
+                                point_id=point_num, device_type_name=uhtml.DEVICE_TYPE, dev_types=types_and_description,
+                                model_name=uhtml.MODEL, serial_name=uhtml.SERIAL_NUM, date_to_browser=functions.date_to_browser(),
+                                verification_date_name=functions.date_to_browser(), kt_name=uhtml.KT_NAME,
+                                is_inner_name=uhtml.IS_INNER_NAME, comment_name=uhtml.COMMENT, password=uhtml.PASSWORD)
+        return web_template.result_page(table, '/meters-in-point/{}'.format(point_num), str(stylesheet_number), False)
+
+
+def add_meter_device_method(data, method, stylesheet_number: str) -> str:
+    """Get data from form. analize them and add in database new meter device"""
+
+    print(data)
+    if method == 'POST':
+        if functions.is_superuser_password(data[uhtml.PASSWORD]):
+            date_start = datetime.strptime(data['work_datetime'].split('T')[0], "%Y-%m-%d").date()
+            date_verification = datetime.strptime(data['verification_date_name'].split('T')[0], "%Y-%m-%d").date()
+            if date_verification >= datetime.now().date():
+                date_verification = 'NULL'
+            with Database() as base:
+                connection, cursor = base
+                insert_new_meter_device(cursor, data[uhtml.DEVICE_TYPE], data[uhtml.MODEL], data[uhtml.SERIAL_NUM],
+                                        True, str(date_start), str(date_verification), int(data[uhtml.KT_NAME]),
+                                        data[uhtml.IS_INNER_NAME], data[uhtml.COMMENT])
+                
+            page = '<h2>Страница в разработке</h2>'
+        else:
+            page = uhtml.pass_is_not_valid()
+    else:
+        page = '<h2>Method in Add Meter Device not corrected!</h2>'
+    return web_template.result_page(page, '/works-points', stylesheet_number)
 
 
 @replace_decor

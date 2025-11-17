@@ -1,0 +1,65 @@
+<h2>Создаем новый прибор учета</h2>
+<div class="container">
+    <form action="/add-new-meter-device" method="post">
+        <input type="hidden" name="{{point_id_name}}" value="{{point_id}}">
+        <div class="tr_div_login">
+            <div class="faq_quest">Тип прибора учета:</div>
+            <div class="faq_answer">
+                <select name="{{device_type_name}}" class="div_select">
+                {% for dev_type in dev_types %}
+                    <option value="{{dev_type[0]}}">{{dev_type[1]}}</option>
+                {% endfor %}
+            </select>
+            </div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Модель:</div>
+            <div class="faq_answer"><textarea name="{{model_name}}" placeholder="Обязательное поле"></textarea></div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Серийный номер:</div>
+            <div class="faq_answer"><textarea name="{{serial_name}}" placeholder="Обязательное поле"></textarea></div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Дата ввода в эксплуатацию:</div>
+            <div class="faq_answer">
+                <input type="datetime-local" name="work_datetime" value="{{date_to_browser}}">
+            </div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Дата последней поверки:</div>
+            <div class="faq_answer">
+                <input type="datetime-local" name="verification_date_name" value="{{date_to_browser}}">
+            </div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Коэффициент преобразования:</div>
+            <div class="faq_answer">
+                <input type="text" name="{{kt_name}}" value="1">
+            </div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Тип учета:</div>
+            <div class="faq_answer">
+                <select name="{{is_inner_name}}" class="div_select">
+                    <option value="true">Внутренний</option>
+                    <option value="true">Расчетный/Коммерческий</option>
+            </select>
+            </div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Комментарий:</div>
+            <div class="faq_answer"><textarea name="{{comment_name}}" placeholder="Необязательное поле"></textarea></div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Пароль</div>
+            <div class="faq_answer">
+                <input type="password"  name="{{password}}" placeholder="Обязательно" required>
+            </div>
+        </div>
+        <div class="tr_div_login">
+            <div class="faq_quest">Отправить</div>
+            <div class="faq_answer"><input type="submit" value="Отправить"></div>
+        </div>
+    </form>
+</div>

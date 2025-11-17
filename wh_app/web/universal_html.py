@@ -77,6 +77,7 @@ CUSTOMER_ID = 'customer_id'
 ORDER_STATUS_NAME = "order_status"
 ORDER_ID = "order_id"
 DEVICE_ID = "device_id"
+DEVICE_TYPE = "device_type"
 READING_NAME = "reading"
 FULL_NAME = "full_name"
 LAST_NAME = "last_name"
@@ -85,6 +86,9 @@ PASSWORD1 = "password_1"
 PASSWORD2 = "password_2"
 FILE_NAME = 'filename'
 DETAIL_NAME = 'detail_name'
+VERIFICATION_DATE_NAME = 'verification_date'
+KT_NAME = 'Kt'
+IS_INNER_NAME = 'is_inner'
 
 
 def link_or_str(elem: str, link_type: bool = False, link: str = '') -> str:
