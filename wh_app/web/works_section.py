@@ -63,7 +63,7 @@ def select_new_equip_for_work_form(data, method, stylesheet_number: str) -> str:
         with Database() as base:
             _, cursor = base
             work = select_operations.get_full_information_to_work(cursor, work_id)
-            equip_in_point = select_operations.get_equip_in_point(cursor, point_id)
+            equip_in_point = select_operations.get_equip_in_point(cursor, point_id, True, 3)
             return web_template.result_page(render_template("equip/select_equip_to_replace.html", work_id_name=uhtml.WORK_ID,
                                                             work_id=work_id,
                                                             work_description="{0} --> {1}".format(work[6], work[7]),

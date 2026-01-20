@@ -32,7 +32,7 @@ def bugs_menu(stylesheet_number: str) -> str:
     menu = ['Отобразить все', 'Отобразить незакрытые', 'Зарегистрировать проблему']
     headers = ['№', 'Выполнить']
     links_list = ['/all-bugs', '/all-bugs-in-work', '/add-bug']
-    table = uhtml.universal_table('Возможные действия', headers, functions.list_to_numer_list(menu), True, links_list)
+    table = uhtml.universal_table('Некорректное поведение системы', headers, functions.list_to_numer_list(menu), True, links_list)
     return web_template.result_page(table, '/bugs', str(stylesheet_number))
 
 

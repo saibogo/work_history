@@ -2,12 +2,13 @@
 
 from fpdf import FPDF
 from wh_app.web.servers_parts.support_part import *
-from wh_app.web.any_section import main_web_menu, faq_page, statistics_page,\
+from wh_app.web.any_section import (main_web_menu, faq_page, statistics_page,\
     system_status_page, view_changelog, view_changelog_page, external_services_page, power_outages_page,\
     meter_devices_menu_page, all_meter_devices_page, all_reading_to_device_page, add_reading_method,\
     all_meter_devices_in_point_page, meter_readings_bar_page, meter_readings_bar_page_avr, all_worked_meter_devices,\
     only_reading_to_device_page, last_24_monthly_expense_page, all_meter_devices_with_paging,\
-    all_worked_meter_devices_with_paging, power_profile_common, add_meter_device_form, add_meter_device_method
+    all_worked_meter_devices_with_paging, power_profile_common, add_meter_device_form, add_meter_device_method,
+                                    user_manual_page, trivial_manual_page)
 from wh_app.supporting.pdf_operations.pdf import equips_in_point, works_from_equip,\
     works_from_performer, weekly_charts_pdf, move_equip, point_tech_information, find_work_without_date, find_equip,\
     find_point, find_work_with_date, works_from_performer_with_date, top10workers, top10points, top10equips,\
@@ -241,5 +242,18 @@ def html_table_to_pdf(data:str) -> Response:
     return send_file(config.path_to_pdf()) \
         if section == "weekly" \
         else goto_or_redirect(lambda : send_file(config.path_to_pdf()))
+
+
+@app.route('/user-manual')
+def user_manual() -> Response:
+    """Redirect to page with all information to use system"""
+
+    return goto_or_redirect(lambda: user_manual_page(stylesheet_number()), functions.NO_ROLE)
+
+@app.route('/trivial_manual.html')
+def trivial_manual() -> Response:
+    """Redirect to mage with manual to trivial user"""
+
+    return goto_or_redirect(lambda: trivial_manual_page(stylesheet_number()), functions.NO_ROLE)
 
 

@@ -27,9 +27,10 @@ def main_web_menu(stylesheet_number: str) -> str:
     name = "Доступные действия"
     menu_items = ['Операции с предприятиями', 'Операции с оборудованием', 'Операции с ремонтами',
                   'Операции с сотрудниками', 'Баг-трекер системы', 'Заявки и Заказчики',
-                  'Изменить тему оформления', 'Изменения в системе', 'Вспомогательные сервисы', 'Выйти из системы']
-    links_list = ['/points', '/equips', '/works', '/workers', '/bugs', '/orders-and-customers', '/next-themes',
-                  '/changelog-page', '/external-services', '/logout']
+                  'Изменить тему оформления', 'Изменения в системе', 'Вспомогательные сервисы', 'Инструкция',
+                  'Выйти из системы']
+    links_list = ['/points', '/equips', '/works', '/workers', '/bugs', '/orders-and-customers',
+                  '/next-themes', '/changelog-page', '/external-services', '/user-manual', '/logout']
     table = uhtml.universal_table(name, ['№', 'Перейти к'], [(i + 1, menu_items[i]) for i in range(len(menu_items))],
                                   True, links_list)
     return web_template.result_page(table, "", stylesheet_number)
@@ -482,3 +483,18 @@ def view_changelog_page(page_num: int, stylesheet_number: str) -> str:
 def login_input_page() -> str:
     """Function create new form to input login and page"""
     return web_template.result_page(logpass_table(), '/')
+
+
+def user_manual_page(stylesheet_number: str) -> str:
+    """Create web-page with instructions"""
+
+    table = render_template('manuals/main_manual.html')
+    return web_template.result_page(table, '/', stylesheet_number, False)
+
+
+def trivial_manual_page(stylesheet_number: str) -> str:
+    """Create frame with manual to trivial user"""
+
+    content = render_template('manuals/tr_user_manual.html')
+    table = render_template('manuals/main_manual.html', page_with_manual=content)
+    return web_template.result_page(table, '/', stylesheet_number, False)
