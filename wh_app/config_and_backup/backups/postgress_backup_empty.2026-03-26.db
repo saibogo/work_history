@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict Lzh1ocaL5N0WQCEAmveGMHaLkf9jtzG2jKrESSaBRNebopVNEeeffjappmltoP9
+\restrict KxWdnA5qt1vHZQDDuRvIwJ8Jl5N6oATNEu7nY3xvzkCeoQKVB403mVJZzhCVjuD
 
 -- Dumped from database version 15.14 (Debian 15.14-0+deb12u1)
 -- Dumped by pg_dump version 15.14 (Debian 15.14-0+deb12u1)
@@ -2797,5 +2797,5 @@ GRANT ALL ON SEQUENCE public.workspoints_point_id_seq TO admin55;
 -- PostgreSQL database dump complete
 --
 
-\unrestrict Lzh1ocaL5N0WQCEAmveGMHaLkf9jtzG2jKrESSaBRNebopVNEeeffjappmltoP9
+\unrestrict KxWdnA5qt1vHZQDDuRvIwJ8Jl5N6oATNEu7nY3xvzkCeoQKVB403mVJZzhCVjuD
 

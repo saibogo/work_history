@@ -1,8 +1,11 @@
 """This module is creating new session telegram-bot"""
 import asyncio
+import aiohttp
 
 from aiogram import Bot, Dispatcher, executor, types, filters
 from aiogram.utils.exceptions import MessageTextIsEmpty
+from aiohttp import ClientSession
+from aiohttp_socks import ProxyConnector
 
 from wh_app.supporting import functions
 from wh_app.postgresql.database import Database
@@ -38,12 +41,23 @@ def load_token() -> str:
 
 MAX_CHAR_IN_MSG = 4000
 API_TOKEN = load_token()
-bot = Bot(token=API_TOKEN)
+proxy = 'socks5://206.123.156.176:8505'
+login_p = ''
+password_p = ''
+
+#bot = Bot(token=API_TOKEN, proxy=proxy, proxy_auth=BasicAuth(login, password))
+#PROXY_URL = 'socks5://username:password@proxy_server:port'
+#PROXY_URL = 'socks5://eqvit:DTWmQp6W2D@94.230.130.147:5191'
+#connector = ProxyConnector.from_url(PROXY_URL)
+#session = ClientSession(connector=connector)
+#bot = Bot(token=API_TOKEN, session=session)
+bot = Bot(token=API_TOKEN, proxy_auth=aiohttp.BasicAuth(login_p, password_p))
 dp = Dispatcher(bot)
 TIMEOUT_TO_SEND_INFO_MESSAGE = 60
 bot_is_restarted = True
 bot_state = BotStateMachine.get_instance()
 new_orders_dict = {}
+
 
 
 def repeat(coro, loop):
@@ -67,6 +81,12 @@ def add_new_order_in_loop(order_id) -> None:
 
 async def start_message_with_new_order():
     """Send all users in chats-list message with a new order"""
+    bot_info = await bot.get_me()
+    print(bot_info.first_name)
+    if str(bot_info.first_name) == 'malachite_works':
+        print('Telegram bot is worked!')
+    else:
+        print('Not connected wit telegram servers!')
     global new_orders_dict
     messages_del = []
     if True in new_orders_dict.values():
