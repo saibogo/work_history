@@ -11,7 +11,7 @@ from wh_app.supporting import functions
 from wh_app.postgresql.database import Database
 from wh_app.sql_operations.select_operations.select_operations import get_all_telegram_chats, get_order_from_id
 from wh_app.telegram_bot.bot_state_machine import BotStateMachine
-from wh_app.config_and_backup.config import path_to_telegram_token, path_to_messages
+from wh_app.config_and_backup.config import path_to_telegram_token, path_to_messages, socks5_name, socks5_user, socks5_pass
 from wh_app.telegram_bot.point_bot import all_points, send_statistic, point_info, not_create_record, get_svu, \
     get_tech_info
 from wh_app.telegram_bot.equip_bot import equip_info, start_add_new_equip, save_new_equip, equip_repler, start_download_detail,\
@@ -45,7 +45,8 @@ proxy = 'socks5://206.123.156.176:8505'
 login_p = ''
 password_p = ''
 
-#bot = Bot(token=API_TOKEN, proxy=proxy, proxy_auth=BasicAuth(login, password))
+
+#bot = Bot(token=API_TOKEN, proxy=socks5_name(), proxy_auth=aiohttp.BasicAuth(login=socks5_user(), password=socks5_pass()))
 #PROXY_URL = 'socks5://username:password@proxy_server:port'
 #PROXY_URL = 'socks5://eqvit:DTWmQp6W2D@94.230.130.147:5191'
 #connector = ProxyConnector.from_url(PROXY_URL)

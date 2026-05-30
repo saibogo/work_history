@@ -29,6 +29,9 @@
     <telegram>
         <!-->Auto delete messages from telegram bot in seconds<-->
         <telegram_delete_message_pause>7200</telegram_delete_message_pause>
+        <socks5_host>socks5://192.168.150.10</socks5_host>
+        <socks5_user>saibogo</socks5_user>
+        <socks5_pass>IFy4gwh4i6</socks5_pass>
     </telegram>
     <any>
     </any>

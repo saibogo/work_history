@@ -39,14 +39,17 @@ def login_verification() -> str:
     """Function compare pair login-password with data in system and redirect to new page"""
     user_ip = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
     need_clean_session = True
-
     if functions.is_login_and_password_correct(request.form[LOGIN], request.form[PASSWORD]):
         user_name = request.form[LOGIN]
         print("Успешная верификация пользователя ", user_name)
         user_role = functions.get_user_role(user_name)
+        print(user_role)
         if functions.is_login_and_password_correct( user_name, request.form[PASSWORD]) \
                 and user_role == functions.ROLE_SUPERUSER:
             session[SESSION_ROLE] = functions.ROLE_SUPERUSER
+            session[LOGIN] = user_name
+        elif user_role == functions.ROLE_ENGINEER:
+            session[SESSION_ROLE] = functions.ROLE_ENGINEER
             session[LOGIN] = user_name
         elif user_role == functions.ROLE_WORKER:
             session[SESSION_ROLE] = functions.ROLE_WORKER

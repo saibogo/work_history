@@ -26,35 +26,35 @@ def all_customers_table_server() -> Response:
 @app.route('/add-new-customer')
 def add_new_customer() -> Response:
     """go to new form to create new customer"""
-    return goto_or_redirect(lambda: create_new_customer_form(stylesheet_number()), functions.ROLE_SUPERUSER)
+    return goto_or_redirect(lambda: create_new_customer_form(stylesheet_number()), functions.ROLE_ENGINEER)
 
 
 @app.route('/create_new_customer', methods=['POST'])
 def create_new_customer() -> Response:
     """Go to analyze and add new customer in database"""
     return goto_or_redirect(lambda: create_new_customer_method(functions.form_to_data(request.form), request.method,
-                                                        stylesheet_number()), functions.ROLE_SUPERUSER)
+                                                        stylesheet_number()), functions.ROLE_ENGINEER)
 
 
 @app.route('/change-customer-status/<customer_id>')
 def change_customer_status(customer_id: int) -> Response:
     """Go to form with chane customer status"""
 
-    return goto_or_redirect(lambda: change_customer_status_form(customer_id, stylesheet_number()), functions.ROLE_SUPERUSER)
+    return goto_or_redirect(lambda: change_customer_status_form(customer_id, stylesheet_number()), functions.ROLE_ENGINEER)
 
 
 @app.route('/common-invert-customer-status', methods=['POST'])
 def common_invert_customer_status() -> Response:
     """If password is superusers password, then status of customer will invert"""
     return goto_or_redirect(lambda: change_customer_status_method(functions.form_to_data(request.form), request.method,
-                                                                  stylesheet_number()), functions.ROLE_SUPERUSER)
+                                                                  stylesheet_number()), functions.ROLE_ENGINEER)
 
 
 @app.route('/change-customer-password/<customer_id>')
 def change_customer_password(customer_id: int) -> Response:
     """Go to form change customer's password"""
     return goto_or_redirect_from_roles_list(lambda: change_customer_password_form(customer_id, stylesheet_number()),
-                                            [functions.ROLE_SUPERUSER, functions.ROLE_CUSTOMER])
+                                            [functions.ROLE_SUPERUSER, functions.ROLE_ENGINEER, functions.ROLE_CUSTOMER])
 
 
 @app.route('/common-change-customer-password', methods=['POST'])
@@ -62,7 +62,7 @@ def common_change_customer_password() -> Response:
     """Go to form change customer's password"""
     return goto_or_redirect_from_roles_list(lambda: change_customer_password_method(functions.form_to_data(request.form),
                                                                                     request.method, stylesheet_number()),
-                                            [functions.ROLE_SUPERUSER, functions.ROLE_CUSTOMER])
+                                            [functions.ROLE_SUPERUSER, functions.ROLE_ENGINEER, functions.ROLE_CUSTOMER])
 
 
 @app.route('/all-registred-orders')
@@ -112,7 +112,7 @@ def my_orders() -> Response:
     """Return table with all orders to customer or all orders to superuser"""
 
     return goto_or_redirect_from_roles_list(lambda: my_orders_table(stylesheet_number()),
-                                            [functions.ROLE_CUSTOMER, functions.ROLE_SUPERUSER])
+                                            [functions.ROLE_CUSTOMER, functions.ROLE_ENGINEER, functions.ROLE_SUPERUSER])
 
 
 @app.route('/my-orders/<page_num>')
@@ -120,14 +120,14 @@ def my_orders_pages(page_num: int) -> Response:
     """Return table with all orders to customer or all orders to superuser"""
 
     return goto_or_redirect_from_roles_list(lambda: my_orders_table_page(stylesheet_number(), page_num),
-                                            [functions.ROLE_CUSTOMER, functions.ROLE_SUPERUSER])
+                                            [functions.ROLE_CUSTOMER, functions.ROLE_ENGINEER, functions.ROLE_SUPERUSER])
 
 
 @app.route('/add-performer-to-order/<order_id>')
 def add_performer_to_order(order_id: int) -> Response:
     """Go to form to add performer in order with id = order_id"""
 
-    return goto_or_redirect(lambda: add_performer_to_order_form(order_id, stylesheet_number()), functions.ROLE_SUPERUSER)
+    return goto_or_redirect(lambda: add_performer_to_order_form(order_id, stylesheet_number()), functions.ROLE_ENGINEER)
 
 
 @app.route('/add-performer-in-order', methods=['POST'])
@@ -135,7 +135,7 @@ def add_performer_in_order() -> Response:
     """Go to method set performer in current order"""
 
     return goto_or_redirect(lambda: add_performer_in_order_method(functions.form_to_data(request.form), request.method,
-                                                                  stylesheet_number()), functions.ROLE_SUPERUSER)
+                                                                  stylesheet_number()), functions.ROLE_ENGINEER)
 
 
 @app.route('/all-no-closed-orders')

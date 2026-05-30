@@ -77,7 +77,7 @@ def change_customer_status_method(data: Dict, method, stylesheet_number: str) ->
     if method == 'POST':
         password = data[uhtml.PASSWORD]
         customer_id = data[uhtml.CUSTOMER_ID]
-        if functions.is_superuser_password(password):
+        if functions.is_superuser_password(password) or functions.is_engineer_password(password):
             with Database() as base:
                 connection, cursor = base
                 update_operations.update_invert_customer_status(cursor, customer_id)
@@ -98,7 +98,8 @@ def change_customer_password_method(data: Dict, method, stylesheet_number: str) 
         password1 = data[uhtml.PASSWORD1]
         password2 = data[uhtml.PASSWORD2]
         customer_id = data[uhtml.CUSTOMER_ID]
-        if functions.is_superuser_password(password) and __new_password_is_correct(customer_id, password1, password2):
+        if ((functions.is_superuser_password(password) or functions.is_engineer_password(password))
+                and __new_password_is_correct(customer_id, password1, password2)):
             new_hash = functions.create_hash(password1)
             with Database() as base:
                 connection, cursor = base
@@ -154,7 +155,7 @@ def create_new_customer_method(data: Dict, method, stylesheet_number: str) -> st
         last_name = data[uhtml.LAST_NAME]
         password1 = data[uhtml.PASSWORD1]
         password2 = data[uhtml.PASSWORD2]
-        if functions.is_superuser_password(password):
+        if functions.is_superuser_password(password) or functions.is_engineer_password(password):
             if password1 == password2:
                 with Database() as base:
                     connection, cursor = base
@@ -246,7 +247,7 @@ def create_new_order_form(stylesheet_number: str) -> str:
         _, cursor = base
         user_name = session[uhtml.LOGIN]
         user_role = session[uhtml.SESSION_ROLE]
-        if user_role == functions.ROLE_SUPERUSER:
+        if user_role == functions.ROLE_SUPERUSER or user_role == functions.ROLE_ENGINEER:
             current_customer = 0
         elif user_role == functions.ROLE_CUSTOMER:
             customers_info = select_operations.get_all_customers(cursor)
@@ -316,7 +317,7 @@ def add_performer_in_order_method(data: Dict, method, stylesheet_number: str) ->
     """Analyze data and if all correct then set performer in order"""
     pre_adr = '/all-no-closed-orders'
     if method == 'POST':
-        if functions.is_superuser_password(data[uhtml.PASSWORD]):
+        if functions.is_superuser_password(data[uhtml.PASSWORD]) or functions.is_engineer_password(data[uhtml.PASSWORD]):
             performer_id = data[uhtml.PERFORMER]
             order_id = data[uhtml.ORDER_ID]
             with Database() as base:
@@ -482,7 +483,7 @@ def my_orders_table(stylesheet_number: str) -> str:
     """Return table with all customers order or ALL orders if user role = superuser"""
     user_name = session[uhtml.LOGIN]
     user_role = functions.get_user_role(user_name)
-    if user_role == functions.ROLE_SUPERUSER:
+    if user_role == functions.ROLE_SUPERUSER or user_role == functions.ROLE_ENGINEER:
         return all_registered_orders_table_page(1, stylesheet_number)
     elif user_role == functions.ROLE_CUSTOMER:
         return my_orders_table_page(stylesheet_number, 1)
@@ -508,7 +509,7 @@ def my_orders_table_page(stylesheet_number: str, page_num=1) -> str:
     """Return table with all customers order or ALL orders if user role = superuser"""
     user_name = session[uhtml.LOGIN]
     user_role = functions.get_user_role(user_name)
-    if user_role == functions.ROLE_SUPERUSER:
+    if user_role == functions.ROLE_SUPERUSER or user_role == functions.ROLE_ENGINEER:
         return all_registered_orders_table_page(1, stylesheet_number)
     elif user_role == functions.ROLE_CUSTOMER:
         with Database() as base:

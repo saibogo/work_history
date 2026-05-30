@@ -42,6 +42,10 @@ max_session_time = lambda: int(globals()['max_session_time_var'])
 def telegram_delete_message_pause():
     return globals()['telegram_delete_message_pause_var']
 
+socks5_name = lambda: str(globals()['socks5_host_var'])
+socks5_user = lambda: str(globals()['socks5_user_var'])
+socks5_pass = lambda: str(globals()['socks5_pass_var'])
+
 
 path_to_config_xml = str(os.path.abspath(__file__)).replace('config.py', 'config.xml')
 
@@ -90,6 +94,9 @@ def load_config():
 
         # Telegram section
         globals()['telegram_delete_message_pause_var'] = int(tree.find('telegram/telegram_delete_message_pause').text)
+        globals()['socks5_host_var'] = str(tree.find('telegram/socks5_host').text)
+        globals()['socks5_user_var'] = str(tree.find('telegram/socks5_user').text)
+        globals()['socks5_pass_var'] = str(tree.find('telegram/socks5_pass').text)
 
     except FileNotFoundError:
         print('Конфигурационный файл по пути {}, недоступен!'.format(path_to_config_xml))

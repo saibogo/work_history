@@ -103,14 +103,14 @@ def get_devices_reading(device_id: int) -> Response:
 def add_meter_device_in_form(point_num: int) -> Response:
     """Goto to form addiction new meter device"""
 
-    return goto_or_redirect(lambda: add_meter_device_form(int(point_num), stylesheet_number()), functions.ROLE_SUPERUSER)
+    return goto_or_redirect(lambda: add_meter_device_form(int(point_num), stylesheet_number()), functions.ROLE_ENGINEER)
 
 
 @app.route('/add-new-meter-device', methods=['POST'])
 def add_new_meter_device_common() -> Response:
     """Go to analyze and create new meter device"""
     return goto_or_redirect(lambda: add_meter_device_method(functions.form_to_data(request.form), request.method,
-                                                       stylesheet_number()), functions.ROLE_SUPERUSER)
+                                                       stylesheet_number()), functions.ROLE_ENGINEER)
 
 
 @app.route('/meters-in-point/<point_id>')
@@ -140,7 +140,7 @@ def to_bar_meter_avr(device_id: int) -> Response:
 @app.route('/to-bar-meter-mnth/<device_id>')
 def to_bar_meter_mounths(device_id: int) -> Response:
     """Goto to simple bar with last_24_monthly_expense from device meter with id = device_id"""
-    return goto_or_redirect(lambda: last_24_monthly_expense_page(device_id, stylesheet_number()), functions.ROLE_SUPERUSER)
+    return goto_or_redirect(lambda: last_24_monthly_expense_page(device_id, stylesheet_number()), functions.ROLE_ENGINEER)
 
 
 @app.route('/get-power-profile/<device_id>')

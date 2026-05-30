@@ -229,15 +229,6 @@ def is_superuser_password(password: str) -> bool:
            and get_user_role(username) == ROLE_SUPERUSER
 
 
-def is_engineer_password(password: str) -> bool:
-    """Function compare password and engineer passwordhash"""
-    username = session['login']
-    all_users = read_all_users()
-    return (username in all_users.keys()) \
-            and (create_hash(password) == all_users[username]) \
-            and get_user_role(username) == ROLE_ENGINEER
-
-
 def is_superuser_password_cli(password: str) -> bool:
     """Function compare password and superuser password hash (ONLY command string )"""
     all_users = read_all_users()
@@ -263,6 +254,7 @@ def get_user_role(login: str) -> str:
         file_passwords = open(config.path_to_passwords(), mode='r')
         for line in file_passwords:
             user, pass_hash, role = line.split()
+            print(user, pass_hash, role)
             if user == login:
                 if role == ROLE_SUPERUSER:
                     result = ROLE_SUPERUSER
